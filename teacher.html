@@ -57,6 +57,8 @@
       <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
       <a data-view="schedule"><span class="ic">📅</span> Jadwal Saya</a>
       <a data-view="fee"><span class="ic">📊</span> Rekap Bulan Ini</a>
+      <a data-view="resources"><span class="ic">📚</span> Teaching Resources</a>
+      <a data-view="payroll"><span class="ic">🧾</span> Bukti Fee</a>
       <div class="divider"></div>
       <a href="portal.html"><span class="ic">↩️</span> Ganti Portal</a>
       <a href="index.html"><span class="ic">🚪</span> Keluar</a>
@@ -146,6 +148,23 @@
         </table></div></div>
       </section>
 
+      <!-- TEACHING RESOURCES (view-only) -->
+      <section class="view hide" id="view-resources">
+        <div class="page-head"><div><h1>Teaching Resources</h1><div class="sub">Modul &amp; panduan dari owner — hanya untuk dilihat, tidak bisa diunduh</div></div></div>
+        <div class="grid grid-3" id="resList"></div>
+      </section>
+
+      <!-- BUKTI FEE / PAYROLL -->
+      <section class="view hide" id="view-payroll">
+        <div class="page-head"><div><h1>Bukti Fee</h1><div class="sub">Konfirmasi &amp; bukti transfer fee mengajar yang sudah kamu terima</div></div>
+          <button class="btn btn-primary" onclick="openPayroll()">＋ Tambah Bukti</button></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Bulan</th><th>Nominal</th><th>Tgl Transfer</th><th>Bukti</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="payrollBody"></tbody>
+        </table></div></div>
+        <div class="note-band mt-16">ℹ️ Isi bagian ini setiap kali kamu menerima transfer fee dari owner — sebagai catatan bersama.</div>
+      </section>
+
       <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
     </div>
   </div>
@@ -194,6 +213,39 @@
   </div>
 </div>
 
+<!-- MODAL: view resource (view-only) -->
+<div class="modal-overlay" id="mResource">
+  <div class="modal" style="max-width:840px">
+    <div class="modal-head"><h3 id="resTitle">Modul</h3><button class="x" onclick="document.getElementById('resFrame').src='';closeModal('mResource')">×</button></div>
+    <div class="modal-body">
+      <iframe id="resFrame" src="" style="width:100%;height:70vh;border:none;border-radius:10px;background:#f4f8fd"></iframe>
+      <div class="help" style="margin-top:8px">👁️ Modul ini hanya untuk dilihat sebagai panduan lesson plan — mohon tidak menyebarkan.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: tambah bukti fee -->
+<div class="modal-overlay" id="mPayroll">
+  <div class="modal">
+    <div class="modal-head"><h3>Tambah Bukti Fee</h3><button class="x" onclick="closeModal('mPayroll')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="prId">
+      <div class="field-row">
+        <div class="field"><label>Bulan</label><input type="month" id="prMonth"></div>
+        <div class="field"><label>Nominal Diterima</label><input type="number" id="prAmount" placeholder="0"></div>
+      </div>
+      <div class="field"><label>Tanggal Transfer</label><input type="date" id="prDate"></div>
+      <div class="field"><label>Upload Bukti Transfer</label>
+        <div class="dropzone" onclick="document.getElementById('prProof').click()"><span class="zi">📎</span><div><b>Pilih file</b> atau drag &amp; drop<br><span class="help">JPG / PNG / PDF</span></div></div>
+        <input type="file" id="prProof" accept="image/*,application/pdf" class="hide"><div class="help" id="prProofName"></div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mPayroll')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePayrollRec()">Simpan</button>
+    </div>
+  </div>
+</div>
+
 <script src="assets/app.js"></script>
 <script>
 document.getElementById('logo').innerHTML=logoBlock('KWE Lingo','Portal Tentor');
@@ -212,6 +264,8 @@ document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
   if(window.innerWidth<768)toggleSidebar();
   if(a.dataset.view==='schedule')renderSchedule();
   if(a.dataset.view==='fee')renderFee();
+  if(a.dataset.view==='resources')renderResources();
+  if(a.dataset.view==='payroll')renderPayroll();
 });
 
 function sName(id){return (STUDENTS.find(s=>s.id===id)||{}).nama||'-';}
@@ -383,6 +437,77 @@ async function saveFill(){
   catch(e){ toast('Gagal simpan: '+(e.message||e),'err'); }
   finally{ saveFill._busy=false; if(btn){btn.disabled=false; btn.textContent=btn.dataset.t||'Simpan Laporan';} }
 }
+/* ===== Teaching Resources (view-only) ===== */
+let RESOURCES=[];
+function drivePreview(url){
+  const m=String(url||'').match(/\/d\/([^/]+)/)||String(url||'').match(/[?&]id=([^&]+)/);
+  return m?('https://drive.google.com/file/d/'+m[1]+'/preview'):url;
+}
+async function renderResources(){
+  const box=document.getElementById('resList');
+  box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
+  try{ RESOURCES=await API.getResources()||[]; }
+  catch(e){ box.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal memuat: '+esc(e.message||e)+'</div>'; return; }
+  box.innerHTML=RESOURCES.map(r=>`<div class="card card-pad">
+    <div style="font-size:26px">📄</div>
+    <div style="font-weight:800;color:var(--navy);margin-top:6px">${esc(r.title||'Modul')}</div>
+    <div class="muted" style="font-size:12.5px">${esc([r.subject,r.level].filter(Boolean).join(' · ')||'-')}</div>
+    ${r.note?`<div style="font-size:12px;color:#374151;margin-top:6px">${esc(r.note)}</div>`:''}
+    <button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="openResource('${r.id}')">📖 Lihat</button>
+  </div>`).join('') || '<div class="card card-pad muted" style="text-align:center">Belum ada modul dari owner.</div>';
+}
+function openResource(id){
+  const r=RESOURCES.find(x=>x.id===id); if(!r)return;
+  document.getElementById('resTitle').textContent=r.title||'Modul';
+  document.getElementById('resFrame').src=drivePreview(r.file_url);
+  openModal('mResource');
+}
+
+/* ===== Bukti Fee / Payroll ===== */
+let PAYROLL=[];
+function openPayroll(){
+  document.getElementById('prId').value='';
+  document.getElementById('prMonth').value=todayStr().slice(0,7);
+  document.getElementById('prAmount').value='';
+  document.getElementById('prDate').value=todayStr();
+  document.getElementById('prProof').value=''; document.getElementById('prProofName').textContent='';
+  openModal('mPayroll');
+}
+document.getElementById('prProof').onchange=e=>document.getElementById('prProofName').textContent=e.target.files[0]?('📎 '+e.target.files[0].name):'';
+async function savePayrollRec(){
+  if(savePayrollRec._busy)return;
+  const p={ id:document.getElementById('prId').value||undefined, tutor_id:ME.id,
+    month:document.getElementById('prMonth').value, amount:Number(document.getElementById('prAmount').value)||0,
+    transfer_date:document.getElementById('prDate').value, status:'DITERIMA' };
+  if(!p.month){ toast('Pilih bulan dulu','err'); return; }
+  const f=document.getElementById('prProof').files[0];
+  const btn=document.querySelector('#mPayroll .btn-primary');
+  savePayrollRec._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Menyimpan…';}
+  try{
+    if(f){ toast('Mengupload bukti…'); const b64=await fileToBase64(f); const r=await API.uploadFile(b64,f.name); p.proof_url=(r&&(r.view||r.url))||''; }
+    await API.savePayroll(p); closeModal('mPayroll'); toast('Bukti fee tersimpan','ok'); renderPayroll();
+  }catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+  finally{ savePayrollRec._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Simpan';} }
+}
+async function renderPayroll(){
+  const tb=document.getElementById('payrollBody');
+  tb.innerHTML='<tr><td colspan="6" class="muted" style="padding:16px">Memuat…</td></tr>';
+  try{ PAYROLL=await API.getPayroll({tutor_id:ME.id})||[]; }
+  catch(e){ tb.innerHTML='<tr><td colspan="6" style="color:var(--red);padding:16px">Gagal: '+esc(e.message||e)+'</td></tr>'; return; }
+  tb.innerHTML=PAYROLL.map(r=>{
+    const per=r.month?new Date(r.month+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}):'-';
+    const proof=r.proof_url?`<a href="${r.proof_url}" target="_blank" style="color:var(--blue)">📎 Lihat</a>`:'<span class="muted">-</span>';
+    return `<tr><td>${per}</td><td><b>${fmtRp(r.amount)}</b></td><td>${r.transfer_date?prettyDate(r.transfer_date):'-'}</td>
+      <td>${proof}</td><td><span class="badge badge-paid">${esc(r.status||'DITERIMA')}</span></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delPayroll('${r.id}')">Hapus</button></td></tr>`;
+  }).join('') || '<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">Belum ada bukti fee.</td></tr>';
+}
+async function delPayroll(id){
+  if(!confirm('Hapus bukti ini?'))return;
+  try{ await API.deletePayroll(id); toast('Terhapus','ok'); renderPayroll(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+
 boot();
 </script>
 </body>

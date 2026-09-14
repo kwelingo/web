@@ -194,6 +194,15 @@ const SCRIPT_API = {
   saveTutorBonus:(d)   => SCRIPT_API._post({action:'saveTutorBonus',...d}),
 
   uploadFile  : (base64,filename) => SCRIPT_API._post({action:'uploadFile',base64,filename}),
+
+  // Teaching Resources (modul PDF — owner upload, guru view-only)
+  getResources : ()  => SCRIPT_API._post({action:'getResources'}),
+  addResource  : (d) => SCRIPT_API._post({action:'addResource',...d}),
+  deleteResource:(id)=> SCRIPT_API._post({action:'deleteResource',id}),
+  // Bukti terima fee / payroll tentor
+  getPayroll   : (o={}) => SCRIPT_API._post({action:'getPayroll',...o}),
+  savePayroll  : (d) => SCRIPT_API._post({action:'savePayroll',...d}),
+  deletePayroll:(id)=> SCRIPT_API._post({action:'deletePayroll',id}),
 };
 
 /* ============================================================

@@ -79,6 +79,7 @@
       <a data-view="data"><span class="ic">🗄️</span> Data Explorer</a>
       <a data-view="payment"><span class="ic">💳</span> Payment Student</a>
       <a data-view="tpay"><span class="ic">🧑‍🏫</span> Payment Tentor</a>
+      <a data-view="resources"><span class="ic">📚</span> Teaching Resources</a>
       <a data-view="settings"><span class="ic">🔒</span> Ganti Password</a>
       <div class="divider"></div>
       <div class="sidebar-role" style="margin-top:0">Buka Portal Lain</div>
@@ -272,6 +273,30 @@
           </div>
         </div>
         <div id="tpContent"></div>
+      </section>
+
+      <!-- TEACHING RESOURCES (owner upload) -->
+      <section class="view hide" id="view-resources">
+        <div class="page-head"><div><h1>Teaching Resources</h1><div class="sub">Upload modul/panduan PDF — tentor hanya bisa melihat (tidak bisa unduh)</div></div></div>
+        <div class="card card-pad" style="margin-bottom:16px">
+          <div class="card-title">＋ Tambah Modul</div>
+          <div class="field-row">
+            <div class="field"><label>Judul <span class="req">*</span></label><input id="rcTitle" placeholder="cth: Modul General English Unit 1"></div>
+            <div class="field"><label>Subject</label><input id="rcSubject" placeholder="cth: English / Mandarin"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Level</label><input id="rcLevel" placeholder="cth: Beginner / HSK 1"></div>
+            <div class="field"><label>Catatan</label><input id="rcNote" placeholder="opsional"></div>
+          </div>
+          <div class="field"><label>File PDF <span class="req">*</span></label>
+            <div class="dropzone" onclick="document.getElementById('rcFile').click()"><span class="zi">📄</span><div><b>Pilih PDF</b> atau drag &amp; drop<br><span class="help">Disimpan ke Google Drive</span></div></div>
+            <input type="file" id="rcFile" accept="application/pdf" class="hide"><div class="help" id="rcFileName"></div></div>
+          <div style="text-align:right"><button class="btn btn-primary" onclick="uploadResource()">⬆️ Upload Modul</button></div>
+        </div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Judul</th><th>Subject</th><th>Level</th><th>Catatan</th><th>Aksi</th></tr></thead>
+          <tbody id="rcBody"></tbody>
+        </table></div></div>
       </section>
 
       <!-- SETTINGS: GANTI PASSWORD -->
@@ -497,6 +522,41 @@ function renderM(v){
   if(v==='payment')     initPayment();
   if(v==='tpay')        initTentorPay();
   if(v==='data')        initData();
+  if(v==='resources')   renderResourcesAdmin();
+}
+/* ===== Teaching Resources (owner) ===== */
+document.getElementById('rcFile') && (document.getElementById('rcFile').onchange=e=>{document.getElementById('rcFileName').textContent=e.target.files[0]?('📎 '+e.target.files[0].name):'';});
+async function renderResourcesAdmin(){
+  const tb=document.getElementById('rcBody'); if(!tb) return;
+  tb.innerHTML='<tr><td colspan="5" class="muted" style="padding:16px">Memuat…</td></tr>';
+  let list=[]; try{ list=await API.getResources()||[]; }catch(e){ tb.innerHTML='<tr><td colspan="5" style="color:var(--red);padding:16px">Gagal: '+esc(e.message||e)+'</td></tr>'; return; }
+  tb.innerHTML=list.map(r=>`<tr>
+    <td><b>${esc(r.title||'-')}</b></td><td>${esc(r.subject||'-')}</td><td>${esc(r.level||'-')}</td><td>${esc(r.note||'-')}</td>
+    <td style="white-space:nowrap">
+      ${r.file_url?`<a class="btn btn-outline btn-sm" href="${r.file_url}" target="_blank">Buka</a>`:''}
+      <button class="btn btn-danger btn-sm" onclick="delResource('${r.id}')">Hapus</button></td></tr>`).join('')
+    || '<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Belum ada modul.</td></tr>';
+}
+async function uploadResource(){
+  const title=document.getElementById('rcTitle').value.trim();
+  const f=document.getElementById('rcFile').files[0];
+  if(!title){ toast('Isi judul dulu','err'); return; }
+  if(!f){ toast('Pilih file PDF dulu','err'); return; }
+  const btn=event&&event.target; if(btn){btn.disabled=true;btn.textContent='Mengupload…';}
+  try{
+    const b64=await fileToBase64(f);
+    const up=await API.uploadFile(b64,f.name);
+    await API.addResource({title, subject:document.getElementById('rcSubject').value.trim(), level:document.getElementById('rcLevel').value.trim(), note:document.getElementById('rcNote').value.trim(), file_url:(up&&(up.view||up.url))||''});
+    ['rcTitle','rcSubject','rcLevel','rcNote'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('rcFile').value=''; document.getElementById('rcFileName').textContent='';
+    toast('Modul terupload','ok'); renderResourcesAdmin();
+  }catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+  finally{ if(btn){btn.disabled=false;btn.textContent='⬆️ Upload Modul';} }
+}
+async function delResource(id){
+  if(!confirm('Hapus modul ini?'))return;
+  try{ await API.deleteResource(id); toast('Terhapus','ok'); renderResourcesAdmin(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
 }
 /* ===== DATA EXPLORER ===== */
 const DATA_DEFS={
@@ -601,7 +661,20 @@ async function loadTentorPay(){
         <div class="val" id="tpTotal" style="font-size:22px">${fmtRp(fee+amt)}</div>
         <div class="hint">Fee <b>${fmtRp(fee)}</b> + Komisi/Bonus</div></div>
     </div>
-    <div style="text-align:right;margin-top:14px"><button class="btn btn-primary" onclick="saveTentorPay('${tid}','${mon}')">💾 Simpan Komisi/Bonus</button></div>`;
+    <div style="text-align:right;margin-top:14px"><button class="btn btn-primary" onclick="saveTentorPay('${tid}','${mon}')">💾 Simpan Komisi/Bonus</button></div>
+    <div id="tpPayrollBox" style="margin-top:18px"></div>`;
+  renderTutorPayroll(tid);
+}
+async function renderTutorPayroll(tid){
+  const box=document.getElementById('tpPayrollBox'); if(!box) return;
+  let list=[]; try{ list=await API.getPayroll({tutor_id:tid})||[]; }catch(e){ box.innerHTML=''; return; }
+  const rows=list.map(r=>{
+    const per=r.month?new Date(r.month+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}):'-';
+    const proof=r.proof_url?`<a href="${r.proof_url}" target="_blank" style="color:var(--blue)">📎 Lihat</a>`:'<span class="muted">-</span>';
+    return `<tr><td>${per}</td><td><b>${fmtRp(r.amount)}</b></td><td>${r.transfer_date?prettyDate(r.transfer_date):'-'}</td><td>${proof}</td><td><span class="badge badge-paid">${esc(r.status||'DITERIMA')}</span></td></tr>`;
+  }).join('') || '<tr><td colspan="5" class="muted" style="text-align:center;padding:16px">Belum ada bukti fee dari tentor ini.</td></tr>';
+  box.innerHTML=`<div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">🧾 Bukti Fee Diterima Tentor</div></div>
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>Bulan</th><th>Nominal</th><th>Tgl Transfer</th><th>Bukti</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 function tpCalc(){
   const amt=Number((document.getElementById('tpAmount')||{}).value)||0;
