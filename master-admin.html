@@ -80,6 +80,7 @@
       <a data-view="payment"><span class="ic">💳</span> Payment Student</a>
       <a data-view="tpay"><span class="ic">🧑‍🏫</span> Payment Tentor</a>
       <a data-view="resources"><span class="ic">📚</span> Teaching Resources</a>
+      <a data-view="content"><span class="ic">🎓</span> Konten Siswa</a>
       <a data-view="settings"><span class="ic">🔒</span> Ganti Password</a>
       <div class="divider"></div>
       <div class="sidebar-role" style="margin-top:0">Buka Portal Lain</div>
@@ -297,6 +298,29 @@
           <thead><tr><th>Judul</th><th>Subject</th><th>Level</th><th>Catatan</th><th>Aksi</th></tr></thead>
           <tbody id="rcBody"></tbody>
         </table></div></div>
+      </section>
+
+      <!-- KONTEN SISWA (pengumuman + quiz) -->
+      <section class="view hide" id="view-content">
+        <div class="page-head"><div><h1>Konten Siswa</h1><div class="sub">Pengumuman &amp; Quiz yang tampil di Portal Siswa</div></div></div>
+        <div class="grid grid-2" style="gap:18px;align-items:start">
+          <div class="card card-pad">
+            <div class="card-title">📢 Pengumuman</div>
+            <div class="field"><label>Judul</label><input id="anTitle" placeholder="cth: Libur Nasional"></div>
+            <div class="field"><label>Isi</label><textarea id="anBody" style="min-height:70px" placeholder="Tulis pengumuman…"></textarea></div>
+            <div style="text-align:right"><button class="btn btn-primary btn-sm" onclick="postAnnounce()">＋ Posting</button></div>
+            <div id="anList" style="margin-top:10px"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title">📝 Buat Quiz</div>
+            <div class="field-row"><div class="field"><label>Judul</label><input id="qzTitle" placeholder="cth: Vocabulary Unit 1"></div><div class="field"><label>Subject</label><input id="qzSubject" placeholder="English / Mandarin"></div></div>
+            <div class="field"><label>Level</label><input id="qzLevel" placeholder="cth: Beginner / HSK 1"></div>
+            <div id="qzQuestions"></div>
+            <button class="btn btn-outline btn-sm" onclick="addQuestion()">＋ Tambah Soal</button>
+            <div style="text-align:right;margin-top:10px"><button class="btn btn-primary btn-sm" onclick="saveQuiz()">💾 Simpan Quiz</button></div>
+            <div id="qzList" style="margin-top:12px"></div>
+          </div>
+        </div>
       </section>
 
       <!-- SETTINGS: GANTI PASSWORD -->
@@ -523,7 +547,55 @@ function renderM(v){
   if(v==='tpay')        initTentorPay();
   if(v==='data')        initData();
   if(v==='resources')   renderResourcesAdmin();
+  if(v==='content')     initContent();
 }
+/* ===== Konten Siswa: Pengumuman + Quiz ===== */
+function initContent(){ renderAnnList(); renderQzList(); document.getElementById('qzQuestions').innerHTML=''; addQuestion(); }
+async function postAnnounce(){
+  const t=document.getElementById('anTitle').value.trim(), b=document.getElementById('anBody').value.trim();
+  if(!t){ toast('Isi judul dulu','err'); return; }
+  try{ await API.addAnnouncement({title:t, body:b, date:todayStr()}); document.getElementById('anTitle').value=''; document.getElementById('anBody').value=''; toast('Pengumuman diposting','ok'); renderAnnList(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+async function renderAnnList(){
+  const box=document.getElementById('anList'); if(!box) return; box.innerHTML='<div class="muted" style="font-size:12px">Memuat…</div>';
+  let list=[]; try{ list=await API.getAnnouncements()||[]; }catch(e){ box.innerHTML='<div style="color:var(--red);font-size:12px">Gagal memuat</div>'; return; }
+  box.innerHTML=list.map(a=>`<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)"><span style="flex:1;font-size:12.5px"><b>${esc(a.title||'')}</b> <span class="muted">${a.date?prettyDate(a.date):''}</span></span><button class="btn btn-danger btn-sm" onclick="delAnnounce('${a.id}')">Hapus</button></div>`).join('') || '<div class="muted" style="font-size:12px">Belum ada.</div>';
+}
+async function delAnnounce(id){ if(!confirm('Hapus pengumuman?'))return; try{ await API.deleteAnnouncement(id); renderAnnList(); }catch(e){ toast('Gagal','err'); } }
+let QZ_N=0;
+function addQuestion(){
+  QZ_N++; const id='qzr'+QZ_N; const box=document.getElementById('qzQuestions');
+  const div=document.createElement('div'); div.className='qz-item'; div.style.cssText='border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px';
+  div.innerHTML=`<div class="field" style="margin-bottom:6px"><input placeholder="Pertanyaan" class="qz-q"></div>`+
+    [0,1,2,3].map(i=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><input type="radio" name="${id}" value="${i}" ${i===0?'checked':''} title="jawaban benar"><input placeholder="Pilihan ${i+1}" class="qz-o" style="flex:1;padding:7px 10px;border:1.5px solid var(--line);border-radius:8px"></div>`).join('')+
+    `<div style="text-align:right"><button class="btn btn-ghost btn-sm" onclick="this.closest('.qz-item').remove()">🗑️ Hapus soal</button></div>`;
+  box.appendChild(div);
+}
+async function saveQuiz(){
+  const title=document.getElementById('qzTitle').value.trim();
+  if(!title){ toast('Isi judul quiz','err'); return; }
+  const qs=[];
+  document.querySelectorAll('#qzQuestions .qz-item').forEach(d=>{
+    const q=d.querySelector('.qz-q').value.trim();
+    const opts=[...d.querySelectorAll('.qz-o')].map(o=>o.value.trim());
+    const ans=Number((d.querySelector('input[type=radio]:checked')||{}).value||0);
+    if(q && opts.filter(Boolean).length>=2) qs.push({q, options:opts, answer:ans});
+  });
+  if(!qs.length){ toast('Tambah minimal 1 soal lengkap (pertanyaan + 2 pilihan)','err'); return; }
+  try{
+    await API.addQuiz({title, subject:document.getElementById('qzSubject').value.trim(), level:document.getElementById('qzLevel').value.trim(), questions:JSON.stringify(qs)});
+    document.getElementById('qzTitle').value=''; document.getElementById('qzSubject').value=''; document.getElementById('qzLevel').value='';
+    document.getElementById('qzQuestions').innerHTML=''; addQuestion();
+    toast('Quiz tersimpan','ok'); renderQzList();
+  }catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+async function renderQzList(){
+  const box=document.getElementById('qzList'); if(!box) return; box.innerHTML='<div class="muted" style="font-size:12px">Memuat…</div>';
+  let list=[]; try{ list=await API.getQuizzes()||[]; }catch(e){ box.innerHTML='<div style="color:var(--red);font-size:12px">Gagal memuat</div>'; return; }
+  box.innerHTML=list.map(q=>{ let n=0; try{ n=JSON.parse(q.questions||'[]').length; }catch(e){} return `<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)"><span style="flex:1;font-size:12.5px"><b>${esc(q.title||'')}</b> <span class="muted">${esc([q.subject,q.level].filter(Boolean).join(' · '))} · ${n} soal</span></span><button class="btn btn-danger btn-sm" onclick="delQuiz('${q.id}')">Hapus</button></div>`; }).join('') || '<div class="muted" style="font-size:12px">Belum ada.</div>';
+}
+async function delQuiz(id){ if(!confirm('Hapus quiz?'))return; try{ await API.deleteQuiz(id); renderQzList(); }catch(e){ toast('Gagal','err'); } }
 /* ===== Teaching Resources (owner) ===== */
 document.getElementById('rcFile') && (document.getElementById('rcFile').onchange=e=>{document.getElementById('rcFileName').textContent=e.target.files[0]?('📎 '+e.target.files[0].name):'';});
 async function renderResourcesAdmin(){

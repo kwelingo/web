@@ -203,6 +203,18 @@ const SCRIPT_API = {
   getPayroll   : (o={}) => SCRIPT_API._post({action:'getPayroll',...o}),
   savePayroll  : (d) => SCRIPT_API._post({action:'savePayroll',...d}),
   deletePayroll:(id)=> SCRIPT_API._post({action:'deletePayroll',id}),
+  // Student portal: pengumuman, quiz, leaderboard, diskusi
+  getAnnouncements:() => SCRIPT_API._post({action:'getAnnouncements'}),
+  addAnnouncement:(d) => SCRIPT_API._post({action:'addAnnouncement',...d}),
+  deleteAnnouncement:(id)=> SCRIPT_API._post({action:'deleteAnnouncement',id}),
+  getQuizzes   :() => SCRIPT_API._post({action:'getQuizzes'}),
+  addQuiz      :(d) => SCRIPT_API._post({action:'addQuiz',...d}),
+  deleteQuiz   :(id)=> SCRIPT_API._post({action:'deleteQuiz',id}),
+  getQuizResults:(o={})=> SCRIPT_API._post({action:'getQuizResults',...o}),
+  saveQuizResult:(d)=> SCRIPT_API._post({action:'saveQuizResult',...d}),
+  getLeaderboard:() => SCRIPT_API._post({action:'getLeaderboard'}),
+  getDiscussion:(o={})=> SCRIPT_API._post({action:'getDiscussion',...o}),
+  addDiscussion:(d)=> SCRIPT_API._post({action:'addDiscussion',...d}),
 };
 
 /* ============================================================

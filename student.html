@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student — KWE Lingo</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .qopt{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:8px;cursor:pointer;transition:.12s;font-size:14px}
+  .qopt:hover{border-color:var(--sky);background:var(--sky-soft)}
+  .qopt input{accent-color:var(--sky-deep)}
+  .qopt.correct{border-color:var(--green2);background:var(--green-soft)}
+  .qopt.wrong{border-color:var(--red);background:var(--red-soft)}
+  .lb-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;background:#fff;border:1px solid var(--line);margin-bottom:8px}
+  .lb-row.me{border-color:var(--sky);background:var(--sky-soft)}
+  .lb-rank{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Poppins';font-weight:800;background:var(--bg);color:var(--muted);flex:0 0 34px}
+  .lb-rank.g1{background:#fff4cc;color:#b8860b}.lb-rank.g2{background:#eef1f5;color:#7a8394}.lb-rank.g3{background:#fce7d6;color:#b5651d}
+  .lb-pts{margin-left:auto;font-weight:800;color:var(--gold);font-size:16px}
+  .lb-pts small{color:var(--muted);font-weight:500;font-size:11px}
+  .disc{max-width:760px}
+  .msg{display:flex;gap:10px;margin-bottom:12px}
+  .msg .av{width:36px;height:36px;border-radius:50%;background:var(--sky-deep);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 36px}
+  .msg .bub{background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 13px;font-size:13.5px}
+  .msg .bub b{color:var(--navy);font-size:12.5px;display:block;margin-bottom:2px}
+  .msg .bub .t{color:var(--muted);font-size:10.5px;margin-top:3px}
+  .msg.me{flex-direction:row-reverse}
+  .msg.me .bub{background:var(--sky-soft);border-color:#bfe6ee}
+  .ann{border-left:4px solid var(--sky);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#E9F8FB,#F3FBFC);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card card-pad" style="max-width:380px;width:100%;text-align:center">
+    <img src="assets/logo.png" style="height:78px;margin:0 auto 12px;display:block">
+    <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Login Siswa</h2>
+    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Masuk dengan username &amp; PIN dari admin</p>
+    <div class="field" style="text-align:left"><label>Username</label>
+      <input id="lgName" autocomplete="off" placeholder="cth: ethankwe" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field" style="text-align:left"><label>PIN (4 digit)</label>
+      <input id="lgPin" maxlength="4" inputmode="numeric" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Masuk →</button>
+    <div class="help" id="lgErr" style="color:var(--red);margin-top:10px;font-weight:600"></div>
+    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Kembali ke pemilihan portal</a></div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-head" id="logo"></div>
+    <div class="sidebar-role">Menu</div>
+    <nav class="nav">
+      <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
+      <a data-view="quiz"><span class="ic">📝</span> Quiz</a>
+      <a data-view="leaderboard"><span class="ic">🏆</span> Leaderboard</a>
+      <a data-view="announce"><span class="ic">📢</span> Pengumuman</a>
+      <a data-view="discuss"><span class="ic">💬</span> Diskusi</a>
+      <div class="divider"></div>
+      <a href="portal.html"><span class="ic">↩️</span> Ganti Portal</a>
+      <a href="index.html"><span class="ic">🚪</span> Keluar</a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar" id="savatar">S</div>
+      <div class="who" id="swho">Siswa<small>Student</small></div>
+    </div>
+  </aside>
+  <div class="backdrop" onclick="toggleSidebar()"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="spacer"></div>
+      <div class="me"><div class="who" id="swho2">Siswa<small>Student</small></div><div class="avatar" id="savatar2">S</div></div>
+    </div>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <div class="page-head"><div><h1 id="hi">Halo 👋</h1><div class="sub" id="today">—</div></div></div>
+        <div class="grid grid-4" style="margin-bottom:22px">
+          <div class="stat tint-amber"><div class="lbl"><span class="icon">⭐</span> Poin Saya</div><div class="val" id="myPoints">0</div></div>
+          <div class="stat tint-purple"><div class="lbl"><span class="icon">🏆</span> Peringkat</div><div class="val" id="myRank">-</div></div>
+          <div class="stat tint-blue"><div class="lbl"><span class="icon">📝</span> Quiz Tersedia</div><div class="val" id="quizCount">0</div></div>
+          <div class="stat tint-green"><div class="lbl"><span class="icon">✅</span> Quiz Dikerjakan</div><div class="val" id="doneCount">0</div></div>
+        </div>
+        <div class="grid grid-2" style="gap:18px">
+          <div class="card card-pad">
+            <div class="card-title">📢 Pengumuman Terbaru</div>
+            <div id="dashAnn"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title">📝 Ayo Kerjakan Quiz</div>
+            <div id="dashQuiz"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUIZ -->
+      <section class="view hide" id="view-quiz">
+        <div class="page-head"><div><h1>Quiz</h1><div class="sub">Kerjakan quiz &amp; kumpulkan poin!</div></div></div>
+        <div class="grid grid-3" id="quizList"></div>
+      </section>
+
+      <!-- LEADERBOARD -->
+      <section class="view hide" id="view-leaderboard">
+        <div class="page-head"><div><h1>Leaderboard</h1><div class="sub">Peringkat berdasarkan total poin quiz</div></div></div>
+        <div id="lbList" style="max-width:620px"></div>
+      </section>
+
+      <!-- ANNOUNCEMENTS -->
+      <section class="view hide" id="view-announce">
+        <div class="page-head"><div><h1>Pengumuman</h1><div class="sub">Info terbaru dari KWE Lingo</div></div></div>
+        <div id="annList" style="max-width:760px"></div>
+      </section>
+
+      <!-- DISCUSSION -->
+      <section class="view hide" id="view-discuss">
+        <div class="page-head"><div><h1>Diskusi</h1><div class="sub">Ngobrol bareng teman &amp; belajar bersama — jaga sopan santun ya 🙂</div></div></div>
+        <div class="card card-pad disc">
+          <div id="discFeed" style="max-height:52vh;overflow:auto;margin-bottom:14px"></div>
+          <div style="display:flex;gap:10px">
+            <input id="discInput" placeholder="Tulis pesan…" style="flex:1;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px" onkeydown="if(event.key==='Enter')postDiscuss()">
+            <button class="btn btn-primary" onclick="postDiscuss()">Kirim</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: kerjakan quiz -->
+<div class="modal-overlay" id="mQuiz">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-head"><h3 id="qTitle">Quiz</h3><button class="x" onclick="closeModal('mQuiz')">×</button></div>
+    <div class="modal-body" id="qBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mQuiz')">Tutup</button>
+      <button class="btn btn-primary" id="qSubmitBtn" onclick="submitQuiz()">Selesai &amp; Cek Nilai</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+document.getElementById('logo').innerHTML = logoBlock('KWE Lingo','Portal Siswa');
+document.getElementById('today').textContent = '📅 ' + longToday();
+
+let ME=null, QUIZZES=[], RESULTS=[], LB=[], ANN=[], CUR_QUIZ=null, CUR_ANS={};
+
+/* ---------- login ---------- */
+(function(){ const q=new URLSearchParams(location.search); if(q.get('user')) document.getElementById('lgName').value=q.get('user'); })();
+async function doLogin(){
+  const user=document.getElementById('lgName').value.trim(), pin=document.getElementById('lgPin').value;
+  const err=document.getElementById('lgErr');
+  if(!user){err.textContent='Masukkan username dulu';return;}
+  if(!/^\d{4}$/.test(pin)){err.textContent='PIN harus 4 digit angka';return;}
+  err.textContent='Memeriksa…';
+  try{
+    ME=await API.studentLogin(user,pin);
+    document.getElementById('loginGate').style.display='none'; err.textContent='';
+    setMe(); await loadAll();
+  }catch(e){ err.textContent=e.message||'Login gagal'; }
+}
+function setMe(){
+  const nm=ME.nama||'Siswa';
+  ['savatar','savatar2'].forEach(i=>document.getElementById(i).textContent=(nm[0]||'S').toUpperCase());
+  ['swho','swho2'].forEach(i=>document.getElementById(i).innerHTML=`${nm}<small>${ME.school||'Student'}</small>`);
+  document.getElementById('hi').textContent=`Halo, ${nm}! 👋`;
+}
+
+/* ---------- nav ---------- */
+document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
+  document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));
+  document.getElementById('view-'+a.dataset.view).classList.remove('hide');
+  if(window.innerWidth<768)toggleSidebar();
+  if(a.dataset.view==='quiz') renderQuizList();
+  if(a.dataset.view==='leaderboard') renderLeaderboard();
+  if(a.dataset.view==='announce') renderAnnouncements();
+  if(a.dataset.view==='discuss') renderDiscuss();
+});
+
+/* ---------- load ---------- */
+async function loadAll(){
+  try{ QUIZZES=await API.getQuizzes()||[]; }catch(e){ QUIZZES=[]; }
+  try{ RESULTS=await API.getQuizResults({student_id:ME.id})||[]; }catch(e){ RESULTS=[]; }
+  try{ ANN=await API.getAnnouncements()||[]; }catch(e){ ANN=[]; }
+  try{ LB=await API.getLeaderboard()||[]; }catch(e){ LB=[]; }
+  renderDashboard();
+}
+function myPoints(){ return RESULTS.reduce((a,r)=>a+(Number(r.score)||0),0); }
+function myRankNum(){ const i=LB.findIndex(x=>String(x.student_id)===String(ME.id)); return i>=0?i+1:'-'; }
+
+function renderDashboard(){
+  document.getElementById('myPoints').textContent=myPoints();
+  document.getElementById('myRank').textContent=myRankNum()==='-'?'-':('#'+myRankNum());
+  document.getElementById('quizCount').textContent=QUIZZES.length;
+  document.getElementById('doneCount').textContent=new Set(RESULTS.map(r=>r.quiz_id)).size;
+  document.getElementById('dashAnn').innerHTML=(ANN.slice(0,3).map(a=>`<div class="ann" style="padding:8px 12px;margin-bottom:8px;background:var(--sky-soft);border-radius:0 10px 10px 0">
+    <b style="color:var(--navy);font-size:13.5px">${esc(a.title||'')}</b><div class="muted" style="font-size:11px">${a.date?prettyDate(a.date):''}</div></div>`).join(''))
+    || '<div class="muted" style="font-size:13px">Belum ada pengumuman.</div>';
+  const done=new Set(RESULTS.map(r=>r.quiz_id));
+  document.getElementById('dashQuiz').innerHTML=(QUIZZES.slice(0,4).map(q=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)">
+    <span style="font-size:13.5px;font-weight:600;color:var(--navy);flex:1">${esc(q.title||'Quiz')}</span>
+    ${done.has(q.id)?'<span class="badge badge-paid">✅ Selesai</span>':`<button class="btn btn-primary btn-sm" onclick="startQuiz('${q.id}')">Kerjakan</button>`}</div>`).join(''))
+    || '<div class="muted" style="font-size:13px">Belum ada quiz.</div>';
+}
+
+/* ---------- quiz ---------- */
+function parseQ(q){ try{ return JSON.parse(q.questions||'[]'); }catch(e){ return []; } }
+function renderQuizList(){
+  const done=new Set(RESULTS.map(r=>r.quiz_id));
+  document.getElementById('quizList').innerHTML=QUIZZES.map(q=>{
+    const n=parseQ(q).length;
+    const res=RESULTS.filter(r=>r.quiz_id===q.id).sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0))[0];
+    return `<div class="card card-pad">
+      <div style="font-size:24px">📝</div>
+      <div style="font-weight:800;color:var(--navy);margin-top:6px">${esc(q.title||'Quiz')}</div>
+      <div class="muted" style="font-size:12.5px">${esc([q.subject,q.level].filter(Boolean).join(' · ')||'-')} · ${n} soal</div>
+      ${res?`<div style="margin-top:8px;font-size:12.5px">Nilai terbaik: <b class="text-green">${res.score}/${res.total}</b></div>`:''}
+      <button class="btn ${res?'btn-outline':'btn-primary'} btn-sm" style="margin-top:12px" onclick="startQuiz('${q.id}')">${res?'Kerjakan Lagi':'Kerjakan'}</button>
+    </div>`;
+  }).join('') || '<div class="card card-pad muted" style="text-align:center">Belum ada quiz dari guru.</div>';
+}
+function startQuiz(id){
+  CUR_QUIZ=QUIZZES.find(q=>q.id===id); if(!CUR_QUIZ)return;
+  CUR_ANS={};
+  const qs=parseQ(CUR_QUIZ);
+  document.getElementById('qTitle').textContent=CUR_QUIZ.title||'Quiz';
+  document.getElementById('qSubmitBtn').style.display='';
+  document.getElementById('qBody').innerHTML=qs.map((item,qi)=>`
+    <div class="card card-pad" style="margin-bottom:12px;box-shadow:none;border:1px solid var(--line)">
+      <div style="font-weight:700;color:var(--navy);margin-bottom:10px">${qi+1}. ${esc(item.q||'')}</div>
+      ${(item.options||[]).map((op,oi)=>`<label class="qopt" data-q="${qi}"><input type="radio" name="q${qi}" value="${oi}" onchange="CUR_ANS[${qi}]=${oi}"> <span>${esc(op)}</span></label>`).join('')}
+    </div>`).join('') || '<div class="muted">Quiz ini belum punya soal.</div>';
+  openModal('mQuiz');
+}
+async function submitQuiz(){
+  const qs=parseQ(CUR_QUIZ); if(!qs.length){ closeModal('mQuiz'); return; }
+  let score=0;
+  qs.forEach((item,qi)=>{
+    const chosen=CUR_ANS[qi];
+    const correct=Number(item.answer);
+    document.querySelectorAll(`.qopt[data-q="${qi}"]`).forEach((el,oi)=>{
+      if(oi===correct) el.classList.add('correct');
+      if(oi===chosen && chosen!==correct) el.classList.add('wrong');
+      el.querySelector('input').disabled=true;
+    });
+    if(chosen===correct) score++;
+  });
+  document.getElementById('qSubmitBtn').style.display='none';
+  const total=qs.length;
+  const head=document.createElement('div');
+  head.className='note-band'; head.style.cssText='background:var(--green-soft);border-color:#bfe6cf;color:#1e7e34;font-size:15px;font-weight:700;margin-bottom:12px;text-align:center';
+  head.innerHTML=`🎉 Nilai kamu: ${score}/${total} — dapat ${score} poin!`;
+  document.getElementById('qBody').prepend(head);
+  try{
+    await API.saveQuizResult({quiz_id:CUR_QUIZ.id, student_id:ME.id, student_name:ME.nama||'', score, total, taken_at:todayStr()});
+    RESULTS.push({quiz_id:CUR_QUIZ.id, student_id:ME.id, score, total});
+    LB=await API.getLeaderboard()||LB;
+    renderDashboard();
+  }catch(e){ toast('Nilai tersimpan lokal, gagal sinkron: '+(e.message||e),'err'); }
+}
+
+/* ---------- leaderboard ---------- */
+async function renderLeaderboard(){
+  const box=document.getElementById('lbList'); box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
+  try{ LB=await API.getLeaderboard()||[]; }catch(e){ box.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
+  box.innerHTML=LB.map((r,i)=>`<div class="lb-row ${String(r.student_id)===String(ME.id)?'me':''}">
+    <div class="lb-rank ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i<3?['🥇','🥈','🥉'][i]:(i+1)}</div>
+    <div><b style="color:var(--navy)">${esc(r.name||'Siswa')}</b><div class="muted" style="font-size:11.5px">${r.quizzes||0} quiz</div></div>
+    <div class="lb-pts">${r.points||0}<small> poin</small></div></div>`).join('')
+    || '<div class="card card-pad muted" style="text-align:center">Belum ada yang mengerjakan quiz. Jadilah yang pertama! 🚀</div>';
+}
+
+/* ---------- announcements ---------- */
+async function renderAnnouncements(){
+  const box=document.getElementById('annList'); box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
+  try{ ANN=await API.getAnnouncements()||[]; }catch(e){ box.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
+  box.innerHTML=ANN.map(a=>`<div class="card card-pad ann" style="margin-bottom:12px;border-left:4px solid var(--sky)">
+    <div style="font-weight:800;color:var(--navy);font-size:16px">${esc(a.title||'')}</div>
+    <div class="muted" style="font-size:11.5px;margin-bottom:8px">${a.date?prettyDate(a.date):''}</div>
+    <div style="white-space:pre-line;color:#374151;font-size:14px">${esc(a.body||'')}</div></div>`).join('')
+    || '<div class="card card-pad muted" style="text-align:center">Belum ada pengumuman.</div>';
+}
+
+/* ---------- discussion ---------- */
+let DISC=[];
+async function renderDiscuss(){
+  const feed=document.getElementById('discFeed'); feed.innerHTML='<div class="muted">Memuat…</div>';
+  try{ DISC=await API.getDiscussion()||[]; }catch(e){ feed.innerHTML='<div style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
+  feed.innerHTML=DISC.map(m=>{
+    const me=String(m.student_id)===String(ME.id);
+    return `<div class="msg ${me?'me':''}"><div class="av">${(String(m.name||'S')[0]||'S').toUpperCase()}</div>
+      <div class="bub"><b>${esc(m.name||'Siswa')}</b>${esc(m.message||'')}<div class="t">${m.created_at?prettyDate(String(m.created_at).slice(0,10)):''}</div></div></div>`;
+  }).join('') || '<div class="muted" style="text-align:center;padding:20px">Belum ada obrolan. Sapa temanmu! 👋</div>';
+  feed.scrollTop=feed.scrollHeight;
+}
+async function postDiscuss(){
+  const inp=document.getElementById('discInput'); const msg=inp.value.trim();
+  if(!msg) return; inp.value='';
+  try{
+    await API.addDiscussion({student_id:ME.id, name:ME.nama||'Siswa', message:msg});
+    renderDiscuss();
+  }catch(e){ toast('Gagal kirim: '+(e.message||e),'err'); inp.value=msg; }
+}
+</script>
+</body>
+</html>
