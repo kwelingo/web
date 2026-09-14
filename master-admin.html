@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master Admin — KWE Lingo</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .report-grid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
+  @media(max-width:1100px){.report-grid{grid-template-columns:1fr}}
+  .wa-msg{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:12.5px;line-height:1.7;white-space:pre-wrap;max-height:340px;overflow:auto}
+  .wa-total{background:#fff;border:1.5px dashed var(--green);border-radius:12px;padding:12px;text-align:center;margin:12px 0}
+  .wa-total .big{font-size:22px;font-weight:800;color:var(--green2)}
+  .search-hit{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:.15s;background:#fff}
+  .search-hit:hover{border-color:var(--blue);box-shadow:var(--shadow)}
+  .search-hit .av{width:44px;height:44px;border-radius:50%;background:var(--sky-soft);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--navy)}
+  /* ---- Print header (only shows when printing / Save as PDF) ---- */
+  .print-only{display:none}
+  .print-head{border-bottom:2.5px solid var(--navy);padding-bottom:10px;margin-bottom:16px}
+  .print-head .pt{font-size:19px;font-weight:800;color:var(--navy)}
+  .print-head .pl{font-size:13px;color:#333;margin-top:3px}
+  .print-head img{height:44px;border-radius:8px}
+  @media print{
+    @page{margin:12mm}
+    body{background:#fff}
+    .sidebar,.backdrop,.topbar,.foot-note{display:none!important}
+    .main{display:block}
+    .content{padding:0!important}
+    .page-head,.no-print{display:none!important}
+    .print-only{display:block!important}
+    .pill-tabs{display:none!important}
+    .report-grid{grid-template-columns:1fr!important}   /* WA composer column hidden below */
+    #view-report .drawer,#view-report [id^=mWa]{display:none!important}
+    .card{box-shadow:none!important;border:1px solid #ddd}
+    .table-wrap{overflow:visible!important}
+    table.tbl{font-size:10.5px;table-layout:fixed;width:100%}
+    table.tbl th,table.tbl td{padding:6px 7px;word-break:break-word;white-space:normal!important;vertical-align:top}
+    #view-report table.tbl th:nth-child(1),#view-report table.tbl td:nth-child(1){width:4%}
+    #view-report table.tbl th:nth-child(2),#view-report table.tbl td:nth-child(2){width:10%}
+    #view-report table.tbl th:nth-child(3),#view-report table.tbl td:nth-child(3){width:9%}
+    #view-report table.tbl th:nth-child(4),#view-report table.tbl td:nth-child(4){width:9%}
+    #view-report table.tbl th:nth-child(5),#view-report table.tbl td:nth-child(5){width:6%}
+    #view-report table.tbl th:nth-child(6),#view-report table.tbl td:nth-child(6){width:8%}
+    #view-report table.tbl th:nth-child(7),#view-report table.tbl td:nth-child(7){width:20%}
+    #view-report table.tbl th:nth-child(8),#view-report table.tbl td:nth-child(8){width:20%}
+    #view-report table.tbl th:nth-child(9),#view-report table.tbl td:nth-child(9){width:14%}
+    table.tbl .thumb,.docthumb{width:90px!important;height:auto!important;max-height:70px}
+    .stat{break-inside:avoid}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<!-- PIN GATE (Master Admin) -->
+<div id="maGate" style="position:fixed;inset:0;z-index:600;background:linear-gradient(180deg,#E9F8FB,#F3FBFC);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card card-pad" style="max-width:360px;width:100%;text-align:center">
+    <img src="assets/logo.png" style="width:80px;height:80px;border-radius:16px;padding:6px;background:#fff;box-shadow:var(--shadow);margin:0 auto 14px">
+    <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Master Admin</h2>
+    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Masukkan PIN untuk masuk</p>
+    <input id="maPin" type="password" maxlength="8" inputmode="numeric" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800;width:100%;padding:11px;border:1.5px solid var(--line);border-radius:11px" onkeydown="if(event.key==='Enter')maLogin()">
+    <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="maLogin()">Masuk →</button>
+    <div class="help" id="maErr" style="color:var(--red);margin-top:10px;font-weight:600"></div>
+    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Kembali ke pemilihan portal</a></div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-head" id="logo"></div>
+    <div class="sidebar-role">Master Admin</div>
+    <nav class="nav">
+      <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
+      <a data-view="all-classes"><span class="ic">📅</span> Semua Kelas</a>
+      <a data-view="students"><span class="ic">🧑‍🎓</span> Murid</a>
+      <a data-view="tutors"><span class="ic">👩‍🏫</span> Tentor</a>
+      <a data-view="laporan"><span class="ic">📊</span> Laporan</a>
+      <a data-view="data"><span class="ic">🗄️</span> Data Explorer</a>
+      <a data-view="payment"><span class="ic">💳</span> Payment Student</a>
+      <a data-view="tpay"><span class="ic">🧑‍🏫</span> Payment Tentor</a>
+      <a data-view="settings"><span class="ic">🔒</span> Ganti Password</a>
+      <div class="divider"></div>
+      <div class="sidebar-role" style="margin-top:0">Buka Portal Lain</div>
+      <a href="admin.html"><span class="ic">🗂️</span> Portal Admin</a>
+      <a href="teacher.html"><span class="ic">📘</span> Portal Tentor</a>
+      <a href="parent.html"><span class="ic">👨‍👩‍👧</span> Portal Orang Tua</a>
+      <div class="divider"></div>
+      <a href="index.html"><span class="ic">🚪</span> Keluar</a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">M</div>
+      <div class="who">Master Admin<small>Super Administrator</small></div>
+    </div>
+  </aside>
+  <div class="backdrop" onclick="toggleSidebar()"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="search"><span class="mag">🔎</span><input id="globalSearch" placeholder="Cari murid atau tentor…"></div>
+      <div class="spacer"></div>
+      <div class="me"><div class="who">Master Admin<small>Super Administrator</small></div><div class="avatar">M</div></div>
+    </div>
+
+    <div class="content">
+      <div id="loadErr" style="display:none;background:#fdecec;border:1.5px solid #f5b5b5;color:#a12626;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:14px;display:none;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap">
+        <span>⚠️ Gagal memuat data dari server (koneksi sesaat terganggu). Data yang tampil mungkin belum terbaru.</span>
+        <button class="btn btn-primary btn-sm" onclick="boot()">🔄 Coba muat ulang</button>
+      </div>
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <div class="page-head"><div><h1>Beranda</h1><div class="sub">Ringkasan seluruh operasional KWE Lingo</div></div></div>
+        <div id="bdayBanner" style="display:none;background:linear-gradient(120deg,#fff0f6,#eef7fd);border:1.5px solid #ffc9e0;border-radius:14px;padding:14px 18px;margin-bottom:18px;color:var(--navy);font-size:14px"></div>
+        <div class="grid grid-4" style="margin-bottom:22px">
+          <div class="stat tint-purple"><div class="lbl"><span class="icon">🧑‍🎓</span> Total Murid</div><div class="val" id="mStudents">0</div></div>
+          <div class="stat tint-blue"><div class="lbl"><span class="icon">👩‍🏫</span> Total Tentor</div><div class="val" id="mTutors">0</div></div>
+          <div class="stat tint-green"><div class="lbl"><span class="icon">📅</span> Kelas Bulan Ini</div><div class="val" id="mClasses">0</div></div>
+          <div class="stat tint-amber"><div class="lbl"><span class="icon">💰</span> Estimasi Fee Bln Ini</div><div class="val" id="mRevenue">Rp 0</div></div>
+        </div>
+        <div class="card card-pad">
+          <div class="card-title">🔍 Cari & Buka Laporan Murid</div>
+          <div class="field"><input id="dashSearch" placeholder="Ketik nama murid… lalu klik hasil"></div>
+          <div id="dashHits" class="grid" style="gap:10px"></div>
+        </div>
+      </section>
+
+      <!-- COMBINED SEARCH RESULTS -->
+      <section class="view hide" id="view-search">
+        <div class="page-head"><div><h1>Hasil Pencarian</h1><div class="sub">Murid &amp; tentor — klik untuk membuka</div></div></div>
+        <div class="card card-pad"><div id="searchHits" class="grid" style="gap:10px"></div></div>
+      </section>
+
+      <!-- STUDENT REPORT -->
+      <section class="view hide" id="view-report">
+        <div class="page-head">
+          <div><h1>Laporan Murid</h1>
+            <div class="breadcrumb">Beranda › Cari Murid › <b id="crumb">—</b></div></div>
+          <div style="display:flex;gap:10px;align-items:center" class="no-print">
+            <input type="month" id="repMonthSel" class="btn btn-outline" style="font-weight:600" title="Pilih periode laporan" onchange="if(CUR)openReport(CUR.id,this.value)">
+            <button class="btn btn-green" onclick="openModal('mWa')">🟢 WA Orang Tua</button>
+            <button class="btn btn-outline" onclick="window.print()">🧾 Simpan PDF</button>
+          </div>
+        </div>
+
+        <!-- clean header shown only in the printed / PDF version -->
+        <div class="print-only print-head">
+          <div style="display:flex;align-items:center;gap:12px">
+            <img src="assets/logo.png" alt="KWE Lingo">
+            <div>
+              <div class="pt">Laporan Murid — KWE Lingo</div>
+              <div class="pl">Nama: <b id="phName">—</b></div>
+              <div class="pl">Periode: <b id="phPeriod">—</b></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- header cards -->
+        <div class="grid" style="grid-template-columns:1.4fr 1fr 1fr 1fr;gap:16px;margin-bottom:20px" id="repHeader"></div>
+
+        <button class="btn btn-outline btn-sm no-print" style="margin-bottom:16px" onclick="showView('search')">← Kembali ke Pencarian</button>
+
+        <!-- history -->
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:0"><div class="card-title" id="rHist">📅 Riwayat Kelas</div></div>
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>No.</th><th>Tanggal</th><th>Tutor</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik / Material</th><th>Note</th><th>Doc</th></tr></thead>
+            <tbody id="rBody"></tbody>
+          </table></div>
+        </div>
+
+        <!-- fee summary -->
+        <div class="grid grid-4 mt-24" id="rSummary"></div>
+      </section>
+
+      <!-- ALL CLASSES -->
+      <section class="view hide" id="view-all-classes">
+        <div class="page-head"><div><h1>Semua Kelas</h1><div class="sub">Seluruh sesi kelas</div></div>
+          <input type="month" id="acMonth" class="btn btn-outline" style="font-weight:600"></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Tanggal</th><th>Murid</th><th>Tentor</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik</th></tr></thead>
+          <tbody id="acBody"></tbody>
+        </table></div></div>
+      </section>
+
+      <!-- STUDENTS -->
+      <section class="view hide" id="view-students">
+        <div class="page-head"><div><h1>Murid</h1><div class="sub">Kelola data murid — Edit atau buka laporan</div></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn btn-ghost btn-sm" id="genUserBtn" onclick="generateAllUsernames()">🪄 Generate semua username</button>
+            <button class="btn btn-primary" onclick="openStudent()">＋ Tambah Murid</button></div></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Nama</th><th>Username</th><th>Sekolah</th><th>Grade</th><th>Orang Tua</th><th>Jadwal</th><th>Fee Ortu</th><th>Fee Tentor</th><th>PIN Ortu</th><th>Action</th></tr></thead>
+          <tbody id="msBody"></tbody>
+        </table></div></div>
+      </section>
+
+      <!-- TUTORS -->
+      <section class="view hide" id="view-tutors">
+        <div class="page-head"><div><h1>Tentor</h1><div class="sub">Kelola data tentor & PIN login</div></div>
+          <button class="btn btn-primary" onclick="openTutor()">＋ Tambah Tentor</button></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Nama</th><th>Username</th><th>Pelajaran</th><th>Jenjang</th><th>WA</th><th>PIN Login</th><th>Action</th></tr></thead>
+          <tbody id="mtBody"></tbody>
+        </table></div></div>
+      </section>
+
+      <!-- LAPORAN -->
+      <section class="view hide" id="view-laporan">
+        <div class="page-head"><div><h1>Laporan</h1><div class="sub">Rekap kelas per murid untuk laporan bulanan</div></div>
+          <input type="month" id="repMonth" class="btn btn-outline" style="font-weight:600"></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Murid</th><th>Jml Kelas</th><th>Total Menit</th><th>Fee Ortu/Meet</th><th>Estimasi Tagihan</th><th></th></tr></thead>
+          <tbody id="repBody"></tbody>
+        </table></div></div>
+      </section>
+
+      <!-- PAYMENT -->
+      <section class="view hide" id="view-payment">
+        <div class="page-head">
+          <div><h1>Payment Student</h1><div class="breadcrumb">Payment Student › <b id="payCrumb">Pilih murid</b></div></div>
+          <button class="btn btn-primary no-print" onclick="window.print()">🖨️ Cetak Invoice</button>
+        </div>
+
+        <div class="print-only print-head">
+          <div style="display:flex;align-items:center;gap:12px">
+            <img src="assets/logo.png" alt="KWE Lingo">
+            <div>
+              <div class="pt" id="payPrintTitle">Invoice — KWE Lingo</div>
+              <div class="pl">Nama: <b id="payPhName">—</b></div>
+              <div class="pl" id="payPhSub">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-pad no-print" style="margin-bottom:16px">
+          <label style="font-weight:700;font-size:12.5px">Search Student</label>
+          <input id="paySearchInput" list="payStudentList" placeholder="Ketik nama murid… atau pilih dari daftar" onchange="paySearchPick()" oninput="paySearchPick()" style="width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:11px;margin-top:6px;font-family:inherit;font-size:14px">
+          <datalist id="payStudentList"></datalist>
+        </div>
+
+        <div class="pill-tabs no-print" id="payTabs" style="display:none">
+          <button id="ptDeposit" class="active" onclick="showPayTab('deposit')">💳 Deposit Payment</button>
+          <button id="ptBilling" onclick="showPayTab('billing')">🧾 Laporan Akhir Penagihan</button>
+        </div>
+
+        <div id="payDeposit"></div>
+        <div id="payBilling" class="hide"></div>
+      </section>
+
+      <!-- DATA EXPLORER -->
+      <section class="view hide" id="view-data">
+        <div class="page-head"><div><h1>Data Explorer</h1><div class="sub">Lihat, cari, urutkan &amp; ekspor semua data — tanpa buka SQL</div></div>
+          <button class="btn btn-primary btn-sm no-print" onclick="exportDataCSV()">⬇️ Download CSV</button></div>
+        <div class="card card-pad" style="margin-bottom:14px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div id="dataTabs" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+            <input id="dataSearch" placeholder="🔎 Cari di semua kolom…" oninput="renderDataTable()" style="flex:1;min-width:220px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px">
+          </div>
+          <div class="hint" id="dataInfo" style="margin-top:8px"></div>
+        </div>
+        <div class="card"><div class="table-wrap"><table class="tbl" id="dataTable"><thead id="dataHead"></thead><tbody id="dataBody"></tbody></table></div></div>
+      </section>
+
+      <!-- PAYMENT TENTOR (komisi/bonus) -->
+      <section class="view hide" id="view-tpay">
+        <div class="page-head"><div><h1>Payment Tentor</h1><div class="sub">Isi komisi/bonus bulanan tentor — tampil di Portal Tentor sebagai tambahan fee</div></div></div>
+        <div class="card card-pad" style="margin-bottom:16px">
+          <div class="field-row">
+            <div class="field"><label>Pilih Tentor</label><select id="tpTutor" onchange="loadTentorPay()"></select></div>
+            <div class="field"><label>Bulan</label><input type="month" id="tpMonth" onchange="loadTentorPay()"></div>
+          </div>
+        </div>
+        <div id="tpContent"></div>
+      </section>
+
+      <!-- SETTINGS: GANTI PASSWORD -->
+      <section class="view hide" id="view-settings">
+        <div class="page-head"><div><h1>Ganti Password</h1><div class="sub">Ubah PIN login portal. Masukkan password lama untuk verifikasi.</div></div></div>
+        <div class="grid grid-2" style="gap:18px">
+          <div class="card card-pad">
+            <div class="card-title">🛡️ Password Master Admin</div>
+            <div class="field"><label>Password lama</label><input type="password" id="mpOld" inputmode="numeric" placeholder="PIN lama"></div>
+            <div class="field"><label>Password baru</label><input type="password" id="mpNew" inputmode="numeric" placeholder="4–10 digit angka"></div>
+            <div class="field"><label>Ulangi password baru</label><input type="password" id="mpNew2" inputmode="numeric" placeholder="ketik ulang"></div>
+            <div class="help" id="mpMsg" style="min-height:18px"></div>
+            <button class="btn btn-primary" onclick="changePortalPin('master')">💾 Simpan Password Master Admin</button>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title">🗂️ Password Admin</div>
+            <div class="field"><label>Password Admin lama</label><input type="password" id="apOld" inputmode="numeric" placeholder="PIN Admin lama"></div>
+            <div class="field"><label>Password Admin baru</label><input type="password" id="apNew" inputmode="numeric" placeholder="4–10 digit angka"></div>
+            <div class="field"><label>Ulangi password baru</label><input type="password" id="apNew2" inputmode="numeric" placeholder="ketik ulang"></div>
+            <div class="help" id="apMsg" style="min-height:18px"></div>
+            <button class="btn btn-primary" onclick="changePortalPin('admin')">💾 Simpan Password Admin</button>
+          </div>
+        </div>
+        <div class="note-band mt-16">ℹ️ Password disimpan aman di server. Perubahan langsung berlaku untuk login berikutnya di semua perangkat. Tidak ada yang bisa melihat password — hanya bisa direset (lihat di bawah).</div>
+        <details style="margin-top:12px;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 16px">
+          <summary style="cursor:pointer;font-weight:700;color:var(--navy)">❓ Lupa password? Cara reset</summary>
+          <div style="font-size:13px;color:#374151;line-height:1.7;margin-top:10px">
+            Kalau lupa PIN Master Admin / Admin, reset lewat Google Apps Script (butuh akun Google pemilik script):
+            <ol style="margin:8px 0 0 18px">
+              <li>Buka project <b>Apps Script</b> situs ini (script.google.com → project KWE Lingo).</li>
+              <li>Klik ⚙️ <b>Project Settings</b>.</li>
+              <li>Scroll ke <b>Script Properties</b>.</li>
+              <li>Hapus baris <b>MASTER_PIN</b> dan/atau <b>ADMIN_PIN</b> (klik ikon hapus), lalu <b>Save</b>.</li>
+              <li>PIN otomatis kembali ke default: Master Admin <b>5758</b>, Admin <b>17081945</b>. Login pakai itu, lalu ganti lagi di halaman ini.</li>
+            </ol>
+            <div style="margin-top:8px;color:var(--muted)">Tidak perlu ubah kode atau redeploy. Kalau bingung, hubungi yang mengelola Apps Script.</div>
+          </div>
+        </details>
+      </section>
+
+      <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
+    </div>
+  </div>
+</div>
+
+<!-- WA MODAL -->
+<div class="modal-overlay" id="mWa">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-head"><h3>Kirim WhatsApp ke Orang Tua</h3><button class="x" onclick="closeModal('mWa')">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Pilih Salam</label>
+        <select id="waGreet">
+          <option>Selamat Pagi 🌅</option><option>Selamat Siang ☀️</option><option>Selamat Sore 🌇</option><option>Selamat Malam 🌙</option>
+        </select></div>
+      <div class="field"><label>Preview Pesan</label><div class="wa-msg" id="waMsg">—</div></div>
+      <div class="wa-total"><div class="hint">GRAND TOTAL YANG HARUS DITRANSFER</div><div class="big" id="waTotal">Rp 0</div></div>
+    </div>
+    <div class="modal-foot" style="flex-direction:column;gap:10px">
+      <button class="btn btn-green btn-block" onclick="sendWa()">🟢 Kirim via WhatsApp</button>
+      <button class="btn btn-outline btn-block" onclick="copyWa()">📋 Copy Message</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: STUDENT -->
+<div class="modal-overlay" id="mStudent">
+  <div class="modal">
+    <div class="modal-head"><h3 id="mStudentTitle">Tambah Murid</h3><button class="x" onclick="closeModal('mStudent')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="sId">
+      <div class="field-row">
+        <div class="field"><label>Nama Murid <span class="req">*</span></label><input id="sNama"></div>
+        <div class="field"><label>Grade</label><input id="sGrade" placeholder="7"></div>
+      </div>
+      <div class="field"><label>Username Login <span class="req">*</span></label>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input id="sUser" placeholder="cth: charlenelsc" style="flex:1">
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('sUser').value=genUsername(document.getElementById('sNama').value)">🔄 Generate</button>
+        </div>
+        <div class="help">Dari nama depan + "lsc". Orang tua login pakai username ini + PIN — nama asli murid tidak ditampilkan.</div></div>
+      <div class="field"><label>School (Nama Sekolah)</label><input id="sSchool" placeholder="cth: SMP Petra 1"></div>
+      <div class="field"><label>Address (Alamat)</label><input id="sAddress" placeholder="Alamat rumah"></div>
+      <div class="field-row">
+        <div class="field"><label>Date of Birth</label><input type="date" id="sDob"></div>
+        <div class="field"><label>Jadwal Tetap</label><input id="sSchedule" placeholder="Sen & Kam · 19.00"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Nama Orang Tua</label><input id="sParent"></div>
+        <div class="field"><label>WA Orang Tua</label><input id="sWa" placeholder="08xxxx"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Fee / Meeting (Orang Tua)</label><input type="number" id="sFee" value="150000"></div>
+        <div class="field"><label>Fee Tentor / Meeting</label><input type="number" id="sFeeTutor" value="90000"><div class="help">Fee tentor untuk 1 pertemuan (sesuai durasi normal di bawah)</div></div>
+      </div>
+      <div class="field"><label>Durasi per Meeting (menit) <span class="req">*</span></label><input type="number" id="sMin" value="90"><div class="help">Durasi normal murid ini — jadi patokan hitung fee tentor (mis. 60 / 90 / 120 menit). Kalau kelas lebih lama, fee tentor otomatis proporsional.</div></div>
+      <input type="hidden" id="sDep" value="0">
+      <input type="hidden" id="sAddFee" value="0"><input type="hidden" id="sAddNote" value="">
+      <div class="field"><label>PIN Login Orang Tua (4 digit)</label>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input id="sPin" maxlength="4" readonly style="max-width:120px;font-weight:800;letter-spacing:5px;text-align:center;font-size:18px">
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('sPin').value=genPin()">🔄 Generate</button>
+        </div>
+        <div class="help">Orang tua login ke Portal Orang Tua pakai nama anak + PIN ini.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mStudent')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStudent()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TUTOR -->
+<div class="modal-overlay" id="mTutor">
+  <div class="modal">
+    <div class="modal-head"><h3 id="mTutorTitle">Tambah Tentor</h3><button class="x" onclick="closeModal('mTutor')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="tId">
+      <div class="field-row">
+        <div class="field"><label>Nama <span class="req">*</span></label><input id="tNama"></div>
+        <div class="field"><label>Pelajaran</label><input id="tSubject" placeholder="cth: Math, Science"></div>
+      </div>
+      <div class="field"><label>Username Login <span class="req">*</span></label>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input id="tUser" placeholder="cth: nitalsc" style="flex:1">
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('tUser').value=genUsername(document.getElementById('tNama').value)">🔄 Generate</button>
+        </div>
+        <div class="help">Dari nama depan + "lsc". Tentor login pakai username ini + PIN.</div></div>
+      <div class="field-row">
+        <div class="field"><label>WhatsApp</label><input id="tWa" placeholder="08xxxx"></div>
+        <div class="field"><label>Date of Birth</label><input type="date" id="tDob"></div>
+      </div>
+      <div class="field"><label>Jenjang <span class="help" style="display:inline">(bisa pilih lebih dari satu)</span></label>
+        <div class="radio-row" style="flex-wrap:wrap;gap:10px 22px;padding:4px 0">
+          <label><input type="checkbox" class="tLvl" value="Primary (SD)"> Primary (SD)</label>
+          <label><input type="checkbox" class="tLvl" value="Lower Secondary (SMP)"> Lower Secondary (SMP)</label>
+          <label><input type="checkbox" class="tLvl" value="Upper Secondary (SMA)"> Upper Secondary (SMA)</label>
+        </div></div>
+      <div class="field"><label>Address (Alamat)</label><input id="tAddress" placeholder="Alamat rumah"></div>
+      <div class="field"><label>PIN Login Tentor (4 digit)</label>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input id="tPin" maxlength="4" readonly style="max-width:120px;font-weight:800;letter-spacing:5px;text-align:center;font-size:18px">
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('tPin').value=genPin()">🔄 Generate</button>
+        </div>
+        <div class="help">Tentor login ke Portal Tentor pakai nama + PIN ini.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mTutor')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTutor()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: RESET (murid / tentor) -->
+<div class="modal-overlay" id="mReset">
+  <div class="modal">
+    <div class="modal-head"><h3 id="rsTitle">Reset Data</h3><button class="x" onclick="closeModal('mReset')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="rsId"><input type="hidden" id="rsRole">
+      <p style="font-size:13.5px;color:#374151;line-height:1.6">Menghapus <b>semua kelas (log)</b> dan <b>payment</b> milik <b id="rsName">—</b> untuk bulan terpilih — kembali ke 0. Ikut hilang di semua portal (Orang Tua & Tentor) dan hitungan deposit menyesuaikan. <b style="color:#c0392b">Tidak bisa dibatalkan.</b></p>
+      <div class="field"><label>Bulan yang di-reset</label><input type="month" id="rsMonth"></div>
+      <div class="help" id="rsMsg" style="min-height:18px"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mReset')">Batal</button>
+      <button class="btn btn-danger" id="rsBtn" onclick="doReset()">🗑️ Hapus &amp; Reset</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+document.getElementById('logo').innerHTML=logoBlock('KWE Lingo','Master Admin');
+/* ---- PIN gate (verifikasi ke server) ---- */
+try{ if(sessionStorage.getItem('ma_ok')==='1') document.getElementById('maGate').style.display='none'; else document.getElementById('maPin').focus(); }catch(e){}
+async function maLogin(){
+  const v=document.getElementById('maPin').value.trim();
+  const err=document.getElementById('maErr'); err.textContent='Memeriksa…';
+  try{
+    const r=await API.verifyPin('master',v);
+    if(r&&r.ok){ try{sessionStorage.setItem('ma_ok','1');}catch(e){} document.getElementById('maGate').style.display='none'; err.textContent=''; }
+    else { err.textContent='PIN salah'; document.getElementById('maPin').value=''; }
+  }catch(e){ err.textContent='Gagal memeriksa PIN — coba lagi.'; }
+}
+let TUTORS=[],STUDENTS=[],CUR=null,REP_MONTH=todayStr().slice(0,7),PAY_SID=null,PAY_LIST=[],PAY_CLASSES=[];
+// normalisasi bulan → selalu "YYYY-MM" walau Sheets menyimpannya sebagai tanggal/serial
+function ym(v){ if(!v) return ''; const s=String(v); const m=s.match(/(\d{4})-(\d{2})/); if(m) return m[1]+'-'+m[2]; const d=new Date(s); return isNaN(d)?'':d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+let BILL={monthMin:0,dur:90,meets:0};   // dipakai carry-over editable
+function tName(id){return (TUTORS.find(t=>t.id===id)||{}).nama||'-';}
+function sName(id){return (STUDENTS.find(s=>s.id===id)||{}).nama||'-';}
+function showView(v){
+  document.querySelectorAll('.nav a[data-view]').forEach(x=>x.classList.remove('active'));
+  document.querySelector(`.nav a[data-view="${v}"]`)?.classList.add('active');
+  document.querySelectorAll('.view').forEach(x=>x.classList.add('hide'));
+  document.getElementById('view-'+v).classList.remove('hide');
+}
+document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
+  showView(a.dataset.view); renderM(a.dataset.view); if(window.innerWidth<768)toggleSidebar();
+});
+async function changePortalPin(role){
+  const pre = role==='master' ? 'mp' : 'ap';
+  const oldV=document.getElementById(pre+'Old').value.trim();
+  const n1=document.getElementById(pre+'New').value.trim();
+  const n2=document.getElementById(pre+'New2').value.trim();
+  const msg=document.getElementById(pre+'Msg');
+  const fail=t=>{msg.style.color='var(--red)';msg.textContent=t;};
+  if(!oldV||!n1){ return fail('Isi password lama & baru.'); }
+  if(!/^\d{4,10}$/.test(n1)){ return fail('Password baru harus 4–10 digit angka.'); }
+  if(n1!==n2){ return fail('Ulangi password baru tidak cocok.'); }
+  msg.style.color='var(--muted)'; msg.textContent='Menyimpan…';
+  try{
+    const r=await API.changePin(role, oldV, n1);
+    if(r&&r.ok){
+      msg.style.color='var(--green2)'; msg.textContent='✅ Password berhasil diganti.';
+      [pre+'Old',pre+'New',pre+'New2'].forEach(id=>document.getElementById(id).value='');
+    } else { fail((r&&r.message)||'Gagal mengganti password.'); }
+  }catch(e){ fail('Gagal: '+(e.message||e)); }
+}
+function renderM(v){
+  if(v==='all-classes') renderAllClasses();
+  if(v==='students')    renderStudentsM();
+  if(v==='tutors')      renderTutorsM();
+  if(v==='laporan')     renderLaporan();
+  if(v==='payment')     initPayment();
+  if(v==='tpay')        initTentorPay();
+  if(v==='data')        initData();
+}
+/* ===== DATA EXPLORER ===== */
+const DATA_DEFS={
+  murid:{label:'🧑‍🎓 Murid',       load:()=>API.getStudents({})},
+  tentor:{label:'👩‍🏫 Tentor',      load:()=>API.getTutors()},
+  kelas:{label:'📅 Kelas',          load:()=>API.getClasses({})},
+  payment:{label:'💳 Payment',      load:()=>API.getPayments({})},
+  bonus:{label:'🧾 Komisi/Bonus',   load:()=>API.getTutorBonus({})},
+};
+let DATA_KEY='murid', DATA_ROWS=[], DATA_COLS=[], DATA_SORT={col:null,dir:1};
+function dataTabsHTML(){
+  return Object.entries(DATA_DEFS).map(([k,d])=>`<button class="btn btn-sm ${k===DATA_KEY?'btn-primary':'btn-outline'}" onclick="selectData('${k}')">${d.label}</button>`).join('');
+}
+function initData(){ document.getElementById('dataSearch').value=''; selectData(DATA_KEY); }
+async function selectData(k){
+  DATA_KEY=k; DATA_SORT={col:null,dir:1};
+  document.getElementById('dataTabs').innerHTML=dataTabsHTML();
+  document.getElementById('dataBody').innerHTML='<tr><td class="muted" style="padding:16px">Memuat…</td></tr>';
+  try{ DATA_ROWS=(await DATA_DEFS[k].load())||[]; }
+  catch(e){
+    DATA_ROWS=[]; DATA_COLS=[];
+    document.getElementById('dataHead').innerHTML='';
+    document.getElementById('dataBody').innerHTML=`<tr><td style="padding:16px;color:var(--red)">Gagal memuat: ${esc(e.message||e)}<br><span class="muted" style="font-size:12px">Kalau menyebut tabel belum ada, jalankan file SQL terkait di Supabase.</span></td></tr>`;
+    document.getElementById('dataInfo').textContent='';
+    return;
+  }
+  const keys=[]; DATA_ROWS.forEach(r=>Object.keys(r).forEach(x=>{ if(!keys.includes(x)) keys.push(x); }));
+  DATA_COLS=keys;
+  renderDataTable();
+}
+function fmtCell(v){
+  if(v==null) return '';
+  let s=String(v);
+  if(s.startsWith('data:')) return '<span class="muted">[file base64]</span>';
+  if(/^https?:\/\//.test(s)) return `<a href="${s}" target="_blank">${esc(s.slice(0,40))}${s.length>40?'…':''}</a>`;
+  return esc(s.length>60?s.slice(0,60)+'…':s);
+}
+function currentDataRows(){
+  const q=(document.getElementById('dataSearch').value||'').toLowerCase().trim();
+  let rows=DATA_ROWS;
+  if(q) rows=rows.filter(r=>DATA_COLS.some(c=>String(r[c]==null?'':r[c]).toLowerCase().includes(q)));
+  if(DATA_SORT.col){ const c=DATA_SORT.col,d=DATA_SORT.dir;
+    rows=[...rows].sort((a,b)=>String(a[c]==null?'':a[c]).localeCompare(String(b[c]==null?'':b[c]),undefined,{numeric:true})*d); }
+  return rows;
+}
+function renderDataTable(){
+  if(!document.getElementById('dataHead')) return;
+  const rows=currentDataRows();
+  document.getElementById('dataHead').innerHTML='<tr>'+DATA_COLS.map(c=>`<th style="cursor:pointer;white-space:nowrap" onclick="sortData('${c}')">${c}${DATA_SORT.col===c?(DATA_SORT.dir>0?' ▲':' ▼'):''}</th>`).join('')+'</tr>';
+  document.getElementById('dataBody').innerHTML=rows.map(r=>'<tr>'+DATA_COLS.map(c=>`<td style="white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis">${fmtCell(r[c])}</td>`).join('')+'</tr>').join('')
+    ||`<tr><td colspan="${DATA_COLS.length||1}" class="muted" style="text-align:center;padding:20px">Tidak ada data.</td></tr>`;
+  document.getElementById('dataInfo').textContent=`${rows.length} baris · ${DATA_COLS.length} kolom · ${DATA_DEFS[DATA_KEY].label}`;
+}
+function sortData(c){ if(DATA_SORT.col===c) DATA_SORT.dir*=-1; else {DATA_SORT.col=c;DATA_SORT.dir=1;} renderDataTable(); }
+function exportDataCSV(){
+  const rows=currentDataRows();
+  const cell=v=>{ let s=String(v==null?'':v); if(s.startsWith('data:'))s='[file base64]'; if(/[",\n]/.test(s)) s='"'+s.replace(/"/g,'""')+'"'; return s; };
+  const csv=[DATA_COLS.join(','),...rows.map(r=>DATA_COLS.map(c=>cell(r[c])).join(','))].join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`data-${DATA_KEY}-${todayStr()}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+let TP_FEE=0;
+function stuFeeTentor(c){
+  const s=STUDENTS.find(x=>x.id===c.student_id)||{};
+  const norm=Number(s.meeting_minutes)||90, per=Number(s.fee_tentor)||0, dur=Number(c.duration)||norm;
+  return Math.round(per/norm*dur);
+}
+function initTentorPay(){
+  const sel=document.getElementById('tpTutor');
+  sel.innerHTML='<option value="">Pilih tentor…</option>'+TUTORS.map(t=>`<option value="${t.id}">${esc(t.nama)}</option>`).join('');
+  document.getElementById('tpMonth').value=todayStr().slice(0,7);
+  document.getElementById('tpContent').innerHTML='<div class="card card-pad muted" style="text-align:center">Pilih tentor &amp; bulan.</div>';
+}
+async function loadTentorPay(){
+  const tid=document.getElementById('tpTutor').value, mon=document.getElementById('tpMonth').value;
+  const box=document.getElementById('tpContent');
+  if(!tid||!mon){ box.innerHTML='<div class="card card-pad muted" style="text-align:center">Pilih tentor &amp; bulan.</div>'; return; }
+  const t=TUTORS.find(x=>x.id===tid)||{};
+  box.innerHTML='<div class="card card-pad muted" style="text-align:center">Memuat…</div>';
+  let cls=[], b={}, bonusErr='';
+  try{ cls=await API.getClasses({tutor_id:tid, month:mon})||[]; }
+  catch(e){ box.innerHTML=`<div class="card card-pad" style="text-align:center;color:var(--red)">Gagal memuat kelas: ${esc(e.message||e)}</div>`; return; }
+  try{ const bonuses=await API.getTutorBonus({tutor_id:tid, month:mon}); b=bonuses[0]||{}; }
+  catch(e){ bonusErr=e.message||String(e); }   // tampilkan error asli, jangan macet
+  const fee=cls.reduce((a,c)=>a+stuFeeTentor(c),0); TP_FEE=fee;
+  const amt=Number(b.amount)||0, note=b.note||'';
+  const periodName=new Date(mon+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  box.innerHTML=`
+    ${bonusErr?`<div class="note-band" style="background:#fdecec;border-color:#f5b5b5;color:#a12626;margin-bottom:12px">⚠️ Komisi/bonus tidak bisa dimuat: <b>${esc(bonusErr)}</b><br><span style="font-size:12px">Jika menyebut "schema cache", buka Supabase → SQL Editor → jalankan: <code>NOTIFY pgrst, 'reload schema';</code> lalu refresh halaman.</span></div>`:''}
+    <div class="card card-pad" style="margin-bottom:16px;display:flex;gap:28px;flex-wrap:wrap">
+      <div><div class="lbl muted">Tentor</div><b>${esc(t.nama)}</b></div>
+      <div><div class="lbl muted">Periode</div><b>${periodName}</b></div>
+      <div><div class="lbl muted">Jumlah Sesi</div><b>${cls.length} sesi</b></div>
+      <div><div class="lbl muted">Fee Mengajar (otomatis)</div><b class="text-green">${fmtRp(fee)}</b></div>
+    </div>
+    <div class="grid grid-2" style="gap:16px">
+      <div class="stat tint-amber"><div class="lbl">KOMISI / BONUS (isi manual)</div>
+        <input type="number" id="tpAmount" value="${amt}" placeholder="nominal" oninput="tpCalc()" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:9px;margin:6px 0">
+        <textarea id="tpNote" placeholder="Keterangan (mis. bonus murid baru, lembur, dll.)" style="width:100%;min-height:52px;padding:8px;border:1.5px solid var(--line);border-radius:9px">${esc(note)}</textarea></div>
+      <div class="stat tint-purple"><div class="lbl">TOTAL DITERIMA TENTOR</div>
+        <div class="val" id="tpTotal" style="font-size:22px">${fmtRp(fee+amt)}</div>
+        <div class="hint">Fee <b>${fmtRp(fee)}</b> + Komisi/Bonus</div></div>
+    </div>
+    <div style="text-align:right;margin-top:14px"><button class="btn btn-primary" onclick="saveTentorPay('${tid}','${mon}')">💾 Simpan Komisi/Bonus</button></div>`;
+}
+function tpCalc(){
+  const amt=Number((document.getElementById('tpAmount')||{}).value)||0;
+  const el=document.getElementById('tpTotal'); if(el) el.textContent=fmtRp(TP_FEE+amt);
+}
+async function saveTentorPay(tid,mon){
+  const amount=Number((document.getElementById('tpAmount')||{}).value)||0;
+  const note=(document.getElementById('tpNote')||{}).value||'';
+  try{ await API.saveTutorBonus({tutor_id:tid,month:mon,amount,note}); toast('Komisi/bonus tersimpan','ok'); }
+  catch(e){ toast('Gagal simpan: '+(e.message||e),'err'); }
+}
+
+/* ================= PAYMENT MODULE ================= */
+function initPayment(){
+  document.getElementById('payStudentList').innerHTML=STUDENTS.map(s=>`<option value="${(s.nama||'').trim()}">`).join('');
+  if(PAY_SID){ const st=STUDENTS.find(s=>s.id===PAY_SID); document.getElementById('paySearchInput').value=st?st.nama.trim():''; renderPayment(PAY_SID); }
+}
+function paySearchPick(){
+  const v=document.getElementById('paySearchInput').value.trim().toLowerCase();
+  if(!v){ renderPayment(''); return; }
+  const st=STUDENTS.find(s=>(s.nama||'').trim().toLowerCase()===v);
+  if(st && st.id!==PAY_SID) renderPayment(st.id);
+}
+async function renderPayment(sid){
+  PAY_SID=sid||null;
+  document.getElementById('payTabs').style.display = sid?'flex':'none';
+  if(!sid){ document.getElementById('payDeposit').innerHTML=''; document.getElementById('payBilling').innerHTML=''; document.getElementById('payCrumb').textContent='Pilih murid'; return; }
+  const st=STUDENTS.find(s=>s.id===sid);
+  document.getElementById('payCrumb').textContent=st.nama;
+  document.getElementById('payPhName').textContent=st.nama;
+  PAY_LIST=await API.getPayments({student_id:sid});
+  PAY_CLASSES=await API.getClasses({student_id:sid});
+  renderDepositPane(st,PAY_LIST);
+  renderBillingPane(st,PAY_LIST);
+  showPayTab('deposit');
+}
+function showPayTab(tab){
+  const dep=tab==='deposit';
+  document.getElementById('payDeposit').classList.toggle('hide',!dep);
+  document.getElementById('payBilling').classList.toggle('hide',dep);
+  document.getElementById('ptDeposit').classList.toggle('active',dep);
+  document.getElementById('ptBilling').classList.toggle('active',!dep);
+  document.getElementById('payPrintTitle').textContent = dep?'Invoice Deposit — KWE Lingo':'Invoice Penagihan — KWE Lingo';
+  document.getElementById('payPhSub').textContent = dep?'Rincian Pembayaran Deposit':'Laporan Akhir Penagihan';
+}
+function renderDepositPane(st,list){
+  document.getElementById('payDeposit').innerHTML=`
+    <div class="card card-pad no-print" style="margin-bottom:16px">
+      <div class="card-title" style="color:var(--green2)">🧾 DEPOSIT PAYMENT</div>
+      <div class="grid grid-3">
+        <div class="field"><label>Jumlah Meeting (Deposit)</label><input type="number" id="pdMeet" value="8" oninput="calcDeposit();updateDepositCarry()"></div>
+        <div class="field"><label>Periode (Bulan)</label><input type="month" id="pdMonth" value="${todayStr().slice(0,7)}" onchange="updateDepositCarry()"></div>
+        <div class="field"><label>Tanggal Bayar</label><input type="date" id="pdDate" value="${todayStr()}"></div>
+        <div class="field"><label>Harga per Meet</label><input type="number" id="pdPrice" value="${st.fee_per_meeting||150000}" oninput="calcDeposit()"></div>
+        <div class="field"><label>Durasi per Meet (menit)</label><input type="number" id="pdDur" value="${st.meeting_minutes||90}" oninput="updateDepositCarry()"></div>
+        <div class="field"><label>Total Payment</label><div id="pdTotal" style="font-size:22px;font-weight:800;color:var(--green2);padding-top:4px">Rp 0</div></div>
+      </div>
+      <input type="hidden" id="pdCarry" value="0">
+      <div class="note-band" style="margin-top:12px" id="pdCarryBand">—</div>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-green" onclick="saveDeposit()">＋ Simpan Deposit</button></div>
+    </div>
+    <div class="card">
+      <div class="card-pad" style="padding-bottom:0"><div class="card-title">Rincian Payment</div></div>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th>No</th><th>Tanggal Bayar</th><th>Deposit Meeting</th><th>Harga/Meet</th><th>Durasi</th><th>Total Payment</th><th>Status</th><th class="no-print">Aksi</th></tr></thead>
+        <tbody>${list.map((p,i)=>`<tr>
+          <td>${i+1}</td><td>${prettyDate(p.pay_date)}</td><td>${p.meetings} meetings</td>
+          <td>${fmtRp(p.price_per_meet)}</td><td>${p.duration} menit</td><td><b>${fmtRp(p.deposit_total)}</b></td>
+          <td><span class="badge badge-paid">${p.status||'LUNAS'}</span></td>
+          <td class="no-print"><button class="btn btn-danger btn-sm" onclick="delPayment('${p.id}')">Hapus</button></td></tr>`).join('')
+          || '<tr><td colspan="8" class="muted" style="text-align:center;padding:20px">Belum ada pembayaran.</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+  calcDeposit(); updateDepositCarry();
+}
+function calcDeposit(){
+  const m=Number((document.getElementById('pdMeet')||{}).value)||0, pr=Number((document.getElementById('pdPrice')||{}).value)||0;
+  const el=document.getElementById('pdTotal'); if(el) el.textContent=fmtRp(m*pr);
+}
+// leftover minutes from the previous month's payment (deposit habis vs terpakai)
+function prevLeftover(month){
+  if(!month) return 0;
+  const [y,m]=month.split('-').map(Number);
+  const pd=new Date(y,m-2,1);
+  const pm=`${pd.getFullYear()}-${String(pd.getMonth()+1).padStart(2,'0')}`;
+  const pp=PAY_LIST.find(x=>ym(x.month)===pm);
+  if(!pp) return 0;
+  const avail=(Number(pp.meetings)||0)*(Number(pp.duration)||90)+(Number(pp.carry_in)||0);
+  const used=PAY_CLASSES.filter(c=>String(c.date).startsWith(pm)).reduce((a,c)=>a+(Number(c.duration)||0),0);
+  return Math.max(0,avail-used);
+}
+function updateDepositCarry(){
+  const band=document.getElementById('pdCarryBand'); if(!band) return;
+  const month=document.getElementById('pdMonth').value;
+  const carry=prevLeftover(month);
+  document.getElementById('pdCarry').value=carry;
+  const m=Number(document.getElementById('pdMeet').value)||0, dur=Number(document.getElementById('pdDur').value)||90;
+  const bulanIni=m*dur, avail=bulanIni+carry;
+  band.innerHTML=`Sisa deposit bulan sebelumnya: <b>${carry} menit</b> · Total menit tersedia: <b>${fmtNum(bulanIni)} + ${carry} = ${fmtNum(avail)} menit</b>`;
+}
+async function saveDeposit(){
+  const m=Number(document.getElementById('pdMeet').value)||0, pr=Number(document.getElementById('pdPrice').value)||0;
+  const month=document.getElementById('pdMonth').value;
+  if(!month){toast('Isi periode dulu','err');return;}
+  const carry=Number(document.getElementById('pdCarry').value)||0;
+  const p={student_id:PAY_SID,month,pay_date:document.getElementById('pdDate').value,meetings:m,price_per_meet:pr,
+    duration:Number(document.getElementById('pdDur').value)||90,deposit_total:m*pr,carry_in:carry,
+    next_meetings:m,next_deposit:m*pr,grand_total:m*pr,status:'LUNAS'};
+  try{ await API.savePayment(p); toast('Deposit tersimpan'+(carry?` (+${carry} mnt carry-over)`:''),'ok'); renderPayment(PAY_SID); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+async function delPayment(id){
+  if(!confirm('Hapus pembayaran ini?'))return;
+  try{ await API.deletePayment(id); toast('Terhapus','ok'); renderPayment(PAY_SID); }catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+function renderBillingPane(st,list){
+  const opts=list.map(p=>{const k=ym(p.month);const lbl=k?new Date(k+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}):'(periode belum jelas)';return `<option value="${p.id}">${lbl}</option>`;}).join('');
+  document.getElementById('payBilling').innerHTML=`
+    <div class="card card-pad no-print" style="margin-bottom:16px">
+      <label style="font-weight:700;font-size:12.5px">Pilih Periode Penagihan</label>
+      <select id="blSel" onchange="loadBilling()" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px;margin-top:6px">${opts||'<option value="">(belum ada deposit)</option>'}</select>
+    </div>
+    <div id="blContent"></div>`;
+  if(list.length) loadBilling();
+  else document.getElementById('blContent').innerHTML='<div class="card card-pad muted" style="text-align:center">Belum ada data deposit. Isi di tab Deposit Payment dulu.</div>';
+}
+function curPay(){ return PAY_LIST.find(x=>x.id===(document.getElementById('blSel')||{}).value)||PAY_LIST[0]; }
+function loadBilling(){
+  const st=STUDENTS.find(s=>s.id===PAY_SID), p=curPay(); if(!p)return;
+  const dur=Number(p.duration)||90, price=Number(p.price_per_meet)||0;
+  // auto extra minutes: pemakaian melebihi deposit (deposit + carry-over bulan lalu)
+  const carryIn=Number(p.carry_in)||0;
+  const pMon=ym(p.month);
+  const monthMin=PAY_CLASSES.filter(c=>String(c.date).startsWith(pMon)).reduce((a,c)=>a+(Number(c.duration)||0),0);
+  const depositMin=(Number(p.meetings)||0)*dur + carryIn;
+  const autoExtra=Math.max(0,monthMin-depositMin);
+  BILL={monthMin,dur,meets:(Number(p.meetings)||0)};
+  const extraVal=(Number(p.extra_minutes)>0)?Number(p.extra_minutes):autoExtra;
+  document.getElementById('blContent').innerHTML=`
+    <div class="card card-pad" style="margin-bottom:16px;display:flex;gap:28px;flex-wrap:wrap">
+      <div><div class="lbl muted">Murid</div><b>${st.nama}</b></div>
+      <div><div class="lbl muted">Orang Tua</div><b>${st.parent_name||'-'}</b></div>
+      <div><div class="lbl muted">Durasi Normal</div><b>${dur} menit</b></div>
+      <div><div class="lbl muted">Harga per Meet</div><b>${fmtRp(price)}</b></div>
+      <div><div class="lbl muted">Carry-over bulan lalu <span style="font-size:10px;color:var(--blue)">✏️ edit</span></div><input type="number" id="blCarry" value="${carryIn}" oninput="recalcCarry()" style="width:120px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;font-weight:800;font-size:15px"> <span class="hint" style="font-size:11px">menit</span></div>
+      <div><div class="lbl muted">Terpakai bulan ini</div><b id="blUsed">${monthMin} / ${depositMin} menit</b></div>
+    </div>
+    <div class="grid grid-4" style="margin-bottom:16px">
+      <div class="stat tint-green"><div class="lbl">TOTAL PAYMENT BULAN INI</div><div class="val">${fmtRp(p.deposit_total)}</div><div class="hint">meeting yang sudah dijalankan</div></div>
+      <div class="stat tint-blue"><div class="lbl">TAMBAHAN SESI (LEBIH DURASI)</div>
+        <input type="number" id="blExtra" value="${extraVal}" oninput="calcBilling()" placeholder="menit tambahan" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:9px;margin:6px 0">
+        <div class="hint" id="blExtraHint">🔄 Otomatis: <b>${autoExtra} mnt</b> lebih dari deposit${carryIn?` + carry ${carryIn}`:''} (bisa diedit)</div>
+        <div class="hint">Additional Fee 1</div><div style="font-weight:800;color:var(--blue);font-size:16px" id="blFee1">Rp 0</div>
+        <div class="hint" id="blFee1Calc"></div></div>
+      <div class="stat tint-amber"><div class="lbl">ADDITIONAL FEE 2 (MANUAL)</div>
+        <input type="number" id="blFee2" value="${p.add_fee2||0}" oninput="calcBilling()" placeholder="nominal" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:9px;margin:6px 0">
+        <textarea id="blFee2Note" placeholder="Keterangan" style="width:100%;min-height:42px;padding:8px;border:1.5px solid var(--line);border-radius:9px">${esc(p.add_fee2_note||'')}</textarea></div>
+      <div class="stat tint-purple"><div class="lbl">DEPOSIT NEXT MONTH</div>
+        <input type="number" id="blNext" value="${p.next_meetings||p.meetings||8}" oninput="calcBilling()" placeholder="meetings" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:9px;margin:6px 0">
+        <div class="hint">Total Deposit</div><div style="font-weight:800;color:var(--purple);font-size:16px" id="blNextDep">Rp 0</div></div>
+    </div>
+    <div class="card card-pad" style="background:var(--purple-soft)">
+      <div class="card-title" style="color:var(--purple)">RINGKASAN TAGIHAN</div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:13px">
+        Additional Fee 1: <b id="sFee1">Rp 0</b> + Additional Fee 2: <b id="sFee2">Rp 0</b> + Deposit Next Month: <b id="sNext">Rp 0</b>
+        <span style="margin-left:auto;font-size:12px;color:var(--muted)">TOTAL YANG HARUS DIBAYAR</span>
+        <span style="font-size:24px;font-weight:800;color:var(--purple)" id="blGrand">Rp 0</span>
+      </div>
+      <div style="text-align:right;margin-top:12px" class="no-print"><button class="btn btn-primary" onclick="saveBilling('${p.id}')">💾 Simpan Penagihan</button></div>
+    </div>
+    <div class="note-band mt-16 no-print">ℹ️ Data ini otomatis muncul di Laporan murid & pesan WA. Deposit bulan depan jadi pembayaran meeting berikutnya.</div>`;
+  calcBilling();
+}
+function calcBilling(){
+  const p=curPay(); if(!p)return;
+  const dur=Number(p.duration)||90, price=Number(p.price_per_meet)||0;
+  const extra=Number(document.getElementById('blExtra').value)||0;
+  const fee1=Math.round(price/dur*extra);
+  const fee2=Number(document.getElementById('blFee2').value)||0;
+  const nextMeet=Number(document.getElementById('blNext').value)||0;
+  const nextDep=nextMeet*price, grand=fee1+fee2+nextDep;
+  document.getElementById('blFee1').textContent=fmtRp(fee1);
+  document.getElementById('blFee1Calc').textContent=`(${fmtRp(price)}/${dur} mnt) × ${extra} mnt`;
+  document.getElementById('blNextDep').textContent=fmtRp(nextDep);
+  document.getElementById('sFee1').textContent=fmtRp(fee1);
+  document.getElementById('sFee2').textContent=fmtRp(fee2);
+  document.getElementById('sNext').textContent=fmtRp(nextDep);
+  document.getElementById('blGrand').textContent=fmtRp(grand);
+}
+function recalcCarry(){
+  const carry=Number((document.getElementById('blCarry')||{}).value)||0;
+  const depMin=(BILL.meets*BILL.dur)+carry;
+  const autoExtra=Math.max(0,BILL.monthMin-depMin);
+  const u=document.getElementById('blUsed'); if(u) u.textContent=`${BILL.monthMin} / ${depMin} menit`;
+  const h=document.getElementById('blExtraHint'); if(h) h.innerHTML=`🔄 Otomatis: <b>${autoExtra} mnt</b> lebih dari deposit${carry?` + carry ${carry}`:''} (bisa diedit)`;
+  const ex=document.getElementById('blExtra'); if(ex) ex.value=autoExtra;
+  calcBilling();
+}
+async function saveBilling(id){
+  const p=PAY_LIST.find(x=>x.id===id); if(!p)return;
+  const dur=Number(p.duration)||90, price=Number(p.price_per_meet)||0;
+  const carry=Number((document.getElementById('blCarry')||{}).value)||0;
+  const extra=Number(document.getElementById('blExtra').value)||0;
+  const fee1=Math.round(price/dur*extra);
+  const fee2=Number(document.getElementById('blFee2').value)||0, note=document.getElementById('blFee2Note').value;
+  const nextMeet=Number(document.getElementById('blNext').value)||0, nextDep=nextMeet*price;
+  const upd={...p,carry_in:carry,extra_minutes:extra,add_fee1:fee1,add_fee2:fee2,add_fee2_note:note,next_meetings:nextMeet,next_deposit:nextDep,grand_total:fee1+fee2+nextDep};
+  try{ await API.savePayment(upd); toast('Penagihan tersimpan','ok'); PAY_LIST=await API.getPayments({student_id:PAY_SID}); loadBilling(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+/* ============== end PAYMENT MODULE ============== */
+async function renderAllClasses(){
+  const m=document.getElementById('acMonth').value;
+  const all=await API.getClasses(m?{month:m}:{});
+  document.getElementById('acBody').innerHTML=all.map(c=>`<tr>
+    <td>${prettyDate(c.date)}</td><td><b>${sName(c.student_id)}</b></td><td>${tName(c.tutor_id)}</td>
+    <td>${timeRange(c.start_time,c.end_time)}</td><td>${c.duration||'-'} min</td>
+    <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
+    <td>${c.topic||'<span class="muted">-</span>'}</td></tr>`).join('')
+    ||'<tr><td colspan="7" class="muted" style="text-align:center;padding:22px">Belum ada kelas.</td></tr>';
+}
+function renderBirthday(){
+  const el=document.getElementById('bdayBanner'); if(!el) return;
+  const now=new Date(), M=now.getMonth()+1, D=now.getDate();
+  const isToday=p=>{ if(!p.dob) return false; const [,m,d]=String(p.dob).split('-').map(Number); return m===M&&d===D; };
+  const names=[...STUDENTS.filter(isToday).map(s=>`${s.nama} <span class="muted">(Murid)</span>`),
+               ...TUTORS.filter(isToday).map(t=>`${t.nama} <span class="muted">(Tentor)</span>`)];
+  if(names.length){ el.innerHTML='🎂 <b>Ulang tahun hari ini:</b> '+names.join(' · '); el.style.display='block'; }
+  else el.style.display='none';
+}
+const gradeKey=s=>{const m=String(s.grade||'').match(/\d+/);return m?parseInt(m[0]):999;};
+function renderStudentsM(){
+  const list=[...STUDENTS].sort((a,b)=>gradeKey(a)-gradeKey(b)||String(a.nama||'').localeCompare(String(b.nama||'')));
+  document.getElementById('msBody').innerHTML=list.map(s=>`<tr>
+    <td><b>${s.nama}</b></td><td><b style="color:var(--navy)">${s.username||'<span class="muted">-</span>'}</b></td><td>${s.school||'<span class="muted">-</span>'}</td><td>${s.grade||'-'}</td>
+    <td>${s.parent_name||'-'}</td><td>${s.schedule||'-'}</td>
+    <td>${fmtRp(s.fee_per_meeting)}</td><td>${fmtRp(s.fee_tentor)}</td>
+    <td><span style="font-weight:800;letter-spacing:3px;color:var(--navy)">${s.pin||'----'}</span>
+        <button class="btn btn-ghost btn-sm" title="Buat PIN baru" onclick="regenStudentPin('${s.id}')">🔄</button></td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-warn btn-sm" onclick="openStudent('${s.id}')">Edit</button>
+      <button class="btn btn-sm" style="background:#fff3e0;color:#b26a00;border:1px solid #ffd9a3" onclick="openReset('${s.id}','student')">🔄 Reset</button>
+      <button class="btn btn-danger btn-sm" onclick="delStudent('${s.id}')">Delete</button>
+      <button class="btn btn-outline btn-sm" onclick="openReport('${s.id}')">Laporan →</button></td></tr>`).join('')
+    ||'<tr><td colspan="10" class="muted" style="text-align:center;padding:22px">Belum ada murid.</td></tr>';
+}
+function renderTutorsM(){
+  document.getElementById('mtBody').innerHTML=TUTORS.map(t=>`<tr>
+    <td><b>${t.nama}</b></td><td><b style="color:var(--navy)">${t.username||'<span class="muted">-</span>'}</b></td><td>${t.subject||'-'}</td><td>${t.level||'<span class="muted">-</span>'}</td><td>${t.wa||'-'}</td>
+    <td><span style="font-weight:800;letter-spacing:3px;color:var(--navy)">${t.pin||'----'}</span>
+        <button class="btn btn-ghost btn-sm" title="Buat PIN baru" onclick="regenPin('${t.id}')">🔄</button></td>
+    <td style="white-space:nowrap"><button class="btn btn-warn btn-sm" onclick="openTutor('${t.id}')">Edit</button>
+      <button class="btn btn-sm" style="background:#fff3e0;color:#b26a00;border:1px solid #ffd9a3" onclick="openReset('${t.id}','tutor')">🔄 Reset</button>
+      <button class="btn btn-danger btn-sm" onclick="delTutor('${t.id}')">Delete</button></td></tr>`).join('')
+    ||'<tr><td colspan="7" class="muted" style="text-align:center;padding:22px">Belum ada tentor.</td></tr>';
+}
+async function renderLaporan(){
+  const m=document.getElementById('repMonth').value||todayStr().slice(0,7);
+  const cls=await API.getClasses({month:m});
+  const byStu={}; cls.forEach(c=>{(byStu[c.student_id]=byStu[c.student_id]||[]).push(c);});
+  const html=STUDENTS.map(s=>{
+    const list=byStu[s.id]||[]; if(!list.length) return '';
+    const mins=list.reduce((a,c)=>a+(Number(c.duration)||0),0);
+    const est=Math.round(mins/(s.meeting_minutes||90))*(s.fee_per_meeting||0);
+    return `<tr><td><b>${s.nama}</b></td><td>${list.length}</td><td>${mins} min</td>
+      <td>${fmtRp(s.fee_per_meeting)}</td><td class="text-green"><b>${fmtRp(est)}</b></td>
+      <td><button class="btn btn-outline btn-sm" onclick="openReport('${s.id}')">Lihat →</button></td></tr>`;
+  }).join('');
+  document.getElementById('repBody').innerHTML=html||'<tr><td colspan="6" class="muted" style="text-align:center;padding:22px">Belum ada kelas pada bulan ini.</td></tr>';
+}
+document.addEventListener('change',e=>{
+  if(e.target.id==='acMonth')  renderAllClasses();
+  if(e.target.id==='repMonth') renderLaporan();
+});
+
+/* ---- Student CRUD ---- */
+function fillSelect(el,arr,val){el.innerHTML='<option value="">Pilih…</option>'+arr.map(a=>`<option value="${a.id}" ${a.id===val?'selected':''}>${a.nama}</option>`).join('');}
+function openStudent(id){
+  document.getElementById('mStudentTitle').textContent=id?'Edit Murid':'Tambah Murid';
+  const s=id?STUDENTS.find(x=>x.id===id):{};
+  const V=(k,v)=>document.getElementById(k).value=v;
+  document.getElementById('sId').value=id||'';
+  V('sNama',s.nama||''); V('sGrade',s.grade||''); V('sUser',s.username||genUsername(s.nama||'')); V('sSchool',s.school||''); V('sAddress',s.address||'');
+  V('sDob',s.dob||''); V('sSchedule',s.schedule||''); V('sParent',s.parent_name||''); V('sWa',s.wa_ortu||'');
+  V('sFee',s.fee_per_meeting||150000); V('sFeeTutor',s.fee_tentor||90000);
+  V('sMin',s.meeting_minutes||90); V('sDep',s.deposit_meetings||8);
+  V('sAddFee',s.add_fee||''); V('sAddNote',s.add_fee_note||'');
+  V('sPin', s.pin||genPin());
+  openModal('mStudent');
+}
+async function saveStudent(){
+  const g=id=>{const el=document.getElementById(id);return el?el.value:'';};
+  const p={id:g('sId')||undefined,nama:g('sNama'),username:(g('sUser')||genUsername(g('sNama'))).toLowerCase().trim(),school:g('sSchool'),address:g('sAddress'),dob:g('sDob'),
+    grade:g('sGrade'),schedule:g('sSchedule'),parent_name:g('sParent'),wa_ortu:g('sWa'),
+    fee_per_meeting:g('sFee'),fee_tentor:g('sFeeTutor'),meeting_minutes:g('sMin'),deposit_meetings:g('sDep'),
+    add_fee:g('sAddFee'),add_fee_note:g('sAddNote'),pin:g('sPin')||genPin()};
+  if(!p.nama){toast('Nama wajib diisi','err');return;}
+  try{
+    if(p.id) await API.updateStudent(p); else await API.addStudent(p);
+    STUDENTS=await API.getStudents(); closeModal('mStudent'); toast('Murid disimpan · PIN '+p.pin,'ok'); renderStudentsM();
+  }catch(e){ toast('Gagal simpan: '+(e.message||e),'err'); }
+}
+async function regenStudentPin(id){
+  const s=STUDENTS.find(x=>x.id===id); if(!s) return;
+  const pin=genPin();
+  try{ await API.updateStudent({...s,pin}); STUDENTS=await API.getStudents(); renderStudentsM(); toast('PIN baru '+s.nama+': '+pin,'ok'); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+
+/* ---- Tutor CRUD ---- */
+function openTutor(id){
+  document.getElementById('mTutorTitle').textContent=id?'Edit Tentor':'Tambah Tentor';
+  const t=id?TUTORS.find(x=>x.id===id):{};
+  document.getElementById('tId').value=id||'';
+  document.getElementById('tNama').value=t.nama||''; document.getElementById('tSubject').value=t.subject||'';
+  document.getElementById('tUser').value=t.username||genUsername(t.nama||'');
+  const levels=String(t.level||'').split(',').map(x=>x.trim());
+  document.querySelectorAll('.tLvl').forEach(cb=>cb.checked=levels.includes(cb.value));
+  document.getElementById('tWa').value=t.wa||'';
+  document.getElementById('tAddress').value=t.address||''; document.getElementById('tDob').value=t.dob||'';
+  document.getElementById('tPin').value=t.pin||genPin();
+  openModal('mTutor');
+}
+async function saveTutor(){
+  const g=id=>{const el=document.getElementById(id);return el?el.value:'';};
+  const level=[...document.querySelectorAll('.tLvl:checked')].map(cb=>cb.value).join(', ');
+  const p={id:g('tId')||undefined,nama:g('tNama'),username:(g('tUser')||genUsername(g('tNama'))).toLowerCase().trim(),subject:g('tSubject'),level,
+    address:g('tAddress'),dob:g('tDob'),wa:g('tWa'),pin:g('tPin')||genPin()};
+  if(!p.nama){toast('Nama wajib diisi','err');return;}
+  try{
+    if(p.id) await API.updateTutor(p); else await API.addTutor(p);
+    TUTORS=await API.getTutors(); closeModal('mTutor'); toast('Tentor disimpan · PIN '+p.pin,'ok'); renderTutorsM();
+  }catch(e){ toast('Gagal simpan: '+(e.message||e),'err'); }
+}
+async function regenPin(id){
+  const t=TUTORS.find(x=>x.id===id); if(!t) return;
+  const pin=genPin(); await API.updateTutor({...t,pin});
+  TUTORS=await API.getTutors(); renderTutorsM(); toast('PIN baru '+t.nama+': '+pin,'ok');
+}
+async function delTutor(id){
+  const t=TUTORS.find(x=>x.id===id); if(!t) return;
+  if(!confirm('Hapus tentor "'+t.nama+'" ? Tindakan ini tidak bisa dibatalkan.')) return;
+  try{ await API.deleteTutor(id); TUTORS=await API.getTutors(); renderTutorsM(); toast('Tentor dihapus','ok'); }
+  catch(e){ toast('Gagal hapus: '+(e.message||e),'err'); }
+}
+async function delStudent(id){
+  const s=STUDENTS.find(x=>x.id===id); if(!s) return;
+  if(!confirm('Hapus murid "'+s.nama+'" ? Tindakan ini tidak bisa dibatalkan.')) return;
+  try{ await API.deleteStudent(id); STUDENTS=await API.getStudents(); renderStudentsM(); toast('Murid dihapus','ok'); }
+  catch(e){ toast('Gagal hapus: '+(e.message||e),'err'); }
+}
+
+async function generateAllUsernames(){
+  if(!confirm('Buat username otomatis untuk murid & tentor yang BELUM punya username?\n\nYang sudah punya username (termasuk yang diedit manual) TIDAK diubah.')) return;
+  const btn=document.getElementById('genUserBtn'); if(btn)btn.disabled=true;
+  try{
+    const used=new Set([...STUDENTS,...TUTORS].map(x=>String(x.username||'').toLowerCase().trim()).filter(Boolean));
+    const uniq=(base)=>{ if(!base) return ''; let u=base,i=2; while(used.has(u)){ u=base.replace(/lsc$/,'')+i+'lsc'; i++; } used.add(u); return u; };
+    let made=0, skipped=0;
+    for(const s of STUDENTS){
+      if(String(s.username||'').trim()){ skipped++; continue; }
+      const u=uniq(genUsername(s.nama)); if(!u){ skipped++; continue; }
+      await API.updateStudent({...s,username:u}); made++; if(btn) btn.textContent=`Membuat… ${made}`;
+    }
+    for(const t of TUTORS){
+      if(String(t.username||'').trim()){ skipped++; continue; }
+      const u=uniq(genUsername(t.nama)); if(!u){ skipped++; continue; }
+      await API.updateTutor({...t,username:u}); made++; if(btn) btn.textContent=`Membuat… ${made}`;
+    }
+    STUDENTS=await API.getStudents(); TUTORS=await API.getTutors();
+    renderStudentsM(); renderTutorsM();
+    toast(`Selesai — ${made} username dibuat, ${skipped} dilewati`,'ok');
+  }catch(e){ toast('Gagal: '+(e.message||e)+'. Klik lagi untuk melanjutkan sisanya.','err'); }
+  finally{ if(btn){btn.disabled=false; btn.textContent='🪄 Generate semua username';} }
+}
+function openReset(id, role){
+  const arr = role==='tutor' ? TUTORS : STUDENTS;
+  const x = arr.find(a=>a.id===id); if(!x) return;
+  document.getElementById('rsId').value=id;
+  document.getElementById('rsRole').value=role;
+  document.getElementById('rsName').textContent=x.nama+(role==='tutor'?' (Tentor)':' (Murid)');
+  document.getElementById('rsTitle').textContent='Reset Data — '+x.nama;
+  document.getElementById('rsMonth').value=todayStr().slice(0,7);
+  document.getElementById('rsMsg').textContent='';
+  openModal('mReset');
+}
+async function doReset(){
+  const id=document.getElementById('rsId').value, role=document.getElementById('rsRole').value;
+  const mon=document.getElementById('rsMonth').value, msg=document.getElementById('rsMsg');
+  if(!mon){ msg.style.color='var(--red)'; msg.textContent='Pilih bulan dulu.'; return; }
+  if(!confirm(`Hapus SEMUA kelas & payment bulan ${mon} untuk ${role==='tutor'?'tentor':'murid'} ini?\n\nTidak bisa dibatalkan.`)) return;
+  const btn=document.getElementById('rsBtn'); btn.disabled=true;
+  msg.style.color='var(--muted)'; msg.textContent='Menghapus…';
+  try{
+    const filter = role==='tutor' ? {tutor_id:id, month:mon} : {student_id:id, month:mon};
+    const cls = await API.getClasses(filter);
+    let nc=0; for(const c of cls){ await API.deleteClass(c.id); nc++; msg.textContent=`Menghapus kelas… ${nc}/${cls.length}`; }
+    let np=0;
+    if(role!=='tutor'){
+      const pays=(await API.getPayments({student_id:id})).filter(p=>ym(p.month)===mon);
+      for(const p of pays){ await API.deletePayment(p.id); np++; }
+    }
+    msg.style.color='var(--green2)'; msg.textContent=`✅ ${nc} kelas${role!=='tutor'?` & ${np} payment`:''} bulan ${mon} dihapus.`;
+    if(PAY_SID===id) renderPayment(id);
+    setTimeout(()=>closeModal('mReset'),1500);
+  }catch(e){ msg.style.color='var(--red)'; msg.textContent='Gagal: '+(e.message||e); }
+  finally{ btn.disabled=false; }
+}
+async function boot(){
+  let tutors,students,cls;
+  try{
+    tutors=await API.getTutors();
+    students=await API.getStudents();
+    cls=await API.getClasses({month:todayStr().slice(0,7)});
+  }catch(e){
+    document.getElementById('loadErr').style.display='flex';
+    toast('Gagal memuat data — coba muat ulang','err');
+    renderStudentsM(); renderTutorsM();   // biarkan data lama yang masih tampil
+    return;
+  }
+  document.getElementById('loadErr').style.display='none';
+  TUTORS=tutors; STUDENTS=students;
+  document.getElementById('repMonth').value=todayStr().slice(0,7);
+  document.getElementById('acMonth').value=todayStr().slice(0,7);
+  document.getElementById('mStudents').textContent=STUDENTS.length;
+  document.getElementById('mTutors').textContent=TUTORS.length;
+  document.getElementById('mClasses').textContent=cls.length;
+  let rev=0; STUDENTS.forEach(s=>{const n=cls.filter(c=>c.student_id===s.id).length;rev+=n*(s.fee_per_meeting||0);});
+  document.getElementById('mRevenue').textContent=fmtRp(rev);
+  renderBirthday();
+  wireSearch('dashSearch','dashHits');   // pencarian cepat murid di dashboard
+  wireGlobalSearch();                    // kolom atas → gabungan murid + tentor
+  renderHits('dashHits',STUDENTS);
+  // deep link
+  const q=new URLSearchParams(location.search);
+  if(q.get('student')){const s=STUDENTS.find(x=>x.id===q.get('student'));if(s)openReport(s.id);}
+}
+function wireSearch(inputId,hitsId,jump){
+  const inp=document.getElementById(inputId); if(!inp)return;
+  inp.oninput=()=>{
+    const q=inp.value.toLowerCase();
+    const list=STUDENTS.filter(s=>s.nama.toLowerCase().includes(q)||(s.parent_name||'').toLowerCase().includes(q));
+    if(jump)showView('dashboard');
+    renderHits(hitsId,list);
+  };
+}
+function renderHits(id,list){
+  const el=document.getElementById(id); if(!el)return;
+  el.innerHTML=list.map(s=>`<div class="search-hit" onclick="openReport('${s.id}')">
+    <div class="av">${s.nama[0]}</div>
+    <div style="flex:1"><b>${s.nama}</b> <span class="badge badge-active">Grade ${s.grade||'-'}</span>
+      <div class="hint text-muted">${s.parent_name||''} · ${s.schedule||''}</div></div>
+    <div class="right-arrow">›</div></div>`).join('')||'<div class="text-muted" style="padding:8px">Tidak ada hasil.</div>';
+}
+function wireGlobalSearch(){
+  const inp=document.getElementById('globalSearch');
+  inp.oninput=()=>{ showView('search'); renderCombined(inp.value.trim().toLowerCase()); };
+}
+async function renderCombined(q){
+  const cls=await API.getClasses({month:todayStr().slice(0,7)});
+  const grp=t=>`<div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);margin:12px 2px 4px;text-transform:uppercase">${t}</div>`;
+  const stu=STUDENTS.filter(s=>!q||(s.nama||'').toLowerCase().includes(q)||(s.parent_name||'').toLowerCase().includes(q)||(s.school||'').toLowerCase().includes(q));
+  const tut=TUTORS.filter(t=>!q||(t.nama||'').toLowerCase().includes(q)||(t.subject||'').toLowerCase().includes(q));
+  const sHtml=stu.map(s=>`<div class="search-hit" onclick="openReport('${s.id}')">
+    <div class="av">${(s.nama||'?')[0]}</div>
+    <div style="flex:1"><b>${s.nama}</b> <span class="badge badge-active">Murid · Grade ${s.grade||'-'}</span>
+      <div class="hint text-muted">${s.parent_name||''}${s.school?' · '+s.school:''}${s.schedule?' · '+s.schedule:''}</div></div>
+    <div class="right-arrow">›</div></div>`).join('');
+  const tHtml=tut.map(t=>{
+    const my=cls.filter(c=>c.tutor_id===t.id); const mins=my.reduce((a,c)=>a+(Number(c.duration)||0),0);
+    return `<div class="search-hit" onclick="openTutor('${t.id}')">
+      <div class="av">${(t.nama||'?')[0]}</div>
+      <div style="flex:1"><b>${t.nama}</b> <span class="badge badge-onsite">Tentor · ${t.subject||'-'}</span> ${t.level?`<span class="badge badge-active">${t.level}</span>`:''}
+        <div class="hint text-muted">${my.length} kelas · ${mins} menit bln ini · WA ${t.wa||'-'}</div></div>
+      <div class="right-arrow">›</div></div>`;
+  }).join('');
+  const el=document.getElementById('searchHits');
+  el.innerHTML = ((stu.length?grp('Murid ('+stu.length+')')+sHtml:'')+(tut.length?grp('Tentor ('+tut.length+')')+tHtml:''))
+    || '<div class="text-muted" style="padding:8px">Tidak ada hasil.</div>';
+}
+
+/* ---- STUDENT REPORT ---- */
+/* Lesson plan (owner-only) — tampil ringkas di riwayat kelas */
+function lpDetails(c){
+  let lp={}; try{ lp=c.lesson_plan?JSON.parse(c.lesson_plan):{}; }catch(e){ return ''; }
+  const o=lp.objectives||{},s=lp.skills||{},d=lp.summary||{};
+  const any=[o.grammar,o.vocab,o.phrases,s.listening,s.reading,s.writing,s.speaking,lp.extended,d.strength,d.improve,d.strategy].some(v=>v);
+  if(!any) return '';
+  const line=(k,v)=>v?`<div style="font-size:11.5px"><b>${k}:</b> ${esc(v)}</div>`:'';
+  return `<details style="margin-top:6px"><summary style="cursor:pointer;color:var(--blue);font-weight:700;font-size:11.5px">📋 Lesson Plan</summary>
+    <div style="margin-top:6px;background:#f4f8fd;border-radius:8px;padding:8px 10px;line-height:1.6">
+      ${line('Grammar',o.grammar)}${line('Vocabulary',o.vocab)}${line('Useful Phrases',o.phrases)}
+      ${line('Listening',s.listening)}${line('Reading',s.reading)}${line('Writing',s.writing)}${line('Speaking',s.speaking)}
+      ${line('Extended',lp.extended)}
+      ${(d.strength||d.improve||d.strategy)?`<div style="margin-top:5px;border-top:1px dashed #cfd6ea;padding-top:5px">${line('Strength',d.strength)}${line('Area of Improvement',d.improve)}${line('Strategy',d.strategy)}</div>`:''}
+    </div></details>`;
+}
+async function openReport(id, month){
+  CUR=STUDENTS.find(s=>s.id===id); if(!CUR)return;
+  REP_MONTH = month || REP_MONTH || todayStr().slice(0,7);
+  showView('report');
+  const sel=document.getElementById('repMonthSel'); if(sel) sel.value=REP_MONTH;
+  const periodName=new Date(REP_MONTH+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  document.getElementById('crumb').textContent=CUR.nama;
+  document.getElementById('rHist').textContent=`📅 Riwayat Kelas ${CUR.nama.split(' ')[0]} · ${periodName}`;
+  document.getElementById('phName').textContent=CUR.nama;
+  document.getElementById('phPeriod').textContent=periodName;
+  const allCls=await API.getClasses({student_id:id});
+  const cls=allCls.filter(c=>String(c.date).startsWith(REP_MONTH))
+    .sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.start_time||'').localeCompare(String(b.start_time||'')));
+  // deposit & billing now come from the Payment tab
+  const pays=await API.getPayments({student_id:id});
+  const pay=pays.find(x=>x.month===REP_MONTH)||pays[0]||null;
+  const perMin=pay?Number(pay.duration)||90:(CUR.meeting_minutes||90);
+  const meets=pay?Number(pay.meetings)||0:(CUR.deposit_meetings||0);
+  const perMeet=pay?Number(pay.price_per_meet)||0:(CUR.fee_per_meeting||0);
+  const base=pay?Number(pay.deposit_total)||perMeet*meets:perMeet*meets;
+  const carryIn=pay?Number(pay.carry_in)||0:0;
+  const total=meets*perMin+carryIn, used=cls.reduce((a,c)=>a+(+c.duration||0),0), left=Math.max(0,total-used);
+  const extraMin=Math.max(0,used-total);                                   // otomatis, sinkron dengan portal ortu
+  const addFee1=(perMin&&extraMin)?Math.round((perMeet/perMin)*extraMin):0;
+  const addFee2=pay?Number(pay.add_fee2)||0:0;
+  const addFee2Note=pay?pay.add_fee2_note||'':'';
+  const nextDep=pay?Number(pay.next_deposit)||0:0;
+  const grandBill=addFee1+addFee2+nextDep;
+  const hasPay=!!pay;
+  // header cards
+  document.getElementById('repHeader').innerHTML=`
+    <div class="card card-pad" style="display:flex;gap:16px;align-items:center">
+      <div class="avatar-lg">🧑‍🎓</div>
+      <div><div style="font-size:20px;font-weight:800;color:var(--navy)">${CUR.nama} <span class="badge badge-active">Active</span></div>
+        <div class="hint">Grade ${CUR.grade||'-'} · School: ${CUR.school||'-'}</div>
+        <div class="hint">Date of Birth: ${CUR.dob?prettyDate(CUR.dob):'-'}</div>
+        <div class="hint">Address: ${CUR.address||'-'}</div>
+        <div class="hint">Parent: ${CUR.parent_name||'-'} (${CUR.wa_ortu||'-'})</div></div></div>
+    <div class="stat tint-green"><div class="lbl">💳 TOTAL DEPOSIT PAYMENT</div><div class="val" style="font-size:18px">${hasPay?`LUNAS ${meets}× MEETING`:'⏳ BELUM LUNAS'}</div><div class="hint">${hasPay?`Per meet: ${fmtRp(perMeet)} · ${meets}×${perMin}${carryIn?` + carry ${fmtNum(carryIn)}`:''} = ${fmtNum(total)} menit<br>Deposit dibayar: <b class="text-green">${fmtRp(base)}</b><br>${prettyDate(pay.pay_date)}`:'Input di tab Payment dulu'}</div></div>
+    <div class="stat tint-blue"><div class="lbl">⏱️ TOTAL USED</div><div class="val">${fmtNum(used)} <span style="font-size:13px">menit</span></div><div class="hint">${Math.round(used/perMin)} meetings</div></div>
+    <div class="stat tint-amber"><div class="lbl">📚 REMAINING</div><div class="val">${fmtNum(left)} <span style="font-size:13px">menit</span></div><div class="hint">Setara ${Math.floor(left/perMin)} sesi</div></div>`;
+  // history
+  document.getElementById('rBody').innerHTML=cls.map((c,i)=>`<tr>
+    <td>${i+1}</td><td>${prettyDate(c.date)}<br><span class="muted">(${dayName(c.date)})</span></td>
+    <td>${tName(c.tutor_id)}</td><td>${timeRange(c.start_time,c.end_time)}</td><td>${c.duration||'-'} min</td>
+    <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
+    <td>${multiline(c.topic)}${lpDetails(c)}</td><td>${multiline(c.note)}</td>
+    <td>${docCell(c.doc_url)}</td></tr>`).join('')
+    ||`<tr><td colspan="9" class="muted" style="text-align:center;padding:24px">Belum ada kelas pada ${periodName}.</td></tr>`;
+  // billing summary (from Payment tab)
+  document.getElementById('rSummary').innerHTML=`
+    <div class="stat tint-blue"><div class="lbl">ADDITIONAL FEE 1 (Sesi Tambahan)</div><div class="val">${fmtRp(addFee1)}</div><div class="hint">${fmtNum(extraMin)} menit tambahan</div></div>
+    <div class="stat tint-amber"><div class="lbl">ADDITIONAL FEE 2 (Manual)</div><div class="val">${fmtRp(addFee2)}</div><div class="hint">${addFee2Note?esc(addFee2Note):'-'}</div></div>
+    <div class="stat tint-green"><div class="lbl">DEPOSIT BULAN DEPAN</div><div class="val">${fmtRp(nextDep)}</div><div class="hint">${pay?(Number(pay.next_meetings)||0):0}× meeting</div></div>
+    <div class="stat tint-purple"><div class="lbl">TOTAL YANG HARUS DIBAYAR</div><div class="val">${fmtRp(grandBill)}</div><div class="hint">Fee1 + Fee2 + Deposit depan</div></div>`;
+  buildWa(cls,{periodName,perMin,perMeet,meets,base,used,addFee1,addFee2,addFee2Note,nextDep,grandBill,pay});
+}
+
+/* ---- WA composer ---- */
+let WA_TEXT='',WA_NUM='';
+function buildWa(cls,x){
+  const nm=CUR.nama.split(' ')[0];
+  const g=document.getElementById('waGreet').value;
+  const nextMeets=x.pay?(Number(x.pay.next_meetings)||0):0;
+  const lines=[];
+  lines.push(`${g}, ${CUR.parent_name||'Bapak/Ibu'} 😊`,'',`Berikut laporan kelas ${nm} untuk bulan ${x.periodName} di KWE Lingo.`,'');
+  lines.push(`📅 Total pertemuan bulan ini: ${cls.length} kali`);
+  lines.push(`⏱️ Total durasi: ${x.used} menit`);
+  if(x.base) lines.push(`💳 Deposit bulan ini: ${x.meets}× meeting = ${fmtRp(x.base)}`);
+  lines.push('');
+  if(x.addFee1) lines.push(`➕ Additional fee 1 (sesi tambahan): ${fmtRp(x.addFee1)}`);
+  if(x.addFee2) lines.push(`➕ Additional fee 2${x.addFee2Note?` (${x.addFee2Note})`:''}: ${fmtRp(x.addFee2)}`);
+  if(x.nextDep) lines.push(`📅 Deposit bulan depan: ${nextMeets}× meeting = ${fmtRp(x.nextDep)}`);
+  lines.push('',`🧾 *Total yang harus dibayar: ${fmtRp(x.grandBill)}*`,'');
+  lines.push('Terima kasih atas kepercayaannya kepada KWE Lingo 🙏',`Semoga ${nm} terus semangat belajarnya!`,'','Salam hangat,','KWE Lingo ⭐');
+  WA_TEXT=lines.join('\n');
+  WA_NUM=(CUR.wa_ortu||'').replace(/[^0-9]/g,'').replace(/^0/,'62');
+  document.getElementById('waMsg').textContent=WA_TEXT;
+  document.getElementById('waTotal').textContent=fmtRp(x.grandBill);
+}
+document.getElementById('waGreet').onchange=()=>{if(CUR)openReport(CUR.id);};
+function sendWa(){window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(WA_TEXT)}`,'_blank');}
+function copyWa(){navigator.clipboard.writeText(WA_TEXT).then(()=>toast('Pesan disalin','ok'));}
+boot();
+</script>
+</body>
+</html>

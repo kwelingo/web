@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tentor — KWE Lingo</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .print-only{display:none}
+  .print-head{border-bottom:2.5px solid var(--navy);padding-bottom:10px;margin-bottom:16px}
+  .print-head .pt{font-size:19px;font-weight:800;color:var(--navy)}
+  .print-head .pl{font-size:13px;color:#333;margin-top:3px}
+  .print-head img{height:44px;border-radius:8px}
+  @media print{
+    @page{margin:12mm}
+    body{background:#fff}
+    .sidebar,.backdrop,.topbar,.foot-note,.no-print{display:none!important}
+    .main{display:block}.content{padding:0!important}
+    .page-head{display:none!important}
+    .print-only{display:block!important}
+    .card{box-shadow:none!important;border:1px solid #ddd}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<style>
+.sugbox{position:absolute;left:0;right:0;top:100%;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-lg);margin-top:4px;z-index:20;overflow:hidden;display:none;max-height:220px;overflow-y:auto}
+.sugbox.show{display:block}
+.sug-item{padding:10px 14px;cursor:pointer;font-size:14px;text-align:left;color:var(--navy)}
+.sug-item:hover{background:var(--sky-soft)}
+</style>
+<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#E9F8FB,#F3FBFC);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card card-pad" style="max-width:380px;width:100%;text-align:center">
+    <img src="assets/logo.png" style="width:84px;height:84px;border-radius:18px;padding:6px;background:#fff;box-shadow:var(--shadow);margin:0 auto 14px">
+    <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Login Tentor</h2>
+    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Masuk dengan nama & PIN 4 digit dari admin</p>
+    <div class="field" style="text-align:left"><label>Username</label>
+      <input id="lgName" autocomplete="off" placeholder="cth: nitalsc" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field" style="text-align:left"><label>PIN (4 digit)</label>
+      <input id="lgPin" maxlength="4" inputmode="numeric" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800"
+             onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Masuk →</button>
+    <div class="help" id="lgErr" style="color:var(--red);margin-top:10px;font-weight:600"></div>
+    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Kembali ke pemilihan portal</a></div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-head" id="logo"></div>
+    <div class="sidebar-role">Menu</div>
+    <nav class="nav">
+      <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
+      <a data-view="schedule"><span class="ic">📅</span> Jadwal Saya</a>
+      <a data-view="fee"><span class="ic">📊</span> Rekap Bulan Ini</a>
+      <div class="divider"></div>
+      <a href="portal.html"><span class="ic">↩️</span> Ganti Portal</a>
+      <a href="index.html"><span class="ic">🚪</span> Keluar</a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar" id="tavatar">Y</div>
+      <div class="who" id="twho">Tentor<small>Teacher</small></div>
+    </div>
+  </aside>
+  <div class="backdrop" onclick="toggleSidebar()"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="spacer"></div>
+      <div class="me"><div class="who" id="twho2">Tentor<small>Teacher</small></div><div class="avatar" id="tavatar2">Y</div></div>
+    </div>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <div class="page-head">
+          <div><h1 id="hi">Halo, Tentor 👋</h1><div class="sub" id="today">—</div></div>
+        </div>
+
+        <div class="grid grid-4" style="margin-bottom:22px">
+          <div class="stat tint-blue"><div class="lbl"><span class="icon">📅</span> Kelas Hari Ini</div><div class="val" id="cToday">0</div><div class="hint">jadwal tetap murid</div></div>
+          <div class="stat tint-green"><div class="lbl"><span class="icon">✅</span> Selesai Bulan Ini</div><div class="val" id="cMonth">0</div><div class="hint" id="mLabel">—</div></div>
+          <div class="stat tint-amber"><div class="lbl"><span class="icon">💰</span> Total Fee Bulan Ini</div><div class="val" id="feeMonth">Rp 0</div><div class="hint">dari fee tentor tiap murid</div></div>
+          <div class="stat tint-purple"><div class="lbl"><span class="icon">🧑‍🎓</span> Murid Saya</div><div class="val" id="myStudents">0</div></div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="card-title">📅 Jadwal Hari Ini</div>
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Murid</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik & Catatan</th><th>Materi PDF</th><th>Action</th></tr></thead>
+            <tbody id="todayBody"></tbody>
+          </table></div>
+          <div class="note-band mt-16">📝 Tentor mengisi <b>Topik/Materi</b>, <b>Catatan</b>, dan melampirkan <b>materi</b> — bisa upload <b>PDF/JPG</b> atau tempel <b>link</b> (YouTube / Google Drive). Semua bisa diakses orang tua. Waktu & dokumentasi diisi admin.</div>
+        </div>
+      </section>
+
+      <!-- SCHEDULE -->
+      <section class="view hide" id="view-schedule">
+        <div class="page-head"><div><h1>Jadwal Saya</h1><div class="sub">Pilih bulan untuk melihat jadwal</div></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="month" id="schedMonth" onchange="renderSchedule()" style="padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-weight:600">
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('schedMonth').value='';renderSchedule()">Semua</button>
+          </div></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Tanggal</th><th>Murid</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik</th><th>Action</th></tr></thead>
+          <tbody id="schedBody"></tbody>
+        </table></div></div>
+      </section>
+
+      <!-- FEE -->
+      <section class="view hide" id="view-fee">
+        <div class="page-head"><div><h1>Rekap Bulan Ini</h1><div class="sub" id="feeLabel">—</div></div>
+          <div style="display:flex;gap:10px;align-items:center" class="no-print">
+            <input type="month" id="feeMonthPick" class="btn btn-outline" style="font-weight:600">
+            <button class="btn btn-primary" onclick="window.print()">🖨️ Generate PDF</button>
+          </div></div>
+        <div class="print-only print-head">
+          <div style="display:flex;align-items:center;gap:12px">
+            <img src="assets/logo.png" alt="KWE Lingo">
+            <div>
+              <div class="pt">Rekap Fee Tentor — KWE Lingo</div>
+              <div class="pl">Tentor: <b id="phTName">—</b></div>
+              <div class="pl">Periode: <b id="phTPeriod">—</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-4" style="margin-bottom:20px">
+          <div class="stat tint-green"><div class="lbl">Total Fee</div><div class="val" id="feeTotal">Rp 0</div></div>
+          <div class="stat tint-blue"><div class="lbl">Total Sesi</div><div class="val" id="feeSessions">0</div></div>
+          <div class="stat tint-purple"><div class="lbl">Total Menit</div><div class="val" id="feeMinutes">0</div></div>
+          <div class="stat tint-amber"><div class="lbl">Onsite / Online</div><div class="val" id="feeMix">0 / 0</div></div>
+        </div>
+        <div class="card card-pad" style="margin-bottom:20px;display:flex;gap:28px;flex-wrap:wrap;align-items:center">
+          <div><div class="lbl muted">Fee Mengajar</div><b class="text-green" id="feeBase">Rp 0</b></div>
+          <div><div class="lbl muted">Komisi / Bonus</div><b style="color:var(--orange)" id="feeBonus">Rp 0</b><div class="hint" id="feeBonusNote" style="max-width:320px;white-space:pre-line"></div></div>
+          <div style="margin-left:auto;text-align:right"><div class="lbl muted">TOTAL DITERIMA</div><b style="font-size:22px;color:var(--purple)" id="feeGrand">Rp 0</b></div>
+        </div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Tanggal</th><th>Murid</th><th>Durasi</th><th>Type</th><th>Fee</th></tr></thead>
+          <tbody id="feeBody"></tbody>
+        </table></div></div>
+      </section>
+
+      <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: fill topic/note/material -->
+<div class="modal-overlay" id="mFill">
+  <div class="modal">
+    <div class="modal-head"><h3>Isi Laporan Kelas</h3><button class="x" onclick="closeModal('mFill')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="fId">
+      <div class="field"><label>Topic / Material <span class="req">*</span> <span class="help" style="display:inline">(bisa Enter untuk baris baru)</span></label><textarea id="fTopic" placeholder="cth: *Math WS#1 hal 33-36&#10;*Science (Senses)"></textarea></div>
+      <div class="field"><label>Catatan / Remarks untuk Orang Tua</label><textarea id="fNote" placeholder="cth: Anton cukup aktif dan memahami materi dengan baik."></textarea></div>
+
+      <div style="border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px;background:#fbfdff">
+        <div style="font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:10px">📋 Lesson Plan <span class="help" style="display:inline;font-weight:500">(untuk Owner — tidak dilihat orang tua)</span></div>
+        <div style="font-weight:700;font-size:12px;color:var(--muted);margin-bottom:6px">Learning Objectives</div>
+        <div class="field-row"><div class="field"><label>Grammar</label><input id="fGrammar" placeholder="cth: Present Perfect Tense"></div><div class="field"><label>Vocabulary</label><input id="fVocab" placeholder="cth: destination, itinerary"></div></div>
+        <div class="field"><label>Useful Phrases</label><input id="fPhrases" placeholder="cth: Have you ever...? I've never..."></div>
+        <div style="font-weight:700;font-size:12px;color:var(--muted);margin:4px 0 6px">Skills Practice</div>
+        <div class="field-row"><div class="field"><label>Listening</label><input id="fListening"></div><div class="field"><label>Reading</label><input id="fReading"></div></div>
+        <div class="field-row"><div class="field"><label>Writing</label><input id="fWriting"></div><div class="field"><label>Speaking</label><input id="fSpeaking"></div></div>
+        <div class="field" style="margin-bottom:0"><label>Extended Practices</label><textarea id="fExtended" style="min-height:50px" placeholder="cth: Write a short review of a travel destination"></textarea></div>
+      </div>
+
+      <div style="border:1.5px solid #ffe0c2;border-radius:12px;padding:14px;margin-bottom:16px;background:#fffaf4">
+        <div style="font-weight:800;color:var(--orange);font-size:13.5px;margin-bottom:10px">💪 Student Development Summary <span class="help" style="display:inline;font-weight:500">(muncul di laporan orang tua)</span></div>
+        <div class="field"><label>Strength(s)</label><textarea id="fStrength" style="min-height:44px" placeholder="cth: Speaks confidently when discussing personal experiences."></textarea></div>
+        <div class="field"><label>Area of Improvement</label><textarea id="fImprove" style="min-height:44px" placeholder="cth: Needs to use past tense forms more consistently."></textarea></div>
+        <div class="field" style="margin-bottom:0"><label>Improvement Strategies</label><textarea id="fStrategy" style="min-height:44px" placeholder="cth: Practice past tense through short speaking & writing exercises."></textarea></div>
+      </div>
+
+      <div class="field"><label>Materi Belajar (PDF / JPG — bisa diunduh orang tua)</label>
+        <div class="dropzone" onclick="document.getElementById('fPdf').click()"><span class="zi">📎</span><div><b>Pilih file</b> atau drag &amp; drop<br><span class="help">PDF &amp; JPG · bisa pilih beberapa file sekaligus</span></div></div>
+        <input type="file" id="fPdf" accept="application/pdf,image/jpeg,image/jpg,image/png" multiple class="hide"><div class="help" id="fPdfName"></div></div>
+      <div class="field"><label>Materi via Link <span class="help" style="display:inline">(YouTube / Google Drive / dll · satu link per baris)</span></label>
+        <textarea id="fLinks" placeholder="https://youtu.be/xxxxxxxx&#10;https://drive.google.com/file/d/..."></textarea></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:2px">
+        <input type="checkbox" id="fReplace"> Ganti semua materi lama (kalau tidak dicentang, materi baru <b>ditambahkan</b>)</label>
+      <div class="help" id="fCurMat" style="margin-top:6px"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mFill')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveFill()">Simpan Laporan</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+document.getElementById('logo').innerHTML=logoBlock('KWE Lingo','Portal Tentor');
+document.getElementById('today').textContent='📅 '+longToday();
+document.getElementById('feeMonthPick').value=todayStr().slice(0,7);
+const monLabel=new Date().toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+document.getElementById('mLabel').textContent=monLabel;
+document.getElementById('feeLabel').textContent=monLabel;
+
+let TUTORS=[],STUDENTS=[],ME=null;
+
+document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
+  document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));
+  document.getElementById('view-'+a.dataset.view).classList.remove('hide');
+  if(window.innerWidth<768)toggleSidebar();
+  if(a.dataset.view==='schedule')renderSchedule();
+  if(a.dataset.view==='fee')renderFee();
+});
+
+function sName(id){return (STUDENTS.find(s=>s.id===id)||{}).nama||'-';}
+function sFee(id){return Number((STUDENTS.find(s=>s.id===id)||{}).fee_tentor)||0;}
+// Fee tentor proporsional durasi: (fee per durasi normal) / normal × durasi kelas
+function sTutorFee(c){
+  const s=STUDENTS.find(x=>x.id===c.student_id)||{};
+  const norm=Number(s.meeting_minutes)||90, feePer=Number(s.fee_tentor)||0, dur=Number(c.duration)||norm;
+  return Math.round(feePer/norm*dur);
+}
+function setMe(t){
+  ME=t;
+  ['tavatar','tavatar2'].forEach(i=>document.getElementById(i).textContent=(t.nama||'T')[0]);
+  ['twho','twho2'].forEach(i=>document.getElementById(i).innerHTML=`${t.nama}<small>${t.subject||'Teacher'}</small>`);
+  document.getElementById('hi').textContent=`Hello, ${t.nama} 👋`;
+  renderToday(); renderStats();
+}
+
+async function boot(){
+  const q=new URLSearchParams(location.search);
+  if(q.get('user')) document.getElementById('lgName').value=q.get('user');
+}
+async function doLogin(){
+  const user=document.getElementById('lgName').value.trim();
+  const pin=document.getElementById('lgPin').value;
+  const err=document.getElementById('lgErr');
+  if(!user){err.textContent='Masukkan username dulu';return;}
+  if(!/^\d{4}$/.test(pin)){err.textContent='PIN harus 4 digit angka';return;}
+  try{
+    const t=await API.tutorLogin(user,pin);
+    STUDENTS=await API.getStudents();
+    document.getElementById('loginGate').style.display='none';
+    setMe(t);
+  }catch(e){ err.textContent=e.message||'Login gagal'; }
+}
+
+async function renderToday(){
+  const list=(await API.getClasses({date:todayStr(),tutor_id:ME.id})).sort((a,b)=>String(a.start_time||'99:99').localeCompare(String(b.start_time||'99:99')));
+  const tb=document.getElementById('todayBody');
+  tb.innerHTML=list.map(c=>`<tr>
+    <td><b>${sName(c.student_id)}</b></td><td>${timeRange(c.start_time,c.end_time)}</td>
+    <td>${c.duration||'-'} min</td>
+    <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
+    <td>${c.topic?`<b style="white-space:pre-line">${esc(c.topic)}</b><br><span class="muted" style="white-space:pre-line">${esc(c.note||'')}</span>`:'<span class="muted">Belum diisi</span>'}</td>
+    <td>${c.material_url?`📄 <span class="text-green">${String(c.material_url).split('|').filter(Boolean).length} file</span>`:'<span class="muted">-</span>'}</td>
+    <td><button class="btn btn-primary btn-sm" onclick="openFill('${c.id}')">Isi</button></td></tr>`).join('')
+    || '<tr><td colspan="7" class="muted" style="text-align:center;padding:24px">Tidak ada jadwal hari ini.</td></tr>';
+  document.getElementById('cToday').textContent=list.length;
+}
+async function renderStats(){
+  const m=todayStr().slice(0,7);
+  const cls=(await API.getClasses({month:m,tutor_id:ME.id}));
+  document.getElementById('cMonth').textContent=cls.length;
+  const myStu=new Set((await API.getClasses({tutor_id:ME.id})).map(c=>c.student_id));
+  document.getElementById('myStudents').textContent=myStu.size;
+  const fee=cls.reduce((a,c)=>a+sTutorFee(c),0);
+  document.getElementById('feeMonth').textContent=fmtRp(fee);
+}
+const byDate=(a,b)=>((a.date||'')+(a.start_time||'')).localeCompare((b.date||'')+(b.start_time||''));
+async function renderSchedule(){
+  const mp=document.getElementById('schedMonth');
+  if(mp && !mp.value && !mp.dataset.init){ mp.value=todayStr().slice(0,7); mp.dataset.init='1'; }
+  const mon=mp?mp.value:'';
+  const q={tutor_id:ME.id}; if(mon) q.month=mon;
+  const cls=(await API.getClasses(q)).sort(byDate);
+  const label=mon?new Date(mon+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}):'semua bulan';
+  document.getElementById('schedBody').innerHTML=cls.map(c=>`<tr>
+    <td>${prettyDate(c.date)}</td><td><b>${sName(c.student_id)}</b></td><td>${timeRange(c.start_time,c.end_time)}</td>
+    <td>${c.duration||'-'} min</td>
+    <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
+    <td>${c.topic?multiline(c.topic):'<span class="muted">-</span>'}</td>
+    <td><button class="btn btn-warn btn-sm" onclick="openFill('${c.id}')">Isi</button></td></tr>`).join('')
+    ||`<tr><td colspan="7" class="muted" style="text-align:center;padding:20px">Tidak ada jadwal untuk ${label}.</td></tr>`;
+}
+async function renderFee(){
+  const m=document.getElementById('feeMonthPick').value||todayStr().slice(0,7);
+  const periodName=new Date(m+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  document.getElementById('feeLabel').textContent=periodName;
+  document.getElementById('phTName').textContent=ME?ME.nama:'-';
+  document.getElementById('phTPeriod').textContent=periodName;
+  const cls=(await API.getClasses({month:m,tutor_id:ME.id})).sort(byDate);
+  let fee=0,mins=0,on=0,onl=0;
+  const body=cls.map(c=>{
+    const f=sTutorFee(c); fee+=f; mins+=Number(c.duration)||0; if(c.type==='online')onl++;else on++;
+    return `<tr><td>${prettyDate(c.date)}</td><td><b>${sName(c.student_id)}</b></td><td>${c.duration||'-'} min</td>
+      <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
+      <td><b>${fmtRp(f)}</b></td></tr>`;
+  }).join('');
+  document.getElementById('feeBody').innerHTML=body||'<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Belum ada kelas.</td></tr>';
+  document.getElementById('feeTotal').textContent=fmtRp(fee);
+  document.getElementById('feeSessions').textContent=cls.length;
+  document.getElementById('feeMinutes').textContent=fmtNum(mins);
+  document.getElementById('feeMix').textContent=on+' / '+onl;
+  // komisi/bonus dari master admin
+  let bonus=0, bnote='';
+  try{ const bs=await API.getTutorBonus({tutor_id:ME.id,month:m}); const b=bs[0]||{}; bonus=Number(b.amount)||0; bnote=b.note||''; }catch(e){}
+  document.getElementById('feeBase').textContent=fmtRp(fee);
+  document.getElementById('feeBonus').textContent=fmtRp(bonus);
+  document.getElementById('feeBonusNote').textContent=bnote?('📝 '+bnote):'';
+  document.getElementById('feeGrand').textContent=fmtRp(fee+bonus);
+}
+document.getElementById('feeMonthPick').onchange=renderFee;
+
+/* fill modal */
+let CUR_MAT='', CUR_MATS=[];
+async function openFill(id){
+  const c=(await API.getClasses({})).find(x=>x.id===id); if(!c)return;
+  document.getElementById('fId').value=id;
+  document.getElementById('fTopic').value=c.topic||''; document.getElementById('fNote').value=c.note||'';
+  let lp={}; try{ lp=c.lesson_plan?JSON.parse(c.lesson_plan):{}; }catch(e){ lp={}; }
+  const _o=lp.objectives||{}, _s=lp.skills||{}, _d=lp.summary||{};
+  const setv=(id,v)=>{const e=document.getElementById(id); if(e) e.value=v||'';};
+  setv('fGrammar',_o.grammar); setv('fVocab',_o.vocab); setv('fPhrases',_o.phrases);
+  setv('fListening',_s.listening); setv('fReading',_s.reading); setv('fWriting',_s.writing); setv('fSpeaking',_s.speaking);
+  setv('fExtended',lp.extended);
+  setv('fStrength',_d.strength); setv('fImprove',_d.improve); setv('fStrategy',_d.strategy);
+  CUR_MAT=c.material_url||'';
+  CUR_MATS=CUR_MAT.split('|').filter(Boolean);
+  renderMatList();
+  document.getElementById('fLinks').value='';
+  document.getElementById('fReplace').checked=false;
+  document.getElementById('fPdf').value=''; document.getElementById('fPdfName').textContent='';
+  openModal('mFill');
+}
+document.getElementById('fPdf').onchange=e=>{const fs=[...e.target.files];document.getElementById('fPdfName').textContent=fs.length?('📎 '+fs.map(f=>f.name).join(', ')):'';};
+function renderMatList(){
+  const box=document.getElementById('fCurMat');
+  if(!CUR_MATS.length){ box.innerHTML='<span class="muted">Belum ada materi tersimpan.</span>'; return; }
+  box.innerHTML='<div style="font-weight:700;font-size:12.5px;margin-bottom:6px">📎 Materi tersimpan ('+CUR_MATS.length+'):</div>'+
+    CUR_MATS.map((u,i)=>{
+      const isData=u.startsWith('data:');
+      const nm=isData?'File lama (perlu di-upload ulang)':((u.split('/').pop().split('?')[0]||'materi').slice(0,36));
+      const icon=/youtu\.?be/i.test(u)?'▶️':/drive\.google/i.test(u)?'📁':/\.(jpe?g|png)(\?|$)/i.test(u)?'🖼️':'📄';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;margin-bottom:4px;background:#f4f8fd;border-radius:8px;font-size:12.5px">
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${isData?'#b26a00':'var(--navy)'}">${icon} ${esc(nm)}</span>
+        <button type="button" class="btn btn-danger btn-sm" onclick="removeMat(${i})">🗑️ Hapus</button></div>`;
+    }).join('');
+}
+function removeMat(i){ CUR_MATS.splice(i,1); renderMatList(); }
+async function saveFill(){
+  if(saveFill._busy) return;
+  const p={id:document.getElementById('fId').value,topic:document.getElementById('fTopic').value,note:document.getElementById('fNote').value};
+  const gv=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+  const lp={
+    objectives:{grammar:gv('fGrammar'),vocab:gv('fVocab'),phrases:gv('fPhrases')},
+    skills:{listening:gv('fListening'),reading:gv('fReading'),writing:gv('fWriting'),speaking:gv('fSpeaking')},
+    extended:gv('fExtended'),
+    summary:{strength:gv('fStrength'),improve:gv('fImprove'),strategy:gv('fStrategy')}
+  };
+  const _hasLP=JSON.stringify(lp).replace(/[{}\[\]":,a-z]/g,'').trim().length>0
+    || Object.values(lp.objectives).concat(Object.values(lp.skills),[lp.extended],Object.values(lp.summary)).some(v=>v);
+  p.lesson_plan = _hasLP ? JSON.stringify(lp) : '';
+  const files=[...document.getElementById('fPdf').files];
+  const links=document.getElementById('fLinks').value.split(/[\s,]+/).map(s=>s.trim()).filter(s=>/^https?:\/\//i.test(s));
+  // buang materi base64 lama (bikin timeout & diblokir browser) — hanya simpan URL/link
+  const base=document.getElementById('fReplace').checked?[]:CUR_MATS.filter(u=>!u.startsWith('data:'));
+  const newFileUrls=[];
+  if(files.length){
+    toast('Mengupload '+files.length+' file materi…');
+    try{
+      for(const f of files){ const b64=await fileToBase64(f); const r=await API.uploadFile(b64,f.name); newFileUrls.push((r&&(r.view||r.url))||('materi/'+f.name)); }
+    }catch(e){ toast('Upload materi gagal: '+(e.message||e),'err'); return; }
+  }
+  const seen=new Set();
+  p.material_url=[...base,...newFileUrls,...links].filter(u=>u&&!seen.has(u)&&seen.add(u)).join('|');
+  const btn=document.querySelector('#mFill .btn-primary');
+  saveFill._busy=true; if(btn){btn.disabled=true; btn.dataset.t=btn.textContent; btn.textContent='Menyimpan…';}
+  try{ await API.updateClass(p); closeModal('mFill'); toast('Laporan tersimpan','ok'); renderToday(); }
+  catch(e){ toast('Gagal simpan: '+(e.message||e),'err'); }
+  finally{ saveFill._busy=false; if(btn){btn.disabled=false; btn.textContent=btn.dataset.t||'Simpan Laporan';} }
+}
+boot();
+</script>
+</body>
+</html>

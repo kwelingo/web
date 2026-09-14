@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orang Tua — KWE Lingo</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .print-only{display:none}
+  .print-head{border-bottom:2.5px solid var(--navy);padding-bottom:10px;margin-bottom:16px}
+  .print-head .pt{font-size:19px;font-weight:800;color:var(--navy)}
+  .print-head .pl{font-size:13px;color:#333;margin-top:3px}
+  .print-head img{height:46px}
+  .rep-remark{white-space:pre-line}
+  .lp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+  @media(max-width:640px){.lp-grid{grid-template-columns:1fr}}
+  .lp-box{background:var(--sky-soft);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .lp-box b{color:var(--navy);font-size:12px;display:block;margin-bottom:4px}
+  .lp-box span{font-size:12.5px;color:#374151;white-space:pre-line}
+  @media print{
+    @page{margin:12mm}
+    body{background:#fff}
+    .sidebar,.backdrop,.topbar,.foot-note,.no-print{display:none!important}
+    .main{display:block}.content{padding:0!important}
+    .page-head{display:none!important}
+    .print-only{display:block!important}
+    .card{box-shadow:none!important;border:1px solid #ddd}
+    table.tbl{font-size:11px}
+    table.tbl th,table.tbl td{padding:7px 8px;white-space:normal!important;vertical-align:top}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE (Orang Tua) -->
+<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#E9F8FB,#F3FBFC);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card card-pad" style="max-width:380px;width:100%;text-align:center">
+    <img src="assets/logo.png" style="height:78px;margin:0 auto 12px;display:block">
+    <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Login Orang Tua</h2>
+    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Masuk dengan username anak &amp; PIN dari admin</p>
+    <div class="field" style="text-align:left"><label>Username / Nama Anak</label>
+      <input id="lgName" autocomplete="off" placeholder="username anak" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field" style="text-align:left"><label>PIN (4 digit)</label>
+      <input id="lgPin" maxlength="4" inputmode="numeric" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800"
+             onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Masuk →</button>
+    <div class="help" id="lgErr" style="color:var(--red);margin-top:10px;font-weight:600"></div>
+    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Kembali ke pemilihan portal</a></div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-head" id="logo"></div>
+    <div class="sidebar-role">Menu</div>
+    <nav class="nav">
+      <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
+      <a data-view="report"><span class="ic">📄</span> Laporan Kelas</a>
+      <a data-view="attend"><span class="ic">✅</span> Absensi</a>
+      <a data-view="payment"><span class="ic">💳</span> Pembayaran</a>
+      <div class="divider"></div>
+      <a href="portal.html"><span class="ic">↩️</span> Ganti Portal</a>
+      <a href="index.html"><span class="ic">🚪</span> Keluar</a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar" id="pavatar">O</div>
+      <div class="who" id="pwho">Orang Tua<small>Parent</small></div>
+    </div>
+  </aside>
+  <div class="backdrop" onclick="toggleSidebar()"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="spacer"></div>
+      <div class="me"><div class="who" id="pwho2">Orang Tua<small>Parent</small></div><div class="avatar" id="pavatar2">O</div></div>
+    </div>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <div class="page-head"><div><h1 id="hi">Halo 👋</h1><div class="sub" id="today">—</div></div></div>
+        <div class="grid grid-4" style="margin-bottom:22px">
+          <div class="stat tint-blue"><div class="lbl"><span class="icon">📅</span> Kelas Bulan Ini</div><div class="val" id="mClasses">0</div><div class="hint" id="mLabel">—</div></div>
+          <div class="stat tint-green"><div class="lbl"><span class="icon">✅</span> Kehadiran</div><div class="val" id="mAttend">0</div><div class="hint">sesi dihadiri bulan ini</div></div>
+          <div class="stat tint-amber"><div class="lbl"><span class="icon">📎</span> Materi Tersedia</div><div class="val" id="mMaterials">0</div><div class="hint">file/link dari guru</div></div>
+          <div class="stat tint-purple"><div class="lbl"><span class="icon">💳</span> Status Pembayaran</div><div class="val" id="mPayment" style="font-size:16px">—</div><div class="hint" id="mPayHint">—</div></div>
+        </div>
+        <div class="card card-pad">
+          <div class="card-title">👦 Data Anak</div>
+          <div class="grid grid-4" id="childInfo" style="gap:14px"></div>
+        </div>
+        <div class="card card-pad mt-16">
+          <div class="card-title">📅 Jadwal Hari Ini</div>
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Guru</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik</th></tr></thead>
+            <tbody id="todayBody"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- REPORT -->
+      <section class="view hide" id="view-report">
+        <div class="page-head">
+          <div><h1>Laporan Kelas</h1><div class="sub" id="repLabel">—</div></div>
+          <div style="display:flex;gap:10px;align-items:center" class="no-print">
+            <input type="month" id="repMonth" class="btn btn-outline" style="font-weight:600" onchange="renderReport()">
+            <button class="btn btn-primary" onclick="window.print()">🧾 Simpan PDF</button>
+          </div>
+        </div>
+        <div class="print-only print-head">
+          <div style="display:flex;align-items:center;gap:12px">
+            <img src="assets/logo.png" alt="Kwelingo">
+            <div>
+              <div class="pt">Laporan Kelas — KWE Lingo</div>
+              <div class="pl">Nama: <b id="phName">—</b></div>
+              <div class="pl">Periode: <b id="phPeriod">—</b></div>
+            </div>
+          </div>
+        </div>
+        <div id="reportBody"></div>
+      </section>
+
+      <!-- ATTENDANCE -->
+      <section class="view hide" id="view-attend">
+        <div class="page-head"><div><h1>Absensi</h1><div class="sub" id="attLabel">—</div></div>
+          <input type="month" id="attMonth" class="btn btn-outline" style="font-weight:600" onchange="renderAttend()"></div>
+        <div class="grid grid-4" style="margin-bottom:20px" id="attStats"></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>No</th><th>Tanggal</th><th>Guru</th><th>Time</th><th>Type</th><th>Kehadiran</th></tr></thead>
+          <tbody id="attBody"></tbody>
+        </table></div></div>
+      </section>
+
+      <!-- PAYMENT -->
+      <section class="view hide" id="view-payment">
+        <div class="page-head"><div><h1>Pembayaran</h1><div class="sub">Status deposit &amp; riwayat pembayaran — diverifikasi admin</div></div></div>
+        <div class="grid grid-4" style="margin-bottom:20px" id="payStats"></div>
+        <div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">🧾 Riwayat Pembayaran</div></div>
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Periode</th><th>Tgl Bayar</th><th>Jumlah Meeting</th><th>Total</th><th>Status</th></tr></thead>
+            <tbody id="payBody"></tbody>
+          </table></div>
+        </div>
+        <div class="note-band mt-16">ℹ️ Status <b>LUNAS / TERVERIFIKASI</b> berarti pembayaran sudah dicek &amp; disetujui admin. Bila ada pertanyaan, hubungi admin KWE Lingo.</div>
+      </section>
+
+      <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+document.getElementById('logo').innerHTML = logoBlock('KWE Lingo','Portal Orang Tua');
+document.getElementById('today').textContent = '📅 ' + longToday();
+const _m = todayStr().slice(0,7);
+['repMonth','attMonth'].forEach(id=>{const e=document.getElementById(id); if(e) e.value=_m;});
+const monLabel = new Date().toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+document.getElementById('mLabel').textContent = monLabel;
+
+let ME=null, TUTORS=[], ALL=[], PAYS=[], DEP=null;
+function tName(id){return (TUTORS.find(t=>t.id===id)||{}).nama||'-';}
+function ym(v){const m=String(v||'').match(/(\d{4})-(\d{2})/);return m?m[1]+'-'+m[2]:'';}
+const typeBadge = t => t==='online'
+  ? '<span class="badge badge-online">ONLINE</span>'
+  : '<span class="badge badge-onsite">ONSITE</span>';
+
+/* ---------- LOGIN ---------- */
+(function(){ const q=new URLSearchParams(location.search); if(q.get('user')) document.getElementById('lgName').value=q.get('user'); })();
+async function doLogin(){
+  const user=document.getElementById('lgName').value.trim();
+  const pin=document.getElementById('lgPin').value;
+  const err=document.getElementById('lgErr');
+  if(!user){err.textContent='Masukkan username / nama anak dulu';return;}
+  if(!/^\d{4}$/.test(pin)){err.textContent='PIN harus 4 digit angka';return;}
+  err.textContent='Memeriksa…';
+  try{
+    ME = await API.studentLogin(user,pin);
+    try{ TUTORS = await API.getTutors(); }catch(e){ TUTORS=[]; }
+    document.getElementById('loginGate').style.display='none';
+    err.textContent='';
+    setMe(); await loadAll();
+  }catch(e){ err.textContent=e.message||'Login gagal'; }
+}
+function setMe(){
+  const nm=ME.nama||'Anak';
+  ['pavatar','pavatar2'].forEach(i=>document.getElementById(i).textContent=(nm[0]||'A').toUpperCase());
+  ['pwho','pwho2'].forEach(i=>document.getElementById(i).innerHTML=`${nm}<small>${ME.school||'Murid'}</small>`);
+  document.getElementById('hi').textContent=`Halo, orang tua ${nm} 👋`;
+  document.getElementById('phName').textContent=nm;
+}
+
+/* ---------- NAV ---------- */
+document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
+  document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));
+  document.getElementById('view-'+a.dataset.view).classList.remove('hide');
+  if(window.innerWidth<768)toggleSidebar();
+  if(a.dataset.view==='report') renderReport();
+  if(a.dataset.view==='attend') renderAttend();
+  if(a.dataset.view==='payment') renderPayment();
+});
+
+/* ---------- LOAD ---------- */
+async function loadAll(){
+  try{ ALL = await API.getClasses({student_id:ME.id}) || []; }catch(e){ ALL=[]; toast('Gagal memuat kelas','err'); }
+  try{ PAYS = await API.getPayments({student_id:ME.id}) || []; }catch(e){ PAYS=[]; }
+  try{ DEP = await API.getDeposit(ME.id); }catch(e){ DEP=null; }
+  renderDashboard();
+}
+const byDateDesc=(a,b)=>String((b.date||'')+(b.start_time||'')).localeCompare(String((a.date||'')+(a.start_time||'')));
+const attended = c => !!(c.stu_in || (c.date && c.date <= todayStr()));
+
+function renderDashboard(){
+  const m=_m;
+  const mon = ALL.filter(c=>ym(c.date)===m);
+  document.getElementById('mClasses').textContent = mon.length;
+  document.getElementById('mAttend').textContent = mon.filter(attended).length;
+  const mats = ALL.reduce((n,c)=>n+String(c.material_url||'').split('|').filter(Boolean).length,0);
+  document.getElementById('mMaterials').textContent = mats;
+  // payment status
+  const last = [...PAYS].sort((a,b)=>String(b.month||'').localeCompare(String(a.month||'')))[0];
+  const paidThis = PAYS.find(p=>ym(p.month)===m);
+  const payEl=document.getElementById('mPayment'), payHint=document.getElementById('mPayHint');
+  if(paidThis){ payEl.innerHTML='<span class="text-green">✅ Lunas</span>'; payHint.textContent='bulan '+monLabel; }
+  else if(last){ payEl.innerHTML='<span style="color:var(--orange)">Belum bulan ini</span>'; payHint.textContent='terakhir: '+ (new Date(ym(last.month)+'-01').toLocaleDateString('id-ID',{month:'short',year:'numeric'})); }
+  else { payEl.textContent='—'; payHint.textContent='belum ada data'; }
+  // child info
+  document.getElementById('childInfo').innerHTML = [
+    ['Nama', ME.nama||'-'],
+    ['Sekolah', ME.school||'-'],
+    ['Grade', ME.grade||'-'],
+    ['Jadwal Tetap', ME.schedule||'-'],
+  ].map(([k,v])=>`<div class="stat" style="background:#fff"><div class="lbl">${k}</div><div style="font-weight:700;color:var(--navy);font-size:14px">${esc(String(v))}</div></div>`).join('');
+  // today
+  const tb=document.getElementById('todayBody');
+  const today=ALL.filter(c=>c.date===todayStr()).sort((a,b)=>String(a.start_time||'').localeCompare(String(b.start_time||'')));
+  tb.innerHTML = today.map(c=>`<tr>
+    <td>${tName(c.tutor_id)}</td><td>${timeRange(c.start_time,c.end_time)}</td>
+    <td>${c.duration||'-'} min</td><td>${typeBadge(c.type)}</td>
+    <td>${c.topic?multiline(c.topic):'<span class="muted">Belum diisi</span>'}</td></tr>`).join('')
+    || '<tr><td colspan="5" class="muted" style="text-align:center;padding:22px">Tidak ada kelas hari ini.</td></tr>';
+}
+
+/* ---------- REPORT ---------- */
+function matLinks(u){
+  const arr=String(u||'').split('|').filter(Boolean);
+  if(!arr.length) return '<span class="muted">-</span>';
+  return arr.map((x,i)=>{
+    const icon=/youtu\.?be/i.test(x)?'▶️':/drive\.google/i.test(x)?'📁':/\.(jpe?g|png)(\?|$)/i.test(x)?'🖼️':'📄';
+    const isData=x.startsWith('data:');
+    return isData ? `${icon} <span class="muted">file</span>` : `<a href="${x}" target="_blank" class="no-print" style="color:var(--blue)">${icon} File ${i+1}</a><span class="print-only" style="display:none">${icon} File ${i+1}</span>`;
+  }).join(' · ');
+}
+// Parent report = Student Development Summary ONLY (lesson plan objectives/skills are owner-only, not shown here).
+function developmentBlock(c){
+  let lp=null; try{ lp = c.lesson_plan ? JSON.parse(c.lesson_plan) : null; }catch(e){ lp=null; }
+  const dv = (lp && lp.summary) ? lp.summary : {};
+  if(dv.strength || dv.improve || dv.strategy){
+    return `<div class="lp-grid">
+      <div class="lp-box"><b>💪 Strength(s)</b><span>${esc(dv.strength||'-')}</span></div>
+      <div class="lp-box"><b>📈 Area of Improvement</b><span>${esc(dv.improve||'-')}</span></div>
+      <div class="lp-box"><b>🎯 Improvement Strategies</b><span>${esc(dv.strategy||'-')}</span></div>
+      ${c.note?`<div class="lp-box"><b>📝 Remarks</b><span>${esc(c.note)}</span></div>`:''}
+    </div>`;
+  }
+  return c.note ? `<div class="rep-remark" style="color:#374151;font-size:13px">${esc(c.note)}</div>` : '<span class="muted">Belum ada catatan.</span>';
+}
+function renderReport(){
+  const m=document.getElementById('repMonth').value||_m;
+  const period=new Date(m+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  document.getElementById('repLabel').textContent=period;
+  document.getElementById('phPeriod').textContent=period;
+  const rows=ALL.filter(c=>ym(c.date)===m).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  const box=document.getElementById('reportBody');
+  if(!rows.length){ box.innerHTML='<div class="card card-pad muted" style="text-align:center">Belum ada kelas untuk periode ini.</div>'; return; }
+  box.innerHTML = rows.map((c,i)=>`
+    <div class="card card-pad" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px">
+        <div class="card-title" style="margin:0">📘 Sesi ${i+1} — ${prettyDate(c.date)}</div>
+        <div style="display:flex;gap:8px;align-items:center">${typeBadge(c.type)}<span class="badge badge-active">${tName(c.tutor_id)}</span></div>
+      </div>
+      <div style="font-weight:700;color:var(--navy);white-space:pre-line;margin-bottom:4px">${c.topic?esc(c.topic):'<span class="muted" style="font-weight:400">Topik belum diisi</span>'}</div>
+      ${developmentBlock(c)}
+      <div style="margin-top:10px;font-size:12.5px"><b>Materi:</b> ${matLinks(c.material_url)}</div>
+    </div>`).join('');
+}
+
+/* ---------- ATTENDANCE ---------- */
+function renderAttend(){
+  const m=document.getElementById('attMonth').value||_m;
+  const period=new Date(m+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  document.getElementById('attLabel').textContent=period;
+  const rows=ALL.filter(c=>ym(c.date)===m).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  const hadir=rows.filter(attended).length, total=rows.length;
+  const pct=total?Math.round(hadir/total*100):0;
+  document.getElementById('attStats').innerHTML=[
+    ['tint-blue','Total Sesi',total],['tint-green','Hadir',hadir],
+    ['tint-amber','Belum/Terjadwal',total-hadir],['tint-purple','Persentase',pct+'%'],
+  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+  document.getElementById('attBody').innerHTML=rows.map((c,i)=>`<tr>
+    <td>${i+1}</td><td>${prettyDate(c.date)}</td><td>${tName(c.tutor_id)}</td>
+    <td>${timeRange(c.start_time,c.end_time)}</td><td>${typeBadge(c.type)}</td>
+    <td>${attended(c)?'<span class="badge badge-paid">✅ HADIR</span>':'<span class="badge badge-pending">🕒 TERJADWAL</span>'}</td></tr>`).join('')
+    || '<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">Belum ada sesi.</td></tr>';
+}
+
+/* ---------- PAYMENT ---------- */
+function renderPayment(){
+  const paidMeet = DEP?Number(DEP.paid_meetings)||0:0;
+  const usedMin = DEP?Number(DEP.minutes_used)||0:0, totMin = DEP?Number(DEP.minutes_total)||0:0;
+  const sisaMin = Math.max(0,totMin-usedMin);
+  const totalBayar = PAYS.reduce((a,p)=>a+(Number(p.grand_total)||Number(p.deposit_total)||0),0);
+  document.getElementById('payStats').innerHTML=[
+    ['tint-green','Total Dibayar',fmtRp(totalBayar)],
+    ['tint-blue','Deposit Meeting',paidMeet+' meet'],
+    ['tint-amber','Sisa Menit',fmtNum(sisaMin)+' mnt'],
+    ['tint-purple','Jumlah Transaksi',PAYS.length],
+  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val" style="font-size:20px">${v}</div></div>`).join('');
+  const rows=[...PAYS].sort((a,b)=>String(b.month||'').localeCompare(String(a.month||'')));
+  document.getElementById('payBody').innerHTML=rows.map(p=>{
+    const per=ym(p.month)?new Date(ym(p.month)+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}):(p.month||'-');
+    return `<tr><td>${per}</td><td>${p.pay_date?prettyDate(p.pay_date):'-'}</td>
+      <td>${p.meetings||'-'} meeting</td><td><b>${fmtRp(p.grand_total||p.deposit_total||0)}</b></td>
+      <td><span class="badge badge-paid">${(p.status||'LUNAS')}</span></td></tr>`;
+  }).join('') || '<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Belum ada pembayaran tercatat.</td></tr>';
+}
+</script>
+</body>
+</html>

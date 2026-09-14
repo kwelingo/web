@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KWE Lingo — More than Language</title>
+<meta name="description" content="KWE Lingo — kursus bahasa Inggris & Mandarin. General English, Conversation Class, dan Mandarin (HSK) dengan guru lokal & native. We Help Learners Learn, Grow & Create.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* KWE Lingo brand palette (from screenshot) */
+  --sky:#4CC3D7;--sky-deep:#2BA9BF;--sky-dark:#1B8DA2;--sky-soft:#E9F8FB;--sky-mist:#D3F1F6;
+  --orange:#FF8A3C;--orange-deep:#F26B1D;--yellow:#FFC635;--yellow-soft:#FFE9A6;
+  --cream:#FFF8EE;--ink:#123B47;--ink-soft:#2C5561;--muted:#5F7C87;
+  --line:#e3edef;--bg:#f4fbfc;--card:#fff;
+  --shadow:0 10px 30px rgba(20,80,95,.10);--shadow-lg:0 24px 60px rgba(20,80,95,.18);
+  --disp:'Fredoka',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',system-ui,sans-serif;color:var(--ink);background:var(--card);line-height:1.65;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:999px;font-weight:700;font-size:14.5px;cursor:pointer;border:none;transition:.2s;font-family:var(--disp)}
+.btn:active{transform:translateY(1px)}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange-deep));color:#fff;box-shadow:0 10px 22px rgba(242,107,29,.35)}
+.btn-orange:hover{filter:brightness(1.04);transform:translateY(-2px)}
+.btn-sky{background:var(--sky-deep);color:#fff;box-shadow:0 10px 22px rgba(43,169,191,.30)}
+.btn-sky:hover{background:var(--sky-dark);transform:translateY(-2px)}
+.btn-white{background:#fff;color:var(--sky-dark);box-shadow:var(--shadow)}
+.btn-white:hover{transform:translateY(-2px)}
+.btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.85)}
+.btn-outline:hover{background:#fff;color:var(--sky-dark)}
+.btn-outline-sky{background:#fff;color:var(--sky-dark);border:2px solid var(--sky)}
+.btn-outline-sky:hover{background:var(--sky);color:#fff}
+.sec{padding:74px 0}
+.sec-alt{background:var(--bg)}
+.sec-sky{background:linear-gradient(180deg,var(--sky) 0%,var(--sky-deep) 100%)}
+.eyebrow{color:var(--orange-deep);font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:12.5px;text-align:center;font-family:var(--disp)}
+h2.title{font-family:var(--disp);font-size:clamp(28px,4.4vw,42px);font-weight:700;color:var(--ink);text-align:center;margin:6px 0 12px;letter-spacing:-.3px}
+.sec-sky h2.title,.sec-sky .eyebrow{color:#fff}
+.subtitle{color:var(--muted);text-align:center;max-width:720px;margin:0 auto 42px;font-size:16px}
+.sec-sky .subtitle{color:rgba(255,255,255,.94)}
+.grid{display:grid;gap:22px}
+
+/* sticker helper */
+.sticker{display:inline-block;background:var(--yellow);color:var(--ink);padding:2px 16px;border-radius:14px;transform:rotate(-2deg);box-shadow:4px 5px 0 rgba(18,59,71,.12)}
+
+/* ===== Header ===== */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0;gap:14px}
+.brand{display:flex;align-items:center;gap:11px}
+.brand .logo{width:48px;height:48px;flex:0 0 48px;transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.brand:hover .logo{transform:scale(1.08) rotate(-4deg)}
+.brand b{font-family:var(--disp);color:var(--ink);font-weight:700;font-size:20px;line-height:1;letter-spacing:.3px}
+.brand small{display:block;color:var(--sky-dark);font-size:9.5px;letter-spacing:2px;text-transform:uppercase;margin-top:3px;font-weight:600}
+.nav-links{display:flex;align-items:center;gap:26px}
+.nav-links a{font-weight:600;font-size:14px;color:var(--ink-soft);transition:.15s}
+.nav-links a:hover{color:var(--sky-dark)}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--ink)}
+@media(max-width:920px){
+  .nav-links{position:fixed;inset:0 0 0 auto;width:min(80vw,300px);flex-direction:column;align-items:flex-start;background:#fff;padding:80px 28px;gap:22px;transform:translateX(100%);transition:.3s;box-shadow:var(--shadow-lg);z-index:130}
+  .nav-links.open{transform:translateX(0)}
+  .nav-links a{font-size:17px}
+  .hamburger{display:block;z-index:140}
+  .nav-actions .btn:not(.reg-btn){display:none}
+}
+
+/* ===== Hero ===== */
+.hero{position:relative;background:linear-gradient(175deg,var(--sky) 0%,var(--sky-deep) 78%,#238ea3 100%);overflow:hidden}
+.hero .blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.35}
+.hero .b1{width:280px;height:280px;background:#8fe0ee;top:-70px;right:-40px}
+.hero .b2{width:200px;height:200px;background:#2a95ab;bottom:-60px;left:-40px;opacity:.4}
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center;padding:64px 0 78px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.5);color:#fff;font-weight:600;font-size:12.5px;padding:7px 16px;border-radius:999px;margin-bottom:20px;backdrop-filter:blur(4px)}
+.hero h1{font-family:var(--disp);font-weight:700;color:#fff;line-height:1.02;letter-spacing:-1px;font-size:clamp(40px,7vw,74px);text-shadow:0 4px 0 rgba(18,59,71,.10)}
+.hero h1 .more{color:#fff}
+.hero h1 .than{background:var(--yellow);color:var(--ink);padding:0 18px;border-radius:16px;display:inline-block;transform:rotate(-3deg);box-shadow:5px 6px 0 rgba(18,59,71,.15);margin:6px 4px}
+.hero h1 .language{color:#fff;position:relative;text-shadow:0 4px 0 rgba(242,107,29,.28)}
+.hero .lead{color:rgba(255,255,255,.96);font-size:clamp(16px,2.4vw,20px);font-weight:500;margin:20px 0 6px;font-family:var(--disp)}
+.hero p.desc{color:rgba(255,255,255,.9);font-size:15.5px;max-width:520px;margin-top:12px}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
+.hero-stats{display:flex;gap:26px;margin-top:34px;flex-wrap:wrap}
+.hero-stats .s b{font-family:var(--disp);display:block;font-size:26px;color:#fff;line-height:1}
+.hero-stats .s span{font-size:12px;color:rgba(255,255,255,.85)}
+.hero-art{position:relative;display:flex;align-items:center;justify-content:center}
+.hero-art .ring{position:absolute;width:340px;height:340px;border:3px dashed rgba(255,255,255,.45);border-radius:50%;animation:spin 26s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-art .mascot{position:relative;z-index:2;width:300px;filter:drop-shadow(0 20px 30px rgba(18,59,71,.28))}
+.float-chip{position:absolute;z-index:3;background:#fff;border-radius:16px;padding:9px 15px;font-family:var(--disp);font-weight:600;font-size:13px;color:var(--ink);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px}
+.float-chip.c1{top:22px;left:-6px;color:var(--sky-dark)}
+.float-chip.c2{bottom:60px;right:-10px;color:var(--orange-deep)}
+.float-chip.c3{bottom:-6px;left:40px;color:#c48a00}
+.wave{display:block;width:100%;height:auto;margin-bottom:-6px}
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;text-align:center;padding:48px 0 60px;gap:14px}
+  .hero p.desc{margin:12px auto 0}.hero .cta{justify-content:center}.hero-stats{justify-content:center}
+  .hero-art{margin-top:20px}.hero-art .mascot{width:220px}.hero-art .ring{width:250px;height:250px}
+  .hero-badge{margin-bottom:14px}
+}
+
+/* ===== Value strip ===== */
+.vstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.vitem{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px 18px;text-align:center;box-shadow:var(--shadow);transition:.2s}
+.vitem:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.vitem .em{font-size:30px}
+.vitem h4{font-family:var(--disp);color:var(--ink);font-size:16px;margin:8px 0 4px}
+.vitem p{color:var(--muted);font-size:13px}
+@media(max-width:820px){.vstrip{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.vstrip{grid-template-columns:1fr}}
+
+/* ===== Cards ===== */
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:var(--shadow);transition:.2s}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+
+/* Program cards */
+.prog-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+@media(max-width:820px){.prog-grid{grid-template-columns:1fr}}
+.pcard{position:relative;overflow:hidden;border-radius:24px;padding:0;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow);transition:.2s}
+.pcard:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.pcard .phead{padding:24px 26px 20px;color:#fff;position:relative}
+.pcard.en .phead{background:linear-gradient(130deg,var(--sky),var(--sky-dark))}
+.pcard.zh .phead{background:linear-gradient(130deg,var(--orange),var(--orange-deep))}
+.pcard .phead .flag{font-size:34px}
+.pcard .phead h3{font-family:var(--disp);font-size:24px;margin-top:6px}
+.pcard .phead p{font-size:13.5px;opacity:.95;margin-top:2px}
+.pcard .pbody{padding:22px 26px 26px}
+.sub-prog{border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px;transition:.15s}
+.sub-prog:hover{border-color:var(--sky);background:var(--sky-soft)}
+.sub-prog .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.sub-prog h4{font-family:var(--disp);font-size:17px;color:var(--ink)}
+.sub-prog .freq{font-size:11.5px;font-weight:700;color:var(--sky-dark);background:var(--sky-soft);padding:3px 10px;border-radius:999px;white-space:nowrap}
+.pcard.zh .sub-prog:hover{border-color:var(--orange)}
+.pcard.zh .sub-prog .freq{color:var(--orange-deep);background:#fff2e6}
+.sub-prog p{color:var(--muted);font-size:13px;margin-top:6px}
+.price{font-family:var(--disp);font-weight:700;font-size:20px;color:var(--ink);margin-top:10px}
+.price small{font-size:12px;color:var(--muted);font-weight:400}
+.tag-note{display:inline-block;background:var(--yellow-soft);color:#8a6400;font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;margin-top:8px}
+
+/* teacher package toggle */
+.pkg-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px;margin:0 auto}
+@media(max-width:640px){.pkg-grid{grid-template-columns:1fr}}
+.pkg{border-radius:22px;padding:26px;text-align:center;border:2px solid var(--line);background:#fff;box-shadow:var(--shadow);transition:.2s}
+.pkg:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.pkg.native{border-color:var(--orange);background:linear-gradient(180deg,#fff,#fff7f0)}
+.pkg .badge{font-family:var(--disp);font-size:12px;font-weight:700;padding:5px 14px;border-radius:999px;display:inline-block;margin-bottom:10px}
+.pkg.local .badge{background:var(--sky-soft);color:var(--sky-dark)}
+.pkg.native .badge{background:#fff2e6;color:var(--orange-deep)}
+.pkg h3{font-family:var(--disp);font-size:22px;color:var(--ink)}
+.pkg .pk-price{font-family:var(--disp);font-size:28px;color:var(--ink);margin:8px 0 2px}
+.pkg .pk-price small{font-size:13px;color:var(--muted);font-weight:400}
+.pkg ul{list-style:none;text-align:left;margin-top:16px;display:flex;flex-direction:column;gap:9px}
+.pkg li{font-size:13.5px;color:var(--ink-soft);display:flex;gap:9px;align-items:flex-start}
+.pkg li::before{content:"✓";color:var(--sky-dark);font-weight:800}
+.pkg.native li::before{color:var(--orange-deep)}
+
+/* Teachers */
+.tea-tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
+.tea-tab{font-family:var(--disp);font-weight:600;font-size:14px;padding:10px 22px;border-radius:999px;border:2px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;transition:.15s}
+.tea-tab.on{background:var(--sky-deep);color:#fff;border-color:var(--sky-deep)}
+.tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media(max-width:900px){.tgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.tgrid{grid-template-columns:1fr}}
+.tcard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px 18px;text-align:center;box-shadow:var(--shadow);transition:.2s}
+.tcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.tcard .ava{width:92px;height:92px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:36px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--sky),var(--sky-dark));border:4px solid #fff;box-shadow:0 6px 16px rgba(20,80,95,.18)}
+.tcard.o .ava{background:linear-gradient(135deg,var(--orange),var(--orange-deep))}
+.tcard h4{font-family:var(--disp);font-size:17px;color:var(--ink)}
+.tcard .role{color:var(--sky-dark);font-size:12.5px;font-weight:600;margin-top:2px}
+.tcard.o .role{color:var(--orange-deep)}
+.tcard p{color:var(--muted);font-size:12.5px;margin-top:9px;line-height:1.6}
+.tcard .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px}
+.tcard .chips span{font-size:10.5px;font-weight:600;background:var(--sky-soft);color:var(--sky-dark);padding:3px 9px;border-radius:999px}
+.tcard.o .chips span{background:#fff2e6;color:var(--orange-deep)}
+
+/* Steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:st}
+@media(max-width:820px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.steps{grid-template-columns:1fr}}
+.step{background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.35);border-radius:20px;padding:24px 20px;color:#fff;position:relative;backdrop-filter:blur(4px)}
+.step .n{font-family:var(--disp);font-size:15px;font-weight:700;width:38px;height:38px;border-radius:12px;background:#fff;color:var(--sky-dark);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.step h4{font-family:var(--disp);font-size:17px;margin-bottom:6px}
+.step p{font-size:13px;opacity:.94}
+
+/* Registration form */
+.reg-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start}
+@media(max-width:900px){.reg-grid{grid-template-columns:1fr}}
+.form-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:var(--shadow-lg)}
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:600;font-size:13px;color:var(--ink);margin-bottom:6px}
+.field .req{color:var(--orange-deep)}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:14px;color:var(--ink);background:#fdfefe;transition:.15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(76,195,215,.18)}
+.field .hint{font-size:11.5px;color:var(--muted);margin-top:5px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.field-row{grid-template-columns:1fr}}
+.file-drop{border:1.8px dashed var(--sky);border-radius:14px;padding:18px;text-align:center;background:var(--sky-soft);cursor:pointer;transition:.15s}
+.file-drop:hover{background:var(--sky-mist)}
+.file-drop .fi{font-size:26px}
+.file-drop p{font-size:12.5px;color:var(--sky-dark);font-weight:600;margin-top:4px}
+.file-name{font-size:12px;color:var(--ink-soft);margin-top:8px;font-weight:600}
+.side-card{background:linear-gradient(160deg,var(--sky-soft),#fff);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:var(--shadow)}
+.side-card h3{font-family:var(--disp);color:var(--ink);font-size:20px;margin-bottom:6px}
+.side-card p.muted{color:var(--muted);font-size:13.5px;margin-bottom:18px}
+.sop-btn{display:flex;align-items:center;gap:12px;width:100%;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;cursor:pointer;transition:.15s;margin-bottom:12px}
+.sop-btn:hover{border-color:var(--orange);box-shadow:var(--shadow)}
+.sop-btn .di{font-size:22px}
+.sop-btn b{font-family:var(--disp);font-size:14px;color:var(--ink);display:block}
+.sop-btn small{font-size:11.5px;color:var(--muted)}
+.sop-btn .dl{margin-left:auto;color:var(--orange-deep);font-weight:700;font-size:12px}
+.checkbox-row{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--ink-soft);margin-top:6px}
+.checkbox-row input{width:auto;margin-top:3px;accent-color:var(--sky-deep)}
+
+/* Testimonials */
+.testi{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.testi{grid-template-columns:1fr}}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.qcard .stars{color:var(--yellow);font-size:16px;letter-spacing:2px}
+.qcard p{color:var(--ink-soft);font-size:13.5px;margin:12px 0 16px;font-style:italic;flex:1}
+.qcard .who{display:flex;align-items:center;gap:11px}
+.qcard .av{width:42px;height:42px;border-radius:50%;background:var(--sky-deep);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;flex-shrink:0}
+.qcard .who b{font-size:13.5px;color:var(--ink)}
+.qcard .who small{display:block;color:var(--muted);font-size:11.5px}
+
+/* Final CTA */
+.final{position:relative;text-align:center;background:linear-gradient(135deg,var(--orange),var(--orange-deep));padding:78px 0;overflow:hidden}
+.final h2{font-family:var(--disp);color:#fff;font-size:clamp(28px,4.4vw,44px);letter-spacing:-.3px}
+.final p{color:rgba(255,255,255,.95);max-width:560px;margin:14px auto 28px;font-size:16px}
+
+/* footer */
+footer{background:var(--ink);color:rgba(255,255,255,.8);padding:46px 0 22px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px;margin-bottom:30px}
+@media(max-width:720px){.foot-grid{grid-template-columns:1fr}}
+footer .brand b{color:#fff}
+footer .brand small{color:var(--sky)}
+footer p{font-size:13.5px;line-height:1.7}
+footer h5{font-family:var(--disp);color:#fff;font-size:15px;margin-bottom:12px}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+footer a{font-size:13.5px;transition:.15s}
+footer a:hover{color:var(--sky)}
+.foot-bar{border-top:1px solid rgba(255,255,255,.14);padding-top:18px;text-align:center;font-size:12.5px;color:rgba(255,255,255,.6)}
+
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:14px 22px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;z-index:400;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:640px){.sec{padding:52px 0}.wrap{padding:0 18px}.form-card{padding:22px}}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html" aria-label="KWE Lingo">
+      <span class="logo" id="logoSlot"></span>
+      <div><b>KWE&nbsp;Lingo</b><small>More than Language</small></div>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#programs" onclick="closeNav()">Program</a>
+      <a href="#package" onclick="closeNav()">Paket Guru</a>
+      <a href="#teachers" onclick="closeNav()">Guru Kami</a>
+      <a href="#how" onclick="closeNav()">Cara Daftar</a>
+      <a href="#testi" onclick="closeNav()">Testimoni</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="portal.html" class="btn btn-outline-sky">🔐 Login</a>
+      <a href="#register" class="btn btn-orange reg-btn">Daftar Sekarang</a>
+      <button class="hamburger" onclick="toggleNav()" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <span class="blob b1"></span><span class="blob b2"></span>
+  <div class="wrap hero-inner">
+    <div>
+      <span class="hero-badge">🌏 English &amp; Mandarin · Lokal &amp; Native Teacher</span>
+      <h1><span class="more">More</span> <span class="than">than</span><br><span class="language">Language</span></h1>
+      <div class="lead">We Help Learners Learn, Grow &amp; Create.</div>
+      <p class="desc">Belajar bahasa Inggris &amp; Mandarin dengan cara yang seru dan personal — dari General English, Conversation Class, sampai persiapan HSK. Dibimbing guru lokal berpengalaman dan native speaker.</p>
+      <div class="cta">
+        <a href="#register" class="btn btn-white">✏️ Daftar Sekarang</a>
+        <a href="#programs" class="btn btn-outline">Lihat Program</a>
+      </div>
+      <div class="hero-stats">
+        <div class="s"><b>2</b><span>Bahasa: EN &amp; 中文</span></div>
+        <div class="s"><b>Local + Native</b><span>Pilihan Guru</span></div>
+        <div class="s"><b>Fleksibel</b><span>Jadwal Belajar</span></div>
+      </div>
+    </div>
+    <div class="hero-art">
+      <span class="ring"></span>
+      <span id="mascotSlot"></span>
+      <span class="float-chip c1">💬 Conversation</span>
+      <span class="float-chip c2">汉 HSK Ready</span>
+      <span class="float-chip c3">⭐ Fun Learning</span>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path fill="#ffffff" d="M0,40 C240,80 480,0 720,20 C960,40 1200,90 1440,40 L1440,70 L0,70 Z"></path></svg>
+</section>
+
+<!-- ===== VALUE STRIP ===== -->
+<section class="sec" style="padding-top:52px">
+  <div class="wrap">
+    <div class="vstrip">
+      <div class="vitem"><div class="em">🎯</div><h4>Kelas Kecil</h4><p>Semi-private, maks 4 orang — perhatian lebih.</p></div>
+      <div class="vitem"><div class="em">🗓️</div><h4>Jadwal Fleksibel</h4><p>Atur waktu belajar sesuai kesibukanmu.</p></div>
+      <div class="vitem"><div class="em">👩‍🏫</div><h4>Guru Terpilih</h4><p>Lokal berpengalaman &amp; native speaker.</p></div>
+      <div class="vitem"><div class="em">📈</div><h4>Progress Terpantau</h4><p>Laporan perkembangan rutin untuk orang tua.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROGRAMS ===== -->
+<section class="sec sec-alt" id="programs">
+  <div class="wrap">
+    <div class="eyebrow">Program Kami</div>
+    <h2 class="title">Pilih Bahasa, Pilih Gayamu Belajar</h2>
+    <p class="subtitle">Dua bahasa, banyak jalur. Dari percakapan santai sampai persiapan ujian resmi — semua bisa disesuaikan dengan level dan tujuanmu.</p>
+    <div class="prog-grid">
+
+      <!-- ENGLISH -->
+      <div class="pcard en">
+        <div class="phead">
+          <div class="flag">🇬🇧</div>
+          <h3>Bahasa Inggris</h3>
+          <p>General English &amp; Conversation Class</p>
+        </div>
+        <div class="pbody">
+          <div class="sub-prog">
+            <div class="top"><h4>General English</h4><span class="freq">8× / bulan</span></div>
+            <p>Program terstruktur: grammar, vocabulary, reading, writing, listening &amp; speaking sesuai level.</p>
+            <div class="price">Rp —<small> / bulan</small></div>
+            <span class="tag-note">Isi harga di sini</span>
+          </div>
+          <div class="sub-prog">
+            <div class="top"><h4>Conversation Class</h4><span class="freq">Fleksibel</span></div>
+            <p>Fokus percakapan. Guru set jadwal available, murid cek waktu yang cocok → submit → admin verifikasi.</p>
+            <div class="price">Rp —<small> / sesi</small></div>
+            <span class="tag-note">Isi harga di sini</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANDARIN -->
+      <div class="pcard zh">
+        <div class="phead">
+          <div class="flag">🇨🇳</div>
+          <h3>Bahasa Mandarin</h3>
+          <p>General Mandarin &amp; Persiapan HSK</p>
+        </div>
+        <div class="pbody">
+          <div class="sub-prog">
+            <div class="top"><h4>General Mandarin</h4><span class="freq">Reguler</span></div>
+            <p>Belajar Mandarin dari dasar: pinyin, kosakata, tata bahasa, dan percakapan sehari-hari.</p>
+            <div class="price">Rp —<small> / bulan</small></div>
+            <span class="tag-note">Isi harga di sini</span>
+          </div>
+          <div class="sub-prog">
+            <div class="top"><h4>Mandarin HSK</h4><span class="freq">HSK 1–6</span></div>
+            <p>Persiapan ujian HSK terarah — target level, latihan soal, dan strategi ujian.</p>
+            <div class="price">Rp —<small> / bulan</small></div>
+            <span class="tag-note">Isi harga di sini</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <p class="subtitle" style="margin:30px auto 0;font-size:13.5px">💡 Sudah jadi murid? Kamu bisa menambah program lain kapan saja — cukup minta admin untuk assign kamu ke program baru.</p>
+  </div>
+</section>
+
+<!-- ===== TEACHER PACKAGE ===== -->
+<section class="sec" id="package">
+  <div class="wrap">
+    <div class="eyebrow">Paket Guru</div>
+    <h2 class="title">Guru Lokal atau Native Speaker?</h2>
+    <p class="subtitle">Pembayaran per paket. Pilih pengalaman belajar yang paling pas untukmu — keduanya sama-sama seru!</p>
+    <div class="pkg-grid">
+      <div class="pkg local">
+        <span class="badge">GURU LOKAL</span>
+        <h3>Local Teacher</h3>
+        <div class="pk-price">Rp —<small> / paket</small></div>
+        <ul>
+          <li>Penjelasan bilingual (ID &amp; EN/中文) — mudah dipahami</li>
+          <li>Cocok untuk pemula &amp; pembentukan dasar</li>
+          <li>Pendampingan tugas &amp; materi sekolah</li>
+          <li>Harga lebih terjangkau</li>
+        </ul>
+      </div>
+      <div class="pkg native">
+        <span class="badge">GURU NATIVE</span>
+        <h3>Native Teacher</h3>
+        <div class="pk-price">Rp —<small> / paket</small></div>
+        <ul>
+          <li>Belajar langsung dari penutur asli</li>
+          <li>Aksen &amp; pronunciation autentik</li>
+          <li>Terbaik untuk Conversation &amp; fluency</li>
+          <li>Immersion penuh dalam bahasa target</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TEACHERS ===== -->
+<section class="sec sec-alt" id="teachers">
+  <div class="wrap">
+    <div class="eyebrow">Kenali Guru Kami</div>
+    <h2 class="title">Dibimbing Guru yang Tepat</h2>
+    <p class="subtitle">Setiap guru dipilih sesuai subject-nya. Klik kategori untuk melihat profil.</p>
+    <div class="tea-tabs">
+      <button class="tea-tab on" data-grp="en" onclick="showTeachers('en')">🇬🇧 English</button>
+      <button class="tea-tab" data-grp="zh" onclick="showTeachers('zh')">🇨🇳 Mandarin</button>
+      <button class="tea-tab" data-grp="native" onclick="showTeachers('native')">🌟 Native</button>
+    </div>
+    <div class="tgrid" id="teacherGrid"></div>
+    <p class="subtitle" style="margin:26px auto 0;font-size:13px">📸 Ganti nama, foto, dan bio guru asli di bagian <code>TEACHERS</code> pada file — foto bisa ditaruh di folder <code>assets/</code>.</p>
+  </div>
+</section>
+
+<!-- ===== HOW TO REGISTER (steps) ===== -->
+<section class="sec sec-sky" id="how">
+  <div class="wrap">
+    <div class="eyebrow">Cara Daftar</div>
+    <h2 class="title">Mulai dalam 4 Langkah Mudah</h2>
+    <p class="subtitle">Prosesnya cepat dan simpel — tinggal isi, kirim, dan mulai belajar.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h4>Isi Formulir</h4><p>Lengkapi data diri, pilih program &amp; paket guru yang kamu mau.</p></div>
+      <div class="step"><div class="n">2</div><h4>Baca &amp; Setujui SOP</h4><p>Download State of Declaration &amp; Media Content, lalu centang persetujuan.</p></div>
+      <div class="step"><div class="n">3</div><h4>Upload Bukti Bayar</h4><p>Bayar sesuai paket, lampirkan bukti transfer.</p></div>
+      <div class="step"><div class="n">4</div><h4>Verifikasi Admin</h4><p>Admin cek pendaftaranmu &amp; atur jadwal kelas pertamamu.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REGISTRATION ===== -->
+<section class="sec" id="register">
+  <div class="wrap">
+    <div class="eyebrow">Registrasi</div>
+    <h2 class="title">Daftar Kelas KWE Lingo</h2>
+    <p class="subtitle">Isi formulir di bawah ini. Setelah submit, ringkasan pendaftaranmu akan terkirim ke admin via WhatsApp — lampirkan bukti bayar di chat tersebut.</p>
+    <div class="reg-grid">
+
+      <!-- FORM -->
+      <form class="form-card" id="regForm" onsubmit="submitReg(event)">
+        <div class="field-row">
+          <div class="field">
+            <label>Nama Lengkap <span class="req">*</span></label>
+            <input id="rName" required placeholder="Nama calon murid">
+          </div>
+          <div class="field">
+            <label>No. Kontak (WhatsApp) <span class="req">*</span></label>
+            <input id="rPhone" required inputmode="tel" placeholder="08xxxxxxxxxx">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Pilih Program <span class="req">*</span></label>
+          <select id="rProgram" required>
+            <option value="">— Pilih program —</option>
+            <optgroup label="Bahasa Inggris">
+              <option>General English (8×/bulan)</option>
+              <option>Conversation Class (Fleksibel)</option>
+            </optgroup>
+            <optgroup label="Bahasa Mandarin">
+              <option>General Mandarin</option>
+              <option>Mandarin HSK</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Paket Guru <span class="req">*</span></label>
+          <select id="rPackage" required>
+            <option value="">— Pilih paket guru —</option>
+            <option>Local Teacher</option>
+            <option>Native Teacher</option>
+          </select>
+          <div class="hint">Pembayaran dihitung per paket.</div>
+        </div>
+
+        <div class="field">
+          <label>Preferensi Guru <span style="color:var(--muted);font-weight:400">(opsional)</span></label>
+          <input id="rTeacher" placeholder="Nama guru yang kamu inginkan (jika ada)">
+          <div class="hint">Kosongkan jika belum ada preferensi — admin akan bantu carikan yang cocok.</div>
+        </div>
+
+        <div class="field">
+          <label>Catatan / Level Saat Ini <span style="color:var(--muted);font-weight:400">(opsional)</span></label>
+          <textarea id="rNote" rows="2" placeholder="cth: pemula total, atau sudah pernah HSK 2, ingin fokus speaking, dll."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Bukti Pembayaran</label>
+          <label class="file-drop" for="rProof">
+            <div class="fi">📎</div>
+            <p>Klik untuk pilih file bukti transfer</p>
+            <div class="file-name" id="proofName">Belum ada file dipilih</div>
+          </label>
+          <input id="rProof" type="file" accept="image/*,.pdf" hidden onchange="showProof()">
+          <div class="hint">Jika terkirim via WhatsApp, lampirkan file ini langsung di chat setelah submit.</div>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="rAgree" required>
+          <label for="rAgree" style="margin:0;font-weight:500">Saya sudah membaca &amp; menyetujui <b>State of Declaration</b> dan <b>Media Content Agreement</b> KWE Lingo. <span class="req">*</span></label>
+        </div>
+
+        <button type="submit" class="btn btn-orange" style="width:100%;justify-content:center;margin-top:20px;padding:16px">📤 Kirim Pendaftaran via WhatsApp</button>
+      </form>
+
+      <!-- SIDE: SOP + info -->
+      <div>
+        <div class="side-card" style="margin-bottom:20px">
+          <h3>📄 Dokumen SOP</h3>
+          <p class="muted">Wajib dibaca sebelum mendaftar. Silakan download:</p>
+          <a class="sop-btn" href="assets/sop-state-of-declaration.pdf" download>
+            <span class="di">📘</span>
+            <span><b>State of Declaration</b><small>Pernyataan &amp; ketentuan murid</small></span>
+            <span class="dl">Download ↓</span>
+          </a>
+          <a class="sop-btn" href="assets/sop-media-content.pdf" download>
+            <span class="di">📗</span>
+            <span><b>Media Content Agreement</b><small>Persetujuan penggunaan konten &amp; foto</small></span>
+            <span class="dl">Download ↓</span>
+          </a>
+          <div class="hint" style="font-size:11px;color:var(--muted)">Taruh file PDF asli di folder <code>assets/</code> dengan nama di atas.</div>
+        </div>
+        <div class="side-card">
+          <h3>Butuh bantuan?</h3>
+          <p class="muted">Masih bingung memilih program atau paket? Tim kami siap bantu.</p>
+          <a href="#" id="waHelp" class="btn btn-sky" style="width:100%;justify-content:center">💬 Chat Admin</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="sec sec-alt" id="testi">
+  <div class="wrap">
+    <div class="eyebrow">Kata Mereka</div>
+    <h2 class="title">Cerita dari Murid &amp; Orang Tua</h2>
+    <p class="subtitle">Ganti dengan testimoni asli murid KWE Lingo.</p>
+    <div class="testi">
+      <div class="qcard"><div class="stars">★★★★★</div><p>"Anak saya jadi lebih pede ngomong Inggris. Gurunya sabar dan kelasnya kecil jadi benar-benar diperhatikan."</p><div class="who"><div class="av">R</div><div><b>Rina</b><small>Orang tua murid English</small></div></div></div>
+      <div class="qcard"><div class="stars">★★★★★</div><p>"Conversation class-nya seru, jadwalnya fleksibel banget buat yang kerja. Native teacher-nya bikin cepat lancar."</p><div class="who"><div class="av">D</div><div><b>Denny</b><small>Murid Conversation</small></div></div></div>
+      <div class="qcard"><div class="stars">★★★★★</div><p>"Persiapan HSK-nya terstruktur. Alhamdulillah lulus HSK 3 dengan nilai memuaskan. Terima kasih KWE Lingo!"</p><div class="who"><div class="av">M</div><div><b>Mei Ling</b><small>Murid Mandarin HSK</small></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="final">
+  <div class="wrap">
+    <h2>Siap Belajar Bahasa dengan Cara yang Seru?</h2>
+    <p>Bergabung dengan KWE Lingo dan temukan bahwa belajar bahasa itu <b>More than Language</b>.</p>
+    <a href="#register" class="btn btn-white" style="font-size:16px;padding:16px 34px">✏️ Daftar Sekarang</a>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:14px"><span class="logo" id="logoSlotFoot" style="width:44px;height:44px"></span><div><b style="font-family:var(--disp);font-size:19px">KWE Lingo</b><small style="letter-spacing:2px;text-transform:uppercase;font-size:9.5px">More than Language</small></div></div>
+        <p>Kursus bahasa Inggris &amp; Mandarin dengan guru lokal &amp; native. We Help Learners Learn, Grow &amp; Create.</p>
+      </div>
+      <div>
+        <h5>Program</h5>
+        <ul>
+          <li><a href="#programs">General English</a></li>
+          <li><a href="#programs">Conversation Class</a></li>
+          <li><a href="#programs">General Mandarin</a></li>
+          <li><a href="#programs">Mandarin HSK</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Tautan</h5>
+        <ul>
+          <li><a href="#register">Registrasi</a></li>
+          <li><a href="#teachers">Guru Kami</a></li>
+          <li><a href="portal.html">Login Portal</a></li>
+          <li><a href="#" id="waFoot">WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bar">© 2026 KWE Lingo. All rights reserved.</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ CONFIG — ganti sesuai data asli KWE Lingo ============ */
+const WA_NUMBER = "6287855888747"; // TODO: ganti dgn nomor WhatsApp admin KWE Lingo (format 62...)
+
+/* ============ Logo mark (SVG) — figur lompat dalam kotak ============ */
+function logoMark(px){
+  return `<svg viewBox="0 0 100 100" width="${px}" height="${px}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <rect width="100" height="100" rx="26" fill="#4CC3D7"/>
+    <g fill="#ffffff">
+      <circle cx="52" cy="26" r="12"/>
+      <path d="M52 39 C41 39 35 48 35 59 L35 74 C35 79 42 79 42 74 L42 61 C42 58 46 58 46 61 L46 86 C46 92 54 92 54 86 L54 66 C54 63 57 63 57 66 L57 86 C57 92 65 92 65 86 L65 59 C65 51 60 44 55 42 Z"/>
+      <path d="M41 49 L23 37 C18 34 14 41 19 44 L38 55 Z"/>
+      <path d="M60 44 L80 33 C85 30 89 37 84 40 L64 51 Z"/>
+    </g>
+  </svg>`;
+}
+document.getElementById('logoSlot').innerHTML = '<img src="assets/logo.png" alt="Kwelingo" style="height:48px;width:auto;display:block">';
+document.getElementById('logoSlotFoot').innerHTML = '<img src="assets/logo.png" alt="Kwelingo" style="height:44px;width:auto;display:block;background:#fff;border-radius:10px;padding:3px">';
+document.getElementById('mascotSlot').innerHTML =
+  `<svg class="mascot" viewBox="0 0 160 200" width="300" xmlns="http://www.w3.org/2000/svg">
+    <g fill="#ffffff">
+      <circle cx="82" cy="34" r="22"/>
+      <path d="M82 58 C60 58 50 76 50 98 L50 132 C50 142 63 142 63 132 L63 104 C63 99 70 99 70 104 L70 178 C70 190 85 190 85 178 L85 138 C85 133 90 133 90 138 L90 178 C90 190 105 190 105 178 L105 98 C105 90 101 82 95 78 Z"/>
+      <path d="M60 78 L26 52 C18 46 10 58 18 64 L52 90 Z"/>
+      <path d="M100 82 L138 56 C146 50 154 62 146 68 L108 96 Z"/>
+    </g>
+    <circle cx="75" cy="30" r="3.5" fill="#2BA9BF"/><circle cx="89" cy="30" r="3.5" fill="#2BA9BF"/>
+    <path d="M76 42 Q82 47 88 42" stroke="#FF8A3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </svg>`;
+
+/* ============ Nav (mobile) ============ */
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open');}
+function closeNav(){document.getElementById('navLinks').classList.remove('open');}
+
+/* ============ Teachers data — GANTI dengan guru asli ============ */
+const TEACHERS = {
+  en:[
+    {n:"Ms. Sarah",r:"General English",b:"Berpengalaman mengajar grammar & writing untuk semua level.",c:["Grammar","Writing","Kids"],o:false},
+    {n:"Mr. Adi",r:"English Conversation",b:"Spesialis speaking & fluency dengan metode fun & interaktif.",c:["Speaking","Fluency"],o:false},
+    {n:"Ms. Tina",r:"General English",b:"Fokus pada reading & listening, sabar mendampingi pemula.",c:["Reading","Listening"],o:false},
+    {n:"Mr. Rio",r:"Exam & Academic",b:"Persiapan tes & English akademik untuk pelajar.",c:["Academic","Exam Prep"],o:false},
+  ],
+  zh:[
+    {n:"老师 Lina",r:"General Mandarin",b:"Mengajar Mandarin dari pinyin sampai percakapan sehari-hari.",c:["Pinyin","基础"],o:true},
+    {n:"老师 Wang",r:"Mandarin HSK",b:"Spesialis persiapan HSK 1–6 dengan strategi ujian terarah.",c:["HSK","语法"],o:true},
+    {n:"老师 Mei",r:"Mandarin for Kids",b:"Mandarin menyenangkan untuk anak lewat lagu & cerita.",c:["Kids","口语"],o:true},
+  ],
+  native:[
+    {n:"Mr. James",r:"Native English",b:"Native speaker — aksen & pronunciation autentik untuk conversation.",c:["Native","Accent"],o:false},
+    {n:"老师 Chen",r:"Native Mandarin",b:"Penutur asli Mandarin — immersion penuh & budaya Tiongkok.",c:["Native","文化"],o:true},
+  ]
+};
+function initials(name){const p=name.replace(/老师|Ms\.|Mr\./g,'').trim().split(/\s+/);return (p[0]||'?')[0]+(p[1]?p[1][0]:'');}
+function showTeachers(grp){
+  document.querySelectorAll('.tea-tab').forEach(t=>t.classList.toggle('on',t.dataset.grp===grp));
+  const grid=document.getElementById('teacherGrid');
+  grid.innerHTML=(TEACHERS[grp]||[]).map(t=>`
+    <div class="tcard ${t.o?'o':''}">
+      <div class="ava">${initials(t.n).toUpperCase()}</div>
+      <h4>${t.n}</h4>
+      <div class="role">${t.r}</div>
+      <p>${t.b}</p>
+      <div class="chips">${t.c.map(c=>`<span>${c}</span>`).join('')}</div>
+    </div>`).join('');
+}
+showTeachers('en');
+
+/* ============ Registration ============ */
+function showProof(){
+  const f=document.getElementById('rProof').files[0];
+  document.getElementById('proofName').textContent = f ? "✓ "+f.name : "Belum ada file dipilih";
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+function submitReg(e){
+  e.preventDefault();
+  const name=document.getElementById('rName').value.trim();
+  const phone=document.getElementById('rPhone').value.trim();
+  const prog=document.getElementById('rProgram').value;
+  const pkg=document.getElementById('rPackage').value;
+  const teacher=document.getElementById('rTeacher').value.trim()||"(tidak ada preferensi)";
+  const note=document.getElementById('rNote').value.trim()||"-";
+  const agree=document.getElementById('rAgree').checked;
+  if(!name||!phone||!prog||!pkg||!agree){toast("Mohon lengkapi semua kolom wajib & setujui SOP.");return;}
+  const msg=
+`Halo KWE Lingo! 👋 Saya ingin mendaftar kelas.
+
+• Nama: ${name}
+• No. Kontak: ${phone}
+• Program: ${prog}
+• Paket Guru: ${pkg}
+• Preferensi Guru: ${teacher}
+• Catatan/Level: ${note}
+
+Saya sudah membaca & menyetujui State of Declaration dan Media Content Agreement. Bukti pembayaran akan saya lampirkan di chat ini. 🙏`;
+  const url="https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(msg);
+  window.open(url,"_blank");
+  toast("Membuka WhatsApp… jangan lupa lampirkan bukti bayar 📎");
+}
+
+/* WA links */
+const waBase="https://wa.me/"+WA_NUMBER;
+document.getElementById('waHelp').href=waBase+"?text="+encodeURIComponent("Halo KWE Lingo, saya mau tanya tentang program & paket guru.");
+document.getElementById('waFoot').href=waBase;
+
+/* smooth close nav on outside click */
+document.addEventListener('click',e=>{
+  const nav=document.getElementById('navLinks'), ham=document.querySelector('.hamburger');
+  if(nav.classList.contains('open') && !nav.contains(e.target) && e.target!==ham) closeNav();
+});
+</script>
+</body>
+</html>

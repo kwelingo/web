@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilih Portal — KWE Lingo</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  body{background:linear-gradient(180deg,#4CC3D7 0%,#2BA9BF 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .pick{background:#fff;border-radius:24px;box-shadow:0 24px 60px rgba(20,80,95,.25);max-width:520px;width:100%;padding:32px 30px;text-align:center}
+  .pick img.logo{height:70px;margin:0 auto 10px;display:block}
+  .pick h1{font-size:22px;color:var(--navy);font-weight:800;margin-bottom:2px}
+  .pick p.sub{color:var(--muted);font-size:13.5px;margin-bottom:22px}
+  .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:460px){.pgrid{grid-template-columns:1fr}}
+  .pbtn{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);border-radius:16px;padding:16px;transition:.15s;background:#fff;cursor:pointer}
+  .pbtn:hover{border-color:var(--sky);box-shadow:var(--shadow);transform:translateY(-2px)}
+  .pbtn .em{width:44px;height:44px;flex:0 0 44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--sky-soft)}
+  .pbtn.o .em{background:#fff2e6}
+  .pbtn b{display:block;color:var(--navy);font-size:15px}
+  .pbtn small{color:var(--muted);font-size:11.5px}
+  .pick .back{display:inline-block;margin-top:20px;color:var(--muted);font-size:13px}
+  .pick .back:hover{color:var(--navy)}
+</style>
+</head>
+<body>
+  <div class="pick">
+    <img src="assets/logo.png" class="logo" alt="KWE Lingo">
+    <h1>Pilih Portal</h1>
+    <p class="sub">KWE Lingo — More than Language</p>
+    <div class="pgrid">
+      <a class="pbtn" href="master-admin.html"><span class="em">🛡️</span><span><b>Master Admin</b><small>Kelola murid, tentor & laporan</small></span></a>
+      <a class="pbtn" href="admin.html"><span class="em">🗂️</span><span><b>Admin</b><small>Kelas harian & jadwal</small></span></a>
+      <a class="pbtn o" href="teacher.html"><span class="em">📘</span><span><b>Tentor</b><small>Jadwal, laporan & fee</small></span></a>
+      <a class="pbtn o" href="parent.html"><span class="em">👨‍👩‍👧</span><span><b>Orang Tua</b><small>Laporan, absensi & pembayaran</small></span></a>
+    </div>
+    <a class="back" href="index.html">← Kembali ke halaman utama</a>
+  </div>
+</body>
+</html>
