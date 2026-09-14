@@ -37,11 +37,11 @@ function logoBlock(name, sub){
 
 /* ---- Formatting -------------------------------------------- */
 const genPin  = () => String(Math.floor(1000+Math.random()*9000));
-// username = first name (title stripped) + "lsc"  e.g. "Charlene Tannata"→"charlenelsc", "Ms. Nita"→"nitalsc"
+// username = first name (title stripped) + "kwe"  e.g. "Charlene Tannata"→"charlenekwe", "Ms. Nita"→"nitakwe"
 const genUsername = (name) => {
   let n = String(name||'').trim().replace(/^(ms|mr|mrs|miss|mister)\.?\s+/i,'');
   const first = (n.split(/\s+/)[0]||'').toLowerCase().replace(/[^a-z0-9]/g,'');
-  return first ? first+'lsc' : '';
+  return first ? first+'kwe' : '';
 };
 const fmtRp   = n => 'Rp ' + (Number(n)||0).toLocaleString('id-ID');
 const fmtNum  = n => (Number(n)||0).toLocaleString('id-ID');

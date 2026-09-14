@@ -373,10 +373,10 @@
       </div>
       <div class="field"><label>Username Login <span class="req">*</span></label>
         <div style="display:flex;gap:10px;align-items:center">
-          <input id="sUser" placeholder="cth: charlenelsc" style="flex:1">
+          <input id="sUser" placeholder="cth: ethankwe" style="flex:1">
           <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('sUser').value=genUsername(document.getElementById('sNama').value)">🔄 Generate</button>
         </div>
-        <div class="help">Dari nama depan + "lsc". Orang tua login pakai username ini + PIN — nama asli murid tidak ditampilkan.</div></div>
+        <div class="help">Dari nama depan + "kwe". Orang tua login pakai username ini + PIN — nama asli murid tidak ditampilkan.</div></div>
       <div class="field"><label>School (Nama Sekolah)</label><input id="sSchool" placeholder="cth: SMP Petra 1"></div>
       <div class="field"><label>Address (Alamat)</label><input id="sAddress" placeholder="Alamat rumah"></div>
       <div class="field-row">
@@ -420,10 +420,10 @@
       </div>
       <div class="field"><label>Username Login <span class="req">*</span></label>
         <div style="display:flex;gap:10px;align-items:center">
-          <input id="tUser" placeholder="cth: nitalsc" style="flex:1">
+          <input id="tUser" placeholder="cth: nitakwe" style="flex:1">
           <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('tUser').value=genUsername(document.getElementById('tNama').value)">🔄 Generate</button>
         </div>
-        <div class="help">Dari nama depan + "lsc". Tentor login pakai username ini + PIN.</div></div>
+        <div class="help">Dari nama depan + "kwe". Tentor login pakai username ini + PIN.</div></div>
       <div class="field-row">
         <div class="field"><label>WhatsApp</label><input id="tWa" placeholder="08xxxx"></div>
         <div class="field"><label>Date of Birth</label><input type="date" id="tDob"></div>
@@ -1032,7 +1032,7 @@ async function generateAllUsernames(){
   const btn=document.getElementById('genUserBtn'); if(btn)btn.disabled=true;
   try{
     const used=new Set([...STUDENTS,...TUTORS].map(x=>String(x.username||'').toLowerCase().trim()).filter(Boolean));
-    const uniq=(base)=>{ if(!base) return ''; let u=base,i=2; while(used.has(u)){ u=base.replace(/lsc$/,'')+i+'lsc'; i++; } used.add(u); return u; };
+    const uniq=(base)=>{ if(!base) return ''; let u=base,i=2; while(used.has(u)){ u=base.replace(/kwe$/,'')+i+'kwe'; i++; } used.add(u); return u; };
     let made=0, skipped=0;
     for(const s of STUDENTS){
       if(String(s.username||'').trim()){ skipped++; continue; }
