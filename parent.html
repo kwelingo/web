@@ -88,6 +88,7 @@
       <!-- DASHBOARD -->
       <section class="view" id="view-dashboard">
         <div class="page-head"><div><h1 id="hi">Halo 👋</h1><div class="sub" id="today">—</div></div></div>
+        <div id="notifBox" style="display:none"></div>
         <div class="grid grid-4" style="margin-bottom:22px">
           <div class="stat tint-blue"><div class="lbl"><span class="icon">📅</span> Kelas Bulan Ini</div><div class="val" id="mClasses">0</div><div class="hint" id="mLabel">—</div></div>
           <div class="stat tint-green"><div class="lbl"><span class="icon">✅</span> Kehadiran</div><div class="val" id="mAttend">0</div><div class="hint">sesi dihadiri bulan ini</div></div>
@@ -342,6 +343,16 @@ const attended = c => !!(c.stu_in || (c.date && c.date <= todayStr()));
 
 function renderDashboard(){
   const m=_m;
+  // Notifikasi tagihan (dari PAYS yang sudah dimuat)
+  try{
+    const items=[...PAYS].filter(p=>!isPaid(p.status)).sort((a,b)=>String(a.month||'').localeCompare(String(b.month||''))).map(p=>{
+      const per=monthName(p.month); const amt=p.grand_total||p.next_deposit||p.deposit_total;
+      const st=String(p.status||'').toUpperCase().trim();
+      if(st==='MENUNGGU VERIFIKASI') return {level:'info',icon:'🕒',title:'Pembayaran '+per+' menunggu verifikasi',sub:'Bukti sudah dikirim — menunggu admin memverifikasi.'};
+      return {level:'warn',icon:'📌',title:'Tagihan '+per+' belum dibayar',sub:(amt?('Jumlah: '+rupiah(amt)+' · '):'')+'Silakan bayar lalu upload bukti di menu Pembayaran.'};
+    });
+    renderNotif(document.getElementById('notifBox'), items);
+  }catch(e){}
   const mon = ALL.filter(c=>ym(c.date)===m);
   document.getElementById('mClasses').textContent = mon.length;
   document.getElementById('mAttend').textContent = mon.filter(attended).length;

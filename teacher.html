@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tentor — Kwelingo</title>
+<title>Guru — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#3E8A9E">
@@ -41,7 +41,7 @@
 <div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#EAF6FA,#FFF9F0);display:flex;align-items:center;justify-content:center;padding:20px">
   <div class="card card-pad" style="max-width:380px;width:100%;text-align:center">
     <img src="assets/logo.png" style="width:84px;height:84px;border-radius:18px;padding:6px;background:#fff;box-shadow:var(--shadow);margin:0 auto 14px">
-    <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Login Tentor</h2>
+    <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Login Guru</h2>
     <p class="text-muted" style="font-size:13px;margin-bottom:18px">Masuk dengan nama & PIN 4 digit dari admin</p>
     <div class="field" style="text-align:left"><label>Username</label>
       <input id="lgName" autocomplete="off" placeholder="cth: nitakwe" onkeydown="if(event.key==='Enter')doLogin()"></div>
@@ -77,7 +77,7 @@
     </nav>
     <div class="sidebar-foot">
       <div class="avatar" id="tavatar">Y</div>
-      <div class="who" id="twho">Tentor<small>Teacher</small></div>
+      <div class="who" id="twho">Guru<small>Teacher</small></div>
     </div>
   </aside>
   <div class="backdrop" onclick="toggleSidebar()"></div>
@@ -86,20 +86,22 @@
     <div class="topbar">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
       <div class="spacer"></div>
-      <div class="me"><div class="who" id="twho2">Tentor<small>Teacher</small></div><div class="avatar" id="tavatar2">Y</div></div>
+      <div class="me"><div class="who" id="twho2">Guru<small>Teacher</small></div><div class="avatar" id="tavatar2">Y</div></div>
     </div>
 
     <div class="content">
       <!-- DASHBOARD -->
       <section class="view" id="view-dashboard">
         <div class="page-head">
-          <div><h1 id="hi">Halo, Tentor 👋</h1><div class="sub" id="today">—</div></div>
+          <div><h1 id="hi">Halo, Guru 👋</h1><div class="sub" id="today">—</div></div>
         </div>
+
+        <div id="notifBox" style="display:none"></div>
 
         <div class="grid grid-4" style="margin-bottom:22px">
           <div class="stat tint-blue"><div class="lbl"><span class="icon">📅</span> Kelas Hari Ini</div><div class="val" id="cToday">0</div><div class="hint">jadwal tetap murid</div></div>
           <div class="stat tint-green"><div class="lbl"><span class="icon">✅</span> Selesai Bulan Ini</div><div class="val" id="cMonth">0</div><div class="hint" id="mLabel">—</div></div>
-          <div class="stat tint-amber"><div class="lbl"><span class="icon">💰</span> Total Fee Bulan Ini</div><div class="val" id="feeMonth">Rp 0</div><div class="hint">dari fee tentor tiap murid</div></div>
+          <div class="stat tint-amber"><div class="lbl"><span class="icon">💰</span> Total Fee Bulan Ini</div><div class="val" id="feeMonth">Rp 0</div><div class="hint">dari fee guru tiap murid</div></div>
           <div class="stat tint-purple"><div class="lbl"><span class="icon">🧑‍🎓</span> Murid Saya</div><div class="val" id="myStudents">0</div></div>
         </div>
 
@@ -109,7 +111,7 @@
             <thead><tr><th>Murid</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik & Catatan</th><th>Materi PDF</th><th>Absensi</th><th>Action</th></tr></thead>
             <tbody id="todayBody"></tbody>
           </table></div>
-          <div class="note-band mt-16">📝 Tentor mengisi <b>Topik/Materi</b>, <b>Catatan</b>, dan melampirkan <b>materi</b> — bisa upload <b>PDF/JPG</b> atau tempel <b>link</b> (YouTube / Google Drive). Semua bisa diakses orang tua. Waktu & dokumentasi diisi admin.</div>
+          <div class="note-band mt-16">📝 Guru mengisi <b>Topik/Materi</b>, <b>Catatan</b>, dan melampirkan <b>materi</b> — bisa upload <b>PDF/JPG</b> atau tempel <b>link</b> (YouTube / Google Drive). Semua bisa diakses orang tua. Waktu & dokumentasi diisi admin.</div>
         </div>
       </section>
 
@@ -213,8 +215,8 @@
           <div style="display:flex;align-items:center;gap:12px">
             <img src="assets/logo.png" alt="Kwelingo">
             <div>
-              <div class="pt">Rekap Fee Tentor — Kwelingo</div>
-              <div class="pl">Tentor: <b id="phTName">—</b></div>
+              <div class="pt">Rekap Fee Guru — Kwelingo</div>
+              <div class="pl">Guru: <b id="phTName">—</b></div>
               <div class="pl">Periode: <b id="phTPeriod">—</b></div>
             </div>
           </div>
@@ -389,7 +391,7 @@
 
 <script src="assets/app.js"></script>
 <script>
-document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Portal Tentor');
+document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Portal Guru');
 document.getElementById('today').textContent='📅 '+longToday();
 document.getElementById('feeMonthPick').value=todayStr().slice(0,7);
 const monLabel=new Date().toLocaleDateString('id-ID',{month:'long',year:'numeric'});
@@ -431,7 +433,7 @@ async function postChat(){
 
 function sName(id){return (STUDENTS.find(s=>s.id===id)||{}).nama||'-';}
 function sFee(id){return Number((STUDENTS.find(s=>s.id===id)||{}).fee_tentor)||0;}
-// Fee tentor proporsional durasi: (fee per durasi normal) / normal × durasi kelas
+// Fee guru proporsional durasi: (fee per durasi normal) / normal × durasi kelas
 function sTutorFee(c){
   const s=STUDENTS.find(x=>x.id===c.student_id)||{};
   const norm=Number(s.meeting_minutes)||90, feePer=Number(s.fee_tentor)||0, dur=Number(c.duration)||norm;
@@ -442,7 +444,11 @@ function setMe(t){
   ['tavatar','tavatar2'].forEach(i=>document.getElementById(i).textContent=(t.nama||'T')[0]);
   ['twho','twho2'].forEach(i=>document.getElementById(i).innerHTML=`${t.nama}<small>${t.subject||'Teacher'}</small>`);
   document.getElementById('hi').textContent=`Hello, ${t.nama} 👋`;
-  renderToday(); renderStats(); updateReqDot(); updateBoardDot();
+  renderToday(); renderStats(); updateReqDot(); updateBoardDot(); renderTeacherNotifs();
+}
+async function renderTeacherNotifs(){
+  if(!ME) return;
+  try{ renderNotif(document.getElementById('notifBox'), await teacherPayNotifs(ME.id)); }catch(e){}
 }
 
 /* ===== Papan Guru (bulletin board) ===== */

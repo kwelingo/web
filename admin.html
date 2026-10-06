@@ -74,14 +74,14 @@
           <div class="table-wrap">
             <table class="tbl">
               <thead><tr>
-                <th>No.</th><th>Student's Name</th><th>Tentor's Name</th><th>Start</th><th>End</th>
+                <th>No.</th><th>Student's Name</th><th>Guru's Name</th><th>Start</th><th>End</th>
                 <th>Duration</th><th>Type</th><th>Status</th><th>Topic/Material</th><th>Note</th><th>Doc</th><th>Action</th>
               </tr></thead>
               <tbody id="todayBody"></tbody>
             </table>
           </div>
         </div>
-        <div class="note-band mt-16">ℹ️ Admin mengisi <b>waktu mulai/berakhir</b> & <b>dokumentasi foto</b>. Topik, catatan & materi PDF diisi tentor. Kelola data murid/tentor ada di <b>Master Admin</b>.</div>
+        <div class="note-band mt-16">ℹ️ Admin mengisi <b>waktu mulai/berakhir</b> & <b>dokumentasi foto</b>. Topik, catatan & materi PDF diisi guru. Kelola data murid/guru ada di <b>Master Admin</b>.</div>
       </section>
 
       <!-- ============ WEEKLY CALENDAR ============ -->
@@ -108,10 +108,10 @@
         <div class="page-head"><div><h1>Permintaan Kelas</h1><div class="sub">Pengajuan kelas baru &amp; reschedule dari murid / orang tua</div></div>
           <button class="btn btn-ghost btn-sm" onclick="renderRequests()">↻ Refresh</button></div>
         <div class="card"><div class="table-wrap"><table class="tbl">
-          <thead><tr><th>Status</th><th>Murid</th><th>Tentor</th><th>Jadwal Diminta</th><th>Type</th><th>Catatan</th><th>Action</th></tr></thead>
+          <thead><tr><th>Status</th><th>Murid</th><th>Guru</th><th>Jadwal Diminta</th><th>Type</th><th>Catatan</th><th>Action</th></tr></thead>
           <tbody id="reqBody"></tbody>
         </table></div></div>
-        <div class="note-band mt-16">✅ <b>Terima</b> memasukkan kelas ke jadwal. Untuk mengubah tentor/jam sebelum menerima, buka <b>Edit</b> lalu simpan.</div>
+        <div class="note-band mt-16">✅ <b>Terima</b> memasukkan kelas ke jadwal. Untuk mengubah guru/jam sebelum menerima, buka <b>Edit</b> lalu simpan.</div>
       </section>
 
       <!-- ============ KEHADIRAN & SERTIFIKAT ============ -->
@@ -124,7 +124,7 @@
         <div id="certAction"></div>
         <div class="card mt-16"><div class="card-pad" style="padding-bottom:0"><div class="card-title">📅 Riwayat Sesi</div></div>
           <div class="table-wrap"><table class="tbl">
-            <thead><tr><th>Tanggal</th><th>Tentor</th><th>Time</th><th>Type</th><th>Status</th><th>Kehadiran</th></tr></thead>
+            <thead><tr><th>Tanggal</th><th>Guru</th><th>Time</th><th>Type</th><th>Status</th><th>Kehadiran</th></tr></thead>
             <tbody id="certBody"></tbody>
           </table></div>
         </div>
@@ -163,7 +163,7 @@
       </div>
       <div class="field-row">
         <div class="field"><label>Student's Name <span class="req">*</span></label><select id="cStudent"></select></div>
-        <div class="field"><label>Tentor's Name <span class="req">*</span></label><select id="cTutor"></select></div>
+        <div class="field"><label>Guru's Name <span class="req">*</span></label><select id="cTutor"></select></div>
       </div>
       <div class="field-row">
         <div class="field"><label>Start Time <span class="req">*</span></label><input type="time" id="cStart"></div>
@@ -177,7 +177,7 @@
             <label><input type="radio" name="cType" value="online"> Online</label>
           </div></div>
       </div>
-      <div class="field"><label>Topic / Material <span class="help" style="display:inline">(oleh tentor · bisa Enter untuk baris baru)</span></label>
+      <div class="field"><label>Topic / Material <span class="help" style="display:inline">(oleh guru · bisa Enter untuk baris baru)</span></label>
         <textarea id="cTopic" placeholder="Will be filled after class"></textarea></div>
       <div class="field"><label>Note</label><textarea id="cNote" placeholder="Optional note"></textarea></div>
       <div class="field"><label>Documentation (Upload Photo)</label>
@@ -235,7 +235,7 @@ async function postChat(){
 }
 
 async function boot(){
-  try{ TUTORS=await API.getTutors(); }catch(e){ TUTORS=[]; toast('Gagal memuat tentor','err'); }
+  try{ TUTORS=await API.getTutors(); }catch(e){ TUTORS=[]; toast('Gagal memuat guru','err'); }
   try{ STUDENTS=await API.getStudents(); }catch(e){ STUDENTS=[]; toast('Gagal memuat murid','err'); }
   renderToday(); renderBirthday(); updateReqDot();
   // auto-refresh status tiap 60 detik (jeda saat modal terbuka / tab tidak aktif)
@@ -250,7 +250,7 @@ function renderBirthday(){
   const now=new Date(), M=now.getMonth()+1, D=now.getDate();
   const isToday=p=>{ if(!p.dob) return false; const [,m,d]=String(p.dob).split('-').map(Number); return m===M&&d===D; };
   const names=[...STUDENTS.filter(isToday).map(s=>`${s.nama} <span class="muted">(Murid)</span>`),
-               ...TUTORS.filter(isToday).map(t=>`${t.nama} <span class="muted">(Tentor)</span>`)];
+               ...TUTORS.filter(isToday).map(t=>`${t.nama} <span class="muted">(Guru)</span>`)];
   if(names.length){ el.innerHTML='🎂 <b>Ulang tahun hari ini:</b> '+names.join(' · '); el.style.display='block'; }
   else el.style.display='none';
 }
@@ -399,7 +399,7 @@ async function saveClass(){
     note:document.getElementById('cNote').value,
   };
   if(!p.student_id){toast('Pilih murid dulu','err');return;}
-  if(!p.tutor_id){toast('Pilih tentor dulu','err');return;}
+  if(!p.tutor_id){toast('Pilih guru dulu','err');return;}
   const df=document.getElementById('cDoc').files[0];
   if(df){ try{ toast('Memproses foto…'); p.doc_url=await resizeImageToDataURL(df); }catch(e){ toast('Foto gagal diproses','err'); } }
   else if(document.getElementById('cDocClear').checked){ p.doc_url=''; }

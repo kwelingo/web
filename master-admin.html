@@ -74,11 +74,11 @@
       <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
       <a data-view="all-classes"><span class="ic">📅</span> Semua Kelas</a>
       <a data-view="students"><span class="ic">🧑‍🎓</span> Murid</a>
-      <a data-view="tutors"><span class="ic">👩‍🏫</span> Tentor</a>
+      <a data-view="tutors"><span class="ic">👩‍🏫</span> Guru</a>
       <a data-view="laporan"><span class="ic">📊</span> Laporan</a>
       <a data-view="data"><span class="ic">🗄️</span> Data Explorer</a>
       <a data-view="payment"><span class="ic">💳</span> Payment Student</a>
-      <a data-view="tpay"><span class="ic">🧑‍🏫</span> Payment Tentor</a>
+      <a data-view="tpay"><span class="ic">🧑‍🏫</span> Payment Guru</a>
       <a data-view="resources"><span class="ic">📚</span> Teaching Resources</a>
       <a data-view="content"><span class="ic">🎓</span> Konten Siswa</a>
       <a data-view="chat"><span class="ic">💬</span> Diskusi Guru</a>
@@ -87,7 +87,7 @@
       <div class="divider"></div>
       <div class="sidebar-role" style="margin-top:0">Buka Portal Lain</div>
       <a href="admin.html"><span class="ic">🗂️</span> Portal Admin</a>
-      <a href="teacher.html"><span class="ic">📘</span> Portal Tentor</a>
+      <a href="teacher.html"><span class="ic">📘</span> Portal Guru</a>
       <a href="parent.html"><span class="ic">👨‍👩‍👧</span> Portal Orang Tua</a>
       <div class="divider"></div>
       <a href="index.html"><span class="ic">🚪</span> Keluar</a>
@@ -102,7 +102,7 @@
   <div class="main">
     <div class="topbar">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <div class="search"><span class="mag">🔎</span><input id="globalSearch" placeholder="Cari murid atau tentor…"></div>
+      <div class="search"><span class="mag">🔎</span><input id="globalSearch" placeholder="Cari murid atau guru…"></div>
       <div class="spacer"></div>
       <div class="me"><div class="who">Master Admin<small>Super Administrator</small></div><div class="avatar">M</div></div>
     </div>
@@ -118,7 +118,7 @@
         <div id="bdayBanner" style="display:none;background:linear-gradient(120deg,#fff0f6,#eef7fd);border:1.5px solid #ffc9e0;border-radius:14px;padding:14px 18px;margin-bottom:18px;color:var(--navy);font-size:14px"></div>
         <div class="grid grid-4" style="margin-bottom:22px">
           <div class="stat tint-purple"><div class="lbl"><span class="icon">🧑‍🎓</span> Total Murid</div><div class="val" id="mStudents">0</div></div>
-          <div class="stat tint-blue"><div class="lbl"><span class="icon">👩‍🏫</span> Total Tentor</div><div class="val" id="mTutors">0</div></div>
+          <div class="stat tint-blue"><div class="lbl"><span class="icon">👩‍🏫</span> Total Guru</div><div class="val" id="mTutors">0</div></div>
           <div class="stat tint-green"><div class="lbl"><span class="icon">📅</span> Kelas Bulan Ini</div><div class="val" id="mClasses">0</div></div>
           <div class="stat tint-amber"><div class="lbl"><span class="icon">💰</span> Estimasi Fee Bln Ini</div><div class="val" id="mRevenue">Rp 0</div></div>
         </div>
@@ -131,7 +131,7 @@
 
       <!-- COMBINED SEARCH RESULTS -->
       <section class="view hide" id="view-search">
-        <div class="page-head"><div><h1>Hasil Pencarian</h1><div class="sub">Murid &amp; tentor — klik untuk membuka</div></div></div>
+        <div class="page-head"><div><h1>Hasil Pencarian</h1><div class="sub">Murid &amp; guru — klik untuk membuka</div></div></div>
         <div class="card card-pad"><div id="searchHits" class="grid" style="gap:10px"></div></div>
       </section>
 
@@ -168,7 +168,7 @@
         <div class="card">
           <div class="card-pad" style="padding-bottom:0"><div class="card-title" id="rHist">📅 Riwayat Kelas</div></div>
           <div class="table-wrap"><table class="tbl">
-            <thead><tr><th>No.</th><th>Tanggal</th><th>Tutor</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik / Material</th><th>Note</th><th>Doc</th></tr></thead>
+            <thead><tr><th>No.</th><th>Tanggal</th><th>Guru</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik / Material</th><th>Note</th><th>Doc</th></tr></thead>
             <tbody id="rBody"></tbody>
           </table></div>
         </div>
@@ -182,7 +182,7 @@
         <div class="page-head"><div><h1>Semua Kelas</h1><div class="sub">Seluruh sesi kelas</div></div>
           <input type="month" id="acMonth" class="btn btn-outline" style="font-weight:600"></div>
         <div class="card"><div class="table-wrap"><table class="tbl">
-          <thead><tr><th>Tanggal</th><th>Murid</th><th>Tentor</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik</th></tr></thead>
+          <thead><tr><th>Tanggal</th><th>Murid</th><th>Guru</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik</th></tr></thead>
           <tbody id="acBody"></tbody>
         </table></div></div>
       </section>
@@ -194,15 +194,15 @@
             <button class="btn btn-ghost btn-sm" id="genUserBtn" onclick="generateAllUsernames()">🪄 Generate semua username</button>
             <button class="btn btn-primary" onclick="openStudent()">＋ Tambah Murid</button></div></div>
         <div class="card"><div class="table-wrap"><table class="tbl">
-          <thead><tr><th>Nama</th><th>Username</th><th>Sekolah</th><th>Grade</th><th>Orang Tua</th><th>Jadwal</th><th>Fee Ortu</th><th>Fee Tentor</th><th>PIN Ortu</th><th>Action</th></tr></thead>
+          <thead><tr><th>Nama</th><th>Username</th><th>Sekolah</th><th>Grade</th><th>Orang Tua</th><th>Jadwal</th><th>Fee Ortu</th><th>Fee Guru</th><th>PIN Ortu</th><th>Action</th></tr></thead>
           <tbody id="msBody"></tbody>
         </table></div></div>
       </section>
 
       <!-- TUTORS -->
       <section class="view hide" id="view-tutors">
-        <div class="page-head"><div><h1>Tentor</h1><div class="sub">Kelola data tentor & PIN login</div></div>
-          <button class="btn btn-primary" onclick="openTutor()">＋ Tambah Tentor</button></div>
+        <div class="page-head"><div><h1>Guru</h1><div class="sub">Kelola data guru & PIN login</div></div>
+          <button class="btn btn-primary" onclick="openTutor()">＋ Tambah Guru</button></div>
         <div class="card"><div class="table-wrap"><table class="tbl">
           <thead><tr><th>Nama</th><th>Username</th><th>Pelajaran</th><th>Jenjang</th><th>WA</th><th>PIN Login</th><th>Action</th></tr></thead>
           <tbody id="mtBody"></tbody>
@@ -266,12 +266,12 @@
         <div class="card"><div class="table-wrap"><table class="tbl" id="dataTable"><thead id="dataHead"></thead><tbody id="dataBody"></tbody></table></div></div>
       </section>
 
-      <!-- PAYMENT TENTOR (komisi/bonus) -->
+      <!-- PAYMENT GURU (komisi/bonus) -->
       <section class="view hide" id="view-tpay">
-        <div class="page-head"><div><h1>Payment Tentor</h1><div class="sub">Isi komisi/bonus bulanan tentor — tampil di Portal Tentor sebagai tambahan fee</div></div></div>
+        <div class="page-head"><div><h1>Payment Guru</h1><div class="sub">Isi komisi/bonus bulanan guru — tampil di Portal Guru sebagai tambahan fee</div></div></div>
         <div class="card card-pad" style="margin-bottom:16px">
           <div class="field-row">
-            <div class="field"><label>Pilih Tentor</label><select id="tpTutor" onchange="loadTentorPay()"></select></div>
+            <div class="field"><label>Pilih Guru</label><select id="tpTutor" onchange="loadTentorPay()"></select></div>
             <div class="field"><label>Bulan</label><input type="month" id="tpMonth" onchange="loadTentorPay()"></div>
           </div>
         </div>
@@ -280,10 +280,10 @@
 
       <!-- TEACHING RESOURCES (owner upload) -->
       <section class="view hide" id="view-resources">
-        <div class="page-head"><div><h1>Teaching Resources</h1><div class="sub">Upload modul/panduan PDF — tentor hanya bisa melihat (tidak bisa unduh)</div></div></div>
+        <div class="page-head"><div><h1>Teaching Resources</h1><div class="sub">Upload modul/panduan PDF — guru hanya bisa melihat (tidak bisa unduh)</div></div></div>
         <div class="card card-pad" style="margin-bottom:16px;background:#fbfdff">
           <div class="card-title">📘 Panduan Guru (SOP)</div>
-          <div class="field" style="margin-bottom:8px"><label>Link SOP Kwelingo <span class="help" style="display:inline">(Google Drive — tampil view-only di Portal Tentor)</span></label>
+          <div class="field" style="margin-bottom:8px"><label>Link SOP Kwelingo <span class="help" style="display:inline">(Google Drive — tampil view-only di Portal Guru)</span></label>
             <input id="sopUrl" placeholder="https://drive.google.com/file/d/.../view"></div>
           <div style="text-align:right"><button class="btn btn-primary btn-sm" onclick="saveSop()">💾 Simpan SOP</button></div>
         </div>
@@ -451,9 +451,9 @@
       </div>
       <div class="field-row">
         <div class="field"><label>Fee / Meeting (Orang Tua)</label><input type="number" id="sFee" value="150000"></div>
-        <div class="field"><label>Fee Tentor / Meeting</label><input type="number" id="sFeeTutor" value="90000"><div class="help">Fee tentor untuk 1 pertemuan (sesuai durasi normal di bawah)</div></div>
+        <div class="field"><label>Fee Guru / Meeting</label><input type="number" id="sFeeTutor" value="90000"><div class="help">Fee guru untuk 1 pertemuan (sesuai durasi normal di bawah)</div></div>
       </div>
-      <div class="field"><label>Durasi per Meeting (menit) <span class="req">*</span></label><input type="number" id="sMin" value="90"><div class="help">Durasi normal murid ini — jadi patokan hitung fee tentor (mis. 60 / 90 / 120 menit). Kalau kelas lebih lama, fee tentor otomatis proporsional.</div></div>
+      <div class="field"><label>Durasi per Meeting (menit) <span class="req">*</span></label><input type="number" id="sMin" value="90"><div class="help">Durasi normal murid ini — jadi patokan hitung fee guru (mis. 60 / 90 / 120 menit). Kalau kelas lebih lama, fee guru otomatis proporsional.</div></div>
       <input type="hidden" id="sDep" value="0">
       <input type="hidden" id="sAddFee" value="0"><input type="hidden" id="sAddNote" value="">
       <div class="field"><label>PIN Login Orang Tua (4 digit)</label>
@@ -473,7 +473,7 @@
 <!-- MODAL: TUTOR -->
 <div class="modal-overlay" id="mTutor">
   <div class="modal">
-    <div class="modal-head"><h3 id="mTutorTitle">Tambah Tentor</h3><button class="x" onclick="closeModal('mTutor')">×</button></div>
+    <div class="modal-head"><h3 id="mTutorTitle">Tambah Guru</h3><button class="x" onclick="closeModal('mTutor')">×</button></div>
     <div class="modal-body">
       <input type="hidden" id="tId">
       <div class="field-row">
@@ -485,7 +485,7 @@
           <input id="tUser" placeholder="cth: nitakwe" style="flex:1">
           <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('tUser').value=genUsername(document.getElementById('tNama').value)">🔄 Generate</button>
         </div>
-        <div class="help">Dari nama depan + "kwe". Tentor login pakai username ini + PIN.</div></div>
+        <div class="help">Dari nama depan + "kwe". Guru login pakai username ini + PIN.</div></div>
       <div class="field-row">
         <div class="field"><label>WhatsApp</label><input id="tWa" placeholder="08xxxx"></div>
         <div class="field"><label>Date of Birth</label><input type="date" id="tDob"></div>
@@ -497,12 +497,12 @@
           <label><input type="checkbox" class="tLvl" value="Upper Secondary (SMA)"> Upper Secondary (SMA)</label>
         </div></div>
       <div class="field"><label>Address (Alamat)</label><input id="tAddress" placeholder="Alamat rumah"></div>
-      <div class="field"><label>PIN Login Tentor (4 digit)</label>
+      <div class="field"><label>PIN Login Guru (4 digit)</label>
         <div style="display:flex;gap:10px;align-items:center">
           <input id="tPin" maxlength="4" readonly style="max-width:120px;font-weight:800;letter-spacing:5px;text-align:center;font-size:18px">
           <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('tPin').value=genPin()">🔄 Generate</button>
         </div>
-        <div class="help">Tentor login ke Portal Tentor pakai nama + PIN ini.</div></div>
+        <div class="help">Guru login ke Portal Guru pakai nama + PIN ini.</div></div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal('mTutor')">Cancel</button>
@@ -511,13 +511,13 @@
   </div>
 </div>
 
-<!-- MODAL: RESET (murid / tentor) -->
+<!-- MODAL: RESET (murid / guru) -->
 <div class="modal-overlay" id="mReset">
   <div class="modal">
     <div class="modal-head"><h3 id="rsTitle">Reset Data</h3><button class="x" onclick="closeModal('mReset')">×</button></div>
     <div class="modal-body">
       <input type="hidden" id="rsId"><input type="hidden" id="rsRole">
-      <p style="font-size:13.5px;color:#374151;line-height:1.6">Menghapus <b>semua kelas (log)</b> dan <b>payment</b> milik <b id="rsName">—</b> untuk bulan terpilih — kembali ke 0. Ikut hilang di semua portal (Orang Tua & Tentor) dan hitungan deposit menyesuaikan. <b style="color:#c0392b">Tidak bisa dibatalkan.</b></p>
+      <p style="font-size:13.5px;color:#374151;line-height:1.6">Menghapus <b>semua kelas (log)</b> dan <b>payment</b> milik <b id="rsName">—</b> untuk bulan terpilih — kembali ke 0. Ikut hilang di semua portal (Orang Tua & Guru) dan hitungan deposit menyesuaikan. <b style="color:#c0392b">Tidak bisa dibatalkan.</b></p>
       <div class="field"><label>Bulan yang di-reset</label><input type="month" id="rsMonth"></div>
       <div class="help" id="rsMsg" style="min-height:18px"></div>
     </div>
@@ -721,7 +721,7 @@ async function delResource(id){
 /* ===== DATA EXPLORER ===== */
 const DATA_DEFS={
   murid:{label:'🧑‍🎓 Murid',       load:()=>API.getStudents({})},
-  tentor:{label:'👩‍🏫 Tentor',      load:()=>API.getTutors()},
+  guru:{label:'👩‍🏫 Guru',      load:()=>API.getTutors()},
   kelas:{label:'📅 Kelas',          load:()=>API.getClasses({})},
   payment:{label:'💳 Payment',      load:()=>API.getPayments({})},
   bonus:{label:'🧾 Komisi/Bonus',   load:()=>API.getTutorBonus({})},
@@ -779,7 +779,7 @@ function exportDataCSV(){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`data-${DATA_KEY}-${todayStr()}.csv`;
   document.body.appendChild(a); a.click(); a.remove();
 }
-let TP_FEE=0;
+let TP_FEE=0, TP_TID='';
 function stuFeeTentor(c){
   const s=STUDENTS.find(x=>x.id===c.student_id)||{};
   const norm=Number(s.meeting_minutes)||90, per=Number(s.fee_tentor)||0, dur=Number(c.duration)||norm;
@@ -787,14 +787,15 @@ function stuFeeTentor(c){
 }
 function initTentorPay(){
   const sel=document.getElementById('tpTutor');
-  sel.innerHTML='<option value="">Pilih tentor…</option>'+TUTORS.map(t=>`<option value="${t.id}">${esc(t.nama)}</option>`).join('');
+  sel.innerHTML='<option value="">Pilih guru…</option>'+TUTORS.map(t=>`<option value="${t.id}">${esc(t.nama)}</option>`).join('');
   document.getElementById('tpMonth').value=todayStr().slice(0,7);
-  document.getElementById('tpContent').innerHTML='<div class="card card-pad muted" style="text-align:center">Pilih tentor &amp; bulan.</div>';
+  document.getElementById('tpContent').innerHTML='<div class="card card-pad muted" style="text-align:center">Pilih guru &amp; bulan.</div>';
 }
 async function loadTentorPay(){
   const tid=document.getElementById('tpTutor').value, mon=document.getElementById('tpMonth').value;
+  TP_TID=tid;
   const box=document.getElementById('tpContent');
-  if(!tid||!mon){ box.innerHTML='<div class="card card-pad muted" style="text-align:center">Pilih tentor &amp; bulan.</div>'; return; }
+  if(!tid||!mon){ box.innerHTML='<div class="card card-pad muted" style="text-align:center">Pilih guru &amp; bulan.</div>'; return; }
   const t=TUTORS.find(x=>x.id===tid)||{};
   box.innerHTML='<div class="card card-pad muted" style="text-align:center">Memuat…</div>';
   let cls=[], b={}, bonusErr='';
@@ -808,7 +809,7 @@ async function loadTentorPay(){
   box.innerHTML=`
     ${bonusErr?`<div class="note-band" style="background:#fdecec;border-color:#f5b5b5;color:#a12626;margin-bottom:12px">⚠️ Komisi/bonus tidak bisa dimuat: <b>${esc(bonusErr)}</b><br><span style="font-size:12px">Jika menyebut "schema cache", buka Supabase → SQL Editor → jalankan: <code>NOTIFY pgrst, 'reload schema';</code> lalu refresh halaman.</span></div>`:''}
     <div class="card card-pad" style="margin-bottom:16px;display:flex;gap:28px;flex-wrap:wrap">
-      <div><div class="lbl muted">Tentor</div><b>${esc(t.nama)}</b></div>
+      <div><div class="lbl muted">Guru</div><b>${esc(t.nama)}</b></div>
       <div><div class="lbl muted">Periode</div><b>${periodName}</b></div>
       <div><div class="lbl muted">Jumlah Sesi</div><b>${cls.length} sesi</b></div>
       <div><div class="lbl muted">Fee Mengajar (otomatis)</div><b class="text-green">${fmtRp(fee)}</b></div>
@@ -817,13 +818,15 @@ async function loadTentorPay(){
       <div class="stat tint-amber"><div class="lbl">KOMISI / BONUS (isi manual)</div>
         <input type="number" id="tpAmount" value="${amt}" placeholder="nominal" oninput="tpCalc()" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:9px;margin:6px 0">
         <textarea id="tpNote" placeholder="Keterangan (mis. bonus murid baru, lembur, dll.)" style="width:100%;min-height:52px;padding:8px;border:1.5px solid var(--line);border-radius:9px">${esc(note)}</textarea></div>
-      <div class="stat tint-purple"><div class="lbl">TOTAL DITERIMA TENTOR</div>
+      <div class="stat tint-purple"><div class="lbl">TOTAL DITERIMA GURU</div>
         <div class="val" id="tpTotal" style="font-size:22px">${fmtRp(fee+amt)}</div>
         <div class="hint">Fee <b>${fmtRp(fee)}</b> + Komisi/Bonus</div></div>
     </div>
     <div style="text-align:right;margin-top:14px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
       <button class="btn btn-outline" onclick="printTentorSlip('${tid}','${mon}')">🧾 Cetak Slip Gaji</button>
-      <button class="btn btn-primary" onclick="saveTentorPay('${tid}','${mon}')">💾 Simpan Komisi/Bonus</button></div>
+      <button class="btn btn-primary" onclick="saveTentorPay('${tid}','${mon}')">💾 Simpan Komisi/Bonus</button>
+      <button class="btn btn-green" onclick="confirmPayroll('${tid}','${mon}')">✅ Konfirmasi Gaji Dikirim</button></div>
+    <div class="note-band mt-16" style="font-size:12px">💡 Tombol <b>Konfirmasi Gaji Dikirim</b> mencatat gaji periode ini sebagai <b>SUDAH DIBAYAR</b> (tanggal transfer = hari ini) dan guru langsung melihat notifikasinya di portal mereka.</div>
     <div id="tpPayrollBox" style="margin-top:18px"></div>`;
   renderTutorPayroll(tid);
 }
@@ -833,10 +836,12 @@ async function renderTutorPayroll(tid){
   const rows=list.map(r=>{
     const per=r.month?new Date(r.month+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}):'-';
     const proof=r.proof_url?`<a href="${r.proof_url}" target="_blank" style="color:var(--blue)">📎 Lihat</a>`:'<span class="muted">-</span>';
-    return `<tr><td>${per}</td><td><b>${fmtRp(r.amount)}</b></td><td>${r.transfer_date?prettyDate(r.transfer_date):'-'}</td><td>${proof}</td><td><span class="badge badge-paid">${esc(r.status||'DITERIMA')}</span></td></tr>`;
-  }).join('') || '<tr><td colspan="5" class="muted" style="text-align:center;padding:16px">Belum ada bukti fee dari tentor ini.</td></tr>';
-  box.innerHTML=`<div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">🧾 Bukti Fee Diterima Tentor</div></div>
-    <div class="table-wrap"><table class="tbl"><thead><tr><th>Bulan</th><th>Nominal</th><th>Tgl Transfer</th><th>Bukti</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+    const inf=payrollStatusInfo(r.status);
+    const act=inf.paid?'<span class="muted">-</span>':`<button class="btn btn-green btn-sm" onclick="markPayrollSent('${r.id}')">✅ Tandai Dikirim</button>`;
+    return `<tr><td>${per}</td><td><b>${fmtRp(r.amount)}</b></td><td>${r.transfer_date?prettyDate(r.transfer_date):'-'}</td><td>${proof}</td><td>${inf.badge}</td><td class="no-print">${act}</td></tr>`;
+  }).join('') || '<tr><td colspan="6" class="muted" style="text-align:center;padding:16px">Belum ada catatan gaji untuk guru ini.</td></tr>';
+  box.innerHTML=`<div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">🧾 Riwayat Gaji Guru</div></div>
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>Bulan</th><th>Nominal</th><th>Tgl Transfer</th><th>Bukti</th><th>Status</th><th class="no-print">Action</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 function tpCalc(){
   const amt=Number((document.getElementById('tpAmount')||{}).value)||0;
@@ -847,6 +852,22 @@ async function saveTentorPay(tid,mon){
   const note=(document.getElementById('tpNote')||{}).value||'';
   try{ await API.saveTutorBonus({tutor_id:tid,month:mon,amount,note}); toast('Komisi/bonus tersimpan','ok'); }
   catch(e){ toast('Gagal simpan: '+(e.message||e),'err'); }
+}
+async function confirmPayroll(tid,mon){
+  const bonus=Number((document.getElementById('tpAmount')||{}).value)||0;
+  const note=(document.getElementById('tpNote')||{}).value||'';
+  const total=(Number(TP_FEE)||0)+bonus;
+  if(!confirm('Konfirmasi gaji '+new Date(mon+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'})+' sebesar '+fmtRp(total)+' sudah dikirim ke guru ini?')) return;
+  // cek apakah sudah ada record bulan ini → update, else buat baru
+  let existing=null; try{ existing=(await API.getPayroll({tutor_id:tid,month:mon})||[])[0]; }catch(e){}
+  const rec={tutor_id:tid,month:mon,amount:total,transfer_date:todayStr(),note,status:'DIBAYAR'};
+  if(existing&&existing.id) rec.id=existing.id;
+  try{ await API.savePayroll(rec); toast('Gaji ditandai DIBAYAR — guru akan melihat notifikasinya','ok'); renderTutorPayroll(tid); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+async function markPayrollSent(id){
+  try{ await API.savePayroll({id,transfer_date:todayStr(),status:'DIBAYAR'}); toast('Ditandai sudah dikirim','ok'); renderTutorPayroll(TP_TID); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
 }
 async function printTentorSlip(tid,mon){
   const t=TUTORS.find(x=>x.id===tid)||{};
@@ -1081,7 +1102,7 @@ function renderBirthday(){
   const now=new Date(), M=now.getMonth()+1, D=now.getDate();
   const isToday=p=>{ if(!p.dob) return false; const [,m,d]=String(p.dob).split('-').map(Number); return m===M&&d===D; };
   const names=[...STUDENTS.filter(isToday).map(s=>`${s.nama} <span class="muted">(Murid)</span>`),
-               ...TUTORS.filter(isToday).map(t=>`${t.nama} <span class="muted">(Tentor)</span>`)];
+               ...TUTORS.filter(isToday).map(t=>`${t.nama} <span class="muted">(Guru)</span>`)];
   if(names.length){ el.innerHTML='🎂 <b>Ulang tahun hari ini:</b> '+names.join(' · '); el.style.display='block'; }
   else el.style.display='none';
 }
@@ -1109,7 +1130,7 @@ function renderTutorsM(){
     <td style="white-space:nowrap"><button class="btn btn-warn btn-sm" onclick="openTutor('${t.id}')">Edit</button>
       <button class="btn btn-sm" style="background:#fff3e0;color:#b26a00;border:1px solid #ffd9a3" onclick="openReset('${t.id}','tutor')">🔄 Reset</button>
       <button class="btn btn-danger btn-sm" onclick="delTutor('${t.id}')">Delete</button></td></tr>`).join('')
-    ||'<tr><td colspan="7" class="muted" style="text-align:center;padding:22px">Belum ada tentor.</td></tr>';
+    ||'<tr><td colspan="7" class="muted" style="text-align:center;padding:22px">Belum ada guru.</td></tr>';
 }
 async function renderLaporan(){
   const m=document.getElementById('repMonth').value||todayStr().slice(0,7);
@@ -1168,7 +1189,7 @@ async function regenStudentPin(id){
 
 /* ---- Tutor CRUD ---- */
 function openTutor(id){
-  document.getElementById('mTutorTitle').textContent=id?'Edit Tentor':'Tambah Tentor';
+  document.getElementById('mTutorTitle').textContent=id?'Edit Guru':'Tambah Guru';
   const t=id?TUTORS.find(x=>x.id===id):{};
   document.getElementById('tId').value=id||'';
   document.getElementById('tNama').value=t.nama||''; document.getElementById('tSubject').value=t.subject||'';
@@ -1188,7 +1209,7 @@ async function saveTutor(){
   if(!p.nama){toast('Nama wajib diisi','err');return;}
   try{
     if(p.id) await API.updateTutor(p); else await API.addTutor(p);
-    TUTORS=await API.getTutors(); closeModal('mTutor'); toast('Tentor disimpan · PIN '+p.pin,'ok'); renderTutorsM();
+    TUTORS=await API.getTutors(); closeModal('mTutor'); toast('Guru disimpan · PIN '+p.pin,'ok'); renderTutorsM();
   }catch(e){ toast('Gagal simpan: '+(e.message||e),'err'); }
 }
 async function regenPin(id){
@@ -1198,8 +1219,8 @@ async function regenPin(id){
 }
 async function delTutor(id){
   const t=TUTORS.find(x=>x.id===id); if(!t) return;
-  if(!confirm('Hapus tentor "'+t.nama+'" ? Tindakan ini tidak bisa dibatalkan.')) return;
-  try{ await API.deleteTutor(id); TUTORS=await API.getTutors(); renderTutorsM(); toast('Tentor dihapus','ok'); }
+  if(!confirm('Hapus guru "'+t.nama+'" ? Tindakan ini tidak bisa dibatalkan.')) return;
+  try{ await API.deleteTutor(id); TUTORS=await API.getTutors(); renderTutorsM(); toast('Guru dihapus','ok'); }
   catch(e){ toast('Gagal hapus: '+(e.message||e),'err'); }
 }
 async function delStudent(id){
@@ -1210,7 +1231,7 @@ async function delStudent(id){
 }
 
 async function generateAllUsernames(){
-  if(!confirm('Buat username otomatis untuk murid & tentor yang BELUM punya username?\n\nYang sudah punya username (termasuk yang diedit manual) TIDAK diubah.')) return;
+  if(!confirm('Buat username otomatis untuk murid & guru yang BELUM punya username?\n\nYang sudah punya username (termasuk yang diedit manual) TIDAK diubah.')) return;
   const btn=document.getElementById('genUserBtn'); if(btn)btn.disabled=true;
   try{
     const used=new Set([...STUDENTS,...TUTORS].map(x=>String(x.username||'').toLowerCase().trim()).filter(Boolean));
@@ -1237,7 +1258,7 @@ function openReset(id, role){
   const x = arr.find(a=>a.id===id); if(!x) return;
   document.getElementById('rsId').value=id;
   document.getElementById('rsRole').value=role;
-  document.getElementById('rsName').textContent=x.nama+(role==='tutor'?' (Tentor)':' (Murid)');
+  document.getElementById('rsName').textContent=x.nama+(role==='tutor'?' (Guru)':' (Murid)');
   document.getElementById('rsTitle').textContent='Reset Data — '+x.nama;
   document.getElementById('rsMonth').value=todayStr().slice(0,7);
   document.getElementById('rsMsg').textContent='';
@@ -1247,7 +1268,7 @@ async function doReset(){
   const id=document.getElementById('rsId').value, role=document.getElementById('rsRole').value;
   const mon=document.getElementById('rsMonth').value, msg=document.getElementById('rsMsg');
   if(!mon){ msg.style.color='var(--red)'; msg.textContent='Pilih bulan dulu.'; return; }
-  if(!confirm(`Hapus SEMUA kelas & payment bulan ${mon} untuk ${role==='tutor'?'tentor':'murid'} ini?\n\nTidak bisa dibatalkan.`)) return;
+  if(!confirm(`Hapus SEMUA kelas & payment bulan ${mon} untuk ${role==='tutor'?'guru':'murid'} ini?\n\nTidak bisa dibatalkan.`)) return;
   const btn=document.getElementById('rsBtn'); btn.disabled=true;
   msg.style.color='var(--muted)'; msg.textContent='Menghapus…';
   try{
@@ -1288,7 +1309,7 @@ async function boot(){
   document.getElementById('mRevenue').textContent=fmtRp(rev);
   renderBirthday();
   wireSearch('dashSearch','dashHits');   // pencarian cepat murid di dashboard
-  wireGlobalSearch();                    // kolom atas → gabungan murid + tentor
+  wireGlobalSearch();                    // kolom atas → gabungan murid + guru
   renderHits('dashHits',STUDENTS);
   // deep link
   const q=new URLSearchParams(location.search);
@@ -1329,12 +1350,12 @@ async function renderCombined(q){
     const my=cls.filter(c=>c.tutor_id===t.id); const mins=my.reduce((a,c)=>a+(Number(c.duration)||0),0);
     return `<div class="search-hit" onclick="openTutor('${t.id}')">
       <div class="av">${(t.nama||'?')[0]}</div>
-      <div style="flex:1"><b>${t.nama}</b> <span class="badge badge-onsite">Tentor · ${t.subject||'-'}</span> ${t.level?`<span class="badge badge-active">${t.level}</span>`:''}
+      <div style="flex:1"><b>${t.nama}</b> <span class="badge badge-onsite">Guru · ${t.subject||'-'}</span> ${t.level?`<span class="badge badge-active">${t.level}</span>`:''}
         <div class="hint text-muted">${my.length} kelas · ${mins} menit bln ini · WA ${t.wa||'-'}</div></div>
       <div class="right-arrow">›</div></div>`;
   }).join('');
   const el=document.getElementById('searchHits');
-  el.innerHTML = ((stu.length?grp('Murid ('+stu.length+')')+sHtml:'')+(tut.length?grp('Tentor ('+tut.length+')')+tHtml:''))
+  el.innerHTML = ((stu.length?grp('Murid ('+stu.length+')')+sHtml:'')+(tut.length?grp('Guru ('+tut.length+')')+tHtml:''))
     || '<div class="text-muted" style="padding:8px">Tidak ada hasil.</div>';
 }
 

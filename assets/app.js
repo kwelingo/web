@@ -264,7 +264,7 @@ const SCRIPT_API = {
   getResources : ()  => SCRIPT_API._post({action:'getResources'}),
   addResource  : (d) => SCRIPT_API._post({action:'addResource',...d}),
   deleteResource:(id)=> SCRIPT_API._post({action:'deleteResource',id}),
-  // Bukti terima fee / payroll tentor
+  // Bukti terima fee / payroll guru
   getPayroll   : (o={}) => SCRIPT_API._post({action:'getPayroll',...o}),
   savePayroll  : (d) => SCRIPT_API._post({action:'savePayroll',...d}),
   deletePayroll:(id)=> SCRIPT_API._post({action:'deletePayroll',id}),
@@ -358,7 +358,7 @@ const SB = {
 async function sbLogin(table,login,pin){
   const v=SB.enc(String(login||'').trim());
   const rows=await SB.req(`${table}?or=(username.ilike.${v},nama.ilike.${v},id.eq.${v})&select=*`);
-  if(!rows.length) throw new Error(table==='students'?'Murid tidak ditemukan':'Tentor tidak ditemukan');
+  if(!rows.length) throw new Error(table==='students'?'Murid tidak ditemukan':'Guru tidak ditemukan');
   const hit=rows.find(x=>String(x.pin)===String(pin));
   if(!hit) throw new Error('PIN salah');
   return hit;
@@ -452,7 +452,7 @@ const SB_API = {
     return {id};
   },
   async deletePayment(id){ await SB.req('payments?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
-  // ---- Komisi/Bonus Tentor ----
+  // ---- Komisi/Bonus Guru ----
   getTutorBonus:(o={})=> SB.req('tutor_bonus?select=*'+(o.tutor_id?'&tutor_id=eq.'+SB.enc(o.tutor_id):'')+(o.month?'&month=eq.'+SB.enc(o.month):'')),
   async saveTutorBonus(d){
     const id=(d.tutor_id||'')+'_'+(d.month||'');
@@ -469,7 +469,7 @@ const SB_API = {
     return {id};
   },
   async deleteResource(id){ await SB.req('resources?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
-  // ---- Payroll / bukti terima fee tentor ----
+  // ---- Payroll / bukti terima fee guru ----
   getPayroll:(o={})=> SB.req('payroll?select=*'+(o.tutor_id?'&tutor_id=eq.'+SB.enc(o.tutor_id):'')+(o.month?'&month=eq.'+SB.enc(o.month):'')+'&order=created_at.desc'),
   async savePayroll(d){
     const id=d.id||uid();
@@ -619,7 +619,7 @@ function matLinks(u){
   return String(u).split('|').filter(Boolean).map((x,i)=>{
     const name=(x.split('/').pop().split('?')[0]||('File '+(i+1))).slice(0,26);
     const real = x.startsWith('http')||x.startsWith('data:');
-    if(!real) return `<span class="muted" title="File lama belum ter-upload — minta tentor upload ulang">📄 ${name}</span>`;
+    if(!real) return `<span class="muted" title="File lama belum ter-upload — minta guru upload ulang">📄 ${name}</span>`;
     const isData=x.startsWith('data:');
     const isImg=/\.(jpe?g|png)(\?|$)/i.test(x)||x.startsWith('data:image');
     const isPdf=/\.pdf(\?|$)/i.test(x)||/^data:application\/pdf/i.test(x);
@@ -790,7 +790,7 @@ function openCertificate(o){
 }
 
 /* ============================================================
-   KEUANGAN — status tagihan & slip gaji tentor (shared)
+   KEUANGAN — status tagihan & slip gaji guru (shared)
    ============================================================ */
 /* Status pembayaran murid: LUNAS / TERVERIFIKASI (lunas) ·
    MENUNGGU VERIFIKASI (bukti dikirim ortu) · BELUM BAYAR (tagihan). */
@@ -803,10 +803,58 @@ const PAY_STATUS = {
 function payStatusBadge(s){ s=String(s||'LUNAS').toUpperCase(); const m=PAY_STATUS[s]||PAY_STATUS['LUNAS']; return `<span class="badge ${m.cls}">${m.ic} ${s}</span>`; }
 function isPaid(s){ s=String(s||'').toUpperCase(); return s==='LUNAS'||s==='TERVERIFIKASI'; }
 
-/* Slip Pembayaran Fee Tentor (bisa dipakai sebagai prepayment slip) — buka tab print/PDF */
+/* ===== Notifikasi: status pembayaran ortu & status gaji guru ===== */
+const PAYROLL_PAID = ['DIBAYAR','DITERIMA','LUNAS','TRANSFER','SUDAH DIBAYAR','PAID','TERKIRIM'];
+function payrollPaid(s){ return PAYROLL_PAID.includes(String(s||'').toUpperCase().trim()); }
+function payrollStatusInfo(s){
+  const raw=String(s||'DIPROSES').toUpperCase().trim();
+  if(payrollPaid(raw)) return {paid:true,label:'Sudah dibayar',badge:'<span class="badge badge-paid">✅ SUDAH DIBAYAR</span>'};
+  return {paid:false,label:'Belum / sedang diproses',badge:'<span class="badge badge-pending">🕒 '+(raw||'DIPROSES')+'</span>'};
+}
+function monthName(m){ try{ return new Date(String(m)+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}); }catch(e){ return m||''; } }
+function rupiah(n){ return 'Rp '+(Number(n)||0).toLocaleString('id-ID'); }
+
+/* Render daftar notifikasi ke sebuah container. items:[{level:'warn|ok|info',icon,title,sub}] */
+function renderNotif(box, items){
+  if(!box) return;
+  if(!items || !items.length){ box.innerHTML=''; box.style.display='none'; return; }
+  box.style.display='';
+  const col={warn:'var(--orange)',ok:'var(--green2)',info:'var(--blue)'};
+  box.innerHTML='<div class="card card-pad" style="margin-bottom:18px;padding:14px 16px;border-left:4px solid var(--orange)">'
+    + '<div style="font-weight:700;color:var(--navy);margin-bottom:6px">🔔 Notifikasi <span style="background:var(--orange);color:#fff;border-radius:999px;font-size:11px;padding:1px 8px;margin-left:4px">'+items.length+'</span></div>'
+    + items.map(n=>`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)">
+        <span style="font-size:18px;line-height:1.3">${n.icon||'•'}</span>
+        <div style="flex:1"><div style="font-weight:600;color:var(--ink);border-left:3px solid ${col[n.level]||col.info};padding-left:8px">${esc(n.title)}</div>
+        ${n.sub?`<div style="font-size:12px;color:var(--muted);padding-left:11px;margin-top:2px">${esc(n.sub)}</div>`:''}</div></div>`).join('')
+    + '</div>';
+}
+
+/* Notifikasi status gaji untuk GURU (dari tabel payroll). */
+async function teacherPayNotifs(tutorId){
+  let rows=[]; try{ rows=await API.getPayroll({tutor_id:tutorId})||[]; }catch(e){ return []; }
+  rows=rows.slice().sort((a,b)=>String(b.month||'').localeCompare(String(a.month||'')));
+  return rows.slice(0,3).map(r=>{
+    const inf=payrollStatusInfo(r.status); const per=monthName(r.month);
+    if(inf.paid) return {level:'ok',icon:'💰',title:`Gaji ${per} sudah dikirim`,sub:(r.transfer_date?('Ditransfer '+prettyDate(r.transfer_date)+(r.amount?' · ':'')):'')+(r.amount?rupiah(r.amount):'')+(r.note?(' · '+r.note):'')};
+    return {level:'warn',icon:'⏳',title:`Gaji ${per} belum dikonfirmasi dikirim`,sub:'Status: '+(r.status||'sedang diproses')+'. Menunggu admin konfirmasi transfer.'};
+  });
+}
+
+/* Notifikasi tagihan untuk ORANG TUA (dari tabel payments). */
+async function parentPayNotifs(studentId){
+  let rows=[]; try{ rows=await API.getPayments({student_id:studentId})||[]; }catch(e){ return []; }
+  return rows.filter(p=>!isPaid(p.status)).sort((a,b)=>String(a.month||'').localeCompare(String(b.month||''))).map(p=>{
+    const per=monthName(p.month); const amt=p.grand_total||p.amount||p.next_deposit;
+    const st=String(p.status||'').toUpperCase().trim();
+    if(st==='MENUNGGU VERIFIKASI') return {level:'info',icon:'🕒',title:`Pembayaran ${per} menunggu verifikasi`,sub:'Bukti sudah dikirim — menunggu admin memverifikasi.'};
+    return {level:'warn',icon:'📌',title:`Tagihan ${per} belum dibayar`,sub:(amt?('Jumlah: '+rupiah(amt)+' · '):'')+'Silakan bayar lalu upload bukti di menu Pembayaran.'};
+  });
+}
+
+/* Slip Pembayaran Fee Guru (bisa dipakai sebagai prepayment slip) — buka tab print/PDF */
 function openPayrollSlip(o){
   o=o||{};
-  const nm=esc(o.name||'Tentor');
+  const nm=esc(o.name||'Guru');
   const period=esc(o.period||'');
   const sessions=o.sessions!=null?o.sessions:'-';
   const fee=Number(o.fee)||0, bonus=Number(o.bonus)||0, total=(o.total!=null?Number(o.total):fee+bonus);
@@ -852,9 +900,9 @@ function openPayrollSlip(o){
   <div class="slip">
     <div class="hd"><img src="${logo}" alt=""><div><div class="bn">${issuer}</div><div class="sb">HOME FOR LANGUAGE LEARNERS</div></div><div class="tag">${status}</div></div>
     <div class="bd">
-      <div class="ttl">Slip Pembayaran Fee Tentor</div>
+      <div class="ttl">Slip Pembayaran Fee Guru</div>
       <div class="meta">
-        <div>Tentor: <b>${nm}</b></div><div>Periode: <b>${period||'-'}</b></div>
+        <div>Guru: <b>${nm}</b></div><div>Periode: <b>${period||'-'}</b></div>
         <div>Jumlah Sesi: <b>${sessions}</b></div>${transfer?`<div>Tgl Transfer: <b>${transfer}</b></div>`:''}
         <div>No: <b>${no}</b></div><div>Tgl Terbit: <b>${dateStr}</b></div>
       </div>
@@ -872,7 +920,7 @@ function openPayrollSlip(o){
         <div><div class="ln"></div><b>${nm}</b><div>Penerima</div></div>
       </div>
     </div>
-    <div class="ft">Slip ini sah sebagai bukti pembayaran fee / prepayment tentor Kwelingo · ${no}</div>
+    <div class="ft">Slip ini sah sebagai bukti pembayaran fee / prepayment guru Kwelingo · ${no}</div>
   </div>
 </body></html>`;
   const w=window.open('','_blank');
@@ -1028,6 +1076,10 @@ const DEMO = {
     {id:'pay2',student_id:'s1',month:'2026-09',pay_date:'2026-09-01',meetings:8,price_per_meet:150000,duration:90,
      deposit_total:1200000,carry_in:0,extra_minutes:0,add_fee1:0,add_fee2:0,add_fee2_note:'',next_meetings:8,next_deposit:1200000,grand_total:1200000,status:'BELUM BAYAR'},
   ],
+  payroll:[
+    {id:'pr1',tutor_id:'t1',month:'2026-08',amount:2400000,transfer_date:'2026-09-03',proof_url:'',note:'Gaji + bonus Agustus',status:'DIBAYAR',created_at:'2026-09-03T09:00:00'},
+    {id:'pr2',tutor_id:'t1',month:'2026-09',amount:2550000,transfer_date:'',proof_url:'',note:'',status:'DIPROSES',created_at:'2026-10-01T09:00:00'},
+  ],
   ratings:[
     {id:'rt1',class_id:'c5',student_id:'s1',tutor_id:'t1',stars:5,scores:[5,5,5,4,5,5,5,5],liked:'Cara ngajarnya seru!',improve:'Mungkin lebih banyak latihan soal.',comment:'Penjelasannya jelas banget, makasih Mr. Yesaya!',created_at:'2026-06-30T20:40:00'},
   ],
@@ -1093,6 +1145,9 @@ const DEMO = {
       case 'getPayments':{ let r=clone(this.payments); if(p.student_id) r=r.filter(x=>x.student_id===p.student_id); if(p.month) r=r.filter(x=>x.month===p.month); return r.sort((a,b)=>String(b.month).localeCompare(String(a.month))); }
       case 'savePayment':{ if(p.id){const e=this.payments.find(x=>x.id===p.id); if(e){Object.assign(e,p); return {updated:p.id};}} const id='pay'+Date.now(); this.payments.push({id,...p}); return {id}; }
       case 'deletePayment':{ this.payments=this.payments.filter(x=>x.id!==p.id); return {deleted:p.id}; }
+      case 'getPayroll':{ this.payroll=this.payroll||[]; let r=clone(this.payroll); if(p.tutor_id) r=r.filter(x=>x.tutor_id===p.tutor_id); if(p.month) r=r.filter(x=>x.month===p.month); return r.sort((a,b)=>String(b.created_at||b.month).localeCompare(String(a.created_at||a.month))); }
+      case 'savePayroll':{ this.payroll=this.payroll||[]; if(p.id){const e=this.payroll.find(x=>x.id===p.id); if(e){Object.assign(e,p); return {updated:p.id};}} const id=p.id||('pr'+Date.now()); this.payroll.push({id,created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'deletePayroll':{ this.payroll=(this.payroll||[]).filter(x=>x.id!==p.id); return {deleted:p.id}; }
       case 'uploadFile':{ return {url:p.base64,view:p.base64}; }
       case 'addStudent': { const id='s'+Date.now(); const pin=p.pin||genPin(); this.students.push({id,active:'aktif',pin,...p}); return {id,pin}; }
       case 'studentLogin':{ const key=String(p.login||'').toLowerCase().trim(); const s=this.students.find(x=>x.id===p.login||(x.username||'').toLowerCase().trim()===key||genUsername(x.nama)===key||x.nama.toLowerCase().trim()===key); if(!s)throw new Error('Murid tidak ditemukan'); if(String(s.pin)!==String(p.pin))throw new Error('PIN salah'); return clone(s); }
@@ -1106,7 +1161,7 @@ const DEMO = {
       case 'tutorLogin':{
         const key=String(p.login||'').toLowerCase().trim();
         const t=this.tutors.find(x=>x.id===p.login||(x.username||'').toLowerCase().trim()===key||genUsername(x.nama)===key||x.nama.toLowerCase().trim()===key);
-        if(!t) throw new Error('Tentor tidak ditemukan');
+        if(!t) throw new Error('Guru tidak ditemukan');
         if(String(t.pin)!==String(p.pin)) throw new Error('PIN salah');
         return clone(t);
       }
