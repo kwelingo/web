@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — KWE Lingo</title>
+<title>Admin — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 
 <!-- PIN GATE (Admin) -->
-<div id="adGate" style="position:fixed;inset:0;z-index:600;background:linear-gradient(180deg,#E9F8FB,#F3FBFC);display:flex;align-items:center;justify-content:center;padding:20px">
+<div id="adGate" style="position:fixed;inset:0;z-index:600;background:linear-gradient(180deg,#EAF6FA,#FFF9F0);display:flex;align-items:center;justify-content:center;padding:20px">
   <div class="card card-pad" style="max-width:360px;width:100%;text-align:center">
     <img src="assets/logo.png" style="width:80px;height:80px;border-radius:16px;padding:6px;background:#fff;box-shadow:var(--shadow);margin:0 auto 14px">
     <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Portal Admin</h2>
@@ -29,6 +29,9 @@
     <nav class="nav">
       <a data-view="dashboard" class="active"><span class="ic">🏠</span> Kelas Hari Ini</a>
       <a data-view="calendar"><span class="ic">🗓️</span> Kalender Mingguan</a>
+      <a data-view="requests"><span class="ic">📨</span> Permintaan <span id="reqDot" class="nav-dot" style="display:none"></span></a>
+      <a data-view="certs"><span class="ic">🏅</span> Kehadiran &amp; Sertifikat</a>
+      <a data-view="chat"><span class="ic">💬</span> Diskusi Guru</a>
       <div class="divider"></div>
       <a href="portal.html"><span class="ic">↩️</span> Ganti Portal</a>
       <a href="index.html"><span class="ic">🚪</span> Keluar</a>
@@ -100,7 +103,46 @@
         <div class="note-band mt-16">🗓️ <b>Onsite</b> biru, <b>Online</b> hijau. Jam 08.00–21.00.</div>
       </section>
 
-      <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
+      <!-- ============ PERMINTAAN KELAS ============ -->
+      <section class="view hide" id="view-requests">
+        <div class="page-head"><div><h1>Permintaan Kelas</h1><div class="sub">Pengajuan kelas baru &amp; reschedule dari murid / orang tua</div></div>
+          <button class="btn btn-ghost btn-sm" onclick="renderRequests()">↻ Refresh</button></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Status</th><th>Murid</th><th>Tentor</th><th>Jadwal Diminta</th><th>Type</th><th>Catatan</th><th>Action</th></tr></thead>
+          <tbody id="reqBody"></tbody>
+        </table></div></div>
+        <div class="note-band mt-16">✅ <b>Terima</b> memasukkan kelas ke jadwal. Untuk mengubah tentor/jam sebelum menerima, buka <b>Edit</b> lalu simpan.</div>
+      </section>
+
+      <!-- ============ KEHADIRAN & SERTIFIKAT ============ -->
+      <section class="view hide" id="view-certs">
+        <div class="page-head"><div><h1>Kehadiran &amp; Sertifikat</h1><div class="sub">Pantau persentase kehadiran &amp; terbitkan Certificate of Completion (≥80%)</div></div></div>
+        <div class="card card-pad" style="margin-bottom:18px">
+          <div class="field" style="max-width:360px;margin-bottom:0"><label>Pilih Murid</label><select id="certStudent" onchange="renderCerts()"></select></div>
+        </div>
+        <div class="grid grid-4" style="margin-bottom:18px" id="certStats"></div>
+        <div id="certAction"></div>
+        <div class="card mt-16"><div class="card-pad" style="padding-bottom:0"><div class="card-title">📅 Riwayat Sesi</div></div>
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Tanggal</th><th>Tentor</th><th>Time</th><th>Type</th><th>Status</th><th>Kehadiran</th></tr></thead>
+            <tbody id="certBody"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- ============ DISKUSI GURU ============ -->
+      <section class="view hide" id="view-chat">
+        <div class="page-head"><div><h1>Diskusi Guru</h1><div class="sub">Ruang obrolan guru, admin &amp; owner</div></div></div>
+        <div class="card card-pad" style="max-width:820px">
+          <div id="chatFeed" style="max-height:56vh;overflow:auto;margin-bottom:14px"></div>
+          <div style="display:flex;gap:10px">
+            <input id="chatInput" placeholder="Tulis pesan…" style="flex:1;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px" onkeydown="if(event.key==='Enter')postChat()">
+            <button class="btn btn-primary" onclick="postChat()">Kirim</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="foot-note">© 2026 Kwelingo. All rights reserved.</div>
     </div>
   </div>
 </div>
@@ -155,7 +197,7 @@
 
 <script src="assets/app.js"></script>
 <script>
-document.getElementById('logo').innerHTML = logoBlock('KWE Lingo','Portal Admin');
+document.getElementById('logo').innerHTML = logoBlock('Kwelingo','Portal Admin');
 /* ---- PIN gate ---- */
 try{ if(sessionStorage.getItem('ad_ok')==='1') document.getElementById('adGate').style.display='none'; else document.getElementById('adPin').focus(); }catch(e){}
 async function adLogin(){
@@ -179,13 +221,23 @@ document.querySelectorAll('.nav a[data-view]').forEach(a=>{
     document.getElementById('view-'+a.dataset.view).classList.remove('hide');
     if(window.innerWidth<768) toggleSidebar();
     if(a.dataset.view==='calendar') renderCalendar();
+    if(a.dataset.view==='requests') renderRequests();
+    if(a.dataset.view==='certs') renderCertsInit();
+    if(a.dataset.view==='chat') openChat(); else gchat.stop();
   };
 });
+const gchat=makeChatPoller(list=>renderChatFeed(document.getElementById('chatFeed'),list,'admin'),4000);
+function openChat(){ document.getElementById('chatFeed').innerHTML='<div class="muted">Memuat…</div>'; gchat.start('guru'); }
+async function postChat(){
+  const inp=document.getElementById('chatInput'); const msg=inp.value.trim(); if(!msg)return; inp.value='';
+  try{ await API.addChat({room:'guru',sender_id:'admin',sender_name:'Admin',role:'admin',message:msg}); gchat.refresh(); }
+  catch(e){ toast('Gagal kirim: '+(e.message||e),'err'); inp.value=msg; }
+}
 
 async function boot(){
   try{ TUTORS=await API.getTutors(); }catch(e){ TUTORS=[]; toast('Gagal memuat tentor','err'); }
   try{ STUDENTS=await API.getStudents(); }catch(e){ STUDENTS=[]; toast('Gagal memuat murid','err'); }
-  renderToday(); renderBirthday();
+  renderToday(); renderBirthday(); updateReqDot();
   // auto-refresh status tiap 60 detik (jeda saat modal terbuka / tab tidak aktif)
   setInterval(()=>{
     if(document.visibilityState!=='visible') return;
@@ -380,6 +432,99 @@ async function clearAllDocs(){
     toast(`Selesai — ${n} foto dikosongkan`,'ok'); renderToday();
   }catch(e){ toast('Gagal: '+(e.message||e)+'. Coba lagi untuk melanjutkan sisa foto.','err'); }
   finally{ if(btn){btn.disabled=false; btn.textContent='🗑️ Hapus semua foto';} }
+}
+
+/* ---- PERMINTAAN KELAS ---- */
+async function pendingReqs(){
+  const all=await API.getClasses({});
+  return all.filter(c=>{const s=classStatus(c);return s==='requested'||s==='reschedule';})
+    .sort((a,b)=>String((a.resched_date||a.date||'')).localeCompare(String(b.resched_date||b.date||'')));
+}
+async function updateReqDot(){
+  try{ const n=(await pendingReqs()).length; const d=document.getElementById('reqDot');
+    if(d){ d.textContent=n; d.style.display=n?'inline-flex':'none'; } }catch(e){}
+}
+async function renderRequests(){
+  const tb=document.getElementById('reqBody');
+  tb.innerHTML='<tr><td colspan="7" class="muted" style="padding:16px">Memuat…</td></tr>';
+  let reqs; try{ reqs=await pendingReqs(); }
+  catch(e){ tb.innerHTML='<tr><td colspan="7" style="color:var(--red);padding:16px">Gagal: '+esc(e.message||e)+'</td></tr>'; return; }
+  tb.innerHTML=reqs.map(c=>{
+    const resched=classStatus(c)==='reschedule';
+    const when=resched
+      ? `<span style="text-decoration:line-through;color:var(--muted)">${prettyDate(c.date)} ${c.start_time||''}</span> → <b>${prettyDate(c.resched_date)} ${c.resched_time||''}</b>`
+      : `<b>${prettyDate(c.date)}</b> ${c.start_time||''}`;
+    const note=esc(resched?(c.resched_note||'-'):(c.req_note||'-'));
+    const by=c.req_by?`<div class="muted" style="font-size:11px">oleh ${esc(c.req_by)}</div>`:'';
+    const act=resched
+      ? `<button class="btn btn-primary btn-sm" onclick="approveResched('${c.id}')">🔄 Setujui</button>
+         <button class="btn btn-ghost btn-sm" onclick="rejectResched('${c.id}')">Tolak</button>`
+      : `<button class="btn btn-primary btn-sm" onclick="acceptReq('${c.id}')">✅ Terima</button>
+         <button class="btn btn-warn btn-sm" onclick="editClass('${c.id}')">Edit</button>
+         <button class="btn btn-danger btn-sm" onclick="declineReq('${c.id}')">✖️</button>`;
+    return `<tr><td style="white-space:nowrap">${statusBadge(c)}</td><td><b>${sName(c.student_id)}</b>${by}</td><td>${tName(c.tutor_id)}</td><td>${when}</td>
+      <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
+      <td style="white-space:pre-line">${note}</td><td style="white-space:nowrap">${act}</td></tr>`;
+  }).join('') || '<tr><td colspan="7" class="muted" style="text-align:center;padding:24px">Tidak ada permintaan baru. 🎉</td></tr>';
+}
+async function acceptReq(id){ try{ await API.updateClass({id,status:'scheduled'}); toast('Kelas diterima','ok'); renderRequests(); renderToday(); updateReqDot(); }catch(e){ toast('Gagal: '+(e.message||e),'err'); } }
+async function declineReq(id){ if(!confirm('Tolak pengajuan kelas ini?'))return; try{ await API.updateClass({id,status:'declined'}); toast('Pengajuan ditolak','ok'); renderRequests(); updateReqDot(); }catch(e){ toast('Gagal: '+(e.message||e),'err'); } }
+async function approveResched(id){
+  const c=(await API.getClasses({})).find(x=>x.id===id); if(!c)return;
+  try{ await API.updateClass({id,date:c.resched_date||c.date,start_time:c.resched_time||c.start_time,status:'scheduled',resched_date:'',resched_time:'',resched_note:''});
+    toast('Reschedule disetujui','ok'); renderRequests(); renderToday(); updateReqDot(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+async function rejectResched(id){ if(!confirm('Tolak reschedule? Jadwal tetap semula.'))return;
+  try{ await API.updateClass({id,status:'scheduled',resched_date:'',resched_time:'',resched_note:''}); toast('Reschedule ditolak','ok'); renderRequests(); updateReqDot(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); } }
+
+/* ---- KEHADIRAN & SERTIFIKAT ---- */
+let _certInit=false;
+function renderCertsInit(){
+  const sel=document.getElementById('certStudent');
+  if(!_certInit){
+    sel.innerHTML='<option value="">— pilih murid —</option>'+STUDENTS.map(s=>`<option value="${s.id}">${esc(s.nama)}</option>`).join('');
+    _certInit=true;
+  }
+  renderCerts();
+}
+async function renderCerts(){
+  const sid=document.getElementById('certStudent').value;
+  const statsBox=document.getElementById('certStats'), actBox=document.getElementById('certAction'), body=document.getElementById('certBody');
+  if(!sid){ statsBox.innerHTML=''; actBox.innerHTML='<div class="card card-pad muted" style="text-align:center">Pilih murid untuk melihat kehadiran.</div>'; body.innerHTML=''; return; }
+  let cls=[],tasks=[]; try{ cls=await API.getClasses({student_id:sid})||[]; }catch(e){ actBox.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
+  try{ tasks=await API.getTasks({student_id:sid})||[]; }catch(e){}
+  const st=attendanceStats(cls); const ts=taskCompletion(tasks);
+  statsBox.innerHTML=[
+    ['tint-blue','Total Sesi',st.total],['tint-green','Kehadiran',st.pct+'%'],
+    ['tint-amber','Tugas Selesai',ts.done+'/'+ts.total],['tint-purple','Tugas %',ts.pct+'%'],
+  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+  const s=STUDENTS.find(x=>x.id===sid)||{};
+  if(certEligible(st,ts)){
+    actBox.innerHTML=`<div class="card card-pad" style="background:linear-gradient(120deg,#FFF6E6,#EAF6FA);border:1.5px solid #F4D98B">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="font-size:30px">🏅</div><div style="flex:1;min-width:200px"><b style="color:var(--navy)">Memenuhi syarat sertifikat</b>
+        <div class="muted" style="font-size:12.5px">Kehadiran ${st.pct}% & penyelesaian tugas ${ts.pct}% (≥80% keduanya).</div></div>
+        <button class="btn btn-primary" onclick="issueCert('${sid}')">🏅 Terbitkan Sertifikat</button></div></div>`;
+  } else {
+    const reasons=[];
+    if(!(st.counted>0&&st.pct>=80)) reasons.push('kehadiran '+st.pct+'%'+(st.counted===0?' (belum ada sesi ditandai)':''));
+    if(ts.total>0&&ts.pct<80) reasons.push('tugas baru '+ts.pct+'%');
+    actBox.innerHTML=`<div class="note-band">Belum memenuhi syarat sertifikat (min. 80% kehadiran &amp; tugas)${reasons.length?' — '+reasons.join(', '):''}.</div>`;
+  }
+  const today=todayStr();
+  body.innerHTML=[...cls].filter(isSession).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(c=>`<tr>
+    <td>${prettyDate(c.date)}</td><td>${tName(c.tutor_id)}</td><td>${timeRange(c.start_time,c.end_time)}</td>
+    <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
+    <td>${statusBadge(c)}</td><td>${attendBadgeFor(c)}</td></tr>`).join('')
+    || '<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">Belum ada sesi.</td></tr>';
+}
+async function issueCert(sid){
+  const s=STUDENTS.find(x=>x.id===sid)||{};
+  let cls=[]; try{ cls=await API.getClasses({student_id:sid})||[]; }catch(e){}
+  const st=attendanceStats(cls);
+  openCertificate({name:s.nama||'Student', program:(s.grade?('Grade '+s.grade+' '):'')+'Language Program', pct:st.pct, sessions:st.counted});
 }
 
 boot();

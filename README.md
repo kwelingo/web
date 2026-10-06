@@ -1,4 +1,4 @@
-# KWE Lingo — Website
+# Kwelingo — Website
 
 Upload **seluruh isi folder ini** ke GitHub (root repo).
 

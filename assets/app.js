@@ -1,5 +1,5 @@
 /* ============================================================
-   KWE Lingo — Shared front-end helpers
+   Kwelingo — Shared front-end helpers
    ============================================================ */
 
 /* ---- CONFIG ------------------------------------------------
@@ -7,14 +7,15 @@
    While SCRIPT_URL is empty, the portals run in DEMO MODE using
    the sample data below so you can preview the design.
 ------------------------------------------------------------- */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-Pxd3hsP5kEFFJIcnymRn1d8g8M76Bna-kV1x22WHCQVBbCJdQy1GK6F5Gh_95YAz/exec'; // KWE Lingo — Google Sheets (Apps Script) backend
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-Pxd3hsP5kEFFJIcnymRn1d8g8M76Bna-kV1x22WHCQVBbCJdQy1GK6F5Gh_95YAz/exec'; // Kwelingo — Google Sheets (Apps Script) backend
 
-/* ---- SUPABASE (nonaktif — KWE Lingo pakai Google Sheets) ---
-   Untuk balik ke Supabase: isi lagi URL & KEY di bawah ini.
-   URL lama Little Star (contoh): https://nmokhtraxndkxpljyjhm.supabase.co
+/* ---- SUPABASE (backend UTAMA Kwelingo) --------------------
+   Database + Storage. Jalankan supabase-schema.sql dulu di
+   Supabase → SQL Editor sebelum dipakai.
+   Kalau USE_SUPABASE true, SCRIPT_URL di atas diabaikan.
 ------------------------------------------------------------- */
-const SUPABASE_URL = '';
-const SUPABASE_KEY = '';
+const SUPABASE_URL = 'https://eaxihqustnbkzzjaanrt.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVheGlocXVzdG5ia3p6amFhbnJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNTcxNTcsImV4cCI6MjEwNjgzMzE1N30.Ap1L_4Kt04uFKw2bFlkMeTaOPvSZp0KHq2uCDXBbVh4';
 const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_KEY);
 
 const DEMO_MODE   = !USE_SUPABASE && !SCRIPT_URL;
@@ -128,6 +129,70 @@ function toggleSidebar(){
   document.querySelector('.sidebar')?.classList.toggle('open');
   document.querySelector('.backdrop')?.classList.toggle('open');
 }
+function closeDrawer(){
+  document.querySelector('.sidebar')?.classList.remove('open');
+  document.querySelector('.backdrop')?.classList.remove('open');
+}
+
+/* ---- Mobile app shell: bottom nav + quick-grid (portal murid/ortu/guru) ---- */
+function _navMeta(a){
+  const ic=(a.querySelector('.ic')||{}).textContent||'•';
+  const clone=a.cloneNode(true); clone.querySelectorAll('.ic,.nav-dot').forEach(x=>x.remove());
+  return {ic, label:clone.textContent.trim(), view:a.dataset.view};
+}
+function _shellGo(a,view){ a.click(); closeDrawer(); _syncShell(view); }
+function _syncShell(view){ document.querySelectorAll('.botnav-item[data-view],.appgrid .tile[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view)); }
+function refreshShellDots(){
+  document.querySelectorAll('.sidebar .nav a[data-view]').forEach(a=>{
+    const dot=a.querySelector('.nav-dot');
+    const v=(dot && dot.style.display!=='none' && (dot.textContent||'').trim())?dot.textContent.trim():'';
+    document.querySelectorAll('.shell-badge[data-v="'+a.dataset.view+'"]').forEach(b=>{ b.textContent=v; });
+  });
+}
+function initAppShell(){
+  const links=[...document.querySelectorAll('.sidebar .nav a[data-view]')];
+  if(!links.length || document.querySelector('.botnav')) return;
+  // Bottom nav: 4 item teratas + tombol Menu
+  const bn=document.createElement('nav'); bn.className='botnav';
+  links.slice(0,4).forEach(a=>{
+    const m=_navMeta(a);
+    const btn=document.createElement('button'); btn.className='botnav-item'+(a.classList.contains('active')?' active':''); btn.dataset.view=m.view;
+    btn.innerHTML=`<span class="bi">${m.ic}</span><span class="bl">${esc(m.label)}</span><span class="bdot shell-badge" data-v="${esc(m.view)}"></span>`;
+    btn.onclick=()=>_shellGo(a,m.view);
+    bn.appendChild(btn);
+  });
+  const menu=document.createElement('button'); menu.className='botnav-item';
+  menu.innerHTML=`<span class="bi">☰</span><span class="bl">Menu</span>`;
+  menu.onclick=()=>toggleSidebar();
+  bn.appendChild(menu);
+  document.body.appendChild(bn);
+  document.body.classList.add('has-botnav');
+  // Quick-grid di Beranda
+  const dash=document.getElementById('view-dashboard');
+  if(dash && !dash.querySelector('.appgrid')){
+    const wrap=document.createElement('div'); wrap.className='appgrid-wrap';
+    const title=document.createElement('div'); title.className='appgrid-title'; title.textContent='Menu';
+    const grid=document.createElement('div'); grid.className='appgrid';
+    links.forEach(a=>{
+      const m=_navMeta(a);
+      const t=document.createElement('button'); t.className='tile'; t.dataset.view=m.view;
+      t.innerHTML=`<span class="gi">${m.ic}</span><span class="gl">${esc(m.label)}</span><span class="gdot shell-badge" data-v="${esc(m.view)}"></span>`;
+      t.onclick=()=>_shellGo(a,m.view);
+      grid.appendChild(t);
+    });
+    wrap.appendChild(title); wrap.appendChild(grid);
+    const head=dash.querySelector('.page-head');
+    if(head && head.nextSibling) dash.insertBefore(wrap, head.nextSibling);
+    else dash.insertBefore(wrap, dash.firstChild);
+  }
+  // Sinkron badge angka (Tugas, Permintaan, dll) dari sidebar
+  const navEl=document.querySelector('.sidebar .nav');
+  if(navEl && window.MutationObserver){
+    try{ new MutationObserver(refreshShellDots).observe(navEl,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style']}); }catch(e){}
+  }
+  refreshShellDots();
+  setInterval(refreshShellDots, 3000);
+}
 
 /* ============================================================
    SCRIPT_API — Apps Script backend (cadangan) / DEMO
@@ -215,17 +280,47 @@ const SCRIPT_API = {
   getLeaderboard:() => SCRIPT_API._post({action:'getLeaderboard'}),
   getDiscussion:(o={})=> SCRIPT_API._post({action:'getDiscussion',...o}),
   addDiscussion:(d)=> SCRIPT_API._post({action:'addDiscussion',...d}),
+  // Feedback & belajar: rating, diary, tasks
+  getRatings:(o={})=> SCRIPT_API._post({action:'getRatings',...o}),
+  addRating:(d)=> SCRIPT_API._post({action:'addRating',...d}),
+  getDiary:(o={})=> SCRIPT_API._post({action:'getDiary',...o}),
+  addDiary:(d)=> SCRIPT_API._post({action:'addDiary',...d}),
+  getTasks:(o={})=> SCRIPT_API._post({action:'getTasks',...o}),
+  addTask:(d)=> SCRIPT_API._post({action:'addTask',...d}),
+  updateTask:(d)=> SCRIPT_API._post({action:'updateTask',...d}),
+  deleteTask:(id)=> SCRIPT_API._post({action:'deleteTask',id}),
+  getChat:(o={})=> SCRIPT_API._post({action:'getChat',...o}),
+  addChat:(d)=> SCRIPT_API._post({action:'addChat',...d}),
+  getTBoard:()=> SCRIPT_API._post({action:'getTBoard'}),
+  addTBoard:(d)=> SCRIPT_API._post({action:'addTBoard',...d}),
+  deleteTBoard:(id)=> SCRIPT_API._post({action:'deleteTBoard',id}),
+  getTBoardReads:(o={})=> SCRIPT_API._post({action:'getTBoardReads',...o}),
+  markTBoardRead:(d)=> SCRIPT_API._post({action:'markTBoardRead',...d}),
+  getSetting:(key)=> SCRIPT_API._post({action:'getSetting',key}),
+  setSetting:(key,value)=> SCRIPT_API._post({action:'setSetting',key,value}),
 };
 
 /* ============================================================
    SB_API — Supabase (PostgREST) backend UTAMA
    ============================================================ */
 const SB_COLS = {
-  students:['id','nama','username','school','address','dob','grade','parent_name','wa_ortu','tutor_id','schedule','fee_per_meeting','fee_tentor','meeting_minutes','deposit_meetings','add_fee','add_fee_note','pin','active','link_id'],
+  students:['id','nama','username','school','address','dob','grade','parent_name','wa_ortu','tutor_id','schedule','class_group','fee_per_meeting','fee_tentor','meeting_minutes','deposit_meetings','add_fee','add_fee_note','pin','active','link_id'],
   tutors:['id','nama','username','subject','level','address','dob','wa','pin'],
-  classes:['id','date','student_id','tutor_id','start_time','end_time','duration','type','topic','note','material_url','doc_url','stu_in','stu_out','tut_in','tut_out','lesson_plan'],
+  classes:['id','date','student_id','tutor_id','start_time','end_time','duration','type','topic','note','material_url','doc_url','stu_in','stu_out','tut_in','tut_out','lesson_plan','status','req_by','req_note','attend','resched_date','resched_time','resched_note','rec_audio','rec_video'],
   deposit:['student_id','paid_meetings','minutes_total','minutes_used','fee_per_meeting','last_paid','status'],
-  payments:['id','student_id','month','pay_date','meetings','price_per_meet','duration','deposit_total','carry_in','extra_minutes','add_fee1','add_fee2','add_fee2_note','next_meetings','next_deposit','grand_total','status'],
+  payments:['id','student_id','month','pay_date','meetings','price_per_meet','duration','deposit_total','carry_in','extra_minutes','add_fee1','add_fee2','add_fee2_note','next_meetings','next_deposit','grand_total','status','proof_url'],
+  resources:['id','title','subject','level','file_url','note'],
+  payroll:['id','tutor_id','month','amount','transfer_date','proof_url','note','status'],
+  announcements:['id','title','body','date','class_group','author'],
+  quizzes:['id','title','subject','level','questions'],
+  quiz_results:['id','quiz_id','student_id','student_name','score','total','taken_at'],
+  discussion:['id','student_id','name','message'],
+  ratings:['id','class_id','student_id','tutor_id','stars','comment','scores','liked','improve'],
+  diary:['id','student_id','tutor_id','author','message'],
+  tasks:['id','student_id','tutor_id','title','detail','type','due_date','status','done_at','submit_url','submit_text','submit_at','points','feedback','graded_at'],
+  chat:['id','room','sender_id','sender_name','role','message'],
+  tboard:['id','title','body','date','author'],
+  tboard_read:['id','board_id','reader_id','reader_name','read_at'],
 };
 const sbPick=(o,cols)=>{const r={};cols.forEach(k=>{ if(o[k]!==undefined && o[k]!==null) r[k]=o[k]; });return r;};
 const SB = {
@@ -283,18 +378,21 @@ const SB_API = {
   async verifyPin(role,pin){
     const key=role==='master'?'MASTER_PIN':'ADMIN_PIN';
     const rows=await SB.req(`app_settings?key=eq.${key}&select=value`);
-    const cur=rows[0]?rows[0].value:(role==='master'?'5758':'17081945');
+    const cur=rows[0]?rows[0].value:'1234';
     return {ok:String(pin)===String(cur)};
   },
   async changePin(role,oldPin,newPin){
     const key=role==='master'?'MASTER_PIN':'ADMIN_PIN';
     const rows=await SB.req(`app_settings?key=eq.${key}&select=value`);
-    const cur=rows[0]?rows[0].value:(role==='master'?'5758':'17081945');
+    const cur=rows[0]?rows[0].value:'1234';
     if(String(oldPin)!==String(cur)) return {ok:false,message:'Password lama salah.'};
     if(!/^\d{4,10}$/.test(String(newPin||''))) return {ok:false,message:'Password baru harus 4–10 digit angka.'};
     await SB.req('app_settings',{method:'POST',body:{key,value:String(newPin)},prefer:'resolution=merge-duplicates,return=minimal',isWrite:true});
     return {ok:true};
   },
+  // ---- Settings umum (mis. URL SOP guru) ----
+  async getSetting(key){ const rows=await SB.req('app_settings?key=eq.'+SB.enc(key)+'&select=value'); return rows[0]?rows[0].value:''; },
+  async setSetting(key,value){ await SB.req('app_settings',{method:'POST',body:{key,value:String(value==null?'':value)},prefer:'resolution=merge-duplicates,return=minimal',isWrite:true}); return {ok:true}; },
   // ---- Students ----
   getStudents:(o={})=> SB.req('students?select=*'+(o.id?'&id=eq.'+SB.enc(o.id):'')+'&order=created_at.asc'),
   getStudent :(id)=> SB.req('students?select=*&id=eq.'+SB.enc(id)),
@@ -362,6 +460,124 @@ const SB_API = {
     await SB.req('tutor_bonus',{method:'POST',body:row,prefer:'resolution=merge-duplicates,return=minimal',isWrite:true});
     return {id};
   },
+  // ---- Teaching Resources (modul — owner upload, guru view-only) ----
+  getResources:()=> SB.req('resources?select=*&order=created_at.desc'),
+  async addResource(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id},SB_COLS.resources);
+    await SB.req('resources',{method:'POST',body:row,prefer:'return=minimal',isWrite:true});
+    return {id};
+  },
+  async deleteResource(id){ await SB.req('resources?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
+  // ---- Payroll / bukti terima fee tentor ----
+  getPayroll:(o={})=> SB.req('payroll?select=*'+(o.tutor_id?'&tutor_id=eq.'+SB.enc(o.tutor_id):'')+(o.month?'&month=eq.'+SB.enc(o.month):'')+'&order=created_at.desc'),
+  async savePayroll(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id},SB_COLS.payroll);
+    await SB.req('payroll',{method:'POST',body:row,prefer:'resolution=merge-duplicates,return=minimal',isWrite:true});
+    return {id};
+  },
+  async deletePayroll(id){ await SB.req('payroll?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
+  // ---- Pengumuman ----
+  getAnnouncements:()=> SB.req('announcements?select=*&order=created_at.desc'),
+  async addAnnouncement(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id,date:d.date||todayStr()},SB_COLS.announcements);
+    await SB.req('announcements',{method:'POST',body:row,prefer:'return=minimal',isWrite:true});
+    return {id};
+  },
+  async deleteAnnouncement(id){ await SB.req('announcements?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
+  // ---- Quiz ----
+  getQuizzes:()=> SB.req('quizzes?select=*&order=created_at.desc'),
+  async addQuiz(d){
+    const id=d.id||uid();
+    const q=(typeof d.questions==='string')?d.questions:JSON.stringify(d.questions||[]);
+    const row=sbPick({...d,id,questions:q},SB_COLS.quizzes);
+    await SB.req('quizzes',{method:'POST',body:row,prefer:'return=minimal',isWrite:true});
+    return {id};
+  },
+  async deleteQuiz(id){ await SB.req('quizzes?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
+  getQuizResults:(o={})=> SB.req('quiz_results?select=*'+(o.student_id?'&student_id=eq.'+SB.enc(o.student_id):'')+(o.quiz_id?'&quiz_id=eq.'+SB.enc(o.quiz_id):'')+'&order=created_at.desc'),
+  async saveQuizResult(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id,taken_at:d.taken_at||new Date().toISOString()},SB_COLS.quiz_results);
+    await SB.req('quiz_results',{method:'POST',body:row,prefer:'return=minimal',isWrite:true});
+    return {id};
+  },
+  async getLeaderboard(){
+    const res=await SB.req('quiz_results?select=student_id,student_name,score');
+    const agg={};
+    (res||[]).forEach(r=>{
+      const sid=String(r.student_id||''); if(!sid) return;
+      if(!agg[sid]) agg[sid]={student_id:sid,name:r.student_name||'',points:0,quizzes:0};
+      agg[sid].points+=Number(r.score)||0;
+      agg[sid].quizzes+=1;
+      if(r.student_name) agg[sid].name=r.student_name;
+    });
+    return Object.keys(agg).map(k=>agg[k]).sort((a,b)=>b.points-a.points);
+  },
+  // ---- Diskusi siswa ----
+  getDiscussion:(o={})=> SB.req('discussion?select=*'+(o.student_id?'&student_id=eq.'+SB.enc(o.student_id):'')+'&order=created_at.asc'),
+  async addDiscussion(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id},SB_COLS.discussion);
+    await SB.req('discussion',{method:'POST',body:row,prefer:'return=minimal',isWrite:true});
+    return {id};
+  },
+  // ---- Rating kelas & guru ----
+  getRatings:(o={})=> SB.req('ratings?select=*'+(o.tutor_id?'&tutor_id=eq.'+SB.enc(o.tutor_id):'')+(o.student_id?'&student_id=eq.'+SB.enc(o.student_id):'')+(o.class_id?'&class_id=eq.'+SB.enc(o.class_id):'')+'&order=created_at.desc'),
+  async addRating(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id},SB_COLS.ratings);
+    await SB.req('ratings',{method:'POST',body:row,prefer:'resolution=merge-duplicates,return=minimal',isWrite:true});
+    return {id};
+  },
+  // ---- My Diary (murid ↔ guru) ----
+  getDiary:(o={})=> SB.req('diary?select=*'+(o.student_id?'&student_id=eq.'+SB.enc(o.student_id):'')+(o.tutor_id?'&tutor_id=eq.'+SB.enc(o.tutor_id):'')+'&order=created_at.asc'),
+  async addDiary(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id},SB_COLS.diary);
+    await SB.req('diary',{method:'POST',body:row,prefer:'return=minimal',isWrite:true});
+    return {id};
+  },
+  // ---- Task / tugas ----
+  getTasks:(o={})=> SB.req('tasks?select=*'+(o.student_id?'&student_id=eq.'+SB.enc(o.student_id):'')+(o.tutor_id?'&tutor_id=eq.'+SB.enc(o.tutor_id):'')+'&order=created_at.desc'),
+  async addTask(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id,status:d.status||'assigned'},SB_COLS.tasks);
+    await SB.req('tasks',{method:'POST',body:row,prefer:'return=minimal',isWrite:true});
+    return {id};
+  },
+  async updateTask(d){
+    const row=sbPick(d,SB_COLS.tasks.filter(c=>c!=='id'));
+    await SB.req('tasks?id=eq.'+SB.enc(d.id),{method:'PATCH',body:row,prefer:'return=minimal',isWrite:true});
+    return {updated:d.id};
+  },
+  async deleteTask(id){ await SB.req('tasks?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
+  // ---- Chat (Diskusi Kelas & Diskusi Guru) — room-based ----
+  getChat:(o={})=> SB.req('chat?select=*'+(o.room?'&room=eq.'+SB.enc(o.room):'')+'&order=created_at.asc'),
+  async addChat(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id},SB_COLS.chat);
+    await SB.req('chat',{method:'POST',body:row,prefer:'return=minimal',isWrite:true});
+    return {id};
+  },
+  // ---- Teacher Bulletin Board ----
+  getTBoard:()=> SB.req('tboard?select=*&order=created_at.desc'),
+  async addTBoard(d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id,date:d.date||todayStr()},SB_COLS.tboard);
+    await SB.req('tboard',{method:'POST',body:row,prefer:'return=minimal',isWrite:true});
+    return {id};
+  },
+  async deleteTBoard(id){ await SB.req('tboard?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
+  getTBoardReads:(o={})=> SB.req('tboard_read?select=*'+(o.board_id?'&board_id=eq.'+SB.enc(o.board_id):'')+(o.reader_id?'&reader_id=eq.'+SB.enc(o.reader_id):'')),
+  async markTBoardRead(d){
+    const id=(d.board_id||'')+'_'+(d.reader_id||'');
+    const row={id,board_id:d.board_id||'',reader_id:d.reader_id||'',reader_name:d.reader_name||'',read_at:d.read_at||new Date().toISOString()};
+    await SB.req('tboard_read',{method:'POST',body:row,prefer:'resolution=merge-duplicates,return=minimal',isWrite:true});
+    return {id};
+  },
   // ---- Uploads → Supabase Storage (bucket 'materials'), simpan URL saja ----
   async uploadFile(base64,filename){
     const blob=dataURLtoBlob(base64);
@@ -422,6 +638,344 @@ function matLinks(u){
 }
 
 /* ============================================================
+   CLASS LIFECYCLE — status, attendance %, certificate (shared)
+   ============================================================ */
+/* Status kelas: 'requested' (diajukan murid/ortu) · 'scheduled' (disetujui/aktif)
+   · 'declined' (ditolak) · 'reschedule' (minta ganti jadwal, nunggu ACC) · 'done' (selesai).
+   Kelas lama tanpa status dianggap 'scheduled'. */
+const CLASS_STATUS = {
+  requested:{label:'Menunggu ACC',cls:'badge-pending',ic:'🕒'},
+  scheduled:{label:'Terjadwal',cls:'badge-active',ic:'📅'},
+  reschedule:{label:'Minta Reschedule',cls:'badge-pending',ic:'🔄'},
+  declined:{label:'Ditolak',cls:'badge-off',ic:'✖️'},
+  done:{label:'Selesai',cls:'badge-paid',ic:'✅'},
+};
+function classStatus(c){ return (c&&c.status) ? c.status : 'scheduled'; }
+function statusBadge(c){
+  const s=CLASS_STATUS[classStatus(c)]||CLASS_STATUS.scheduled;
+  return `<span class="badge ${s.cls}">${s.ic} ${s.label.toUpperCase()}</span>`;
+}
+// kelas yang dihitung sebagai sesi nyata (bukan ajuan/ditolak/pending reschedule)
+function isSession(c){ const s=classStatus(c); return s==='scheduled'||s==='done'; }
+
+/* Attendance absensi: '', 'hadir', 'izin', 'alpa' (alpha). */
+const ATTEND_META = {
+  hadir:{label:'Hadir',cls:'badge-paid',ic:'✅'},
+  izin:{label:'Izin',cls:'badge-pending',ic:'📝'},
+  alpa:{label:'Alpa',cls:'badge-off',ic:'❌'},
+};
+function attendBadge(v){
+  const a=ATTEND_META[v];
+  if(a) return `<span class="badge ${a.cls}">${a.ic} ${a.label.toUpperCase()}</span>`;
+  return '<span class="badge badge-pending">🕒 TERJADWAL</span>';
+}
+// Badge yang konsisten dengan perhitungan %: sesi lampau yang belum ditandai dianggap hadir.
+function attendBadgeFor(c){
+  if(c.attend) return attendBadge(c.attend);
+  if(isSession(c) && c.date && c.date<todayStr())
+    return '<span class="badge badge-paid" title="Belum ditandai guru — dihitung hadir">✅ HADIR</span>';
+  return '<span class="badge badge-pending">🕒 TERJADWAL</span>';
+}
+/* Hitung statistik kehadiran dari array kelas (1 murid).
+   pct = hadir / (sesi yang sudah di-mark hadir/izin/alpa) × 100.
+   Sesi lampau tanpa mark dianggap hadir (kompatibel data lama). */
+function attendanceStats(classes){
+  const ses=(classes||[]).filter(isSession);
+  let hadir=0,izin=0,alpa=0,belum=0;
+  const today=todayStr();
+  ses.forEach(c=>{
+    const a=c.attend;
+    if(a==='hadir')hadir++;
+    else if(a==='izin')izin++;
+    else if(a==='alpa')alpa++;
+    else if(c.date && c.date<today) hadir++;    // sesi lampau belum di-mark → anggap hadir
+    else belum++;                               // hari ini / akan datang → belum dihitung
+  });
+  const counted=hadir+izin+alpa;
+  const pct=counted?Math.round(hadir/counted*100):0;
+  return {total:ses.length,hadir,izin,alpa,belum,counted,pct};
+}
+const CERT_MIN=80;   // ambang kehadiran & penyelesaian tugas untuk Certificate of Completion
+// Penyelesaian Extended Practice (tugas). Tanpa tugas → dianggap 100% (tidak menghalangi).
+function taskCompletion(tasks){
+  const t=(tasks||[]); const total=t.length;
+  const done=t.filter(x=>((x&&x.status)||'assigned')!=='assigned').length;
+  const pct=total?Math.round(done/total*100):100;
+  return {total,done,pct};
+}
+// Syarat sertifikat: kehadiran ≥80% DAN (kalau ada tugas) penyelesaian tugas ≥80%.
+function certEligible(stats,tstats){
+  if(!(stats && stats.counted>0 && stats.pct>=CERT_MIN)) return false;
+  if(tstats && tstats.total>0 && tstats.pct<CERT_MIN) return false;
+  return true;
+}
+
+/* Certificate of Completion — buka tab baru berisi e-cert siap di-print/Save as PDF */
+function openCertificate(o){
+  o=o||{};
+  const nm=esc(o.name||'Student');
+  const prog=esc(o.program||'Language Program');
+  const pct=o.pct!=null?o.pct:'';
+  const period=esc(o.period||'');
+  const sessions=o.sessions!=null?o.sessions:'';
+  const issuer=esc(o.issuer||'Kwelingo Academy');
+  const dateStr=esc(o.date||longToday());
+  const no=esc(o.no||('KWE/'+new Date().getFullYear()+'/'+Math.floor(1000+Math.random()*9000)));
+  const logo=location.href.replace(/[^/]*$/,'')+'assets/logo.png';
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Certificate — ${nm}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Poppins',sans-serif;background:#f3ece0;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+  .cert{width:1000px;max-width:100%;aspect-ratio:1.414/1;background:#FFF9F0;position:relative;padding:60px 64px;
+    border:3px solid #E9A77C;border-radius:14px;box-shadow:0 14px 50px rgba(0,0,0,.14);overflow:hidden}
+  .cert:before{content:"";position:absolute;inset:14px;border:1.5px solid #8EC9D9;border-radius:8px;pointer-events:none}
+  .blob{position:absolute;border-radius:50%;opacity:.5}
+  .b1{width:220px;height:220px;background:#F4D98B;top:-90px;right:-70px}
+  .b2{width:180px;height:180px;background:#A8C9A0;bottom:-80px;left:-60px}
+  .inner{position:relative;z-index:2;text-align:center}
+  .brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px}
+  .brand img{height:52px}
+  .brand .bn{font-family:'Fredoka';font-size:26px;font-weight:700;color:#8EC9D9}
+  .cap{letter-spacing:4px;font-size:12px;color:#B08968;margin:14px 0 4px}
+  .title{font-family:'Fredoka';font-size:40px;font-weight:700;color:#4B4540;margin-bottom:18px}
+  .pre{font-size:13px;color:#6b6258}
+  .name{font-family:'Fredoka';font-size:38px;font-weight:700;color:#E9A77C;margin:10px 0 6px;border-bottom:2px dashed #e0cdb6;display:inline-block;padding:0 26px 8px}
+  .desc{font-size:14px;color:#4B4540;max-width:640px;margin:16px auto 0;line-height:1.6}
+  .desc b{color:#3E8A9E}
+  .meta{display:flex;justify-content:center;gap:40px;margin-top:26px}
+  .meta .m .v{font-family:'Fredoka';font-size:22px;font-weight:700;color:#7FB37A}
+  .meta .m .l{font-size:11px;color:#8a8178;letter-spacing:1px}
+  .foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;padding:0 20px}
+  .sig{text-align:center;min-width:200px}
+  .sig .ln{border-top:1.5px solid #4B4540;margin-bottom:6px}
+  .sig .r{font-size:11px;color:#8a8178}
+  .sig b{color:#4B4540;font-size:13px}
+  .seal{width:92px;height:92px;border-radius:50%;background:radial-gradient(circle,#F4D98B,#E9A77C);display:flex;align-items:center;justify-content:center;
+    font-family:'Fredoka';font-weight:700;color:#fff;font-size:12px;text-align:center;line-height:1.1;box-shadow:0 4px 14px rgba(233,167,124,.5)}
+  .no{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:10.5px;color:#b3a898;z-index:2}
+  .pbar{position:fixed;top:0;left:0;right:0;background:#3E8A9E;color:#fff;padding:10px;text-align:center;font-size:13px;z-index:99}
+  .pbar button{background:#fff;color:#3E8A9E;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px;font-family:'Poppins'}
+  @media print{.pbar{display:none}body{background:#fff;padding:0}.cert{box-shadow:none;border-color:#E9A77C}@page{size:A4 landscape;margin:0}}
+</style></head><body>
+  <div class="pbar">💾 Simpan sebagai PDF lewat tombol ini → pilih <b>Save as PDF</b>
+    <button onclick="window.print()">🖨️ Download / Print</button></div>
+  <div class="cert">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="inner">
+      <div class="brand"><img src="${logo}" alt=""><span class="bn">${issuer}</span></div>
+      <div class="cap">HOME FOR LANGUAGE LEARNERS</div>
+      <div class="title">Certificate of Completion</div>
+      <div class="pre">This certificate is proudly presented to</div>
+      <div class="name">${nm}</div>
+      <div class="desc">for successfully completing the <b>${prog}</b> program at ${issuer}
+        with an attendance of <b>${pct}%</b>${period?` during <b>${period}</b>`:''}, demonstrating
+        dedication, consistency, and a genuine love for learning languages.</div>
+      <div class="meta">
+        <div class="m"><div class="v">${pct}%</div><div class="l">ATTENDANCE</div></div>
+        ${sessions!==''?`<div class="m"><div class="v">${sessions}</div><div class="l">SESSIONS</div></div>`:''}
+      </div>
+      <div class="foot">
+        <div class="sig"><div class="ln"></div><b>${issuer}</b><div class="r">Academy Director</div></div>
+        <div class="seal">KWE<br>HOME</div>
+        <div class="sig"><div class="ln"></div><b>${dateStr}</b><div class="r">Date Issued</div></div>
+      </div>
+    </div>
+    <div class="no">Certificate No. ${no}</div>
+  </div>
+</body></html>`;
+  const w=window.open('','_blank');
+  if(!w){ toast('Izinkan pop-up untuk membuka sertifikat','err'); return; }
+  w.document.write(html); w.document.close();
+}
+
+/* ============================================================
+   KEUANGAN — status tagihan & slip gaji tentor (shared)
+   ============================================================ */
+/* Status pembayaran murid: LUNAS / TERVERIFIKASI (lunas) ·
+   MENUNGGU VERIFIKASI (bukti dikirim ortu) · BELUM BAYAR (tagihan). */
+const PAY_STATUS = {
+  'LUNAS':{cls:'badge-paid',ic:'✅'},
+  'TERVERIFIKASI':{cls:'badge-paid',ic:'✅'},
+  'MENUNGGU VERIFIKASI':{cls:'badge-pending',ic:'🕒'},
+  'BELUM BAYAR':{cls:'badge-off',ic:'📌'},
+};
+function payStatusBadge(s){ s=String(s||'LUNAS').toUpperCase(); const m=PAY_STATUS[s]||PAY_STATUS['LUNAS']; return `<span class="badge ${m.cls}">${m.ic} ${s}</span>`; }
+function isPaid(s){ s=String(s||'').toUpperCase(); return s==='LUNAS'||s==='TERVERIFIKASI'; }
+
+/* Slip Pembayaran Fee Tentor (bisa dipakai sebagai prepayment slip) — buka tab print/PDF */
+function openPayrollSlip(o){
+  o=o||{};
+  const nm=esc(o.name||'Tentor');
+  const period=esc(o.period||'');
+  const sessions=o.sessions!=null?o.sessions:'-';
+  const fee=Number(o.fee)||0, bonus=Number(o.bonus)||0, total=(o.total!=null?Number(o.total):fee+bonus);
+  const note=esc(o.note||'');
+  const transfer=esc(o.transfer_date||'');
+  const status=esc((o.status||'PREPAYMENT').toUpperCase());
+  const issuer=esc(o.issuer||'Kwelingo Academy');
+  const no=esc(o.no||('KWE-PAY/'+new Date().getFullYear()+'/'+Math.floor(1000+Math.random()*9000)));
+  const dateStr=esc(o.date||longToday());
+  const logo=location.href.replace(/[^/]*$/,'')+'assets/logo.png';
+  const rp=n=>'Rp '+(Number(n)||0).toLocaleString('id-ID');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Slip Fee — ${nm}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Poppins',sans-serif;background:#f3ece0;display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:30px 18px}
+  .slip{width:640px;max-width:100%;background:#FFF9F0;border:2px solid #8EC9D9;border-radius:14px;overflow:hidden;box-shadow:0 12px 44px rgba(0,0,0,.12)}
+  .hd{background:linear-gradient(120deg,#8EC9D9,#5FA9BD);color:#fff;padding:20px 26px;display:flex;align-items:center;gap:14px}
+  .hd img{height:46px;background:#fff;border-radius:10px;padding:4px}
+  .hd .bn{font-family:'Fredoka';font-size:22px;font-weight:700;line-height:1.1}
+  .hd .sb{font-size:11px;opacity:.9;letter-spacing:2px}
+  .hd .tag{margin-left:auto;background:rgba(255,255,255,.22);padding:6px 12px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:1px}
+  .bd{padding:24px 26px}
+  .ttl{font-family:'Fredoka';font-size:20px;font-weight:700;color:#4B4540;margin-bottom:2px}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 30px;margin:14px 0 18px;font-size:13px;color:#4B4540}
+  .meta b{color:#3E8A9E}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  td,th{padding:10px 12px;text-align:left;border-bottom:1px solid #ece1cf}
+  th{background:#F7F1E6;color:#8a7a63;font-size:11px;letter-spacing:.5px}
+  td.r,th.r{text-align:right}
+  .tot{background:#EAF6FA}
+  .tot td{font-family:'Fredoka';font-weight:700;font-size:16px;color:#3E8A9E;border:none}
+  .note{margin-top:14px;font-size:12.5px;color:#6b6258;white-space:pre-line}
+  .sign{display:flex;justify-content:space-between;margin-top:28px;font-size:12px;color:#8a8178}
+  .sign .ln{border-top:1.5px solid #4B4540;width:170px;margin-bottom:6px;margin-top:40px}
+  .sign b{color:#4B4540}
+  .ft{text-align:center;font-size:10.5px;color:#b3a898;padding:12px}
+  .pbar{position:fixed;top:0;left:0;right:0;background:#3E8A9E;color:#fff;padding:10px;text-align:center;font-size:13px;z-index:99}
+  .pbar button{background:#fff;color:#3E8A9E;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px;font-family:'Poppins'}
+  @media print{.pbar{display:none}body{background:#fff;padding:0}.slip{box-shadow:none}@page{size:A4;margin:12mm}}
+</style></head><body>
+  <div class="pbar">💾 Simpan sebagai PDF → <b>Save as PDF</b> <button onclick="window.print()">🖨️ Download / Print</button></div>
+  <div class="slip">
+    <div class="hd"><img src="${logo}" alt=""><div><div class="bn">${issuer}</div><div class="sb">HOME FOR LANGUAGE LEARNERS</div></div><div class="tag">${status}</div></div>
+    <div class="bd">
+      <div class="ttl">Slip Pembayaran Fee Tentor</div>
+      <div class="meta">
+        <div>Tentor: <b>${nm}</b></div><div>Periode: <b>${period||'-'}</b></div>
+        <div>Jumlah Sesi: <b>${sessions}</b></div>${transfer?`<div>Tgl Transfer: <b>${transfer}</b></div>`:''}
+        <div>No: <b>${no}</b></div><div>Tgl Terbit: <b>${dateStr}</b></div>
+      </div>
+      <table>
+        <thead><tr><th>Komponen</th><th class="r">Jumlah</th></tr></thead>
+        <tbody>
+          <tr><td>Fee Mengajar (${sessions} sesi)</td><td class="r">${rp(fee)}</td></tr>
+          <tr><td>Komisi / Bonus</td><td class="r">${rp(bonus)}</td></tr>
+          <tr class="tot"><td>TOTAL DITERIMA</td><td class="r">${rp(total)}</td></tr>
+        </tbody>
+      </table>
+      ${note?`<div class="note">📝 ${note}</div>`:''}
+      <div class="sign">
+        <div><div class="ln"></div><b>${issuer}</b><div>Admin / Owner</div></div>
+        <div><div class="ln"></div><b>${nm}</b><div>Penerima</div></div>
+      </div>
+    </div>
+    <div class="ft">Slip ini sah sebagai bukti pembayaran fee / prepayment tentor Kwelingo · ${no}</div>
+  </div>
+</body></html>`;
+  const w=window.open('','_blank');
+  if(!w){ toast('Izinkan pop-up untuk membuka slip','err'); return; }
+  w.document.write(html); w.document.close();
+}
+
+/* ============================================================
+   FEEDBACK & BELAJAR — rating, diary, tasks (shared helpers)
+   ============================================================ */
+function starsHTML(n,max){
+  n=Math.round(Number(n)||0); max=max||5; let s='';
+  for(let i=1;i<=max;i++) s+=`<span style="color:${i<=n?'#F4C544':'#dcd3c4'}">★</span>`;
+  return `<span style="font-size:15px;letter-spacing:1px">${s}</span>`;
+}
+function avgStars(list){ if(!list||!list.length) return 0; return list.reduce((a,r)=>a+(Number(r.stars)||0),0)/list.length; }
+const TASK_STATUS={
+  assigned:{label:'Ditugaskan',cls:'badge-pending',ic:'🕒'},
+  submitted:{label:'Dikumpulkan',cls:'badge-active',ic:'📤'},
+  graded:{label:'Dinilai',cls:'badge-paid',ic:'⭐'},
+  done:{label:'Selesai',cls:'badge-paid',ic:'✅'},   // kompatibel data lama
+};
+function taskStatus(t){ const s=(t&&t.status)||'assigned'; return s==='done'?'submitted':s; }
+function taskBadge(s){ const m=TASK_STATUS[s||'assigned']||TASK_STATUS.assigned; return `<span class="badge ${m.cls}">${m.ic} ${m.label.toUpperCase()}</span>`; }
+// Jenis Extended Practice
+const TASK_TYPES={
+  assignment:'Assignment', writing:'Writing', lesson_review:'Lesson Review',
+  final_project:'Final Project', peer_case:'Peer Case-Study', voice_video:'Voice/Video Recording',
+};
+function taskTypeLabel(t){ return TASK_TYPES[t]||'Tugas'; }
+// Kategori rating kelas & guru (rubrik 1-5)
+const RATING_CATS=[
+  'Guru menjelaskan materi dengan jelas',
+  'Materi kelas bermanfaat',
+  'Pelajaran tersusun rapi',
+  'Guru mendorong partisipasi murid',
+  'Aktivitas kelas menarik',
+  'Tugas sesuai & pas',
+  'Suasana kelas nyaman',
+  'Secara keseluruhan saya puas dengan kelas ini',
+];
+function parseScores(r){ try{ return r&&r.scores?(typeof r.scores==='string'?JSON.parse(r.scores):r.scores):[]; }catch(e){ return []; } }
+
+/* ============================================================
+   KOMUNIKASI — chat (polling) & rekaman kelas (shared)
+   ============================================================ */
+// Render satu feed chat ke elemen el; meId = id pengguna sekarang (pesannya di kanan)
+function renderChatFeed(el,list,meId){
+  if(!el) return;
+  el.innerHTML=(list||[]).map(m=>{
+    const me=String(m.sender_id)===String(meId);
+    const role=m.role?`<span style="color:var(--muted);font-weight:500;font-size:10px"> · ${esc(m.role)}</span>`:'';
+    return `<div class="msg ${me?'me':''}"><div class="av">${(String(m.sender_name||'?')[0]||'?').toUpperCase()}</div>
+      <div class="bub"><b>${esc(m.sender_name||'')}${role}</b>${esc(m.message||'')}<div class="t">${m.created_at?prettyDate(String(m.created_at).slice(0,10)):''}</div></div></div>`;
+  }).join('') || '<div class="muted" style="text-align:center;padding:20px">Belum ada pesan. Mulai percakapan 👋</div>';
+  el.scrollTop=el.scrollHeight;
+}
+// Polling chat: panggil start(room) untuk mulai, stop() saat pindah view
+function makeChatPoller(renderFn,intervalMs){
+  let timer=null, room=null, lastLen=-1;
+  async function tick(force){
+    if(!room) return;
+    let list=[]; try{ list=await API.getChat({room})||[]; }catch(e){ return; }
+    if(force || list.length!==lastLen){ lastLen=list.length; renderFn(list); }
+  }
+  return {
+    start(r){ room=r; lastLen=-1; tick(true); clearInterval(timer); timer=setInterval(tick,intervalMs||4000); },
+    stop(){ clearInterval(timer); timer=null; room=null; },
+    refresh(){ tick(true); }
+  };
+}
+// Perekam voice note → data URL (base64). Butuh izin mikrofon.
+const VoiceRec={
+  rec:null,chunks:[],stream:null,
+  supported(){ return !!(navigator.mediaDevices && window.MediaRecorder); },
+  async start(){
+    this.stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    this.chunks=[]; this.rec=new MediaRecorder(this.stream);
+    this.rec.ondataavailable=e=>{ if(e.data&&e.data.size) this.chunks.push(e.data); };
+    this.rec.start();
+  },
+  stop(){
+    return new Promise(res=>{
+      if(!this.rec){ res(null); return; }
+      this.rec.onstop=()=>{
+        const blob=new Blob(this.chunks,{type:(this.chunks[0]&&this.chunks[0].type)||'audio/webm'});
+        try{ (this.stream.getTracks()||[]).forEach(t=>t.stop()); }catch(e){}
+        const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(blob);
+      };
+      this.rec.stop();
+    });
+  }
+};
+function hasRec(c){ return !!(c && (c.rec_audio||c.rec_video)); }
+// Sel rekaman (audio player + link video) untuk ditampilkan di tabel/laporan
+function recCell(c){
+  const parts=[];
+  if(c.rec_audio) parts.push(`<audio controls preload="none" src="${c.rec_audio}" style="height:34px;max-width:200px;vertical-align:middle"></audio>`);
+  if(c.rec_video){ const yt=/youtu|vimeo/i.test(c.rec_video); parts.push(`<a class="btn btn-outline btn-sm" href="${c.rec_video}" target="_blank">${yt?'▶️ Tonton Video':'🔗 Video'}</a>`); }
+  return parts.length?parts.join(' '):'<span class="muted">-</span>';
+}
+
+/* ============================================================
    DEMO DATA  (mirrors the mockups; used until SCRIPT_URL is set)
    ============================================================ */
 const DEMO = {
@@ -432,10 +986,10 @@ const DEMO = {
   ],
   students:[
     {id:'s1',nama:'Anton Wijaya',school:'SMP Petra 1',address:'Jl. Kertajaya 12, Surabaya',dob:'2013-05-14',grade:'7',parent_name:'Ibu Rina Wijaya',wa_ortu:'081234567890',
-     tutor_id:'t1',schedule:'Sen & Kam · 19.00',fee_per_meeting:150000,fee_tentor:90000,meeting_minutes:90,
+     tutor_id:'t1',schedule:'Sen & Kam · 19.00',class_group:'English A · Sen&Kam 19.00',fee_per_meeting:150000,fee_tentor:90000,meeting_minutes:90,
      deposit_meetings:16,add_fee:300000,add_fee_note:'Biaya les olimpiade (Agustus)',pin:'1111',active:'aktif',link_id:'anton-s1'},
     {id:'s2',nama:'Budi Santoso',school:'SMP Cita Hati',address:'Jl. Diponegoro 45, Surabaya',dob:'2012-09-03',grade:'8',parent_name:'Bpk. Hadi',wa_ortu:'081234500011',
-     tutor_id:'t2',schedule:'Sel · 16.00',fee_per_meeting:150000,fee_tentor:90000,meeting_minutes:90,
+     tutor_id:'t2',schedule:'Sel · 16.00',class_group:'English A · Sen&Kam 19.00',fee_per_meeting:150000,fee_tentor:90000,meeting_minutes:90,
      deposit_meetings:8,pin:'2222',active:'aktif',link_id:'budi-s2'},
     {id:'s3',nama:'Clara Halim',school:'SD Gloria',address:'Jl. Mayjend Sungkono 8, Surabaya',dob:'2014-01-22',grade:'6',parent_name:'Ibu Mega',wa_ortu:'081234500022',
      tutor_id:'t3',schedule:'Rab & Jum · 15.30',fee_per_meeting:140000,fee_tentor:85000,meeting_minutes:90,
@@ -449,14 +1003,19 @@ const DEMO = {
     // history for Anton
     {id:'c1',date:'2026-07-28',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',
      topic:'Linear Equation (Persamaan Linear)',note:'Anton cukup aktif dan memahami materi dengan baik.',material_url:'materi/linear-equation.pdf',doc_url:'doc1'},
-    {id:'c2',date:'2026-07-21',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',
+    {id:'c2',date:'2026-07-21',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',status:'done',attend:'izin',
      topic:'Algebraic Fractions',note:'Perlu latihan lebih banyak soal cerita.',material_url:'materi/algebraic-fractions.pdf',doc_url:'doc2'},
     {id:'c3',date:'2026-07-14',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'21:00',duration:120,type:'onsite',
      topic:'Linear Inequalities',note:'Kelas ditambah 30 menit.',material_url:'materi/inequalities.pdf',doc_url:'doc3'},
     {id:'c4',date:'2026-07-07',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',
      topic:'Integers (Bilangan Bulat)',note:'Anton sudah mulai terbiasa.',material_url:'materi/integers.pdf',doc_url:'doc4'},
-    {id:'c5',date:'2026-06-30',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',
-     topic:'Introduction to Algebra',note:'Good job!',material_url:'materi/intro-algebra.pdf',doc_url:'doc5'},
+    {id:'c5',date:'2026-06-30',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',status:'done',attend:'hadir',
+     topic:'Introduction to Algebra',note:'Good job!',material_url:'materi/intro-algebra.pdf',doc_url:'doc5',rec_video:'https://youtu.be/dQw4w9WgXcQ'},
+    // --- demo permintaan kelas (status requested / reschedule) ---
+    {id:'r1',date:'2026-09-20',student_id:'s2',tutor_id:'t2',start_time:'16:00',end_time:'',duration:90,type:'online',status:'requested',req_by:'ortu',
+     req_note:'Minta tambahan sesi Science sebelum ujian.',topic:'',note:''},
+    {id:'r2',date:'2026-09-18',student_id:'s3',tutor_id:'t3',start_time:'15:30',end_time:'',duration:90,type:'onsite',status:'reschedule',req_by:'murid',
+     resched_date:'2026-09-19',resched_time:'16:30',resched_note:'Bentrok acara sekolah, mohon digeser.',topic:'',note:''},
   ],
   deposits:{
     s1:{paid_meetings:16,minutes_total:1440,minutes_used:900,fee_per_meeting:150000,last_paid:'2026-07-20'},
@@ -466,6 +1025,38 @@ const DEMO = {
   payments:[
     {id:'pay1',student_id:'s1',month:'2026-06',pay_date:'2026-06-01',meetings:8,price_per_meet:150000,duration:90,
      deposit_total:1200000,carry_in:0,extra_minutes:0,add_fee1:0,add_fee2:0,add_fee2_note:'',next_meetings:8,next_deposit:1200000,grand_total:1200000,status:'LUNAS'},
+    {id:'pay2',student_id:'s1',month:'2026-09',pay_date:'2026-09-01',meetings:8,price_per_meet:150000,duration:90,
+     deposit_total:1200000,carry_in:0,extra_minutes:0,add_fee1:0,add_fee2:0,add_fee2_note:'',next_meetings:8,next_deposit:1200000,grand_total:1200000,status:'BELUM BAYAR'},
+  ],
+  ratings:[
+    {id:'rt1',class_id:'c5',student_id:'s1',tutor_id:'t1',stars:5,scores:[5,5,5,4,5,5,5,5],liked:'Cara ngajarnya seru!',improve:'Mungkin lebih banyak latihan soal.',comment:'Penjelasannya jelas banget, makasih Mr. Yesaya!',created_at:'2026-06-30T20:40:00'},
+  ],
+  tboard:[
+    {id:'tb1',title:'Rapat Koordinasi Bulanan',body:'Semua guru wajib hadir rapat koordinasi Sabtu 13 Sep pukul 10.00 via Zoom. Agenda: evaluasi kelas & jadwal baru.',date:'2026-09-08',author:'Owner',created_at:'2026-09-08T08:00:00'},
+    {id:'tb2',title:'Template Laporan Baru',body:'Mulai bulan ini gunakan template LDS yang baru ya. Link ada di Teaching Resources.',date:'2026-09-01',author:'Admin',created_at:'2026-09-01T09:00:00'},
+  ],
+  tboard_read:[
+    {id:'tb2_t1',board_id:'tb2',reader_id:'t1',reader_name:'Mr. Yesaya',read_at:'2026-09-02T07:30:00'},
+  ],
+  announcements:[
+    {id:'an1',title:'Libur Nasional',body:'Kwelingo libur tanggal 17 Agustus. Kelas diliburkan.',date:'2026-08-10',class_group:'',author:'Owner',created_at:'2026-08-10T08:00:00'},
+    {id:'an2',title:'Ganti Jadwal Minggu Ini',body:'Kelas English A hari Senin digeser ke Selasa jam 19.00 karena guru ada acara.',date:'2026-09-09',class_group:'English A · Sen&Kam 19.00',author:'Admin',created_at:'2026-09-09T10:00:00'},
+  ],
+  _settings:{TEACHER_SOP_URL:'https://drive.google.com/file/d/1example/preview'},
+  diary:[
+    {id:'dy1',student_id:'s1',tutor_id:'t1',author:'murid',message:'Pak, saya masih bingung bagian faktorisasi.',created_at:'2026-07-20T10:00:00'},
+    {id:'dy2',student_id:'s1',tutor_id:'t1',author:'guru',message:'Tenang Anton, besok kita ulang pelan-pelan ya. Coba kerjakan WS hal. 12 dulu.',created_at:'2026-07-20T12:30:00'},
+  ],
+  tasks:[
+    {id:'tk1',student_id:'s1',tutor_id:'t1',title:'Worksheet Algebra hal. 33–36',detail:'Kerjakan nomor ganjil, foto & upload hasilnya.',type:'assignment',due_date:'2026-07-30',status:'assigned',done_at:''},
+    {id:'tk2',student_id:'s1',tutor_id:'t1',title:'Write a short travel review',detail:'Tulis review tempat wisata impianmu (min. 100 kata).',type:'writing',due_date:'2026-07-22',status:'graded',submit_text:'My dream destination is Japan...',submit_url:'https://drive.google.com/file/d/xxx',submit_at:'2026-07-21',points:'90',feedback:'Bagus! Perhatikan past tense ya.',graded_at:'2026-07-22'},
+    {id:'tk3',student_id:'s1',tutor_id:'t1',title:'Final Project: Presentasi',detail:'Upload file presentasi akhir.',type:'final_project',due_date:'2026-08-05',status:'submitted',submit_url:'https://drive.google.com/file/d/yyy',submit_text:'',submit_at:'2026-08-01'},
+  ],
+  chat:[
+    {id:'ch1',room:'kelas:English A · Sen&Kam 19.00',sender_id:'s2',sender_name:'Budi Santoso',role:'murid',message:'Teman-teman, PR yang nomor 5 jawabannya berapa?',created_at:'2026-09-10T09:00:00'},
+    {id:'ch2',room:'kelas:English A · Sen&Kam 19.00',sender_id:'s1',sender_name:'Anton Wijaya',role:'murid',message:'Aku dapat 12, kamu?',created_at:'2026-09-10T09:05:00'},
+    {id:'ch3',room:'guru',sender_id:'t1',sender_name:'Mr. Yesaya',role:'guru',message:'Selamat pagi, jangan lupa isi laporan kelas hari ini ya.',created_at:'2026-09-11T07:30:00'},
+    {id:'ch4',room:'guru',sender_id:'admin',sender_name:'Admin',role:'admin',message:'Noted pak. Jadwal minggu depan sudah saya update.',created_at:'2026-09-11T07:45:00'},
   ],
   handle(p){
     return new Promise((res,rej)=>{
@@ -520,6 +1111,26 @@ const DEMO = {
         return clone(t);
       }
       case 'getAttendance': return clone(this.classes.filter(c=>!p.date||c.date===p.date));
+      case 'getRatings':{ let r=clone(this.ratings); if(p.tutor_id)r=r.filter(x=>x.tutor_id===p.tutor_id); if(p.student_id)r=r.filter(x=>x.student_id===p.student_id); if(p.class_id)r=r.filter(x=>x.class_id===p.class_id); return r; }
+      case 'addRating':{ const i=this.ratings.findIndex(x=>x.class_id===p.class_id&&x.student_id===p.student_id); if(i>=0){Object.assign(this.ratings[i],p);return {id:this.ratings[i].id};} const id='rt'+Date.now(); this.ratings.push({id,created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'getDiary':{ let r=clone(this.diary); if(p.student_id)r=r.filter(x=>String(x.student_id)===String(p.student_id)); if(p.tutor_id)r=r.filter(x=>String(x.tutor_id)===String(p.tutor_id)); return r.sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))); }
+      case 'addDiary':{ const id='dy'+Date.now(); this.diary.push({id,created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'getTasks':{ let r=clone(this.tasks); if(p.student_id)r=r.filter(x=>String(x.student_id)===String(p.student_id)); if(p.tutor_id)r=r.filter(x=>String(x.tutor_id)===String(p.tutor_id)); return r; }
+      case 'addTask':{ const id='tk'+Date.now(); this.tasks.push({id,status:'assigned',done_at:'',created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'updateTask':{ const t=this.tasks.find(x=>x.id===p.id); if(t)Object.assign(t,p); return {updated:p.id}; }
+      case 'deleteTask':{ this.tasks=this.tasks.filter(x=>x.id!==p.id); return {deleted:p.id}; }
+      case 'getChat':{ let r=clone(this.chat); if(p.room)r=r.filter(x=>x.room===p.room); return r.sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))); }
+      case 'addChat':{ const id='ch'+Date.now(); this.chat.push({id,created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'getTBoard': return clone(this.tboard).sort((a,b)=>String(b.created_at||b.date).localeCompare(String(a.created_at||a.date)));
+      case 'addTBoard':{ const id='tb'+Date.now(); this.tboard.push({id,date:p.date||todayStr(),created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'deleteTBoard':{ this.tboard=this.tboard.filter(x=>x.id!==p.id); this.tboard_read=this.tboard_read.filter(x=>x.board_id!==p.id); return {deleted:p.id}; }
+      case 'getTBoardReads':{ let r=clone(this.tboard_read); if(p.board_id)r=r.filter(x=>x.board_id===p.board_id); if(p.reader_id)r=r.filter(x=>String(x.reader_id)===String(p.reader_id)); return r; }
+      case 'markTBoardRead':{ const id=(p.board_id||'')+'_'+(p.reader_id||''); const e=this.tboard_read.find(x=>x.id===id); if(e){Object.assign(e,{read_at:p.read_at||new Date().toISOString()});return {id};} this.tboard_read.push({id,board_id:p.board_id,reader_id:p.reader_id,reader_name:p.reader_name||'',read_at:p.read_at||new Date().toISOString()}); return {id}; }
+      case 'getAnnouncements': return clone(this.announcements).sort((a,b)=>String(b.created_at||b.date).localeCompare(String(a.created_at||a.date)));
+      case 'addAnnouncement':{ const id='an'+Date.now(); this.announcements.push({id,date:p.date||todayStr(),created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'deleteAnnouncement':{ this.announcements=this.announcements.filter(x=>x.id!==p.id); return {deleted:p.id}; }
+      case 'getSetting':{ return this._settings[p.key]!=null?this._settings[p.key]:''; }
+      case 'setSetting':{ this._settings[p.key]=String(p.value==null?'':p.value); return {ok:true}; }
       default: return null;
     }
   },

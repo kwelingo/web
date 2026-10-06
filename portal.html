@@ -3,40 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pilih Portal — KWE Lingo</title>
+<title>Kwelingo Hub</title>
 <link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3E8A9E">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kwelingo">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  body{background:linear-gradient(180deg,#4CC3D7 0%,#2BA9BF 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-  .pick{background:#fff;border-radius:24px;box-shadow:0 24px 60px rgba(20,80,95,.25);max-width:520px;width:100%;padding:32px 30px;text-align:center}
-  .pick img.logo{height:70px;margin:0 auto 10px;display:block}
-  .pick h1{font-size:22px;color:var(--navy);font-weight:800;margin-bottom:2px}
-  .pick p.sub{color:var(--muted);font-size:13.5px;margin-bottom:22px}
-  .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media(max-width:460px){.pgrid{grid-template-columns:1fr}}
-  .pbtn{display:flex;align-items:center;gap:12px;text-align:left;border:1.5px solid var(--line);border-radius:16px;padding:16px;transition:.15s;background:#fff;cursor:pointer}
-  .pbtn:hover{border-color:var(--sky);box-shadow:var(--shadow);transform:translateY(-2px)}
-  .pbtn .em{width:44px;height:44px;flex:0 0 44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--sky-soft)}
-  .pbtn.o .em{background:#fff2e6}
-  .pbtn b{display:block;color:var(--navy);font-size:15px}
-  .pbtn small{color:var(--muted);font-size:11.5px}
-  .pick .back{display:inline-block;margin-top:20px;color:var(--muted);font-size:13px}
-  .pick .back:hover{color:var(--navy)}
+:root{
+  --bg:#FFF9F0;--cream:#FDF3E6;--ink:#4B4540;--muted:#938A7E;
+  --brand:#8EC9D9;--brand-deep:#5FA9BD;--brand-dark:#3E8A9E;--cta:#E9A77C;--cta-deep:#DB8C5B;
+  --sage:#A8C9A0;--coral:#D98F86;--line:#EFE4D4;--shadow:0 10px 30px rgba(120,95,60,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+body{font-family:'Poppins',system-ui,sans-serif;color:var(--ink);background:linear-gradient(180deg,#EAF6FA,var(--bg));min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.pick{background:#fff;border-radius:26px;box-shadow:0 24px 60px rgba(120,95,60,.18);max-width:580px;width:100%;padding:34px 30px;text-align:center}
+.pick img.logo{height:66px;margin:0 auto 10px;display:block}
+.pick h1{font-family:'Fredoka',sans-serif;font-size:24px;color:var(--brand-dark);font-weight:700}
+.pick p.sub{color:var(--muted);font-size:13.5px;margin-bottom:24px}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:480px){.pgrid{grid-template-columns:1fr}}
+.pbtn{display:flex;align-items:center;gap:13px;text-align:left;border:1.5px solid var(--line);border-radius:18px;padding:16px;transition:.15s;background:#fff;cursor:pointer}
+.pbtn:hover{border-color:var(--brand);box-shadow:var(--shadow);transform:translateY(-2px)}
+.pbtn .em{width:46px;height:46px;flex:0 0 46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:23px}
+.pbtn b{font-family:'Fredoka',sans-serif;display:block;color:var(--ink);font-size:15px}
+.pbtn small{color:var(--muted);font-size:11.5px}
+.pbtn.feat{grid-column:1 / -1;border-color:var(--cta);background:#FDF3E6}
+.e-reg{background:#FBEEE2;color:var(--cta-deep)}
+.e-stu{background:#E6F4F8;color:var(--brand-dark)}
+.e-par{background:#EDF4EA;color:#6c9a63}
+.e-tea{background:#F5EEF9;color:#8B6FB5}
+.e-adm{background:#FBE9E6;color:var(--coral)}
+.e-main{background:#E6F4F8;color:var(--brand-dark)}
+.back{display:inline-block;margin-top:22px;color:var(--muted);font-size:13px}
+.back:hover{color:var(--brand-dark)}
 </style>
 </head>
 <body>
   <div class="pick">
-    <img src="assets/logo.png" class="logo" alt="KWE Lingo">
-    <h1>Pilih Portal</h1>
-    <p class="sub">KWE Lingo — More than Language</p>
+    <img src="assets/logo.png" class="logo" alt="Kwelingo">
+    <h1>Kwelingo Hub</h1>
+    <p class="sub">Home for Language Learners — pilih tujuanmu</p>
     <div class="pgrid">
-      <a class="pbtn" href="master-admin.html"><span class="em">🛡️</span><span><b>Master Admin</b><small>Kelola murid, tentor & laporan</small></span></a>
-      <a class="pbtn" href="admin.html"><span class="em">🗂️</span><span><b>Admin</b><small>Kelas harian & jadwal</small></span></a>
-      <a class="pbtn o" href="teacher.html"><span class="em">📘</span><span><b>Tentor</b><small>Jadwal, laporan & fee</small></span></a>
-      <a class="pbtn o" href="parent.html"><span class="em">👨‍👩‍👧</span><span><b>Orang Tua</b><small>Laporan, absensi & pembayaran</small></span></a>
-      <a class="pbtn" href="student.html"><span class="em">🎒</span><span><b>Siswa</b><small>Quiz, leaderboard & diskusi</small></span></a>
+      <a class="pbtn feat" href="registration.html"><span class="em e-reg">📝</span><span><b>Registration</b><small>Daftar program &amp; lihat harga</small></span></a>
+      <a class="pbtn" href="student.html"><span class="em e-stu">🎒</span><span><b>Student Login</b><small>Quiz, leaderboard &amp; diskusi</small></span></a>
+      <a class="pbtn" href="parent.html"><span class="em e-par">👨‍👩‍👧</span><span><b>Parent Hub</b><small>Laporan, absensi &amp; pembayaran</small></span></a>
+      <a class="pbtn" href="teacher.html"><span class="em e-tea">📘</span><span><b>Teacher Room</b><small>Kelas, laporan &amp; materi</small></span></a>
+      <a class="pbtn" href="master-admin.html"><span class="em e-main">🛡️</span><span><b>Main Admin</b><small>Kelola murid, guru &amp; laporan</small></span></a>
+      <a class="pbtn" href="admin.html"><span class="em e-adm">🗂️</span><span><b>Admin Harian</b><small>Kelas hari ini &amp; jadwal</small></span></a>
     </div>
     <a class="back" href="index.html">← Kembali ke halaman utama</a>
   </div>
+<script>if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }</script>
 </body>
 </html>

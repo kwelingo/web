@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orang Tua — KWE Lingo</title>
+<title>Orang Tua — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3E8A9E">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kwelingo">
 <link rel="stylesheet" href="assets/style.css">
 <style>
   .print-only{display:none}
@@ -35,7 +40,7 @@
 <body>
 
 <!-- LOGIN GATE (Orang Tua) -->
-<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#E9F8FB,#F3FBFC);display:flex;align-items:center;justify-content:center;padding:20px">
+<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#EAF6FA,#FFF9F0);display:flex;align-items:center;justify-content:center;padding:20px">
   <div class="card card-pad" style="max-width:380px;width:100%;text-align:center">
     <img src="assets/logo.png" style="height:78px;margin:0 auto 12px;display:block">
     <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Login Orang Tua</h2>
@@ -59,6 +64,7 @@
       <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
       <a data-view="report"><span class="ic">📄</span> Laporan Kelas</a>
       <a data-view="attend"><span class="ic">✅</span> Absensi</a>
+      <a data-view="progress"><span class="ic">🌱</span> Perkembangan</a>
       <a data-view="payment"><span class="ic">💳</span> Pembayaran</a>
       <div class="divider"></div>
       <a href="portal.html"><span class="ic">↩️</span> Ganti Portal</a>
@@ -114,7 +120,7 @@
           <div style="display:flex;align-items:center;gap:12px">
             <img src="assets/logo.png" alt="Kwelingo">
             <div>
-              <div class="pt">Laporan Kelas — KWE Lingo</div>
+              <div class="pt">Laporan Kelas — Kwelingo</div>
               <div class="pl">Nama: <b id="phName">—</b></div>
               <div class="pl">Periode: <b id="phPeriod">—</b></div>
             </div>
@@ -125,36 +131,115 @@
 
       <!-- ATTENDANCE -->
       <section class="view hide" id="view-attend">
-        <div class="page-head"><div><h1>Absensi</h1><div class="sub" id="attLabel">—</div></div>
-          <input type="month" id="attMonth" class="btn btn-outline" style="font-weight:600" onchange="renderAttend()"></div>
+        <div class="page-head"><div><h1>Absensi &amp; Kelas</h1><div class="sub" id="attLabel">Kehadiran keseluruhan &amp; pengajuan kelas</div></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="month" id="attMonth" class="btn btn-outline" style="font-weight:600" onchange="renderAttend()">
+            <button class="btn btn-primary" onclick="openReq()">＋ Ajukan Kelas</button>
+          </div></div>
         <div class="grid grid-4" style="margin-bottom:20px" id="attStats"></div>
+        <div class="card card-pad" id="certBox" style="display:none;background:linear-gradient(120deg,#FFF6E6,#EAF6FA);border:1.5px solid #F4D98B;margin-bottom:20px">
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div style="font-size:34px">🏅</div>
+            <div style="flex:1;min-width:200px"><div style="font-weight:800;color:var(--navy);font-size:16px">Certificate of Completion tersedia</div>
+              <div class="muted" style="font-size:13px">Kehadiran &amp; tugas sudah memenuhi syarat (<b id="certPct">—</b>, min. 80% keduanya) — unduh sertifikat untuk ananda.</div></div>
+            <button class="btn btn-primary" onclick="downloadCert()">🏅 Download Sertifikat</button>
+          </div>
+        </div>
         <div class="card"><div class="table-wrap"><table class="tbl">
-          <thead><tr><th>No</th><th>Tanggal</th><th>Guru</th><th>Time</th><th>Type</th><th>Kehadiran</th></tr></thead>
+          <thead><tr><th>No</th><th>Tanggal</th><th>Guru</th><th>Time</th><th>Type</th><th>Status</th><th>Kehadiran</th><th>Aksi</th></tr></thead>
           <tbody id="attBody"></tbody>
         </table></div></div>
+      </section>
+
+      <!-- PERKEMBANGAN (tugas + diary + rating) -->
+      <section class="view hide" id="view-progress">
+        <div class="page-head"><div><h1>Perkembangan Anak</h1><div class="sub">Tugas, catatan dengan guru &amp; penilaian kelas</div></div></div>
+        <div class="grid grid-4" style="margin-bottom:18px" id="pgStats"></div>
+        <div class="card" style="margin-bottom:18px"><div class="card-pad" style="padding-bottom:0"><div class="card-title">📋 Tugas</div></div>
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Tugas</th><th>Deadline</th><th>Status</th></tr></thead>
+            <tbody id="pgTaskBody"></tbody>
+          </table></div>
+        </div>
+        <div class="grid grid-2" style="gap:18px;align-items:start">
+          <div class="card card-pad">
+            <div class="card-title">📔 Catatan dengan Guru</div>
+            <div id="pgDiaryFeed" style="max-height:40vh;overflow:auto;margin-bottom:12px"></div>
+            <div style="display:flex;gap:8px">
+              <input id="pgDiaryInput" placeholder="Tulis pesan ke guru…" style="flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px" onkeydown="if(event.key==='Enter')postPDiary()">
+              <button class="btn btn-primary btn-sm" onclick="postPDiary()">Kirim</button>
+            </div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title">⭐ Rating yang Diberikan</div>
+            <div id="pgRatings"></div>
+          </div>
+        </div>
       </section>
 
       <!-- PAYMENT -->
       <section class="view hide" id="view-payment">
         <div class="page-head"><div><h1>Pembayaran</h1><div class="sub">Status deposit &amp; riwayat pembayaran — diverifikasi admin</div></div></div>
         <div class="grid grid-4" style="margin-bottom:20px" id="payStats"></div>
-        <div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">🧾 Riwayat Pembayaran</div></div>
+        <div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">🧾 Tagihan &amp; Riwayat Pembayaran</div></div>
           <div class="table-wrap"><table class="tbl">
-            <thead><tr><th>Periode</th><th>Tgl Bayar</th><th>Jumlah Meeting</th><th>Total</th><th>Status</th></tr></thead>
+            <thead><tr><th>Periode</th><th>Tgl Bayar</th><th>Jumlah Meeting</th><th>Total</th><th>Status</th><th>Bukti / Aksi</th></tr></thead>
             <tbody id="payBody"></tbody>
           </table></div>
         </div>
-        <div class="note-band mt-16">ℹ️ Status <b>LUNAS / TERVERIFIKASI</b> berarti pembayaran sudah dicek &amp; disetujui admin. Bila ada pertanyaan, hubungi admin KWE Lingo.</div>
+        <input type="file" id="buktiFile" accept="image/*,application/pdf" class="hide">
+        <div class="note-band mt-16">ℹ️ Untuk tagihan berstatus <b>📌 BELUM BAYAR</b>, upload bukti transfer di kolom Aksi. Setelah admin cek, status berubah jadi <b>✅ LUNAS</b>.</div>
       </section>
 
-      <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
+      <div class="foot-note">© 2026 Kwelingo. All rights reserved.</div>
     </div>
+  </div>
+</div>
+
+<!-- MODAL: ajukan kelas baru -->
+<div class="modal-overlay" id="mReq">
+  <div class="modal">
+    <div class="modal-head"><h3>Ajukan Kelas Baru</h3><button class="x" onclick="closeModal('mReq')">×</button></div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field"><label>Tanggal <span class="req">*</span></label><input type="date" id="rqDate"></div>
+        <div class="field"><label>Jam Mulai <span class="req">*</span></label><input type="time" id="rqTime"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Durasi (menit)</label><input type="number" id="rqDur" value="60"></div>
+        <div class="field"><label>Type</label>
+          <div class="radio-row"><label><input type="radio" name="rqType" value="online" checked> Online</label>
+          <label><input type="radio" name="rqType" value="onsite"> Onsite</label></div></div>
+      </div>
+      <div class="field"><label>Catatan untuk Guru/Admin</label><textarea id="rqNote" placeholder="cth: Minta tambahan sesi sebelum ujian."></textarea></div>
+      <div class="help">Pengajuan dikirim ke guru/admin untuk disetujui.</div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mReq')">Batal</button>
+      <button class="btn btn-primary" onclick="submitReq()">Kirim Pengajuan</button></div>
+  </div>
+</div>
+
+<!-- MODAL: minta reschedule -->
+<div class="modal-overlay" id="mResched">
+  <div class="modal">
+    <div class="modal-head"><h3>Minta Reschedule</h3><button class="x" onclick="closeModal('mResched')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="rsId">
+      <div class="help" id="rsCur" style="margin-bottom:10px"></div>
+      <div class="field-row">
+        <div class="field"><label>Tanggal Baru <span class="req">*</span></label><input type="date" id="rsDate"></div>
+        <div class="field"><label>Jam Baru <span class="req">*</span></label><input type="time" id="rsTime"></div>
+      </div>
+      <div class="field"><label>Alasan</label><textarea id="rsNote" placeholder="cth: Bentrok acara sekolah."></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mResched')">Batal</button>
+      <button class="btn btn-primary" onclick="submitResched()">Kirim Permintaan</button></div>
   </div>
 </div>
 
 <script src="assets/app.js"></script>
 <script>
-document.getElementById('logo').innerHTML = logoBlock('KWE Lingo','Portal Orang Tua');
+document.getElementById('logo').innerHTML = logoBlock('Kwelingo','Portal Orang Tua');
 document.getElementById('today').textContent = '📅 ' + longToday();
 const _m = todayStr().slice(0,7);
 ['repMonth','attMonth'].forEach(id=>{const e=document.getElementById(id); if(e) e.value=_m;});
@@ -201,8 +286,49 @@ document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
   if(window.innerWidth<768)toggleSidebar();
   if(a.dataset.view==='report') renderReport();
   if(a.dataset.view==='attend') renderAttend();
+  if(a.dataset.view==='progress') renderProgress();
   if(a.dataset.view==='payment') renderPayment();
 });
+function pTutorId(){ return ME.tutor_id || (ALL.find(c=>c.tutor_id)||{}).tutor_id || ''; }
+async function renderProgress(){
+  let tasks=[],rat=[];
+  try{ tasks=await API.getTasks({student_id:ME.id})||[]; }catch(e){}
+  try{ rat=await API.getRatings({student_id:ME.id})||[]; }catch(e){}
+  const done=tasks.filter(t=>(t.status||'assigned')==='done').length, total=tasks.length;
+  document.getElementById('pgStats').innerHTML=[
+    ['tint-blue','Total Tugas',total],['tint-green','Selesai',done],
+    ['tint-amber','Belum',total-done],['tint-purple','Progress',total?Math.round(done/total*100)+'%':'0%'],
+  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+  const today=todayStr();
+  const ord={assigned:0,submitted:1,graded:2};
+  document.getElementById('pgTaskBody').innerHTML=[...tasks].sort((a,b)=>(ord[taskStatus(a)]-ord[taskStatus(b)])).map(t=>{
+    const st=taskStatus(t); const overdue=st==='assigned'&&t.due_date&&t.due_date<today;
+    return `<tr><td><span class="badge badge-active">${esc(taskTypeLabel(t.type))}</span> <b>${esc(t.title||'')}</b>${t.detail?`<br><span class="muted" style="font-size:12px;white-space:pre-line">${esc(t.detail)}</span>`:''}${st==='graded'?`<br><span class="text-green" style="font-size:12px">⭐ ${esc(t.points||'-')}${t.feedback?' — '+esc(t.feedback):''}</span>`:''}</td>
+      <td style="white-space:nowrap">${t.due_date?prettyDate(t.due_date):'-'}${overdue?' <span class="badge badge-off">LEWAT</span>':''}</td>
+      <td>${taskBadge(st)}</td></tr>`;
+  }).join('') || '<tr><td colspan="3" class="muted" style="text-align:center;padding:18px">Belum ada tugas.</td></tr>';
+  document.getElementById('pgRatings').innerHTML=rat.map(r=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)">
+    ${starsHTML(r.stars)} <span class="muted" style="font-size:11px">${r.created_at?prettyDate(String(r.created_at).slice(0,10)):''}</span>
+    ${r.comment?`<div style="font-size:13px;color:#374151;margin-top:2px">${esc(r.comment)}</div>`:''}</div>`).join('')
+    || '<div class="muted" style="font-size:13px">Belum ada rating. Beri rating lewat Portal Siswa.</div>';
+  renderPDiary();
+}
+async function renderPDiary(){
+  const feed=document.getElementById('pgDiaryFeed'); feed.innerHTML='<div class="muted">Memuat…</div>';
+  let list=[]; try{ list=await API.getDiary({student_id:ME.id})||[]; }catch(e){ feed.innerHTML='<div style="color:var(--red);font-size:12px">Gagal memuat</div>'; return; }
+  feed.innerHTML=list.map(m=>{
+    const meSide=m.author!=='guru';
+    const who=meSide?(ME.nama||'Anak'):('👩‍🏫 '+tName(m.tutor_id));
+    return `<div class="msg ${meSide?'me':''}"><div class="av">${meSide?'🙂':'👩‍🏫'}</div>
+      <div class="bub"><b>${esc(who)}</b>${esc(m.message||'')}<div class="t">${m.created_at?prettyDate(String(m.created_at).slice(0,10)):''}</div></div></div>`;
+  }).join('') || '<div class="muted" style="text-align:center;padding:16px;font-size:13px">Belum ada catatan.</div>';
+  feed.scrollTop=feed.scrollHeight;
+}
+async function postPDiary(){
+  const inp=document.getElementById('pgDiaryInput'); const msg=inp.value.trim(); if(!msg)return; inp.value='';
+  try{ await API.addDiary({student_id:ME.id,tutor_id:pTutorId(),author:'murid',message:msg}); renderPDiary(); }
+  catch(e){ toast('Gagal kirim: '+(e.message||e),'err'); inp.value=msg; }
+}
 
 /* ---------- LOAD ---------- */
 async function loadAll(){
@@ -286,26 +412,80 @@ function renderReport(){
       <div style="font-weight:700;color:var(--navy);white-space:pre-line;margin-bottom:4px">${c.topic?esc(c.topic):'<span class="muted" style="font-weight:400">Topik belum diisi</span>'}</div>
       ${developmentBlock(c)}
       <div style="margin-top:10px;font-size:12.5px"><b>Materi:</b> ${matLinks(c.material_url)}</div>
+      ${hasRec(c)?`<div style="margin-top:8px;font-size:12.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b>🎧 Rekaman:</b> ${recCell(c)}</div>`:''}
     </div>`).join('');
 }
 
-/* ---------- ATTENDANCE ---------- */
+/* ---------- ATTENDANCE & KELAS ---------- */
 function renderAttend(){
-  const m=document.getElementById('attMonth').value||_m;
-  const period=new Date(m+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'});
-  document.getElementById('attLabel').textContent=period;
-  const rows=ALL.filter(c=>ym(c.date)===m).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
-  const hadir=rows.filter(attended).length, total=rows.length;
-  const pct=total?Math.round(hadir/total*100):0;
+  // Statistik & sertifikat = keseluruhan (semua sesi); tabel = per bulan terpilih
+  const st=attendanceStats(ALL);
   document.getElementById('attStats').innerHTML=[
-    ['tint-blue','Total Sesi',total],['tint-green','Hadir',hadir],
-    ['tint-amber','Belum/Terjadwal',total-hadir],['tint-purple','Persentase',pct+'%'],
+    ['tint-blue','Total Sesi',st.total],['tint-green','Hadir',st.hadir],
+    ['tint-amber','Izin / Alpa',st.izin+' / '+st.alpa],['tint-purple','Kehadiran',st.pct+'%'],
   ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
-  document.getElementById('attBody').innerHTML=rows.map((c,i)=>`<tr>
-    <td>${i+1}</td><td>${prettyDate(c.date)}</td><td>${tName(c.tutor_id)}</td>
-    <td>${timeRange(c.start_time,c.end_time)}</td><td>${typeBadge(c.type)}</td>
-    <td>${attended(c)?'<span class="badge badge-paid">✅ HADIR</span>':'<span class="badge badge-pending">🕒 TERJADWAL</span>'}</td></tr>`).join('')
-    || '<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">Belum ada sesi.</td></tr>';
+  const cert=document.getElementById('certBox');
+  cert.style.display='none';
+  (async()=>{
+    let tasks=[]; try{ tasks=await API.getTasks({student_id:ME.id})||[]; }catch(e){}
+    const ts=taskCompletion(tasks);
+    if(certEligible(st,ts)){ cert.style.display='block'; document.getElementById('certPct').textContent=st.pct+'% & tugas '+ts.pct+'%'; }
+    else cert.style.display='none';
+  })();
+  const m=document.getElementById('attMonth').value||_m;
+  const today=todayStr();
+  const rows=ALL.filter(c=>ym(c.date)===m).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  document.getElementById('attBody').innerHTML=rows.map((c,i)=>{
+    const upcoming=isSession(c)&&c.date&&c.date>=today;
+    const canResched=upcoming&&classStatus(c)!=='reschedule';
+    const act=canResched?`<button class="btn btn-outline btn-sm" onclick="openResched('${c.id}')">🔄 Reschedule</button>`:'<span class="muted">-</span>';
+    return `<tr>
+      <td>${i+1}</td><td>${prettyDate(c.date)}</td><td>${tName(c.tutor_id)}</td>
+      <td>${timeRange(c.start_time,c.end_time)}</td><td>${typeBadge(c.type)}</td>
+      <td>${statusBadge(c)}</td><td>${isSession(c)?attendBadgeFor(c):'<span class="muted">-</span>'}</td>
+      <td style="white-space:nowrap">${act}</td></tr>`;
+  }).join('') || '<tr><td colspan="8" class="muted" style="text-align:center;padding:20px">Belum ada sesi bulan ini.</td></tr>';
+}
+function downloadCert(){
+  const st=attendanceStats(ALL);
+  openCertificate({name:ME.nama||'Student', program:(ME.grade?('Grade '+ME.grade+' '):'')+'Language Program', pct:st.pct, sessions:st.counted});
+}
+function openReq(){
+  document.getElementById('rqDate').value=todayStr();
+  document.getElementById('rqTime').value='16:00'; document.getElementById('rqDur').value=60;
+  document.getElementById('rqNote').value=''; document.querySelector('input[name=rqType][value=online]').checked=true;
+  openModal('mReq');
+}
+async function submitReq(){
+  if(submitReq._busy)return;
+  const p={student_id:ME.id, tutor_id:ME.tutor_id||'', date:document.getElementById('rqDate').value,
+    start_time:document.getElementById('rqTime').value, duration:document.getElementById('rqDur').value,
+    type:document.querySelector('input[name=rqType]:checked').value, status:'requested', req_by:'ortu',
+    req_note:document.getElementById('rqNote').value };
+  if(!p.date||!p.start_time){ toast('Isi tanggal & jam dulu','err'); return; }
+  const btn=document.querySelector('#mReq .btn-primary'); submitReq._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Mengirim…';}
+  try{ await API.addClass(p); closeModal('mReq'); toast('Pengajuan terkirim — tunggu persetujuan','ok'); ALL=await API.getClasses({student_id:ME.id})||ALL; renderAttend(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+  finally{ submitReq._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Kirim Pengajuan';} }
+}
+function openResched(id){
+  const c=ALL.find(x=>x.id===id); if(!c)return;
+  document.getElementById('rsId').value=id;
+  document.getElementById('rsCur').innerHTML='Jadwal sekarang: <b>'+prettyDate(c.date)+' '+(c.start_time||'')+'</b>';
+  document.getElementById('rsDate').value=c.date||todayStr(); document.getElementById('rsTime').value=c.start_time||'16:00';
+  document.getElementById('rsNote').value='';
+  openModal('mResched');
+}
+async function submitResched(){
+  if(submitResched._busy)return;
+  const id=document.getElementById('rsId').value;
+  const p={id,status:'reschedule',resched_date:document.getElementById('rsDate').value,
+    resched_time:document.getElementById('rsTime').value,resched_note:document.getElementById('rsNote').value,req_by:'ortu'};
+  if(!p.resched_date||!p.resched_time){ toast('Isi tanggal & jam baru','err'); return; }
+  const btn=document.querySelector('#mResched .btn-primary'); submitResched._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Mengirim…';}
+  try{ await API.updateClass(p); closeModal('mResched'); toast('Permintaan reschedule terkirim','ok'); ALL=await API.getClasses({student_id:ME.id})||ALL; renderAttend(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+  finally{ submitResched._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Kirim Permintaan';} }
 }
 
 /* ---------- PAYMENT ---------- */
@@ -323,11 +503,35 @@ function renderPayment(){
   const rows=[...PAYS].sort((a,b)=>String(b.month||'').localeCompare(String(a.month||'')));
   document.getElementById('payBody').innerHTML=rows.map(p=>{
     const per=ym(p.month)?new Date(ym(p.month)+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}):(p.month||'-');
+    const st=(p.status||'LUNAS').toUpperCase();
+    const view=p.proof_url?`<a href="${p.proof_url}" target="_blank" style="color:var(--blue)">📎 Lihat bukti</a>`:'';
+    let act;
+    if(isPaid(st)) act=view||'<span class="muted">-</span>';
+    else if(st==='MENUNGGU VERIFIKASI') act=`<span class="muted">🕒 Menunggu dicek</span>${view?' · '+view:''}`;
+    else act=`<button class="btn btn-primary btn-sm" onclick="uploadBukti('${p.id}')">📤 Upload Bukti</button>${view?' · '+view:''}`;
     return `<tr><td>${per}</td><td>${p.pay_date?prettyDate(p.pay_date):'-'}</td>
       <td>${p.meetings||'-'} meeting</td><td><b>${fmtRp(p.grand_total||p.deposit_total||0)}</b></td>
-      <td><span class="badge badge-paid">${(p.status||'LUNAS')}</span></td></tr>`;
-  }).join('') || '<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Belum ada pembayaran tercatat.</td></tr>';
+      <td>${payStatusBadge(st)}</td><td style="white-space:nowrap">${act}</td></tr>`;
+  }).join('') || '<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">Belum ada tagihan / pembayaran.</td></tr>';
 }
+let _buktiId=null;
+function uploadBukti(id){ _buktiId=id; document.getElementById('buktiFile').value=''; document.getElementById('buktiFile').click(); }
+document.getElementById('buktiFile').onchange=async e=>{
+  const f=e.target.files[0]; if(!f||!_buktiId) return;
+  const p=PAYS.find(x=>x.id===_buktiId); if(!p){ toast('Data tagihan tidak ditemukan','err'); return; }
+  toast('Mengupload bukti…');
+  try{
+    const b64=await fileToBase64(f); const r=await API.uploadFile(b64,f.name);
+    const url=(r&&(r.view||r.url))||'';
+    await API.savePayment({...p, proof_url:url, status:'MENUNGGU VERIFIKASI'});
+    toast('Bukti terkirim — menunggu verifikasi admin','ok');
+    PAYS=await API.getPayments({student_id:ME.id})||PAYS; renderPayment();
+  }catch(err){ toast('Gagal upload: '+(err.message||err),'err'); }
+};
+</script>
+<script>
+  initAppShell();
+  if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
 </script>
 </body>
 </html>

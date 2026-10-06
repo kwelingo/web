@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tentor — KWE Lingo</title>
+<title>Tentor — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3E8A9E">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kwelingo">
 <link rel="stylesheet" href="assets/style.css">
 <style>
   .print-only{display:none}
@@ -33,7 +38,7 @@
 .sug-item{padding:10px 14px;cursor:pointer;font-size:14px;text-align:left;color:var(--navy)}
 .sug-item:hover{background:var(--sky-soft)}
 </style>
-<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#E9F8FB,#F3FBFC);display:flex;align-items:center;justify-content:center;padding:20px">
+<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#EAF6FA,#FFF9F0);display:flex;align-items:center;justify-content:center;padding:20px">
   <div class="card card-pad" style="max-width:380px;width:100%;text-align:center">
     <img src="assets/logo.png" style="width:84px;height:84px;border-radius:18px;padding:6px;background:#fff;box-shadow:var(--shadow);margin:0 auto 14px">
     <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Login Tentor</h2>
@@ -55,9 +60,16 @@
     <div class="sidebar-role">Menu</div>
     <nav class="nav">
       <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
+      <a data-view="requests"><span class="ic">🗓️</span> Permintaan Kelas <span id="reqDot" class="nav-dot" style="display:none"></span></a>
       <a data-view="schedule"><span class="ic">📅</span> Jadwal Saya</a>
+      <a data-view="tasks"><span class="ic">📋</span> Tugas Murid</a>
+      <a data-view="diary"><span class="ic">📔</span> Diary Murid</a>
+      <a data-view="ratings"><span class="ic">⭐</span> Rating Saya</a>
+      <a data-view="chat"><span class="ic">💬</span> Diskusi Guru</a>
+      <a data-view="board"><span class="ic">📌</span> Papan Guru <span id="boardDot" class="nav-dot" style="display:none"></span></a>
       <a data-view="fee"><span class="ic">📊</span> Rekap Bulan Ini</a>
       <a data-view="resources"><span class="ic">📚</span> Teaching Resources</a>
+      <a data-view="guide"><span class="ic">📘</span> Panduan Guru</a>
       <a data-view="payroll"><span class="ic">🧾</span> Bukti Fee</a>
       <div class="divider"></div>
       <a href="portal.html"><span class="ic">↩️</span> Ganti Portal</a>
@@ -94,11 +106,22 @@
         <div class="card card-pad">
           <div class="card-title">📅 Jadwal Hari Ini</div>
           <div class="table-wrap"><table class="tbl">
-            <thead><tr><th>Murid</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik & Catatan</th><th>Materi PDF</th><th>Action</th></tr></thead>
+            <thead><tr><th>Murid</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik & Catatan</th><th>Materi PDF</th><th>Absensi</th><th>Action</th></tr></thead>
             <tbody id="todayBody"></tbody>
           </table></div>
           <div class="note-band mt-16">📝 Tentor mengisi <b>Topik/Materi</b>, <b>Catatan</b>, dan melampirkan <b>materi</b> — bisa upload <b>PDF/JPG</b> atau tempel <b>link</b> (YouTube / Google Drive). Semua bisa diakses orang tua. Waktu & dokumentasi diisi admin.</div>
         </div>
+      </section>
+
+      <!-- PERMINTAAN KELAS -->
+      <section class="view hide" id="view-requests">
+        <div class="page-head"><div><h1>Permintaan Kelas</h1><div class="sub">Pengajuan kelas baru &amp; permintaan reschedule dari murid / orang tua</div></div>
+          <button class="btn btn-ghost btn-sm" onclick="renderRequests()">↻ Refresh</button></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Status</th><th>Murid</th><th>Jadwal Diminta</th><th>Type</th><th>Catatan</th><th>Action</th></tr></thead>
+          <tbody id="reqBody"></tbody>
+        </table></div></div>
+        <div class="note-band mt-16">✅ <b>Terima</b> → kelas masuk jadwalmu. ✖️ <b>Tolak</b> → pengajuan ditolak. 🔄 Reschedule: setujui untuk memindahkan tanggal/jam kelas.</div>
       </section>
 
       <!-- SCHEDULE -->
@@ -109,23 +132,88 @@
             <button class="btn btn-ghost btn-sm" onclick="document.getElementById('schedMonth').value='';renderSchedule()">Semua</button>
           </div></div>
         <div class="card"><div class="table-wrap"><table class="tbl">
-          <thead><tr><th>Tanggal</th><th>Murid</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik</th><th>Action</th></tr></thead>
+          <thead><tr><th>Tanggal</th><th>Murid</th><th>Time</th><th>Durasi</th><th>Type</th><th>Topik</th><th>Absensi</th><th>Action</th></tr></thead>
           <tbody id="schedBody"></tbody>
         </table></div></div>
+      </section>
+
+      <!-- TUGAS MURID -->
+      <section class="view hide" id="view-tasks">
+        <div class="page-head"><div><h1>Tugas Murid</h1><div class="sub">Beri tugas &amp; pantau penyelesaiannya</div></div></div>
+        <div class="card card-pad" style="margin-bottom:16px">
+          <div class="card-title">＋ Beri Tugas Baru</div>
+          <div class="field-row">
+            <div class="field"><label>Murid <span class="req">*</span></label><select id="tkStudent"></select></div>
+            <div class="field"><label>Jenis</label><select id="tkType"></select></div>
+            <div class="field"><label>Deadline</label><input type="date" id="tkDue"></div>
+          </div>
+          <div class="field"><label>Judul Tugas <span class="req">*</span></label><input id="tkTitle" placeholder="cth: Worksheet Algebra hal. 33–36"></div>
+          <div class="field"><label>Detail / Instruksi</label><textarea id="tkDetail" placeholder="cth: Kerjakan nomor ganjil, foto hasilnya."></textarea></div>
+          <div style="text-align:right"><button class="btn btn-primary" onclick="assignTask()">＋ Beri Tugas</button></div>
+        </div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Murid</th><th>Tugas</th><th>Deadline</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tkBody"></tbody>
+        </table></div></div>
+      </section>
+
+      <!-- DIARY MURID -->
+      <section class="view hide" id="view-diary">
+        <div class="page-head"><div><h1>Diary Murid</h1><div class="sub">Catatan pribadi dengan tiap murid</div></div>
+          <select id="dyStudent" onchange="renderTDiary()" style="padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-weight:600"></select></div>
+        <div class="card card-pad" style="max-width:760px">
+          <div id="dyFeed" style="max-height:52vh;overflow:auto;margin-bottom:14px"></div>
+          <div style="display:flex;gap:10px">
+            <input id="dyInput" placeholder="Tulis balasan untuk murid…" style="flex:1;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px" onkeydown="if(event.key==='Enter')postTDiary()">
+            <button class="btn btn-primary" onclick="postTDiary()">Kirim</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RATING SAYA -->
+      <section class="view hide" id="view-ratings">
+        <div class="page-head"><div><h1>Rating Saya</h1><div class="sub">Penilaian kelas dari murid &amp; orang tua</div></div></div>
+        <div class="grid grid-4" style="margin-bottom:18px" id="rtStats"></div>
+        <div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">💬 Komentar Terbaru</div></div>
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Murid</th><th>Rating</th><th>Komentar</th><th>Tanggal</th><th>Rincian</th></tr></thead>
+            <tbody id="rtBody"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- PAPAN GURU (bulletin board) -->
+      <section class="view hide" id="view-board">
+        <div class="page-head"><div><h1>Papan Guru</h1><div class="sub">Pengumuman dari admin / owner — tandai sudah dibaca</div></div>
+          <button class="btn btn-ghost btn-sm" onclick="renderBoard()">↻ Refresh</button></div>
+        <div id="boardList" style="max-width:820px"></div>
+      </section>
+
+      <!-- DISKUSI GURU -->
+      <section class="view hide" id="view-chat">
+        <div class="page-head"><div><h1>Diskusi Guru</h1><div class="sub">Ruang obrolan guru, admin &amp; owner — koordinasi internal</div></div></div>
+        <div class="card card-pad" style="max-width:820px">
+          <div id="chatFeed" style="max-height:56vh;overflow:auto;margin-bottom:14px"></div>
+          <div style="display:flex;gap:10px">
+            <input id="chatInput" placeholder="Tulis pesan…" style="flex:1;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px" onkeydown="if(event.key==='Enter')postChat()">
+            <button class="btn btn-primary" onclick="postChat()">Kirim</button>
+          </div>
+        </div>
       </section>
 
       <!-- FEE -->
       <section class="view hide" id="view-fee">
         <div class="page-head"><div><h1>Rekap Bulan Ini</h1><div class="sub" id="feeLabel">—</div></div>
-          <div style="display:flex;gap:10px;align-items:center" class="no-print">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap" class="no-print">
             <input type="month" id="feeMonthPick" class="btn btn-outline" style="font-weight:600">
+            <button class="btn btn-outline" onclick="teacherSlip()">🧾 Slip Gaji</button>
             <button class="btn btn-primary" onclick="window.print()">🖨️ Generate PDF</button>
           </div></div>
         <div class="print-only print-head">
           <div style="display:flex;align-items:center;gap:12px">
-            <img src="assets/logo.png" alt="KWE Lingo">
+            <img src="assets/logo.png" alt="Kwelingo">
             <div>
-              <div class="pt">Rekap Fee Tentor — KWE Lingo</div>
+              <div class="pt">Rekap Fee Tentor — Kwelingo</div>
               <div class="pl">Tentor: <b id="phTName">—</b></div>
               <div class="pl">Periode: <b id="phTPeriod">—</b></div>
             </div>
@@ -154,6 +242,16 @@
         <div class="grid grid-3" id="resList"></div>
       </section>
 
+      <!-- PANDUAN GURU (SOP, view-only) -->
+      <section class="view hide" id="view-guide">
+        <div class="page-head"><div><h1>Panduan Guru (SOP)</h1><div class="sub">Pedoman Kwelingo — hanya untuk dibaca, tidak bisa diunduh</div></div></div>
+        <div class="card card-pad" id="guideBox">
+          <iframe id="guideFrame" src="" style="width:100%;height:72vh;border:none;border-radius:10px;background:#f4f8fd;display:none"></iframe>
+          <div id="guideEmpty" class="muted" style="text-align:center;padding:30px">Panduan belum diisi admin.</div>
+          <div class="help" style="margin-top:8px">👁️ Mohon tidak menyebarkan dokumen ini.</div>
+        </div>
+      </section>
+
       <!-- BUKTI FEE / PAYROLL -->
       <section class="view hide" id="view-payroll">
         <div class="page-head"><div><h1>Bukti Fee</h1><div class="sub">Konfirmasi &amp; bukti transfer fee mengajar yang sudah kamu terima</div></div>
@@ -165,7 +263,7 @@
         <div class="note-band mt-16">ℹ️ Isi bagian ini setiap kali kamu menerima transfer fee dari owner — sebagai catatan bersama.</div>
       </section>
 
-      <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
+      <div class="foot-note">© 2026 Kwelingo. All rights reserved.</div>
     </div>
   </div>
 </div>
@@ -176,6 +274,8 @@
     <div class="modal-head"><h3>Isi Laporan Kelas</h3><button class="x" onclick="closeModal('mFill')">×</button></div>
     <div class="modal-body">
       <input type="hidden" id="fId">
+      <div class="field"><label>Absensi / Kehadiran Murid</label>
+        <select id="fAttend"><option value="">🕒 Belum ditandai</option><option value="hadir">✅ Hadir</option><option value="izin">📝 Izin</option><option value="alpa">❌ Alpa</option></select></div>
       <div class="field"><label>Topic / Material <span class="req">*</span> <span class="help" style="display:inline">(bisa Enter untuk baris baru)</span></label><textarea id="fTopic" placeholder="cth: *Math WS#1 hal 33-36&#10;*Science (Senses)"></textarea></div>
       <div class="field"><label>Catatan / Remarks untuk Orang Tua</label><textarea id="fNote" placeholder="cth: Anton cukup aktif dan memahami materi dengan baik."></textarea></div>
 
@@ -197,6 +297,19 @@
         <div class="field" style="margin-bottom:0"><label>Improvement Strategies</label><textarea id="fStrategy" style="min-height:44px" placeholder="cth: Practice past tense through short speaking & writing exercises."></textarea></div>
       </div>
 
+      <div style="border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-bottom:16px;background:#fbfdff">
+        <div style="font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:10px">🎧 Rekaman Kelas <span class="help" style="display:inline;font-weight:500">(bisa diputar murid &amp; orang tua)</span></div>
+        <div class="field"><label>Voice Note</label>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button type="button" class="btn btn-outline btn-sm" id="recBtn" onclick="toggleRec()">🎙️ Rekam</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="recClear" onclick="clearRec()" style="display:none">🗑️ Hapus</button>
+            <span class="help" id="recStat" style="display:inline"></span>
+          </div>
+          <audio id="recPlay" controls style="display:none;margin-top:8px;height:34px;width:100%"></audio>
+        </div>
+        <div class="field" style="margin-bottom:0"><label>Link Video Kelas <span class="help" style="display:inline">(YouTube / Google Drive)</span></label>
+          <input id="fVideo" placeholder="https://youtu.be/..."></div>
+      </div>
       <div class="field"><label>Materi Belajar (PDF / JPG — bisa diunduh orang tua)</label>
         <div class="dropzone" onclick="document.getElementById('fPdf').click()"><span class="zi">📎</span><div><b>Pilih file</b> atau drag &amp; drop<br><span class="help">PDF &amp; JPG · bisa pilih beberapa file sekaligus</span></div></div>
         <input type="file" id="fPdf" accept="application/pdf,image/jpeg,image/jpg,image/png" multiple class="hide"><div class="help" id="fPdfName"></div></div>
@@ -210,6 +323,34 @@
       <button class="btn btn-ghost" onclick="closeModal('mFill')">Cancel</button>
       <button class="btn btn-primary" onclick="saveFill()">Simpan Laporan</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL: nilai tugas -->
+<div class="modal-overlay" id="mGrade">
+  <div class="modal">
+    <div class="modal-head"><h3>Nilai Tugas</h3><button class="x" onclick="closeModal('mGrade')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="grId">
+      <div class="note-band" id="grInfo" style="margin-bottom:12px"></div>
+      <div class="field"><label>Jawaban Murid</label><div id="grSubmission" style="padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fbfdff;font-size:13.5px"></div></div>
+      <div class="field"><label>Poin / Nilai</label><input id="grPoints" placeholder="cth: 90 atau A"></div>
+      <div class="field" style="margin-bottom:0"><label>Catatan Koreksi / Komentar</label><textarea id="grFeedback" placeholder="cth: Bagus! Perhatikan past tense ya."></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mGrade')">Batal</button>
+      <button class="btn btn-primary" onclick="saveGrade()">Simpan Nilai</button></div>
+  </div>
+</div>
+
+<!-- MODAL: rincian rating -->
+<div class="modal-overlay" id="mRateDetail">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head"><h3>Rincian Rating</h3><button class="x" onclick="closeModal('mRateDetail')">×</button></div>
+    <div class="modal-body">
+      <div class="help" id="rdInfo" style="margin-bottom:10px"></div>
+      <div id="rdBody"></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-primary" onclick="closeModal('mRateDetail')">Tutup</button></div>
   </div>
 </div>
 
@@ -248,7 +389,7 @@
 
 <script src="assets/app.js"></script>
 <script>
-document.getElementById('logo').innerHTML=logoBlock('KWE Lingo','Portal Tentor');
+document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Portal Tentor');
 document.getElementById('today').textContent='📅 '+longToday();
 document.getElementById('feeMonthPick').value=todayStr().slice(0,7);
 const monLabel=new Date().toLocaleDateString('id-ID',{month:'long',year:'numeric'});
@@ -262,11 +403,31 @@ document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
   document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));
   document.getElementById('view-'+a.dataset.view).classList.remove('hide');
   if(window.innerWidth<768)toggleSidebar();
+  if(a.dataset.view==='requests')renderRequests();
   if(a.dataset.view==='schedule')renderSchedule();
+  if(a.dataset.view==='tasks')initTeacherTasks();
+  if(a.dataset.view==='diary')initTeacherDiary();
+  if(a.dataset.view==='ratings')renderRatings();
+  if(a.dataset.view==='board')renderBoard();
+  if(a.dataset.view==='chat')openChat(); else gchat.stop();
   if(a.dataset.view==='fee')renderFee();
   if(a.dataset.view==='resources')renderResources();
+  if(a.dataset.view==='guide')renderGuide();
   if(a.dataset.view==='payroll')renderPayroll();
 });
+async function renderGuide(){
+  let url=''; try{ url=await API.getSetting('TEACHER_SOP_URL')||''; }catch(e){}
+  const fr=document.getElementById('guideFrame'), em=document.getElementById('guideEmpty');
+  if(url){ fr.src=drivePreview(url); fr.style.display='block'; em.style.display='none'; }
+  else { fr.src=''; fr.style.display='none'; em.style.display='block'; }
+}
+const gchat=makeChatPoller(list=>renderChatFeed(document.getElementById('chatFeed'),list,ME?ME.id:''),4000);
+function openChat(){ document.getElementById('chatFeed').innerHTML='<div class="muted">Memuat…</div>'; gchat.start('guru'); }
+async function postChat(){
+  const inp=document.getElementById('chatInput'); const msg=inp.value.trim(); if(!msg)return; inp.value='';
+  try{ await API.addChat({room:'guru',sender_id:ME.id,sender_name:ME.nama||'Guru',role:'guru',message:msg}); gchat.refresh(); }
+  catch(e){ toast('Gagal kirim: '+(e.message||e),'err'); inp.value=msg; }
+}
 
 function sName(id){return (STUDENTS.find(s=>s.id===id)||{}).nama||'-';}
 function sFee(id){return Number((STUDENTS.find(s=>s.id===id)||{}).fee_tentor)||0;}
@@ -281,8 +442,86 @@ function setMe(t){
   ['tavatar','tavatar2'].forEach(i=>document.getElementById(i).textContent=(t.nama||'T')[0]);
   ['twho','twho2'].forEach(i=>document.getElementById(i).innerHTML=`${t.nama}<small>${t.subject||'Teacher'}</small>`);
   document.getElementById('hi').textContent=`Hello, ${t.nama} 👋`;
-  renderToday(); renderStats();
+  renderToday(); renderStats(); updateReqDot(); updateBoardDot();
 }
+
+/* ===== Papan Guru (bulletin board) ===== */
+let BOARD=[], BOARD_READS=[];
+async function loadBoard(){
+  try{ BOARD=await API.getTBoard()||[]; }catch(e){ BOARD=[]; }
+  try{ BOARD_READS=await API.getTBoardReads({reader_id:ME.id})||[]; }catch(e){ BOARD_READS=[]; }
+}
+function boardRead(id){ return BOARD_READS.find(r=>String(r.board_id)===String(id)); }
+async function updateBoardDot(){
+  await loadBoard();
+  const unread=BOARD.filter(b=>!boardRead(b.id)).length;
+  const d=document.getElementById('boardDot'); if(d){ d.textContent=unread; d.style.display=unread?'inline-flex':'none'; }
+}
+async function renderBoard(){
+  const box=document.getElementById('boardList'); box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
+  await loadBoard();
+  box.innerHTML=BOARD.map(b=>{
+    const rd=boardRead(b.id);
+    return `<div class="card card-pad" style="margin-bottom:12px;border-left:4px solid ${rd?'var(--green2)':'var(--orange)'}">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
+        <b style="color:var(--navy);font-size:15px">${esc(b.title||'')}</b>
+        <span class="muted" style="font-size:11.5px">${esc(b.author||'')} · ${b.date?prettyDate(b.date):''}</span>
+      </div>
+      <div style="white-space:pre-line;color:#374151;font-size:14px;margin-top:6px">${esc(b.body||'')}</div>
+      <div style="margin-top:10px">${rd
+        ? `<span class="badge badge-paid">✅ Dibaca ${rd.read_at?prettyDate(String(rd.read_at).slice(0,10)):''}</span>`
+        : `<button class="btn btn-primary btn-sm" onclick="readBoard('${b.id}')">✔️ Tandai sudah dibaca</button>`}</div>
+    </div>`;
+  }).join('') || '<div class="card card-pad muted" style="text-align:center">Belum ada pengumuman.</div>';
+  updateBoardDot();
+}
+async function readBoard(id){
+  try{ await API.markTBoardRead({board_id:id,reader_id:ME.id,reader_name:ME.nama||'Guru',read_at:new Date().toISOString()}); toast('Ditandai dibaca','ok'); renderBoard(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+
+/* ===== Permintaan Kelas (accept / decline / reschedule) ===== */
+async function pendingReqs(){
+  const all=await API.getClasses({tutor_id:ME.id});
+  return all.filter(c=>{const s=classStatus(c);return s==='requested'||s==='reschedule';});
+}
+async function updateReqDot(){
+  try{ const n=(await pendingReqs()).length; const d=document.getElementById('reqDot');
+    if(d){ d.textContent=n; d.style.display=n?'inline-flex':'none'; } }catch(e){}
+}
+async function renderRequests(){
+  const tb=document.getElementById('reqBody');
+  tb.innerHTML='<tr><td colspan="6" class="muted" style="padding:16px">Memuat…</td></tr>';
+  let reqs; try{ reqs=await pendingReqs(); }
+  catch(e){ tb.innerHTML='<tr><td colspan="6" style="color:var(--red);padding:16px">Gagal: '+esc(e.message||e)+'</td></tr>'; return; }
+  tb.innerHTML=reqs.map(c=>{
+    const resched=classStatus(c)==='reschedule';
+    const when=resched
+      ? `<span style="text-decoration:line-through;color:var(--muted)">${prettyDate(c.date)} ${c.start_time||''}</span> → <b>${prettyDate(c.resched_date)} ${c.resched_time||''}</b>`
+      : `<b>${prettyDate(c.date)}</b> ${c.start_time||''}`;
+    const note=esc(resched?(c.resched_note||'-'):(c.req_note||'-'));
+    const by=c.req_by?`<div class="muted" style="font-size:11px">oleh ${esc(c.req_by)}</div>`:'';
+    const act=resched
+      ? `<button class="btn btn-primary btn-sm" onclick="approveResched('${c.id}')">🔄 Setujui</button>
+         <button class="btn btn-ghost btn-sm" onclick="rejectResched('${c.id}')">Tolak</button>`
+      : `<button class="btn btn-primary btn-sm" onclick="acceptReq('${c.id}')">✅ Terima</button>
+         <button class="btn btn-danger btn-sm" onclick="declineReq('${c.id}')">✖️ Tolak</button>`;
+    return `<tr><td>${statusBadge(c)}</td><td><b>${sName(c.student_id)}</b>${by}</td><td>${when}</td>
+      <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
+      <td style="white-space:pre-line">${note}</td><td style="white-space:nowrap">${act}</td></tr>`;
+  }).join('') || '<tr><td colspan="6" class="muted" style="text-align:center;padding:24px">Tidak ada permintaan baru. 🎉</td></tr>';
+}
+async function acceptReq(id){ try{ await API.updateClass({id,status:'scheduled'}); toast('Kelas diterima','ok'); renderRequests(); renderToday(); updateReqDot(); }catch(e){ toast('Gagal: '+(e.message||e),'err'); } }
+async function declineReq(id){ if(!confirm('Tolak pengajuan kelas ini?'))return; try{ await API.updateClass({id,status:'declined'}); toast('Pengajuan ditolak','ok'); renderRequests(); updateReqDot(); }catch(e){ toast('Gagal: '+(e.message||e),'err'); } }
+async function approveResched(id){
+  const c=(await API.getClasses({})).find(x=>x.id===id); if(!c)return;
+  try{ await API.updateClass({id,date:c.resched_date||c.date,start_time:c.resched_time||c.start_time,status:'scheduled',resched_date:'',resched_time:'',resched_note:''});
+    toast('Reschedule disetujui','ok'); renderRequests(); renderToday(); updateReqDot(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+async function rejectResched(id){ if(!confirm('Tolak permintaan reschedule? Jadwal tetap seperti semula.'))return;
+  try{ await API.updateClass({id,status:'scheduled',resched_date:'',resched_time:'',resched_note:''}); toast('Reschedule ditolak','ok'); renderRequests(); updateReqDot(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); } }
 
 async function boot(){
   const q=new URLSearchParams(location.search);
@@ -302,8 +541,19 @@ async function doLogin(){
   }catch(e){ err.textContent=e.message||'Login gagal'; }
 }
 
+function attendSelect(c){
+  const v=c.attend||'';
+  const opt=(val,lbl)=>`<option value="${val}" ${v===val?'selected':''}>${lbl}</option>`;
+  return `<select class="att-sel" onchange="markAttend('${c.id}',this.value)" style="padding:5px 8px;border:1.5px solid var(--line);border-radius:8px;font-weight:600;font-size:12px">
+    ${opt('','🕒 Belum')}${opt('hadir','✅ Hadir')}${opt('izin','📝 Izin')}${opt('alpa','❌ Alpa')}</select>`;
+}
+async function markAttend(id,val){
+  try{ await API.updateClass({id,attend:val,status:'done'}); toast('Absensi tersimpan','ok'); }
+  catch(e){ toast('Gagal simpan absensi: '+(e.message||e),'err'); }
+}
 async function renderToday(){
-  const list=(await API.getClasses({date:todayStr(),tutor_id:ME.id})).sort((a,b)=>String(a.start_time||'99:99').localeCompare(String(b.start_time||'99:99')));
+  const list=(await API.getClasses({date:todayStr(),tutor_id:ME.id})).filter(isSession)
+    .sort((a,b)=>String(a.start_time||'99:99').localeCompare(String(b.start_time||'99:99')));
   const tb=document.getElementById('todayBody');
   tb.innerHTML=list.map(c=>`<tr>
     <td><b>${sName(c.student_id)}</b></td><td>${timeRange(c.start_time,c.end_time)}</td>
@@ -311,8 +561,9 @@ async function renderToday(){
     <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
     <td>${c.topic?`<b style="white-space:pre-line">${esc(c.topic)}</b><br><span class="muted" style="white-space:pre-line">${esc(c.note||'')}</span>`:'<span class="muted">Belum diisi</span>'}</td>
     <td>${c.material_url?`📄 <span class="text-green">${String(c.material_url).split('|').filter(Boolean).length} file</span>`:'<span class="muted">-</span>'}</td>
+    <td>${attendSelect(c)}</td>
     <td><button class="btn btn-primary btn-sm" onclick="openFill('${c.id}')">Isi</button></td></tr>`).join('')
-    || '<tr><td colspan="7" class="muted" style="text-align:center;padding:24px">Tidak ada jadwal hari ini.</td></tr>';
+    || '<tr><td colspan="8" class="muted" style="text-align:center;padding:24px">Tidak ada jadwal hari ini.</td></tr>';
   document.getElementById('cToday').textContent=list.length;
 }
 async function renderStats(){
@@ -330,15 +581,16 @@ async function renderSchedule(){
   if(mp && !mp.value && !mp.dataset.init){ mp.value=todayStr().slice(0,7); mp.dataset.init='1'; }
   const mon=mp?mp.value:'';
   const q={tutor_id:ME.id}; if(mon) q.month=mon;
-  const cls=(await API.getClasses(q)).sort(byDate);
+  const cls=(await API.getClasses(q)).filter(isSession).sort(byDate);
   const label=mon?new Date(mon+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}):'semua bulan';
   document.getElementById('schedBody').innerHTML=cls.map(c=>`<tr>
     <td>${prettyDate(c.date)}</td><td><b>${sName(c.student_id)}</b></td><td>${timeRange(c.start_time,c.end_time)}</td>
     <td>${c.duration||'-'} min</td>
     <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
     <td>${c.topic?multiline(c.topic):'<span class="muted">-</span>'}</td>
+    <td>${attendSelect(c)}</td>
     <td><button class="btn btn-warn btn-sm" onclick="openFill('${c.id}')">Isi</button></td></tr>`).join('')
-    ||`<tr><td colspan="7" class="muted" style="text-align:center;padding:20px">Tidak ada jadwal untuk ${label}.</td></tr>`;
+    ||`<tr><td colspan="8" class="muted" style="text-align:center;padding:20px">Tidak ada jadwal untuk ${label}.</td></tr>`;
 }
 async function renderFee(){
   const m=document.getElementById('feeMonthPick').value||todayStr().slice(0,7);
@@ -366,14 +618,150 @@ async function renderFee(){
   document.getElementById('feeBonus').textContent=fmtRp(bonus);
   document.getElementById('feeBonusNote').textContent=bnote?('📝 '+bnote):'';
   document.getElementById('feeGrand').textContent=fmtRp(fee+bonus);
+  _SLIP={fee,sessions:cls.length,bonus,note:bnote,period:periodName};
+}
+let _SLIP=null;
+function teacherSlip(){
+  if(!ME){ toast('Login dulu','err'); return; }
+  const s=_SLIP||{fee:0,sessions:0,bonus:0,note:'',period:''};
+  openPayrollSlip({name:ME.nama,period:s.period,sessions:s.sessions,fee:s.fee,bonus:s.bonus,total:(s.fee||0)+(s.bonus||0),note:s.note,status:'SLIP GAJI'});
 }
 document.getElementById('feeMonthPick').onchange=renderFee;
 
+/* ===== Tugas, Diary, Rating ===== */
+function myStudents(){ const m=STUDENTS.filter(s=>String(s.tutor_id)===String(ME.id)); return m.length?m:STUDENTS; }
+function fillStuSel(el){ el.innerHTML='<option value="">Pilih murid…</option>'+myStudents().map(s=>`<option value="${s.id}">${esc(s.nama)}</option>`).join(''); }
+// --- Tugas ---
+let TTASKS=[];
+function initTeacherTasks(){
+  fillStuSel(document.getElementById('tkStudent'));
+  document.getElementById('tkType').innerHTML=Object.keys(TASK_TYPES).map(k=>`<option value="${k}">${TASK_TYPES[k]}</option>`).join('');
+  document.getElementById('tkDue').value=''; document.getElementById('tkTitle').value=''; document.getElementById('tkDetail').value='';
+  renderTeacherTasks();
+}
+async function assignTask(){
+  const sid=document.getElementById('tkStudent').value, title=document.getElementById('tkTitle').value.trim();
+  if(!sid){ toast('Pilih murid dulu','err'); return; }
+  if(!title){ toast('Isi judul tugas','err'); return; }
+  const p={student_id:sid,tutor_id:ME.id,title,type:document.getElementById('tkType').value,detail:document.getElementById('tkDetail').value,due_date:document.getElementById('tkDue').value,status:'assigned'};
+  try{ await API.addTask(p); toast('Tugas diberikan','ok'); document.getElementById('tkTitle').value=''; document.getElementById('tkDetail').value=''; renderTeacherTasks(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+async function renderTeacherTasks(){
+  const tb=document.getElementById('tkBody'); tb.innerHTML='<tr><td colspan="5" class="muted" style="padding:16px">Memuat…</td></tr>';
+  try{ TTASKS=await API.getTasks({tutor_id:ME.id})||[]; }catch(e){ tb.innerHTML='<tr><td colspan="5" style="color:var(--red);padding:16px">Gagal: '+esc(e.message||e)+'</td></tr>'; return; }
+  const today=todayStr(); const ord={submitted:0,assigned:1,graded:2};
+  tb.innerHTML=[...TTASKS].sort((a,b)=>(ord[taskStatus(a)]-ord[taskStatus(b)])||String(b.due_date||'').localeCompare(String(a.due_date||''))).map(t=>{
+    const st=taskStatus(t); const overdue=st==='assigned'&&t.due_date&&t.due_date<today;
+    const act = st==='submitted'
+      ? `<button class="btn btn-primary btn-sm" onclick="openGrade('${t.id}')">⭐ Nilai</button> `
+      : st==='graded' ? `<button class="btn btn-outline btn-sm" onclick="openGrade('${t.id}')">Lihat/Edit</button> ` : '';
+    return `<tr><td><b>${sName(t.student_id)}</b></td>
+      <td><span class="badge badge-active">${esc(taskTypeLabel(t.type))}</span> <b>${esc(t.title||'')}</b>${t.detail?`<br><span class="muted" style="font-size:12px;white-space:pre-line">${esc(t.detail)}</span>`:''}${st==='graded'?`<br><span class="text-green" style="font-size:12px">⭐ ${esc(t.points||'-')} — ${esc(t.feedback||'')}</span>`:''}</td>
+      <td style="white-space:nowrap">${t.due_date?prettyDate(t.due_date):'-'}${overdue?' <span class="badge badge-off">LEWAT</span>':''}</td>
+      <td>${taskBadge(st)}</td>
+      <td style="white-space:nowrap">${act}<button class="btn btn-danger btn-sm" onclick="delTask('${t.id}')">Hapus</button></td></tr>`;
+  }).join('') || '<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Belum ada tugas.</td></tr>';
+}
+function openGrade(id){
+  const t=TTASKS.find(x=>x.id===id); if(!t)return;
+  document.getElementById('grId').value=id;
+  document.getElementById('grInfo').innerHTML=`<b>${esc(sName(t.student_id))}</b> — ${esc(taskTypeLabel(t.type))}: ${esc(t.title||'')}`;
+  const sub=[];
+  if(t.submit_text) sub.push(`<div style="white-space:pre-line">${esc(t.submit_text)}</div>`);
+  if(t.submit_url) sub.push(`<a href="${t.submit_url}" target="_blank" class="btn btn-outline btn-sm">📎 Lihat jawaban/file</a>`);
+  document.getElementById('grSubmission').innerHTML=sub.length?sub.join('<br>'):'<span class="muted">Murid belum melampirkan apa-apa.</span>';
+  document.getElementById('grPoints').value=t.points||'';
+  document.getElementById('grFeedback').value=t.feedback||'';
+  openModal('mGrade');
+}
+async function saveGrade(){
+  if(saveGrade._busy)return;
+  const id=document.getElementById('grId').value;
+  const p={id,status:'graded',points:document.getElementById('grPoints').value,feedback:document.getElementById('grFeedback').value,graded_at:todayStr()};
+  const btn=document.querySelector('#mGrade .btn-primary'); saveGrade._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Menyimpan…';}
+  try{ await API.updateTask(p); closeModal('mGrade'); toast('Nilai tersimpan','ok'); renderTeacherTasks(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+  finally{ saveGrade._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Simpan Nilai';} }
+}
+async function delTask(id){ if(!confirm('Hapus tugas ini?'))return; try{ await API.deleteTask(id); toast('Terhapus','ok'); renderTeacherTasks(); }catch(e){ toast('Gagal: '+(e.message||e),'err'); } }
+// --- Diary ---
+function initTeacherDiary(){ const sel=document.getElementById('dyStudent'); fillStuSel(sel); document.getElementById('dyFeed').innerHTML='<div class="muted" style="text-align:center;padding:20px">Pilih murid untuk melihat diary.</div>'; }
+async function renderTDiary(){
+  const sid=document.getElementById('dyStudent').value; const feed=document.getElementById('dyFeed');
+  if(!sid){ feed.innerHTML='<div class="muted" style="text-align:center;padding:20px">Pilih murid dulu.</div>'; return; }
+  feed.innerHTML='<div class="muted">Memuat…</div>';
+  let list=[]; try{ list=await API.getDiary({student_id:sid})||[]; }catch(e){ feed.innerHTML='<div style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
+  feed.innerHTML=list.map(m=>{
+    const meT=m.author==='guru';
+    return `<div class="msg ${meT?'me':''}"><div class="av">${meT?'👩‍🏫':'🙂'}</div>
+      <div class="bub"><b>${meT?(ME.nama||'Saya'):esc(sName(sid))}</b>${esc(m.message||'')}<div class="t">${m.created_at?prettyDate(String(m.created_at).slice(0,10)):''}</div></div></div>`;
+  }).join('') || '<div class="muted" style="text-align:center;padding:20px">Belum ada catatan dengan murid ini.</div>';
+  feed.scrollTop=feed.scrollHeight;
+}
+async function postTDiary(){
+  const sid=document.getElementById('dyStudent').value; if(!sid){ toast('Pilih murid dulu','err'); return; }
+  const inp=document.getElementById('dyInput'); const msg=inp.value.trim(); if(!msg)return; inp.value='';
+  try{ await API.addDiary({student_id:sid,tutor_id:ME.id,author:'guru',message:msg}); renderTDiary(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); inp.value=msg; }
+}
+// --- Rating ---
+let RT_LIST=[];
+async function renderRatings(){
+  try{ RT_LIST=await API.getRatings({tutor_id:ME.id})||[]; }catch(e){ RT_LIST=[]; }
+  const list=RT_LIST;
+  const avg=avgStars(list), n=list.length;
+  const dist=[5,4,3,2,1].map(s=>list.filter(r=>Math.round(Number(r.stars))===s).length);
+  document.getElementById('rtStats').innerHTML=[
+    ['tint-amber','Rata-rata',avg?avg.toFixed(1)+' ★':'-'],['tint-blue','Jumlah Rating',n],
+    ['tint-green','Bintang 5',dist[0]],['tint-purple','Bintang ≤3',dist[2]+dist[3]+dist[4]],
+  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+  document.getElementById('rtBody').innerHTML=list.map((r,i)=>`<tr>
+    <td><b>${sName(r.student_id)}</b></td><td>${starsHTML(r.stars)}</td>
+    <td>${r.comment?esc(r.comment):'<span class="muted">-</span>'}</td>
+    <td>${r.created_at?prettyDate(String(r.created_at).slice(0,10)):'-'}</td>
+    <td>${parseScores(r).length?`<button class="btn btn-outline btn-sm" onclick="openRatingDetail(${i})">Detail</button>`:'<span class="muted">-</span>'}</td></tr>`).join('')
+    || '<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Belum ada rating.</td></tr>';
+}
+function openRatingDetail(i){
+  const r=RT_LIST[i]; if(!r)return;
+  const sc=parseScores(r);
+  const rows=RATING_CATS.map((c,ci)=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px">
+    <span style="flex:1;color:var(--navy)">${ci+1}. ${esc(c)}</span><span>${starsHTML(sc[ci]||0)}</span></div>`).join('');
+  document.getElementById('rdInfo').innerHTML=`<b>${esc(sName(r.student_id))}</b> · ${r.created_at?prettyDate(String(r.created_at).slice(0,10)):''} · Rata-rata ${starsHTML(r.stars)}`;
+  document.getElementById('rdBody').innerHTML=rows+
+    `<div style="margin-top:12px"><div class="lbl muted">👍 Paling disukai</div><div>${r.liked?esc(r.liked):'<span class="muted">-</span>'}</div></div>`+
+    `<div style="margin-top:8px"><div class="lbl muted">🔧 Bisa diperbaiki</div><div>${r.improve?esc(r.improve):'<span class="muted">-</span>'}</div></div>`+
+    `<div style="margin-top:8px"><div class="lbl muted">💬 Komentar</div><div>${r.comment?esc(r.comment):'<span class="muted">-</span>'}</div></div>`;
+  openModal('mRateDetail');
+}
+
 /* fill modal */
 let CUR_MAT='', CUR_MATS=[];
+/* --- voice note recorder --- */
+let REC_DATA='', REC_ON=false;
+function setRecUI(){
+  const play=document.getElementById('recPlay'), clr=document.getElementById('recClear');
+  if(REC_DATA){ play.src=REC_DATA; play.style.display='block'; clr.style.display='inline-flex'; }
+  else { play.src=''; play.style.display='none'; clr.style.display='none'; }
+}
+async function toggleRec(){
+  const btn=document.getElementById('recBtn'), stat=document.getElementById('recStat');
+  if(!VoiceRec.supported()){ toast('Perekaman tidak didukung browser ini','err'); return; }
+  if(!REC_ON){
+    try{ await VoiceRec.start(); }catch(e){ toast('Tidak bisa akses mikrofon: '+(e.message||e),'err'); return; }
+    REC_ON=true; btn.textContent='⏹️ Stop'; btn.classList.add('btn-danger'); btn.classList.remove('btn-outline'); stat.textContent='● Merekam…';
+  } else {
+    REC_ON=false; btn.textContent='🎙️ Rekam'; btn.classList.remove('btn-danger'); btn.classList.add('btn-outline'); stat.textContent='Memproses…';
+    try{ REC_DATA=await VoiceRec.stop()||''; }catch(e){ REC_DATA=''; }
+    stat.textContent=REC_DATA?'✅ Voice note siap':''; setRecUI();
+  }
+}
+function clearRec(){ REC_DATA=''; document.getElementById('recStat').textContent=''; setRecUI(); }
 async function openFill(id){
   const c=(await API.getClasses({})).find(x=>x.id===id); if(!c)return;
   document.getElementById('fId').value=id;
+  document.getElementById('fAttend').value=c.attend||'';
   document.getElementById('fTopic').value=c.topic||''; document.getElementById('fNote').value=c.note||'';
   let lp={}; try{ lp=c.lesson_plan?JSON.parse(c.lesson_plan):{}; }catch(e){ lp={}; }
   const _o=lp.objectives||{}, _s=lp.skills||{}, _d=lp.summary||{};
@@ -388,6 +776,10 @@ async function openFill(id){
   document.getElementById('fLinks').value='';
   document.getElementById('fReplace').checked=false;
   document.getElementById('fPdf').value=''; document.getElementById('fPdfName').textContent='';
+  REC_DATA=c.rec_audio||''; REC_ON=false;
+  document.getElementById('fVideo').value=c.rec_video||'';
+  const rb=document.getElementById('recBtn'); rb.textContent='🎙️ Rekam'; rb.classList.remove('btn-danger'); rb.classList.add('btn-outline');
+  document.getElementById('recStat').textContent=''; setRecUI();
   openModal('mFill');
 }
 document.getElementById('fPdf').onchange=e=>{const fs=[...e.target.files];document.getElementById('fPdfName').textContent=fs.length?('📎 '+fs.map(f=>f.name).join(', ')):'';};
@@ -408,6 +800,7 @@ function removeMat(i){ CUR_MATS.splice(i,1); renderMatList(); }
 async function saveFill(){
   if(saveFill._busy) return;
   const p={id:document.getElementById('fId').value,topic:document.getElementById('fTopic').value,note:document.getElementById('fNote').value};
+  p.attend=document.getElementById('fAttend').value; if(p.attend) p.status='done';
   const gv=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
   const lp={
     objectives:{grammar:gv('fGrammar'),vocab:gv('fVocab'),phrases:gv('fPhrases')},
@@ -431,6 +824,12 @@ async function saveFill(){
   }
   const seen=new Set();
   p.material_url=[...base,...newFileUrls,...links].filter(u=>u&&!seen.has(u)&&seen.add(u)).join('|');
+  // rekaman kelas: voice note (upload kalau baru direkam) + link video
+  p.rec_video=document.getElementById('fVideo').value.trim();
+  if(REC_DATA && REC_DATA.startsWith('data:')){
+    try{ toast('Mengupload voice note…'); const r=await API.uploadFile(REC_DATA,'voicenote-'+Date.now()+'.webm'); p.rec_audio=(r&&(r.view||r.url))||''; }
+    catch(e){ toast('Upload voice note gagal: '+(e.message||e),'err'); return; }
+  } else { p.rec_audio=REC_DATA||''; }
   const btn=document.querySelector('#mFill .btn-primary');
   saveFill._busy=true; if(btn){btn.disabled=true; btn.dataset.t=btn.textContent; btn.textContent='Menyimpan…';}
   try{ await API.updateClass(p); closeModal('mFill'); toast('Laporan tersimpan','ok'); renderToday(); }
@@ -509,6 +908,10 @@ async function delPayroll(id){
 }
 
 boot();
+</script>
+<script>
+  initAppShell();
+  if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
 </script>
 </body>
 </html>

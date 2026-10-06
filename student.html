@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student — KWE Lingo</title>
+<title>Student — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3E8A9E">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kwelingo">
 <link rel="stylesheet" href="assets/style.css">
 <style>
   .qopt{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:8px;cursor:pointer;transition:.12s;font-size:14px}
@@ -32,7 +37,7 @@
 <body>
 
 <!-- LOGIN GATE -->
-<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#E9F8FB,#F3FBFC);display:flex;align-items:center;justify-content:center;padding:20px">
+<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#EAF6FA,#FFF9F0);display:flex;align-items:center;justify-content:center;padding:20px">
   <div class="card card-pad" style="max-width:380px;width:100%;text-align:center">
     <img src="assets/logo.png" style="height:78px;margin:0 auto 12px;display:block">
     <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Login Siswa</h2>
@@ -53,10 +58,14 @@
     <div class="sidebar-role">Menu</div>
     <nav class="nav">
       <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
+      <a data-view="myclass"><span class="ic">📅</span> Kelas Saya</a>
+      <a data-view="tasks"><span class="ic">📋</span> Tugas <span id="taskDot" class="nav-dot" style="display:none"></span></a>
+      <a data-view="diary"><span class="ic">📔</span> My Diary</a>
       <a data-view="quiz"><span class="ic">📝</span> Quiz</a>
       <a data-view="leaderboard"><span class="ic">🏆</span> Leaderboard</a>
       <a data-view="announce"><span class="ic">📢</span> Pengumuman</a>
-      <a data-view="discuss"><span class="ic">💬</span> Diskusi</a>
+      <a data-view="classboard"><span class="ic">🏫</span> Papan Kelas</a>
+      <a data-view="discuss"><span class="ic">💬</span> Diskusi Kelas</a>
       <div class="divider"></div>
       <a href="portal.html"><span class="ic">↩️</span> Ganti Portal</a>
       <a href="index.html"><span class="ic">🚪</span> Keluar</a>
@@ -97,6 +106,52 @@
         </div>
       </section>
 
+      <!-- KELAS SAYA -->
+      <section class="view hide" id="view-myclass">
+        <div class="page-head"><div><h1>Kelas Saya</h1><div class="sub">Kehadiran, jadwal, ajukan kelas &amp; sertifikat</div></div>
+          <button class="btn btn-primary" onclick="openReq()">＋ Ajukan Kelas</button></div>
+        <div class="grid grid-4" style="margin-bottom:20px" id="mcStats"></div>
+        <div class="card card-pad" id="certBox" style="display:none;background:linear-gradient(120deg,#FFF6E6,#EAF6FA);border:1.5px solid #F4D98B;margin-bottom:20px">
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div style="font-size:34px">🏅</div>
+            <div style="flex:1;min-width:200px"><div style="font-weight:800;color:var(--navy);font-size:16px">Selamat! Kamu memenuhi syarat Certificate of Completion</div>
+              <div class="muted" style="font-size:13px">Kehadiran &amp; penyelesaian tugas sudah memenuhi syarat (<b id="certPct">—</b>, min. 80% keduanya). Unduh sertifikatmu di bawah.</div></div>
+            <button class="btn btn-primary" onclick="downloadCert()">🏅 Download Sertifikat</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">📅 Jadwal &amp; Kehadiran</div></div>
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Tanggal</th><th>Guru</th><th>Time</th><th>Type</th><th>Status</th><th>Kehadiran</th><th>Rekaman</th><th>Aksi</th></tr></thead>
+            <tbody id="mcBody"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- TUGAS -->
+      <section class="view hide" id="view-tasks">
+        <div class="page-head"><div><h1>Tugas</h1><div class="sub">Tugas dari guru — tandai kalau sudah selesai</div></div></div>
+        <div class="grid grid-4" style="margin-bottom:18px" id="taskStats"></div>
+        <div id="taskList"></div>
+      </section>
+
+      <!-- MY DIARY -->
+      <section class="view hide" id="view-diary">
+        <div class="page-head"><div><h1>My Diary</h1><div class="sub">Refleksi belajarmu — dibaca &amp; dibalas gurumu</div></div></div>
+        <div class="grid grid-2" style="gap:18px;align-items:start">
+          <div class="card card-pad">
+            <div class="card-title">✍️ Entry Hari Ini</div>
+            <div class="field"><label>📘 Apa yang saya pahami hari ini?</label><textarea id="dq1" placeholder="Tulis konsep/skill/ide utama yang kamu pelajari…"></textarea></div>
+            <div class="field"><label>😵 Apa yang masih sulit / membingungkan?</label><textarea id="dq2" placeholder="Hal yang masih belum kamu pahami…"></textarea></div>
+            <div class="field"><label>🎯 Apa yang ingin saya pelajari/tingkatkan?</label><textarea id="dq3" placeholder="Pertanyaan / topik / skill berikutnya…"></textarea></div>
+            <div style="text-align:right"><button class="btn btn-primary" onclick="postDiary()">Kirim Entry</button></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title">📔 Riwayat &amp; Balasan Guru</div>
+            <div id="diaryFeed" style="max-height:56vh;overflow:auto"></div>
+          </div>
+        </div>
+      </section>
+
       <!-- QUIZ -->
       <section class="view hide" id="view-quiz">
         <div class="page-head"><div><h1>Quiz</h1><div class="sub">Kerjakan quiz &amp; kumpulkan poin!</div></div></div>
@@ -111,13 +166,19 @@
 
       <!-- ANNOUNCEMENTS -->
       <section class="view hide" id="view-announce">
-        <div class="page-head"><div><h1>Pengumuman</h1><div class="sub">Info terbaru dari KWE Lingo</div></div></div>
+        <div class="page-head"><div><h1>Pengumuman</h1><div class="sub">Info terbaru dari Kwelingo</div></div></div>
         <div id="annList" style="max-width:760px"></div>
+      </section>
+
+      <!-- PAPAN KELAS (class-specific announcements) -->
+      <section class="view hide" id="view-classboard">
+        <div class="page-head"><div><h1>Papan Kelas</h1><div class="sub" id="cbSub">Pengumuman khusus kelasmu (mis. ganti jadwal)</div></div></div>
+        <div id="cbList" style="max-width:760px"></div>
       </section>
 
       <!-- DISCUSSION -->
       <section class="view hide" id="view-discuss">
-        <div class="page-head"><div><h1>Diskusi</h1><div class="sub">Ngobrol bareng teman &amp; belajar bersama — jaga sopan santun ya 🙂</div></div></div>
+        <div class="page-head"><div><h1>Diskusi Kelas</h1><div class="sub" id="discSub">Ngobrol bareng teman sekelas — jaga sopan santun ya 🙂</div></div></div>
         <div class="card card-pad disc">
           <div id="discFeed" style="max-height:52vh;overflow:auto;margin-bottom:14px"></div>
           <div style="display:flex;gap:10px">
@@ -127,7 +188,7 @@
         </div>
       </section>
 
-      <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
+      <div class="foot-note">© 2026 Kwelingo. All rights reserved.</div>
     </div>
   </div>
 </div>
@@ -144,12 +205,91 @@
   </div>
 </div>
 
+<!-- MODAL: ajukan kelas baru -->
+<div class="modal-overlay" id="mReq">
+  <div class="modal">
+    <div class="modal-head"><h3>Ajukan Kelas Baru</h3><button class="x" onclick="closeModal('mReq')">×</button></div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field"><label>Tanggal <span class="req">*</span></label><input type="date" id="rqDate"></div>
+        <div class="field"><label>Jam Mulai <span class="req">*</span></label><input type="time" id="rqTime"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Durasi (menit)</label><input type="number" id="rqDur" value="60"></div>
+        <div class="field"><label>Type</label>
+          <div class="radio-row"><label><input type="radio" name="rqType" value="online" checked> Online</label>
+          <label><input type="radio" name="rqType" value="onsite"> Onsite</label></div></div>
+      </div>
+      <div class="field"><label>Catatan untuk Guru</label><textarea id="rqNote" placeholder="cth: Minta fokus latihan speaking."></textarea></div>
+      <div class="help">Pengajuan akan dikirim ke guru/admin untuk disetujui.</div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mReq')">Batal</button>
+      <button class="btn btn-primary" onclick="submitReq()">Kirim Pengajuan</button></div>
+  </div>
+</div>
+
+<!-- MODAL: minta reschedule -->
+<div class="modal-overlay" id="mResched">
+  <div class="modal">
+    <div class="modal-head"><h3>Minta Reschedule</h3><button class="x" onclick="closeModal('mResched')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="rsId">
+      <div class="help" id="rsCur" style="margin-bottom:10px"></div>
+      <div class="field-row">
+        <div class="field"><label>Tanggal Baru <span class="req">*</span></label><input type="date" id="rsDate"></div>
+        <div class="field"><label>Jam Baru <span class="req">*</span></label><input type="time" id="rsTime"></div>
+      </div>
+      <div class="field"><label>Alasan</label><textarea id="rsNote" placeholder="cth: Bentrok acara sekolah."></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mResched')">Batal</button>
+      <button class="btn btn-primary" onclick="submitResched()">Kirim Permintaan</button></div>
+  </div>
+</div>
+
+<!-- MODAL: beri rating kelas (rubrik) -->
+<div class="modal-overlay" id="mRate">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-head"><h3>Beri Rating Kelas &amp; Guru</h3><button class="x" onclick="closeModal('mRate')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="rtClass"><input type="hidden" id="rtTutor">
+      <div class="help" id="rtInfo" style="margin-bottom:4px"></div>
+      <div class="help" style="margin-bottom:10px">Skala: 1 = sangat kurang · 3 = cukup · 5 = sangat baik</div>
+      <div id="rtRubric"></div>
+      <div class="field"><label>Apa yang paling kamu suka dari kelas ini?</label><textarea id="rtLiked" style="min-height:44px"></textarea></div>
+      <div class="field"><label>Apa yang bisa diperbaiki?</label><textarea id="rtImprove" style="min-height:44px"></textarea></div>
+      <div class="field" style="margin-bottom:0"><label>Komentar tambahan (opsional)</label><textarea id="rtComment" style="min-height:44px" placeholder="cth: Penjelasannya jelas, seru!"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mRate')">Batal</button>
+      <button class="btn btn-primary" onclick="submitRating()">Kirim Rating</button></div>
+  </div>
+</div>
+
+<!-- MODAL: kumpulkan tugas -->
+<div class="modal-overlay" id="mSubmit">
+  <div class="modal">
+    <div class="modal-head"><h3>Kumpulkan Tugas</h3><button class="x" onclick="closeModal('mSubmit')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="subId">
+      <div class="note-band" id="subInfo" style="margin-bottom:12px"></div>
+      <div class="field"><label>Upload File <span class="help" style="display:inline">(pdf / doc / jpg / png)</span></label>
+        <div class="dropzone" onclick="document.getElementById('subFile').click()"><span class="zi">📎</span><div><b>Pilih file</b> atau drag &amp; drop</div></div>
+        <input type="file" id="subFile" accept="application/pdf,.doc,.docx,image/*" class="hide"><div class="help" id="subFileName"></div></div>
+      <div class="field"><label>atau Link <span class="help" style="display:inline">(Google Drive / YouTube / dll)</span></label><input id="subLink" placeholder="https://..."></div>
+      <div class="field" style="margin-bottom:0"><label>Catatan / Jawaban Teks (opsional)</label><textarea id="subText" placeholder="Tulis jawaban di sini kalau tidak pakai file…"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mSubmit')">Batal</button>
+      <button class="btn btn-primary" onclick="submitTask()">Kumpulkan</button></div>
+  </div>
+</div>
+
 <script src="assets/app.js"></script>
 <script>
-document.getElementById('logo').innerHTML = logoBlock('KWE Lingo','Portal Siswa');
+document.getElementById('logo').innerHTML = logoBlock('Kwelingo','Portal Siswa');
 document.getElementById('today').textContent = '📅 ' + longToday();
 
-let ME=null, QUIZZES=[], RESULTS=[], LB=[], ANN=[], CUR_QUIZ=null, CUR_ANS={};
+let ME=null, QUIZZES=[], RESULTS=[], LB=[], ANN=[], CUR_QUIZ=null, CUR_ANS={}, CLASSES=[], TUTORS=[], RATINGS=[], TASKS=[];
+function tNameS(id){return (TUTORS.find(t=>t.id===id)||{}).nama||'Guru';}
+function myTutorId(){ return ME.tutor_id || (CLASSES.find(c=>c.tutor_id)||{}).tutor_id || ''; }
 
 /* ---------- login ---------- */
 (function(){ const q=new URLSearchParams(location.search); if(q.get('user')) document.getElementById('lgName').value=q.get('user'); })();
@@ -178,10 +318,14 @@ document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
   document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));
   document.getElementById('view-'+a.dataset.view).classList.remove('hide');
   if(window.innerWidth<768)toggleSidebar();
+  if(a.dataset.view==='myclass') renderMyClass();
+  if(a.dataset.view==='tasks') renderTasks();
+  if(a.dataset.view==='diary') renderDiary();
   if(a.dataset.view==='quiz') renderQuizList();
   if(a.dataset.view==='leaderboard') renderLeaderboard();
   if(a.dataset.view==='announce') renderAnnouncements();
-  if(a.dataset.view==='discuss') renderDiscuss();
+  if(a.dataset.view==='classboard') renderClassBoard();
+  if(a.dataset.view==='discuss') renderDiscuss(); else discPoller.stop();
 });
 
 /* ---------- load ---------- */
@@ -190,7 +334,85 @@ async function loadAll(){
   try{ RESULTS=await API.getQuizResults({student_id:ME.id})||[]; }catch(e){ RESULTS=[]; }
   try{ ANN=await API.getAnnouncements()||[]; }catch(e){ ANN=[]; }
   try{ LB=await API.getLeaderboard()||[]; }catch(e){ LB=[]; }
+  try{ TUTORS=await API.getTutors()||[]; }catch(e){ TUTORS=[]; }
+  try{ CLASSES=await API.getClasses({student_id:ME.id})||[]; }catch(e){ CLASSES=[]; }
+  try{ RATINGS=await API.getRatings({student_id:ME.id})||[]; }catch(e){ RATINGS=[]; }
+  try{ TASKS=await API.getTasks({student_id:ME.id})||[]; }catch(e){ TASKS=[]; }
+  updateTaskDot();
   renderDashboard();
+}
+function updateTaskDot(){ const n=TASKS.filter(t=>taskStatus(t)==='assigned').length; const d=document.getElementById('taskDot'); if(d){ d.textContent=n; d.style.display=n?'inline-flex':'none'; } }
+
+/* ---------- Kelas Saya: kehadiran, request, reschedule, sertifikat ---------- */
+async function reloadClasses(){ try{ CLASSES=await API.getClasses({student_id:ME.id})||[]; }catch(e){ CLASSES=[]; } }
+async function renderMyClass(){
+  await reloadClasses();
+  try{ RATINGS=await API.getRatings({student_id:ME.id})||RATINGS; }catch(e){}
+  const st=attendanceStats(CLASSES);
+  document.getElementById('mcStats').innerHTML=[
+    ['tint-blue','Total Sesi',st.total],['tint-green','Hadir',st.hadir],
+    ['tint-amber','Izin / Alpa',st.izin+' / '+st.alpa],['tint-purple','Kehadiran',st.pct+'%'],
+  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+  const cert=document.getElementById('certBox');
+  try{ TASKS=await API.getTasks({student_id:ME.id})||TASKS; }catch(e){}
+  const ts=taskCompletion(TASKS);
+  if(certEligible(st,ts)){ cert.style.display='block'; document.getElementById('certPct').textContent=st.pct+'% & tugas '+ts.pct+'%'; }
+  else cert.style.display='none';
+  const rows=[...CLASSES].sort((a,b)=>String((b.date||'')).localeCompare(String(a.date||'')));
+  const today=todayStr();
+  document.getElementById('mcBody').innerHTML=rows.map(c=>{
+    const upcoming=isSession(c)&&c.date&&c.date>=today;
+    const canResched=upcoming&&classStatus(c)!=='reschedule';
+    const rated=RATINGS.find(r=>String(r.class_id)===String(c.id));
+    let act;
+    if(canResched) act=`<button class="btn btn-outline btn-sm" onclick="openResched('${c.id}')">🔄 Reschedule</button>`;
+    else if(isSession(c)&&c.date&&c.date<today) act= rated ? starsHTML(rated.stars) : `<button class="btn btn-outline btn-sm" onclick="openRate('${c.id}','${c.tutor_id||''}')">⭐ Rating</button>`;
+    else act='<span class="muted">-</span>';
+    return `<tr><td>${prettyDate(c.date)}</td><td>${tNameS(c.tutor_id)}</td><td>${timeRange(c.start_time,c.end_time)}</td>
+      <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
+      <td>${statusBadge(c)}</td><td>${isSession(c)?attendBadgeFor(c):'<span class="muted">-</span>'}</td><td>${recCell(c)}</td><td style="white-space:nowrap">${act}</td></tr>`;
+  }).join('') || '<tr><td colspan="8" class="muted" style="text-align:center;padding:22px">Belum ada kelas. Ajukan kelas lewat tombol di atas.</td></tr>';
+}
+function downloadCert(){
+  const st=attendanceStats(CLASSES);
+  openCertificate({name:ME.nama||'Student', program:(ME.grade?('Grade '+ME.grade+' '):'')+'Language Program', pct:st.pct, sessions:st.counted});
+}
+function openReq(){
+  document.getElementById('rqDate').value=todayStr();
+  document.getElementById('rqTime').value='16:00'; document.getElementById('rqDur').value=60;
+  document.getElementById('rqNote').value=''; document.querySelector('input[name=rqType][value=online]').checked=true;
+  openModal('mReq');
+}
+async function submitReq(){
+  if(submitReq._busy)return;
+  const p={student_id:ME.id, tutor_id:ME.tutor_id||'', date:document.getElementById('rqDate').value,
+    start_time:document.getElementById('rqTime').value, duration:document.getElementById('rqDur').value,
+    type:document.querySelector('input[name=rqType]:checked').value, status:'requested', req_by:'murid',
+    req_note:document.getElementById('rqNote').value };
+  if(!p.date||!p.start_time){ toast('Isi tanggal & jam dulu','err'); return; }
+  const btn=document.querySelector('#mReq .btn-primary'); submitReq._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Mengirim…';}
+  try{ await API.addClass(p); closeModal('mReq'); toast('Pengajuan terkirim — tunggu persetujuan','ok'); renderMyClass(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+  finally{ submitReq._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Kirim Pengajuan';} }
+}
+function openResched(id){
+  const c=CLASSES.find(x=>x.id===id); if(!c)return;
+  document.getElementById('rsId').value=id;
+  document.getElementById('rsCur').innerHTML='Jadwal sekarang: <b>'+prettyDate(c.date)+' '+(c.start_time||'')+'</b>';
+  document.getElementById('rsDate').value=c.date||todayStr(); document.getElementById('rsTime').value=c.start_time||'16:00';
+  document.getElementById('rsNote').value='';
+  openModal('mResched');
+}
+async function submitResched(){
+  if(submitResched._busy)return;
+  const id=document.getElementById('rsId').value;
+  const p={id,status:'reschedule',resched_date:document.getElementById('rsDate').value,
+    resched_time:document.getElementById('rsTime').value,resched_note:document.getElementById('rsNote').value,req_by:'murid'};
+  if(!p.resched_date||!p.resched_time){ toast('Isi tanggal & jam baru','err'); return; }
+  const btn=document.querySelector('#mResched .btn-primary'); submitResched._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Mengirim…';}
+  try{ await API.updateClass(p); closeModal('mResched'); toast('Permintaan reschedule terkirim','ok'); renderMyClass(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+  finally{ submitResched._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Kirim Permintaan';} }
 }
 function myPoints(){ return RESULTS.reduce((a,r)=>a+(Number(r.score)||0),0); }
 function myRankNum(){ const i=LB.findIndex(x=>String(x.student_id)===String(ME.id)); return i>=0?i+1:'-'; }
@@ -208,6 +430,125 @@ function renderDashboard(){
     <span style="font-size:13.5px;font-weight:600;color:var(--navy);flex:1">${esc(q.title||'Quiz')}</span>
     ${done.has(q.id)?'<span class="badge badge-paid">✅ Selesai</span>':`<button class="btn btn-primary btn-sm" onclick="startQuiz('${q.id}')">Kerjakan</button>`}</div>`).join(''))
     || '<div class="muted" style="font-size:13px">Belum ada quiz.</div>';
+}
+
+/* ---------- rating kelas (rubrik 8 kategori) ---------- */
+let CUR_SCORES=[];
+function paintRubric(){
+  document.getElementById('rtRubric').innerHTML=RATING_CATS.map((cat,ci)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)">
+      <div style="flex:1;font-size:13px;color:var(--navy)">${ci+1}. ${esc(cat)}</div>
+      <div style="display:flex;gap:4px">${[1,2,3,4,5].map(v=>`<span class="rbStar" data-c="${ci}" data-v="${v}" style="cursor:pointer;font-size:22px;color:${v<=(CUR_SCORES[ci]||0)?'#F4C544':'#dcd3c4'}">★</span>`).join('')}</div>
+    </div>`).join('');
+}
+document.getElementById('rtRubric').addEventListener('click',e=>{
+  const c=e.target.getAttribute('data-c'), v=e.target.getAttribute('data-v');
+  if(c!=null&&v!=null){ CUR_SCORES[+c]=+v; paintRubric(); }
+});
+function openRate(classId,tutorId){
+  document.getElementById('rtClass').value=classId;
+  document.getElementById('rtTutor').value=tutorId||myTutorId();
+  CUR_SCORES=new Array(RATING_CATS.length).fill(0);
+  ['rtLiked','rtImprove','rtComment'].forEach(id=>document.getElementById(id).value='');
+  const c=CLASSES.find(x=>x.id===classId)||{};
+  document.getElementById('rtInfo').innerHTML=`Kelas <b>${prettyDate(c.date)}</b> dengan <b>${tNameS(tutorId)}</b>`;
+  paintRubric(); openModal('mRate');
+}
+async function submitRating(){
+  const filled=CUR_SCORES.filter(v=>v>0).length;
+  if(filled<RATING_CATS.length){ toast('Mohon isi semua '+RATING_CATS.length+' penilaian dulu','err'); return; }
+  const avg=Math.round(CUR_SCORES.reduce((a,b)=>a+b,0)/CUR_SCORES.length);
+  const p={class_id:document.getElementById('rtClass').value,student_id:ME.id,tutor_id:document.getElementById('rtTutor').value,
+    stars:avg, scores:JSON.stringify(CUR_SCORES), liked:document.getElementById('rtLiked').value,
+    improve:document.getElementById('rtImprove').value, comment:document.getElementById('rtComment').value, student_name:ME.nama||''};
+  try{ await API.addRating(p); closeModal('mRate'); toast('Terima kasih atas ratingnya! ⭐','ok');
+    RATINGS=await API.getRatings({student_id:ME.id})||RATINGS; renderMyClass(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+
+/* ---------- tugas ---------- */
+async function renderTasks(){
+  try{ TASKS=await API.getTasks({student_id:ME.id})||[]; }catch(e){ TASKS=[]; }
+  updateTaskDot();
+  const done=TASKS.filter(t=>taskStatus(t)!=='assigned').length, graded=TASKS.filter(t=>taskStatus(t)==='graded').length, total=TASKS.length;
+  document.getElementById('taskStats').innerHTML=[
+    ['tint-blue','Total Tugas',total],['tint-green','Dikumpulkan',done],
+    ['tint-amber','Belum',total-done],['tint-purple','Sudah Dinilai',graded],
+  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+  const box=document.getElementById('taskList');
+  const today=todayStr();
+  const ord={assigned:0,submitted:1,graded:2};
+  box.innerHTML=[...TASKS].sort((a,b)=>(ord[taskStatus(a)]-ord[taskStatus(b)])||String(a.due_date||'').localeCompare(String(b.due_date||''))).map(t=>{
+    const st=taskStatus(t);
+    const overdue=st==='assigned'&&t.due_date&&t.due_date<today;
+    let sub='';
+    if(st==='submitted') sub=`<div class="note-band" style="margin-top:8px;font-size:12px">📤 Sudah dikumpulkan ${t.submit_at?prettyDate(String(t.submit_at).slice(0,10)):''} — menunggu dinilai guru.${t.submit_url?` · <a href="${t.submit_url}" target="_blank" style="color:var(--blue)">lihat jawaban</a>`:''}</div>`;
+    if(st==='graded') sub=`<div class="note-band" style="margin-top:8px;font-size:12.5px;background:var(--green-soft);border-color:#bfe6cf;color:#1e7e34"><b>⭐ Nilai: ${esc(t.points||'-')}</b>${t.feedback?` — ${esc(t.feedback)}`:''}${t.submit_url?` · <a href="${t.submit_url}" target="_blank" style="color:var(--blue)">jawabanmu</a>`:''}</div>`;
+    const btn = st==='graded' ? '' :
+      `<button class="btn ${st==='assigned'?'btn-primary':'btn-outline'} btn-sm" onclick="openSubmit('${t.id}')">${st==='assigned'?'📤 Kumpulkan':'✏️ Ubah'}</button>`;
+    return `<div class="card card-pad" style="margin-bottom:12px;display:flex;gap:14px;align-items:flex-start">
+      <div style="font-size:24px">${st==='graded'?'⭐':st==='submitted'?'📤':'📋'}</div>
+      <div style="flex:1">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="badge badge-active">${esc(taskTypeLabel(t.type))}</span><b style="color:var(--navy)">${esc(t.title||'Tugas')}</b></div>
+        ${t.detail?`<div class="muted" style="font-size:13px;white-space:pre-line;margin-top:4px">${esc(t.detail)}</div>`:''}
+        <div style="font-size:12px;margin-top:6px">${t.due_date?`<span style="color:${overdue?'var(--red)':'var(--muted)'}">📅 Deadline ${prettyDate(t.due_date)}${overdue?' (lewat)':''}</span> · `:''}${taskBadge(st)}</div>
+        ${sub}
+      </div>
+      <div>${btn}</div>
+    </div>`;
+  }).join('') || '<div class="card card-pad muted" style="text-align:center">Belum ada tugas dari guru. 🎉</div>';
+}
+function openSubmit(id){
+  const t=TASKS.find(x=>x.id===id); if(!t)return;
+  document.getElementById('subId').value=id;
+  document.getElementById('subInfo').innerHTML=`<b>${esc(taskTypeLabel(t.type))}:</b> ${esc(t.title||'')}`;
+  document.getElementById('subLink').value=t.submit_url&&!String(t.submit_url).startsWith('data:')?t.submit_url:'';
+  document.getElementById('subText').value=t.submit_text||'';
+  document.getElementById('subFile').value=''; document.getElementById('subFileName').textContent='';
+  SUB_DATA='';
+  openModal('mSubmit');
+}
+let SUB_DATA='';
+document.getElementById('subFile').onchange=async e=>{
+  const f=e.target.files[0]; if(!f){SUB_DATA='';document.getElementById('subFileName').textContent='';return;}
+  document.getElementById('subFileName').textContent='📎 '+f.name;
+  try{ SUB_DATA=await fileToBase64(f); }catch(err){ SUB_DATA=''; }
+};
+async function submitTask(){
+  if(submitTask._busy)return;
+  const id=document.getElementById('subId').value;
+  const link=document.getElementById('subLink').value.trim();
+  const text=document.getElementById('subText').value.trim();
+  if(!link && !text && !SUB_DATA){ toast('Upload file, tempel link, atau tulis jawaban dulu','err'); return; }
+  const btn=document.querySelector('#mSubmit .btn-primary'); submitTask._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Mengirim…';}
+  try{
+    let url=link;
+    if(SUB_DATA){ toast('Mengupload file…'); const r=await API.uploadFile(SUB_DATA,'tugas-'+Date.now()); url=(r&&(r.view||r.url))||url; }
+    await API.updateTask({id,status:'submitted',submit_url:url||'',submit_text:text,submit_at:todayStr()});
+    closeModal('mSubmit'); toast('Tugas dikumpulkan! 🎉','ok'); renderTasks();
+  }catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+  finally{ submitTask._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Kumpulkan';} }
+}
+
+/* ---------- my diary ---------- */
+async function renderDiary(){
+  const feed=document.getElementById('diaryFeed'); feed.innerHTML='<div class="muted">Memuat…</div>';
+  let list=[]; try{ list=await API.getDiary({student_id:ME.id})||[]; }catch(e){ feed.innerHTML='<div style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
+  feed.innerHTML=list.map(m=>{
+    const me=m.author!=='guru';
+    const who=me?(ME.nama||'Saya'):('👩‍🏫 '+tNameS(m.tutor_id));
+    return `<div class="msg ${me?'me':''}"><div class="av">${me?'🙂':'👩‍🏫'}</div>
+      <div class="bub"><b>${esc(who)}</b>${esc(m.message||'')}<div class="t">${m.created_at?prettyDate(String(m.created_at).slice(0,10)):''}</div></div></div>`;
+  }).join('') || '<div class="muted" style="text-align:center;padding:20px">Belum ada catatan. Tulis sesuatu untuk gurumu 👇</div>';
+  feed.scrollTop=feed.scrollHeight;
+}
+async function postDiary(){
+  const q1=document.getElementById('dq1').value.trim(), q2=document.getElementById('dq2').value.trim(), q3=document.getElementById('dq3').value.trim();
+  if(!q1&&!q2&&!q3){ toast('Isi minimal satu pertanyaan dulu','err'); return; }
+  const msg=`📘 Yang saya pahami: ${q1||'-'}\n😵 Yang masih sulit: ${q2||'-'}\n🎯 Ingin dipelajari: ${q3||'-'}`;
+  try{ await API.addDiary({student_id:ME.id,tutor_id:myTutorId(),author:'murid',message:msg});
+    ['dq1','dq2','dq3'].forEach(id=>document.getElementById(id).value=''); toast('Entry terkirim ✍️','ok'); renderDiary(); }
+  catch(e){ toast('Gagal kirim: '+(e.message||e),'err'); }
 }
 
 /* ---------- quiz ---------- */
@@ -278,36 +619,52 @@ async function renderLeaderboard(){
 }
 
 /* ---------- announcements ---------- */
+function annCard(a,color){
+  return `<div class="card card-pad ann" style="margin-bottom:12px;border-left:4px solid ${color}">
+    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">
+      <div style="font-weight:800;color:var(--navy);font-size:16px">${esc(a.title||'')}</div>
+      <span class="muted" style="font-size:11.5px">${a.author?esc(a.author)+' · ':''}${a.date?prettyDate(a.date):''}</span></div>
+    <div style="white-space:pre-line;color:#374151;font-size:14px;margin-top:6px">${esc(a.body||'')}</div></div>`;
+}
 async function renderAnnouncements(){
   const box=document.getElementById('annList'); box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
   try{ ANN=await API.getAnnouncements()||[]; }catch(e){ box.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
-  box.innerHTML=ANN.map(a=>`<div class="card card-pad ann" style="margin-bottom:12px;border-left:4px solid var(--sky)">
-    <div style="font-weight:800;color:var(--navy);font-size:16px">${esc(a.title||'')}</div>
-    <div class="muted" style="font-size:11.5px;margin-bottom:8px">${a.date?prettyDate(a.date):''}</div>
-    <div style="white-space:pre-line;color:#374151;font-size:14px">${esc(a.body||'')}</div></div>`).join('')
+  box.innerHTML=ANN.filter(a=>!a.class_group).map(a=>annCard(a,'var(--sky)')).join('')
     || '<div class="card card-pad muted" style="text-align:center">Belum ada pengumuman.</div>';
 }
+async function renderClassBoard(){
+  const box=document.getElementById('cbList'); box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
+  document.getElementById('cbSub').textContent=ME.class_group?('Kelas: '+ME.class_group):'Pengumuman khusus kelasmu';
+  if(!ME.class_group){ box.innerHTML='<div class="card card-pad muted" style="text-align:center">Kamu belum dimasukkan ke kelas/grup. Hubungi admin.</div>'; return; }
+  try{ ANN=await API.getAnnouncements()||[]; }catch(e){ box.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
+  box.innerHTML=ANN.filter(a=>a.class_group===ME.class_group).map(a=>annCard(a,'var(--orange)')).join('')
+    || '<div class="card card-pad muted" style="text-align:center">Belum ada pengumuman kelas.</div>';
+}
 
-/* ---------- discussion ---------- */
-let DISC=[];
+/* ---------- diskusi kelas (per grup kelas, polling) ---------- */
+function myRoom(){ return ME.class_group ? ('kelas:'+ME.class_group) : ''; }
+const discPoller=makeChatPoller(list=>renderChatFeed(document.getElementById('discFeed'),list,ME.id),4000);
 async function renderDiscuss(){
-  const feed=document.getElementById('discFeed'); feed.innerHTML='<div class="muted">Memuat…</div>';
-  try{ DISC=await API.getDiscussion()||[]; }catch(e){ feed.innerHTML='<div style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
-  feed.innerHTML=DISC.map(m=>{
-    const me=String(m.student_id)===String(ME.id);
-    return `<div class="msg ${me?'me':''}"><div class="av">${(String(m.name||'S')[0]||'S').toUpperCase()}</div>
-      <div class="bub"><b>${esc(m.name||'Siswa')}</b>${esc(m.message||'')}<div class="t">${m.created_at?prettyDate(String(m.created_at).slice(0,10)):''}</div></div></div>`;
-  }).join('') || '<div class="muted" style="text-align:center;padding:20px">Belum ada obrolan. Sapa temanmu! 👋</div>';
-  feed.scrollTop=feed.scrollHeight;
+  const feed=document.getElementById('discFeed'); const sub=document.getElementById('discSub');
+  const room=myRoom();
+  if(!room){ feed.innerHTML='<div class="muted" style="text-align:center;padding:24px">Kamu belum dimasukkan ke kelas/grup. Hubungi admin untuk diatur dulu ya.</div>'; sub.textContent='Belum ada kelas'; return; }
+  sub.textContent='Kelas: '+ME.class_group+' — ngobrol bareng teman sekelas 🙂';
+  feed.innerHTML='<div class="muted">Memuat…</div>';
+  discPoller.start(room);
 }
 async function postDiscuss(){
+  const room=myRoom(); if(!room){ toast('Belum ada kelas/grup','err'); return; }
   const inp=document.getElementById('discInput'); const msg=inp.value.trim();
   if(!msg) return; inp.value='';
   try{
-    await API.addDiscussion({student_id:ME.id, name:ME.nama||'Siswa', message:msg});
-    renderDiscuss();
+    await API.addChat({room, sender_id:ME.id, sender_name:ME.nama||'Siswa', role:'murid', message:msg});
+    discPoller.refresh();
   }catch(e){ toast('Gagal kirim: '+(e.message||e),'err'); inp.value=msg; }
 }
+</script>
+<script>
+  initAppShell();
+  if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Master Admin — KWE Lingo</title>
+<title>Master Admin — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/style.css">
 <style>
@@ -54,7 +54,7 @@
 <body>
 
 <!-- PIN GATE (Master Admin) -->
-<div id="maGate" style="position:fixed;inset:0;z-index:600;background:linear-gradient(180deg,#E9F8FB,#F3FBFC);display:flex;align-items:center;justify-content:center;padding:20px">
+<div id="maGate" style="position:fixed;inset:0;z-index:600;background:linear-gradient(180deg,#EAF6FA,#FFF9F0);display:flex;align-items:center;justify-content:center;padding:20px">
   <div class="card card-pad" style="max-width:360px;width:100%;text-align:center">
     <img src="assets/logo.png" style="width:80px;height:80px;border-radius:16px;padding:6px;background:#fff;box-shadow:var(--shadow);margin:0 auto 14px">
     <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Master Admin</h2>
@@ -81,6 +81,8 @@
       <a data-view="tpay"><span class="ic">🧑‍🏫</span> Payment Tentor</a>
       <a data-view="resources"><span class="ic">📚</span> Teaching Resources</a>
       <a data-view="content"><span class="ic">🎓</span> Konten Siswa</a>
+      <a data-view="chat"><span class="ic">💬</span> Diskusi Guru</a>
+      <a data-view="board"><span class="ic">📌</span> Papan Guru</a>
       <a data-view="settings"><span class="ic">🔒</span> Ganti Password</a>
       <div class="divider"></div>
       <div class="sidebar-role" style="margin-top:0">Buka Portal Lain</div>
@@ -112,7 +114,7 @@
       </div>
       <!-- DASHBOARD -->
       <section class="view" id="view-dashboard">
-        <div class="page-head"><div><h1>Beranda</h1><div class="sub">Ringkasan seluruh operasional KWE Lingo</div></div></div>
+        <div class="page-head"><div><h1>Beranda</h1><div class="sub">Ringkasan seluruh operasional Kwelingo</div></div></div>
         <div id="bdayBanner" style="display:none;background:linear-gradient(120deg,#fff0f6,#eef7fd);border:1.5px solid #ffc9e0;border-radius:14px;padding:14px 18px;margin-bottom:18px;color:var(--navy);font-size:14px"></div>
         <div class="grid grid-4" style="margin-bottom:22px">
           <div class="stat tint-purple"><div class="lbl"><span class="icon">🧑‍🎓</span> Total Murid</div><div class="val" id="mStudents">0</div></div>
@@ -148,9 +150,9 @@
         <!-- clean header shown only in the printed / PDF version -->
         <div class="print-only print-head">
           <div style="display:flex;align-items:center;gap:12px">
-            <img src="assets/logo.png" alt="KWE Lingo">
+            <img src="assets/logo.png" alt="Kwelingo">
             <div>
-              <div class="pt">Laporan Murid — KWE Lingo</div>
+              <div class="pt">Laporan Murid — Kwelingo</div>
               <div class="pl">Nama: <b id="phName">—</b></div>
               <div class="pl">Periode: <b id="phPeriod">—</b></div>
             </div>
@@ -226,9 +228,9 @@
 
         <div class="print-only print-head">
           <div style="display:flex;align-items:center;gap:12px">
-            <img src="assets/logo.png" alt="KWE Lingo">
+            <img src="assets/logo.png" alt="Kwelingo">
             <div>
-              <div class="pt" id="payPrintTitle">Invoice — KWE Lingo</div>
+              <div class="pt" id="payPrintTitle">Invoice — Kwelingo</div>
               <div class="pl">Nama: <b id="payPhName">—</b></div>
               <div class="pl" id="payPhSub">—</div>
             </div>
@@ -279,6 +281,12 @@
       <!-- TEACHING RESOURCES (owner upload) -->
       <section class="view hide" id="view-resources">
         <div class="page-head"><div><h1>Teaching Resources</h1><div class="sub">Upload modul/panduan PDF — tentor hanya bisa melihat (tidak bisa unduh)</div></div></div>
+        <div class="card card-pad" style="margin-bottom:16px;background:#fbfdff">
+          <div class="card-title">📘 Panduan Guru (SOP)</div>
+          <div class="field" style="margin-bottom:8px"><label>Link SOP Kwelingo <span class="help" style="display:inline">(Google Drive — tampil view-only di Portal Tentor)</span></label>
+            <input id="sopUrl" placeholder="https://drive.google.com/file/d/.../view"></div>
+          <div style="text-align:right"><button class="btn btn-primary btn-sm" onclick="saveSop()">💾 Simpan SOP</button></div>
+        </div>
         <div class="card card-pad" style="margin-bottom:16px">
           <div class="card-title">＋ Tambah Modul</div>
           <div class="field-row">
@@ -307,6 +315,9 @@
           <div class="card card-pad">
             <div class="card-title">📢 Pengumuman</div>
             <div class="field"><label>Judul</label><input id="anTitle" placeholder="cth: Libur Nasional"></div>
+            <div class="field"><label>Tujuan</label>
+              <select id="anGroup"><option value="">🌐 Semua murid (umum)</option></select>
+              <div class="help">Pilih kelas/grup untuk Papan Kelas (mis. ganti jadwal); "Semua murid" tampil di Pengumuman umum.</div></div>
             <div class="field"><label>Isi</label><textarea id="anBody" style="min-height:70px" placeholder="Tulis pengumuman…"></textarea></div>
             <div style="text-align:right"><button class="btn btn-primary btn-sm" onclick="postAnnounce()">＋ Posting</button></div>
             <div id="anList" style="margin-top:10px"></div>
@@ -324,6 +335,30 @@
       </section>
 
       <!-- SETTINGS: GANTI PASSWORD -->
+      <!-- PAPAN GURU (bulletin board) -->
+      <section class="view hide" id="view-board">
+        <div class="page-head"><div><h1>Papan Guru</h1><div class="sub">Pengumuman untuk guru — lihat siapa yang sudah baca</div></div></div>
+        <div class="card card-pad" style="margin-bottom:16px">
+          <div class="card-title">＋ Pengumuman Baru</div>
+          <div class="field"><label>Judul</label><input id="tbTitle" placeholder="cth: Rapat Koordinasi Bulanan"></div>
+          <div class="field"><label>Isi</label><textarea id="tbBody" style="min-height:70px" placeholder="Tulis pengumuman untuk guru…"></textarea></div>
+          <div style="text-align:right"><button class="btn btn-primary btn-sm" onclick="postBoard()">＋ Posting</button></div>
+        </div>
+        <div id="tbList"></div>
+      </section>
+
+      <!-- DISKUSI GURU -->
+      <section class="view hide" id="view-chat">
+        <div class="page-head"><div><h1>Diskusi Guru</h1><div class="sub">Ruang obrolan guru, admin &amp; owner</div></div></div>
+        <div class="card card-pad" style="max-width:820px">
+          <div id="chatFeed" style="max-height:56vh;overflow:auto;margin-bottom:14px"></div>
+          <div style="display:flex;gap:10px">
+            <input id="chatInput" placeholder="Tulis pesan…" style="flex:1;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px" onkeydown="if(event.key==='Enter')postChat()">
+            <button class="btn btn-primary" onclick="postChat()">Kirim</button>
+          </div>
+        </div>
+      </section>
+
       <section class="view hide" id="view-settings">
         <div class="page-head"><div><h1>Ganti Password</h1><div class="sub">Ubah PIN login portal. Masukkan password lama untuk verifikasi.</div></div></div>
         <div class="grid grid-2" style="gap:18px">
@@ -350,7 +385,7 @@
           <div style="font-size:13px;color:#374151;line-height:1.7;margin-top:10px">
             Kalau lupa PIN Master Admin / Admin, reset lewat Google Apps Script (butuh akun Google pemilik script):
             <ol style="margin:8px 0 0 18px">
-              <li>Buka project <b>Apps Script</b> situs ini (script.google.com → project KWE Lingo).</li>
+              <li>Buka project <b>Apps Script</b> situs ini (script.google.com → project Kwelingo).</li>
               <li>Klik ⚙️ <b>Project Settings</b>.</li>
               <li>Scroll ke <b>Script Properties</b>.</li>
               <li>Hapus baris <b>MASTER_PIN</b> dan/atau <b>ADMIN_PIN</b> (klik ikon hapus), lalu <b>Save</b>.</li>
@@ -361,7 +396,7 @@
         </details>
       </section>
 
-      <div class="foot-note">© 2026 KWE Lingo. All rights reserved.</div>
+      <div class="foot-note">© 2026 Kwelingo. All rights reserved.</div>
     </div>
   </div>
 </div>
@@ -407,6 +442,9 @@
         <div class="field"><label>Date of Birth</label><input type="date" id="sDob"></div>
         <div class="field"><label>Jadwal Tetap</label><input id="sSchedule" placeholder="Sen & Kam · 19.00"></div>
       </div>
+      <div class="field"><label>Kelas / Grup <span class="help" style="display:inline">(murid dengan grup sama bisa saling diskusi)</span></label>
+        <input id="sClassGroup" list="classGroupList" placeholder="cth: English A · Sen&Kam 19.00">
+        <datalist id="classGroupList"></datalist></div>
       <div class="field-row">
         <div class="field"><label>Nama Orang Tua</label><input id="sParent"></div>
         <div class="field"><label>WA Orang Tua</label><input id="sWa" placeholder="08xxxx"></div>
@@ -492,7 +530,7 @@
 
 <script src="assets/app.js"></script>
 <script>
-document.getElementById('logo').innerHTML=logoBlock('KWE Lingo','Master Admin');
+document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Master Admin');
 /* ---- PIN gate (verifikasi ke server) ---- */
 try{ if(sessionStorage.getItem('ma_ok')==='1') document.getElementById('maGate').style.display='none'; else document.getElementById('maPin').focus(); }catch(e){}
 async function maLogin(){
@@ -548,19 +586,64 @@ function renderM(v){
   if(v==='data')        initData();
   if(v==='resources')   renderResourcesAdmin();
   if(v==='content')     initContent();
+  if(v==='chat')        openChat(); else gchat.stop();
+  if(v==='board')       renderBoardAdmin();
+}
+/* ===== Papan Guru (owner post + read receipts) ===== */
+async function postBoard(){
+  const t=document.getElementById('tbTitle').value.trim(), b=document.getElementById('tbBody').value.trim();
+  if(!t){ toast('Isi judul dulu','err'); return; }
+  try{ await API.addTBoard({title:t,body:b,date:todayStr(),author:'Owner'}); document.getElementById('tbTitle').value=''; document.getElementById('tbBody').value=''; toast('Pengumuman diposting','ok'); renderBoardAdmin(); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+async function renderBoardAdmin(){
+  const box=document.getElementById('tbList'); box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
+  let list=[],reads=[],tutors=[];
+  try{ list=await API.getTBoard()||[]; }catch(e){ box.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
+  try{ reads=await API.getTBoardReads()||[]; }catch(e){}
+  try{ tutors=TUTORS&&TUTORS.length?TUTORS:(await API.getTutors()||[]); }catch(e){}
+  const totalT=tutors.length;
+  box.innerHTML=list.map(b=>{
+    const rs=reads.filter(r=>String(r.board_id)===String(b.id));
+    const names=rs.map(r=>esc(r.reader_name||'?')).join(', ');
+    return `<div class="card card-pad" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
+        <b style="color:var(--navy);font-size:15px">${esc(b.title||'')}</b>
+        <div style="display:flex;gap:8px;align-items:center"><span class="muted" style="font-size:11.5px">${esc(b.author||'')} · ${b.date?prettyDate(b.date):''}</span>
+          <button class="btn btn-danger btn-sm" onclick="delBoard('${b.id}')">Hapus</button></div>
+      </div>
+      <div style="white-space:pre-line;color:#374151;font-size:14px;margin-top:6px">${esc(b.body||'')}</div>
+      <div style="margin-top:10px;font-size:12px"><span class="badge ${rs.length>=totalT&&totalT?'badge-paid':'badge-pending'}">👁️ Dibaca ${rs.length}${totalT?'/'+totalT:''} guru</span>${names?` <span class="muted">· ${names}</span>`:''}</div>
+    </div>`;
+  }).join('') || '<div class="card card-pad muted" style="text-align:center">Belum ada pengumuman.</div>';
+}
+async function delBoard(id){ if(!confirm('Hapus pengumuman ini?'))return; try{ await API.deleteTBoard(id); toast('Terhapus','ok'); renderBoardAdmin(); }catch(e){ toast('Gagal: '+(e.message||e),'err'); } }
+/* ===== Diskusi Guru (owner) ===== */
+const gchat=makeChatPoller(list=>renderChatFeed(document.getElementById('chatFeed'),list,'owner'),4000);
+function openChat(){ document.getElementById('chatFeed').innerHTML='<div class="muted">Memuat…</div>'; gchat.start('guru'); }
+async function postChat(){
+  const inp=document.getElementById('chatInput'); const msg=inp.value.trim(); if(!msg)return; inp.value='';
+  try{ await API.addChat({room:'guru',sender_id:'owner',sender_name:'Owner',role:'owner',message:msg}); gchat.refresh(); }
+  catch(e){ toast('Gagal kirim: '+(e.message||e),'err'); inp.value=msg; }
 }
 /* ===== Konten Siswa: Pengumuman + Quiz ===== */
-function initContent(){ renderAnnList(); renderQzList(); document.getElementById('qzQuestions').innerHTML=''; addQuestion(); }
+function initContent(){
+  const sel=document.getElementById('anGroup');
+  if(sel){ const groups=[...new Set((STUDENTS||[]).map(s=>s.class_group).filter(Boolean))];
+    sel.innerHTML='<option value="">🌐 Semua murid (umum)</option>'+groups.map(g=>`<option value="${esc(g)}">🏫 ${esc(g)}</option>`).join(''); }
+  renderAnnList(); renderQzList(); document.getElementById('qzQuestions').innerHTML=''; addQuestion();
+}
 async function postAnnounce(){
   const t=document.getElementById('anTitle').value.trim(), b=document.getElementById('anBody').value.trim();
   if(!t){ toast('Isi judul dulu','err'); return; }
-  try{ await API.addAnnouncement({title:t, body:b, date:todayStr()}); document.getElementById('anTitle').value=''; document.getElementById('anBody').value=''; toast('Pengumuman diposting','ok'); renderAnnList(); }
+  const grp=(document.getElementById('anGroup')||{}).value||'';
+  try{ await API.addAnnouncement({title:t, body:b, date:todayStr(), class_group:grp, author:'Owner'}); document.getElementById('anTitle').value=''; document.getElementById('anBody').value=''; toast('Pengumuman diposting','ok'); renderAnnList(); }
   catch(e){ toast('Gagal: '+(e.message||e),'err'); }
 }
 async function renderAnnList(){
   const box=document.getElementById('anList'); if(!box) return; box.innerHTML='<div class="muted" style="font-size:12px">Memuat…</div>';
   let list=[]; try{ list=await API.getAnnouncements()||[]; }catch(e){ box.innerHTML='<div style="color:var(--red);font-size:12px">Gagal memuat</div>'; return; }
-  box.innerHTML=list.map(a=>`<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)"><span style="flex:1;font-size:12.5px"><b>${esc(a.title||'')}</b> <span class="muted">${a.date?prettyDate(a.date):''}</span></span><button class="btn btn-danger btn-sm" onclick="delAnnounce('${a.id}')">Hapus</button></div>`).join('') || '<div class="muted" style="font-size:12px">Belum ada.</div>';
+  box.innerHTML=list.map(a=>`<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)"><span style="flex:1;font-size:12.5px"><b>${esc(a.title||'')}</b> <span class="badge ${a.class_group?'badge-active':'badge-pending'}" style="font-size:9px">${a.class_group?'🏫 '+esc(a.class_group):'🌐 Umum'}</span> <span class="muted">${a.date?prettyDate(a.date):''}</span></span><button class="btn btn-danger btn-sm" onclick="delAnnounce('${a.id}')">Hapus</button></div>`).join('') || '<div class="muted" style="font-size:12px">Belum ada.</div>';
 }
 async function delAnnounce(id){ if(!confirm('Hapus pengumuman?'))return; try{ await API.deleteAnnouncement(id); renderAnnList(); }catch(e){ toast('Gagal','err'); } }
 let QZ_N=0;
@@ -600,6 +683,7 @@ async function delQuiz(id){ if(!confirm('Hapus quiz?'))return; try{ await API.de
 document.getElementById('rcFile') && (document.getElementById('rcFile').onchange=e=>{document.getElementById('rcFileName').textContent=e.target.files[0]?('📎 '+e.target.files[0].name):'';});
 async function renderResourcesAdmin(){
   const tb=document.getElementById('rcBody'); if(!tb) return;
+  try{ document.getElementById('sopUrl').value=await API.getSetting('TEACHER_SOP_URL')||''; }catch(e){}
   tb.innerHTML='<tr><td colspan="5" class="muted" style="padding:16px">Memuat…</td></tr>';
   let list=[]; try{ list=await API.getResources()||[]; }catch(e){ tb.innerHTML='<tr><td colspan="5" style="color:var(--red);padding:16px">Gagal: '+esc(e.message||e)+'</td></tr>'; return; }
   tb.innerHTML=list.map(r=>`<tr>
@@ -608,6 +692,10 @@ async function renderResourcesAdmin(){
       ${r.file_url?`<a class="btn btn-outline btn-sm" href="${r.file_url}" target="_blank">Buka</a>`:''}
       <button class="btn btn-danger btn-sm" onclick="delResource('${r.id}')">Hapus</button></td></tr>`).join('')
     || '<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Belum ada modul.</td></tr>';
+}
+async function saveSop(){
+  try{ await API.setSetting('TEACHER_SOP_URL',document.getElementById('sopUrl').value.trim()); toast('Link SOP tersimpan','ok'); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
 }
 async function uploadResource(){
   const title=document.getElementById('rcTitle').value.trim();
@@ -733,7 +821,9 @@ async function loadTentorPay(){
         <div class="val" id="tpTotal" style="font-size:22px">${fmtRp(fee+amt)}</div>
         <div class="hint">Fee <b>${fmtRp(fee)}</b> + Komisi/Bonus</div></div>
     </div>
-    <div style="text-align:right;margin-top:14px"><button class="btn btn-primary" onclick="saveTentorPay('${tid}','${mon}')">💾 Simpan Komisi/Bonus</button></div>
+    <div style="text-align:right;margin-top:14px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="printTentorSlip('${tid}','${mon}')">🧾 Cetak Slip Gaji</button>
+      <button class="btn btn-primary" onclick="saveTentorPay('${tid}','${mon}')">💾 Simpan Komisi/Bonus</button></div>
     <div id="tpPayrollBox" style="margin-top:18px"></div>`;
   renderTutorPayroll(tid);
 }
@@ -757,6 +847,14 @@ async function saveTentorPay(tid,mon){
   const note=(document.getElementById('tpNote')||{}).value||'';
   try{ await API.saveTutorBonus({tutor_id:tid,month:mon,amount,note}); toast('Komisi/bonus tersimpan','ok'); }
   catch(e){ toast('Gagal simpan: '+(e.message||e),'err'); }
+}
+async function printTentorSlip(tid,mon){
+  const t=TUTORS.find(x=>x.id===tid)||{};
+  const amount=Number((document.getElementById('tpAmount')||{}).value)||0;
+  const note=(document.getElementById('tpNote')||{}).value||'';
+  const periodName=new Date(mon+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  let sessions='-'; try{ sessions=(await API.getClasses({tutor_id:tid,month:mon})||[]).length; }catch(e){}
+  openPayrollSlip({name:t.nama,period:periodName,sessions,fee:TP_FEE,bonus:amount,total:TP_FEE+amount,note,status:'SLIP GAJI'});
 }
 
 /* ================= PAYMENT MODULE ================= */
@@ -789,7 +887,7 @@ function showPayTab(tab){
   document.getElementById('payBilling').classList.toggle('hide',dep);
   document.getElementById('ptDeposit').classList.toggle('active',dep);
   document.getElementById('ptBilling').classList.toggle('active',!dep);
-  document.getElementById('payPrintTitle').textContent = dep?'Invoice Deposit — KWE Lingo':'Invoice Penagihan — KWE Lingo';
+  document.getElementById('payPrintTitle').textContent = dep?'Invoice Deposit — Kwelingo':'Invoice Penagihan — Kwelingo';
   document.getElementById('payPhSub').textContent = dep?'Rincian Pembayaran Deposit':'Laporan Akhir Penagihan';
 }
 function renderDepositPane(st,list){
@@ -802,6 +900,8 @@ function renderDepositPane(st,list){
         <div class="field"><label>Tanggal Bayar</label><input type="date" id="pdDate" value="${todayStr()}"></div>
         <div class="field"><label>Harga per Meet</label><input type="number" id="pdPrice" value="${st.fee_per_meeting||150000}" oninput="calcDeposit()"></div>
         <div class="field"><label>Durasi per Meet (menit)</label><input type="number" id="pdDur" value="${st.meeting_minutes||90}" oninput="updateDepositCarry()"></div>
+        <div class="field"><label>Status</label>
+          <select id="pdStatus"><option value="LUNAS">✅ Lunas (sudah dibayar)</option><option value="BELUM BAYAR">📌 Tagihan — belum dibayar</option></select></div>
         <div class="field"><label>Total Payment</label><div id="pdTotal" style="font-size:22px;font-weight:800;color:var(--green2);padding-top:4px">Rp 0</div></div>
       </div>
       <input type="hidden" id="pdCarry" value="0">
@@ -811,13 +911,14 @@ function renderDepositPane(st,list){
     <div class="card">
       <div class="card-pad" style="padding-bottom:0"><div class="card-title">Rincian Payment</div></div>
       <div class="table-wrap"><table class="tbl">
-        <thead><tr><th>No</th><th>Tanggal Bayar</th><th>Deposit Meeting</th><th>Harga/Meet</th><th>Durasi</th><th>Total Payment</th><th>Status</th><th class="no-print">Aksi</th></tr></thead>
+        <thead><tr><th>No</th><th>Tanggal Bayar</th><th>Deposit Meeting</th><th>Harga/Meet</th><th>Durasi</th><th>Total Payment</th><th>Bukti</th><th>Status</th><th class="no-print">Aksi</th></tr></thead>
         <tbody>${list.map((p,i)=>`<tr>
           <td>${i+1}</td><td>${prettyDate(p.pay_date)}</td><td>${p.meetings} meetings</td>
           <td>${fmtRp(p.price_per_meet)}</td><td>${p.duration} menit</td><td><b>${fmtRp(p.deposit_total)}</b></td>
-          <td><span class="badge badge-paid">${p.status||'LUNAS'}</span></td>
-          <td class="no-print"><button class="btn btn-danger btn-sm" onclick="delPayment('${p.id}')">Hapus</button></td></tr>`).join('')
-          || '<tr><td colspan="8" class="muted" style="text-align:center;padding:20px">Belum ada pembayaran.</td></tr>'}</tbody>
+          <td>${p.proof_url?`<a href="${p.proof_url}" target="_blank" style="color:var(--blue)">📎 Lihat</a>`:'<span class="muted">-</span>'}</td>
+          <td>${payStatusBadge(p.status)}</td>
+          <td class="no-print" style="white-space:nowrap">${isPaid(p.status)?'':`<button class="btn btn-green btn-sm" onclick="verifyPayment('${p.id}')">✅ Verifikasi</button> `}<button class="btn btn-danger btn-sm" onclick="delPayment('${p.id}')">Hapus</button></td></tr>`).join('')
+          || '<tr><td colspan="9" class="muted" style="text-align:center;padding:20px">Belum ada pembayaran.</td></tr>'}</tbody>
       </table></div>
     </div>`;
   calcDeposit(); updateDepositCarry();
@@ -852,10 +953,17 @@ async function saveDeposit(){
   const month=document.getElementById('pdMonth').value;
   if(!month){toast('Isi periode dulu','err');return;}
   const carry=Number(document.getElementById('pdCarry').value)||0;
+  const stat=(document.getElementById('pdStatus')||{}).value||'LUNAS';
   const p={student_id:PAY_SID,month,pay_date:document.getElementById('pdDate').value,meetings:m,price_per_meet:pr,
     duration:Number(document.getElementById('pdDur').value)||90,deposit_total:m*pr,carry_in:carry,
-    next_meetings:m,next_deposit:m*pr,grand_total:m*pr,status:'LUNAS'};
-  try{ await API.savePayment(p); toast('Deposit tersimpan'+(carry?` (+${carry} mnt carry-over)`:''),'ok'); renderPayment(PAY_SID); }
+    next_meetings:m,next_deposit:m*pr,grand_total:m*pr,status:stat};
+  try{ await API.savePayment(p); toast(stat==='LUNAS'?('Deposit tersimpan'+(carry?` (+${carry} mnt carry-over)`:'')):'Tagihan dibuat (belum dibayar)','ok'); renderPayment(PAY_SID); }
+  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
+}
+async function verifyPayment(id){
+  const p=(PAY_LIST||[]).find(x=>x.id===id); if(!p){ toast('Data tidak ditemukan','err'); return; }
+  if(!confirm('Verifikasi pembayaran ini sebagai LUNAS?'))return;
+  try{ await API.savePayment({...p,status:'LUNAS'}); toast('Pembayaran diverifikasi LUNAS','ok'); renderPayment(PAY_SID); }
   catch(e){ toast('Gagal: '+(e.message||e),'err'); }
 }
 async function delPayment(id){
@@ -1031,6 +1139,8 @@ function openStudent(id){
   document.getElementById('sId').value=id||'';
   V('sNama',s.nama||''); V('sGrade',s.grade||''); V('sUser',s.username||genUsername(s.nama||'')); V('sSchool',s.school||''); V('sAddress',s.address||'');
   V('sDob',s.dob||''); V('sSchedule',s.schedule||''); V('sParent',s.parent_name||''); V('sWa',s.wa_ortu||'');
+  V('sClassGroup',s.class_group||'');
+  try{ const groups=[...new Set(STUDENTS.map(x=>x.class_group).filter(Boolean))]; document.getElementById('classGroupList').innerHTML=groups.map(gp=>`<option value="${esc(gp)}">`).join(''); }catch(e){}
   V('sFee',s.fee_per_meeting||150000); V('sFeeTutor',s.fee_tentor||90000);
   V('sMin',s.meeting_minutes||90); V('sDep',s.deposit_meetings||8);
   V('sAddFee',s.add_fee||''); V('sAddNote',s.add_fee_note||'');
@@ -1040,7 +1150,7 @@ function openStudent(id){
 async function saveStudent(){
   const g=id=>{const el=document.getElementById(id);return el?el.value:'';};
   const p={id:g('sId')||undefined,nama:g('sNama'),username:(g('sUser')||genUsername(g('sNama'))).toLowerCase().trim(),school:g('sSchool'),address:g('sAddress'),dob:g('sDob'),
-    grade:g('sGrade'),schedule:g('sSchedule'),parent_name:g('sParent'),wa_ortu:g('sWa'),
+    grade:g('sGrade'),schedule:g('sSchedule'),class_group:g('sClassGroup'),parent_name:g('sParent'),wa_ortu:g('sWa'),
     fee_per_meeting:g('sFee'),fee_tentor:g('sFeeTutor'),meeting_minutes:g('sMin'),deposit_meetings:g('sDep'),
     add_fee:g('sAddFee'),add_fee_note:g('sAddNote'),pin:g('sPin')||genPin()};
   if(!p.nama){toast('Nama wajib diisi','err');return;}
@@ -1309,7 +1419,7 @@ function buildWa(cls,x){
   const g=document.getElementById('waGreet').value;
   const nextMeets=x.pay?(Number(x.pay.next_meetings)||0):0;
   const lines=[];
-  lines.push(`${g}, ${CUR.parent_name||'Bapak/Ibu'} 😊`,'',`Berikut laporan kelas ${nm} untuk bulan ${x.periodName} di KWE Lingo.`,'');
+  lines.push(`${g}, ${CUR.parent_name||'Bapak/Ibu'} 😊`,'',`Berikut laporan kelas ${nm} untuk bulan ${x.periodName} di Kwelingo.`,'');
   lines.push(`📅 Total pertemuan bulan ini: ${cls.length} kali`);
   lines.push(`⏱️ Total durasi: ${x.used} menit`);
   if(x.base) lines.push(`💳 Deposit bulan ini: ${x.meets}× meeting = ${fmtRp(x.base)}`);
@@ -1318,7 +1428,7 @@ function buildWa(cls,x){
   if(x.addFee2) lines.push(`➕ Additional fee 2${x.addFee2Note?` (${x.addFee2Note})`:''}: ${fmtRp(x.addFee2)}`);
   if(x.nextDep) lines.push(`📅 Deposit bulan depan: ${nextMeets}× meeting = ${fmtRp(x.nextDep)}`);
   lines.push('',`🧾 *Total yang harus dibayar: ${fmtRp(x.grandBill)}*`,'');
-  lines.push('Terima kasih atas kepercayaannya kepada KWE Lingo 🙏',`Semoga ${nm} terus semangat belajarnya!`,'','Salam hangat,','KWE Lingo ⭐');
+  lines.push('Terima kasih atas kepercayaannya kepada Kwelingo 🙏',`Semoga ${nm} terus semangat belajarnya!`,'','Salam hangat,','Kwelingo ⭐');
   WA_TEXT=lines.join('\n');
   WA_NUM=(CUR.wa_ortu||'').replace(/[^0-9]/g,'').replace(/^0/,'62');
   document.getElementById('waMsg').textContent=WA_TEXT;

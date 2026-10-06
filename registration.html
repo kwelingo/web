@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registration — Kwelingo</title>
+<meta name="description" content="Pendaftaran Kwelingo Academy — pilih program English/Mandarin, lihat paket & harga, lalu daftar.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF9F0;--cream:#FDF3E6;--ink:#4B4540;--ink-soft:#6B635A;--muted:#938A7E;
+  --brand:#8EC9D9;--brand-deep:#5FA9BD;--brand-dark:#3E8A9E;
+  --cta:#E9A77C;--cta-deep:#DB8C5B;--sage:#A8C9A0;--yellow:#F4D98B;--coral:#D98F86;
+  --card:#fff;--line:#EFE4D4;--shadow:0 10px 30px rgba(120,95,60,.10);--shadow-lg:0 22px 55px rgba(120,95,60,.16);
+  --disp:'Fredoka',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;border:none;transition:.2s;font-family:var(--disp);white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-cta{background:var(--cta);color:#fff;box-shadow:0 10px 22px rgba(219,140,91,.32)}
+.btn-cta:hover{background:var(--cta-deep);transform:translateY(-2px)}
+.btn-brand{background:var(--brand-deep);color:#fff}.btn-brand:hover{background:var(--brand-dark)}
+.btn-ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
+.btn-ghost:hover{border-color:var(--brand)}
+.eyebrow{color:var(--cta-deep);font-weight:600;letter-spacing:2px;text-transform:uppercase;font-size:12px;font-family:var(--disp)}
+h2.title{font-family:var(--disp);font-size:clamp(24px,3.6vw,34px);font-weight:700;color:var(--ink);margin:4px 0 8px}
+.sub{color:var(--muted);font-size:15px;margin-bottom:26px}
+
+/* header */
+header{position:sticky;top:0;z-index:50;background:rgba(255,249,240,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:11px 0}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{height:42px}
+.brand b{font-family:var(--disp);font-size:19px;color:var(--ink)}
+.brand small{display:block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--brand-dark);font-weight:600;margin-top:2px}
+
+.hero-r{background:linear-gradient(180deg,#EAF6FA,var(--bg));padding:40px 0 30px;text-align:center}
+.hero-r h1{font-family:var(--disp);font-size:clamp(30px,5vw,44px);color:var(--brand-dark)}
+.hero-r p{color:var(--ink-soft);max-width:600px;margin:10px auto 0}
+
+.sec{padding:46px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+
+/* package toggle */
+.toggle{display:inline-flex;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:4px;margin:0 auto 24px;box-shadow:var(--shadow)}
+.toggle button{border:none;background:none;font-family:var(--disp);font-weight:600;font-size:13.5px;padding:9px 20px;border-radius:999px;cursor:pointer;color:var(--muted)}
+.toggle button.on{background:var(--brand-deep);color:#fff}
+.center{text-align:center}
+
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+@media(max-width:820px){.pkg-grid{grid-template-columns:1fr}}
+.pkg{border-radius:22px;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow);overflow:hidden;transition:.2s;position:relative;display:flex;flex-direction:column}
+.pkg:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.pkg.fav{border:2px solid var(--cta)}
+.pkg .pk-tag{position:absolute;top:14px;right:14px;background:var(--cta);color:#fff;font-family:var(--disp);font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:999px}
+.pkg .pk-head{padding:22px 24px 16px;color:#fff}
+.pkg.p1 .pk-head{background:linear-gradient(130deg,var(--brand),var(--brand-deep))}
+.pkg.p2 .pk-head{background:linear-gradient(130deg,var(--yellow),#E6B84E);color:#5B4A20}
+.pkg.p3 .pk-head{background:linear-gradient(130deg,#B9A7D9,#9B86C9)}
+.pkg .pk-head h3{font-family:var(--disp);font-size:22px}
+.pkg .pk-head .freq{font-size:12.5px;opacity:.9}
+.pkg .pk-body{padding:20px 24px 24px;flex:1;display:flex;flex-direction:column}
+.pkg ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:16px;flex:1}
+.pkg li{font-size:13.5px;color:var(--ink-soft);display:flex;gap:9px;align-items:flex-start}
+.pkg li::before{content:"✓";color:var(--sage);font-weight:800}
+.pkg .price{font-family:var(--disp);font-size:28px;color:var(--ink);font-weight:700}
+.pkg .price small{font-size:13px;color:var(--muted);font-weight:400}
+.pkg .price del{font-size:14px;color:var(--muted);font-weight:400;margin-right:6px}
+
+.note-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+.note-chip{background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:12.5px;color:var(--ink-soft)}
+
+/* price table */
+.table-wrap{overflow-x:auto;border-radius:16px;border:1px solid var(--line)}
+table.pt{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;min-width:560px}
+table.pt th,table.pt td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line)}
+table.pt thead th{background:var(--brand);color:#fff;font-family:var(--disp);font-weight:600}
+table.pt .grp td{background:var(--cream);font-weight:700;color:var(--ink);font-family:var(--disp)}
+table.pt tbody tr:hover{background:#FDF8F0}
+table.pt .rp{font-weight:700;color:var(--brand-dark);white-space:nowrap}
+.remark{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:14px 18px;font-size:13px;color:var(--ink-soft);margin-top:16px;line-height:1.7}
+
+/* form */
+.form-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:var(--shadow-lg)}
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:600;font-size:13px;color:var(--ink);margin-bottom:6px}
+.field .req{color:var(--cta-deep)}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:14px;color:var(--ink);background:#FFFDF9;transition:.15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(142,201,217,.22)}
+.field .hint{font-size:11.5px;color:var(--muted);margin-top:5px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.field-row{grid-template-columns:1fr}}
+.price-live{background:#EAF6FA;border:1.5px dashed var(--brand);border-radius:14px;padding:14px 16px;text-align:center;margin:4px 0 16px}
+.price-live .pv{font-family:var(--disp);font-size:24px;color:var(--brand-dark);font-weight:700}
+.price-live small{color:var(--muted);font-size:12px}
+.consent-box{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:16px;font-size:12.5px;color:var(--ink-soft);line-height:1.65;max-height:150px;overflow:auto;margin-bottom:8px}
+.consent-box b{color:var(--ink)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink);margin-top:4px}
+.chk input{width:auto;margin-top:3px;accent-color:var(--brand-deep)}
+.file-drop{border:1.8px dashed var(--brand);border-radius:14px;padding:18px;text-align:center;background:#EAF6FA;cursor:pointer}
+.file-drop:hover{background:#DFF0F5}
+.file-drop p{font-size:12.5px;color:var(--brand-dark);font-weight:600;margin-top:4px}
+.file-name{font-size:12px;color:var(--ink-soft);margin-top:8px;font-weight:600}
+.sop-btn{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:10px}
+.sop-btn b{font-family:var(--disp);font-size:14px;color:var(--ink);display:block}
+.sop-btn small{font-size:11.5px;color:var(--muted)}
+.sop-btn .dl{margin-left:auto;color:var(--cta-deep);font-weight:700;font-size:12px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:14px 22px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;z-index:400;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{background:#3C3833;color:rgba(255,255,255,.6);text-align:center;padding:24px;font-size:12.5px;margin-top:30px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html"><img src="assets/logo.png" alt="Kwelingo"><div><b>kwelingo</b><small>Home for Language Learners</small></div></a>
+    <a href="portal.html" class="btn btn-ghost">← Kwelingo Hub</a>
+  </div>
+</header>
+
+<section class="hero-r">
+  <div class="wrap">
+    <h1>Registration</h1>
+    <p>Pilih program &amp; paketmu, lalu isi formulir pendaftaran. Kelas percobaan pertama <b>gratis</b>, dan ada diskon 10% untuk kakak-adik!</p>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section class="sec">
+  <div class="wrap">
+    <div class="center"><div class="eyebrow">Paket Langganan</div><h2 class="title">Pilih Paketmu</h2></div>
+    <div class="center">
+      <div class="toggle">
+        <button id="tgOnline" class="on" onclick="setFormat('online')">🌐 Online</button>
+        <button id="tgOnsite" onclick="setFormat('onsite')">🏫 Onsite</button>
+      </div>
+    </div>
+    <div class="pkg-grid">
+      <div class="pkg p1">
+        <div class="pk-head"><h3>Si Pemula</h3><div class="freq">1× seminggu · 4 sesi/bulan</div></div>
+        <div class="pk-body">
+          <ul><li>4 sesi per bulan</li><li>1 program pilihan</li><li>Laporan tiap selesai kelas</li><li>Buku kegiatan</li></ul>
+          <div class="price" data-base="350000"><span class="amt">Rp 350.000</span><small> /bulan</small></div>
+          <div class="hint" style="font-size:11.5px;color:var(--muted);margin-top:4px">Bisa berhenti kapan saja</div>
+          <a href="#form" class="btn btn-ghost" style="margin-top:14px;justify-content:center" onclick="pickPkg('Si Pemula')">Pilih Si Pemula →</a>
+        </div>
+      </div>
+      <div class="pkg p2 fav">
+        <span class="pk-tag">★ PALING FAVORIT</span>
+        <div class="pk-head"><h3>Si Rajin</h3><div class="freq">2× seminggu · 8 sesi/bulan</div></div>
+        <div class="pk-body">
+          <ul><li>8 sesi per bulan</li><li>1 program pilihan</li><li>Laporan tiap selesai kelas</li><li>Buku kegiatan</li><li>Bebas ganti jadwal 2× sebulan</li></ul>
+          <div class="price" data-base="600000"><span class="amt">Rp 600.000</span><small> /bulan</small></div>
+          <div class="hint" style="font-size:11.5px;color:var(--muted);margin-top:4px">Bisa berhenti kapan saja</div>
+          <a href="#form" class="btn btn-cta" style="margin-top:14px;justify-content:center" onclick="pickPkg('Si Rajin')">Pilih Si Rajin →</a>
+        </div>
+      </div>
+      <div class="pkg p3">
+        <div class="pk-head"><h3>Si Jagoan</h3><div class="freq">3× seminggu · 12 sesi/bulan</div></div>
+        <div class="pk-body">
+          <ul><li>12 sesi per bulan</li><li>Boleh gabung 2 program</li><li>Laporan + konsultasi bulanan</li><li>Buku kegiatan</li><li>Bebas ganti jadwal 4× sebulan</li></ul>
+          <div class="price" data-base="850000"><span class="amt">Rp 850.000</span><small> /bulan</small></div>
+          <div class="hint" style="font-size:11.5px;color:var(--muted);margin-top:4px">Bisa berhenti kapan saja</div>
+          <a href="#form" class="btn btn-ghost" style="margin-top:14px;justify-content:center" onclick="pickPkg('Si Jagoan')">Pilih Si Jagoan →</a>
+        </div>
+      </div>
+    </div>
+    <div class="note-row">
+      <span class="note-chip">💳 Biaya pendaftaran Rp150.000 (cukup sekali)</span>
+      <span class="note-chip">👨‍👩‍👧 Diskon 10% untuk kakak-adik</span>
+      <span class="note-chip">🎁 Kelas percobaan pertama gratis</span>
+    </div>
+  </div>
+</section>
+
+<!-- PRICE TABLE (per program, 8 sesi) -->
+<section class="sec" style="padding-top:10px">
+  <div class="wrap">
+    <div class="center"><div class="eyebrow">Rincian Harga per Program</div><h2 class="title">Harga per Program (8 Sesi)</h2>
+      <p class="sub">Semi-Private (maks 4 siswa). Pilihan guru Lokal atau International.</p></div>
+    <div class="table-wrap">
+      <table class="pt">
+        <thead><tr><th>Format</th><th>Program</th><th>Guru Lokal</th><th>Guru International</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">🌐 Online — Semi Private</td></tr>
+          <tr><td>Online</td><td>Boost English</td><td class="rp">Rp 550.000</td><td class="rp">Rp 1.250.000</td></tr>
+          <tr><td>Online</td><td>Speak Active</td><td class="rp">Rp 500.000</td><td class="rp">Rp 1.100.000</td></tr>
+          <tr><td>Online</td><td>IELTS Preparation</td><td class="rp">Rp 800.000</td><td class="rp">—</td></tr>
+          <tr><td>Online</td><td>Boost Mandarin</td><td class="rp">Rp 550.000</td><td class="rp">Rp 1.250.000</td></tr>
+          <tr><td>Online</td><td>HSK Preparation</td><td class="rp">Rp 650.000</td><td class="rp">Rp 1.350.000</td></tr>
+          <tr class="grp"><td colspan="4">🏫 Onsite (Kwelingo Center) — Semi Private</td></tr>
+          <tr><td>Onsite</td><td>Boost English</td><td class="rp">Rp 650.000</td><td class="rp">—</td></tr>
+          <tr><td>Onsite</td><td>IELTS Preparation</td><td class="rp">Rp 1.000.000</td><td class="rp">—</td></tr>
+          <tr><td>Onsite</td><td>Boost Mandarin</td><td class="rp">Rp 650.000</td><td class="rp">—</td></tr>
+          <tr><td>Onsite</td><td>HSK Preparation</td><td class="rp">Rp 750.000</td><td class="rp">—</td></tr>
+          <tr class="grp"><td colspan="4">👤 1-on-1 Private (Online)</td></tr>
+          <tr><td>Online · 1-on-1</td><td>Speak Active</td><td class="rp">Rp 1.200.000</td><td class="rp">Rp 1.600.000</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="remark">
+      <b>Catatan:</b><br>
+      1. Kelas dengan <b>Guru International</b> dimulai minimal 4 siswa.<br>
+      2. Kelas dengan <b>Guru Lokal</b> dimulai minimal 2 siswa.<br>
+      3. Jika hanya 1 siswa yang hadir, durasi kelas menjadi 60 menit (dari 90 menit).<br>
+      4. Harga onsite belum termasuk buku siswa. Setiap program termasuk laporan bulanan &amp; e-certificate.
+    </div>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="sec" id="form" style="padding-top:10px">
+  <div class="wrap">
+    <div class="center"><div class="eyebrow">Formulir Pendaftaran</div><h2 class="title">Daftar Sekarang</h2>
+      <p class="sub">Lengkapi data di bawah. Setelah submit, ringkasan terkirim ke admin via WhatsApp — lampirkan bukti bayar di chat tersebut.</p></div>
+    <form class="form-card" id="regForm" onsubmit="submitReg(event)">
+      <div class="field-row">
+        <div class="field"><label>Nama Orang Tua / Wali <span class="req">*</span></label><input id="fParentName" required></div>
+        <div class="field"><label>Kontak Orang Tua / Wali (WA) <span class="req">*</span></label><input id="fParentContact" required inputmode="tel" placeholder="08xxxxxxxxxx"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Nama Siswa <span class="req">*</span></label><input id="fStudentName" required></div>
+        <div class="field"><label>Kontak Siswa</label><input id="fStudentContact" inputmode="tel" placeholder="opsional"></div>
+      </div>
+      <div class="field"><label>Tanggal Lahir Siswa <span class="req">*</span></label><input id="fDob" type="date" required></div>
+
+      <div style="border:1.5px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;background:#FFFDF9">
+        <div style="font-family:var(--disp);font-weight:600;color:var(--brand-dark);margin-bottom:10px">🎯 Program of Interest</div>
+        <div class="field-row">
+          <div class="field" style="margin-bottom:12px"><label>Bahasa <span class="req">*</span></label>
+            <select id="fLang" required onchange="buildPrograms();calcPrice()"><option value="">— pilih —</option><option>English</option><option>Mandarin</option></select></div>
+          <div class="field" style="margin-bottom:12px"><label>Program <span class="req">*</span></label>
+            <select id="fProgram" required onchange="calcPrice()"><option value="">— pilih bahasa dulu —</option></select></div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="margin-bottom:12px"><label>Format <span class="req">*</span></label>
+            <select id="fFormat" required onchange="calcPrice()"><option value="">— pilih —</option><option value="online">Online</option><option value="onsite">Onsite (Kwelingo Center)</option></select></div>
+          <div class="field" style="margin-bottom:12px"><label>Tipe Kelas <span class="req">*</span></label>
+            <select id="fType" required onchange="calcPrice()"><option value="semi">Semi-Private (maks 4)</option><option value="private">1-on-1 Private</option></select></div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="margin-bottom:12px"><label>Guru <span class="req">*</span></label>
+            <select id="fTeacher" required onchange="calcPrice()"><option value="local">Guru Lokal</option><option value="intl">Guru International</option></select></div>
+          <div class="field" style="margin-bottom:12px"><label>Paket</label>
+            <select id="fPkg"><option value="">— paket langganan (opsional) —</option><option>Si Pemula</option><option>Si Rajin</option><option>Si Jagoan</option></select></div>
+        </div>
+      </div>
+
+      <div class="price-live"><div class="pv" id="priceLive">Pilih program untuk lihat harga</div><small id="priceNote">Harga per 8 sesi</small></div>
+
+      <!-- Statement of Declaration -->
+      <div class="field">
+        <label>Statement of Declaration <span class="req">*</span></label>
+        <div class="consent-box">I hereby commit to taking my studies at Kwelingo Academy seriously. I will actively participate in class, complete all extended practice tasks, and attend at least <b>80% of the class meetings</b> at each level.<br><br>I understand that failure to meet these requirements may result in <b>not receiving a certificate of completion</b>.</div>
+        <label class="chk"><input type="checkbox" id="fSod" required> Saya membaca &amp; menyetujui Statement of Declaration.</label>
+      </div>
+
+      <!-- Media Consent -->
+      <div class="field">
+        <label>Media Consent (Photo/Video Use) <span class="req">*</span></label>
+        <div class="consent-box">I hereby give consent for Kwelingo to capture and use photographs and/or videos of the student during classes and activities for promotional and marketing purposes (including social media, website and marketing materials). All materials will be used appropriately and in accordance with privacy considerations.<br><br><i>Dengan ini, saya memberi izin kepada Kwelingo untuk mengambil dan menggunakan foto dan/atau video peserta selama kelas dan kegiatan berlangsung untuk keperluan promosi, termasuk di media sosial, situs web, dan materi pemasaran. Semua materi akan digunakan secara bertanggung jawab dengan tetap memperhatikan privasi peserta.</i></div>
+        <label class="chk"><input type="checkbox" id="fMc" required> Saya menyetujui Media Consent di atas.</label>
+      </div>
+
+      <!-- Payment -->
+      <div class="field">
+        <label>Payment Confirmation (Bukti Pembayaran)</label>
+        <label class="file-drop" for="fProof"><div style="font-size:26px">📎</div><p>Klik untuk pilih file bukti transfer</p><div class="file-name" id="proofName">Belum ada file dipilih</div></label>
+        <input id="fProof" type="file" accept="image/*,.pdf" hidden onchange="showProof()">
+        <div class="hint">Setelah submit, lampirkan file ini di chat WhatsApp ke admin.</div>
+      </div>
+
+      <!-- SOP download -->
+      <div class="field">
+        <label>Download SOP (untuk Siswa)</label>
+        <a class="sop-btn" href="assets/sop-student.pdf" download><span style="font-size:22px">📘</span><span><b>SOP Siswa Kwelingo</b><small>Panduan &amp; ketentuan siswa</small></span><span class="dl">Download ↓</span></a>
+        <div class="hint">Taruh file PDF asli di <code>assets/sop-student.pdf</code>.</div>
+      </div>
+
+      <button type="submit" class="btn btn-cta" style="width:100%;justify-content:center;padding:16px;margin-top:8px">📤 Kirim Pendaftaran via WhatsApp</button>
+    </form>
+  </div>
+</section>
+
+<footer>© 2026 Kwelingo Academy · 0819-45-144-145 · kwelingo.indonesia@gmail.com</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const WA_NUMBER="6281945144145";
+const PROGRAMS={English:["Boost English","Speak Active","IELTS Preparation"],Mandarin:["Boost Mandarin","HSK Preparation"]};
+/* harga per 8 sesi (dari slide) — null = belum ada, tanya admin */
+const PRICE={
+  online:{
+    semi:{"Boost English":{local:550000,intl:1250000},"Speak Active":{local:500000,intl:1100000},"IELTS Preparation":{local:800000,intl:null},"Boost Mandarin":{local:550000,intl:1250000},"HSK Preparation":{local:650000,intl:1350000}},
+    private:{"Speak Active":{local:1200000,intl:1600000}}
+  },
+  onsite:{
+    semi:{"Boost English":{local:650000,intl:null},"IELTS Preparation":{local:1000000,intl:null},"Boost Mandarin":{local:650000,intl:null},"HSK Preparation":{local:750000,intl:null}},
+    private:{}
+  }
+};
+const rp=n=>"Rp "+(Number(n)||0).toLocaleString("id-ID");
+
+function buildPrograms(){
+  const lang=document.getElementById('fLang').value;
+  const sel=document.getElementById('fProgram');
+  sel.innerHTML='<option value="">— pilih —</option>'+((PROGRAMS[lang]||[]).map(p=>`<option>${p}</option>`).join(''));
+}
+function calcPrice(){
+  const prog=document.getElementById('fProgram').value;
+  const fmt=document.getElementById('fFormat').value;
+  const typ=document.getElementById('fType').value;
+  const tch=document.getElementById('fTeacher').value;
+  const el=document.getElementById('priceLive'), note=document.getElementById('priceNote');
+  if(!prog||!fmt){ el.textContent="Pilih program untuk lihat harga"; note.textContent="Harga per 8 sesi"; return; }
+  const v=((PRICE[fmt]||{})[typ]||{})[prog];
+  if(!v){ el.textContent="Tanya admin"; note.textContent=`${prog} · ${fmt} · ${typ==='semi'?'Semi-Private':'1-on-1'} — kombinasi ini belum ada di daftar`; return; }
+  const price=v[tch];
+  if(price==null){ el.textContent="Tanya admin"; note.textContent=`${prog} · Guru ${tch==='intl'?'International':'Lokal'} — belum tersedia untuk kombinasi ini`; return; }
+  el.textContent=rp(price); note.textContent=`${prog} · ${fmt==='online'?'Online':'Onsite'} · ${typ==='semi'?'Semi-Private':'1-on-1'} · Guru ${tch==='intl'?'International':'Lokal'} · 8 sesi`;
+}
+/* format toggle Online/Onsite — ikut ke-set di form saat pilih paket */
+let PKG_FORMAT='online';
+function setFormat(mode){
+  PKG_FORMAT=mode;
+  document.getElementById('tgOnline').classList.toggle('on',mode==='online');
+  document.getElementById('tgOnsite').classList.toggle('on',mode==='onsite');
+}
+function pickPkg(name){
+  document.getElementById('fPkg').value=name;
+  const f=document.getElementById('fFormat'); if(f){ f.value=PKG_FORMAT; calcPrice(); }
+}
+function showProof(){const f=document.getElementById('fProof').files[0];document.getElementById('proofName').textContent=f?("✓ "+f.name):"Belum ada file dipilih";}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+
+function submitReg(e){
+  e.preventDefault();
+  const g=id=>document.getElementById(id);
+  if(!g('fSod').checked||!g('fMc').checked){toast("Centang persetujuan SOD & Media Consent dulu.");return;}
+  const prog=g('fProgram').value, fmt=g('fFormat').value, typ=g('fType').value, tch=g('fTeacher').value;
+  const v=(((PRICE[fmt]||{})[typ]||{})[prog]||{})[tch];
+  const priceTxt=v!=null?rp(v)+" (8 sesi)":"(tanya admin)";
+  const msg=
+`Halo Kwelingo! 👋 Saya mau mendaftar.
+
+👨‍👩‍👧 Orang Tua/Wali: ${g('fParentName').value} (${g('fParentContact').value})
+🧑‍🎓 Siswa: ${g('fStudentName').value}${g('fStudentContact').value?(' ('+g('fStudentContact').value+')'):''}
+🎂 Tgl Lahir: ${g('fDob').value}
+
+🎯 Program: ${g('fLang').value} — ${prog}
+   Format: ${fmt==='online'?'Online':'Onsite'} · ${typ==='semi'?'Semi-Private':'1-on-1 Private'} · Guru ${tch==='intl'?'International':'Lokal'}
+   Paket: ${g('fPkg').value||'-'}
+   Estimasi: ${priceTxt}
+
+✅ Setuju Statement of Declaration & Media Consent.
+Bukti pembayaran akan saya lampirkan di chat ini. 🙏`;
+  window.open("https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(msg),"_blank");
+  toast("Membuka WhatsApp… lampirkan bukti bayar ya 📎");
+}
+setFormat('online');
+</script>
+</body>
+</html>
