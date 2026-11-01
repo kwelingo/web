@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kwelingo — Home for Language Learners</title>
-<meta name="description" content="Kwelingo Academy — kursus bahasa Inggris & Mandarin. Boost, Speak Active, IELTS & HSK Preparation dengan guru lokal & native. A home for language learners.">
+<meta name="description" content="Kwelingo Academy — English & Mandarin language courses. Boost, Speak Active, IELTS & HSK Preparation with local & native teachers. A home for language learners.">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Kwelingo — warm "home" palette (revisi) */
-  --bg:#FFF9F0;           /* warm creamy white */
-  --cream:#FDF3E6;        /* soft cream panel */
+  /* Kwelingo — sky blue + white + orange palette */
+  --bg:#F7FBFD;           /* cool white */
+  --cream:#EAF6FA;        /* soft sky panel */
   --ink:#4B4540;          /* soft dark brown */
   --ink-soft:#6B635A;
   --muted:#938A7E;
@@ -77,7 +77,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,249,240,.92);backdr
 }
 
 /* ===== Hero ===== */
-.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#EAF6FA 0%,#F3F0E4 72%,var(--bg) 100%)}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#DCF0F7 0%,#EAF6FA 60%,var(--bg) 100%)}
 .hero .cloud{position:absolute;background:#fff;border-radius:50%;opacity:.6}
 .hero .c1{width:120px;height:120px;top:40px;left:8%}
 .hero .c2{width:80px;height:80px;top:90px;left:20%}
@@ -142,6 +142,22 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,249,240,.92);backdr
 .tcard h4{font-family:var(--disp);font-size:17px;color:var(--ink)}
 .tcard .role{color:var(--brand-dark);font-size:12.5px;font-weight:600;margin-top:2px}
 .tcard p{color:var(--muted);font-size:12.5px;margin-top:8px}
+/* instructor carousel */
+.tcarousel{position:relative;display:flex;align-items:center;gap:10px}
+.tscroller{display:flex;gap:18px;overflow-x:auto;scroll-behavior:smooth;padding:6px 2px 14px;scroll-snap-type:x mandatory;flex:1}
+.tscroller::-webkit-scrollbar{height:6px}.tscroller::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.tscroller .tcard{flex:0 0 220px;scroll-snap-align:start;cursor:pointer}
+.tcard.active{border-color:var(--brand);box-shadow:var(--shadow-lg)}
+.tnav{flex:0 0 42px;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:#fff;color:var(--brand-dark);font-size:22px;font-family:var(--disp);cursor:pointer;box-shadow:var(--shadow);transition:.15s}
+.tnav:hover{border-color:var(--brand);transform:translateY(-2px)}
+@media(max-width:600px){.tnav{display:none}}
+.tbio{max-width:760px;margin:10px auto 0;background:#fff;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:18px;padding:22px 24px;box-shadow:var(--shadow);animation:fadein .25s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.tbio h4{font-family:var(--disp);font-size:20px;color:var(--ink)}
+.tbio .role{color:var(--brand-dark);font-weight:600;font-size:13px;margin:2px 0 10px}
+.tbio p{color:var(--ink-soft);font-size:14px;line-height:1.7}
+.tbio .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.tbio .chip{background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:12px;color:var(--ink-soft)}
 
 /* ===== Testimonials ===== */
 .testi{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
@@ -192,9 +208,8 @@ footer a.c{color:var(--brand)}
     </a>
     <nav class="nav-links" id="navLinks">
       <a href="#top" onclick="closeNav()">Home</a>
-      <a href="#programs" onclick="closeNav()">Program</a>
-      <a href="#teachernotes" onclick="closeNav()">TeacherNotes</a>
-      <a href="#homebuilder" onclick="closeNav()">Be Our Homebuilder!</a>
+      <a href="#programs" onclick="closeNav()">Programs</a>
+      <a href="#instructors" onclick="closeNav()">Instructors</a>
       <a href="portal.html" class="hub only-mobile" onclick="closeNav()">Kwelingo Hub</a>
       <a href="#" id="waNavMobile" class="only-mobile" onclick="closeNav()">Chat with Us</a>
     </nav>
@@ -214,34 +229,35 @@ footer a.c{color:var(--brand)}
       <span class="hero-badge">🏡 Welcome to Kwelingo Academy</span>
       <h1>Welcome <span class="hl">Home!</span></h1>
       <p class="lead">You're safe to practice, connect, and grow.</p>
-      <p class="desc">Belajar bahasa Inggris &amp; Mandarin di tempat yang terasa seperti rumah — santai, personal, dan penuh dukungan. Come in, make yourself at home!</p>
+      <p class="desc">Learn English &amp; Mandarin in a place that feels like home — relaxed, personal, and full of support. Come in, make yourself at home!</p>
       <div class="cta">
-        <a href="portal.html" class="btn btn-cta">🏡 Masuk ke Kwelingo Hub</a>
-        <a href="#programs" class="btn btn-ghost">Lihat Program</a>
+        <a href="#" id="waHero" class="btn btn-cta">💬 Chat with Us</a>
+        <a href="#programs" class="btn btn-ghost">Discover Kwelingo</a>
       </div>
       <div class="hero-stats">
-        <div class="s"><b>EN &amp; 中文</b><span>Dua bahasa</span></div>
-        <div class="s"><b>Local + Native</b><span>Pilihan guru</span></div>
-        <div class="s"><b>Online &amp; Onsite</b><span>Cara belajar</span></div>
+        <div class="s"><b>EN &amp; 中文</b><span>Language Program</span></div>
+        <div class="s"><b>Local + Native</b><span>Instructor Preference</span></div>
+        <div class="s"><b>Online &amp; Onsite</b><span>Learning Mode</span></div>
+        <div class="s"><b>Local &amp; International</b><span>Personalized Curriculum</span></div>
       </div>
     </div>
     <div class="hero-art">
       <div class="houses" id="houses"></div>
     </div>
   </div>
-  <svg class="hwave-houses" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path fill="#FFF9F0" d="M0,30 C240,60 480,10 720,24 C960,38 1200,66 1440,30 L1440,60 L0,60 Z"></path></svg>
+  <svg class="hwave-houses" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path fill="#F7FBFD" d="M0,30 C240,60 480,10 720,24 C960,38 1200,66 1440,30 L1440,60 L0,60 Z"></path></svg>
 </section>
 
 <!-- ===== CHOOSE YOUR GOAL ===== -->
 <section class="sec" id="goal">
   <div class="wrap">
     <div class="eyebrow">Choose Your Goal</div>
-    <h2 class="title">Temukan Jalur Belajarmu</h2>
+    <h2 class="title">What Would You Like to Achieve?</h2>
     <p class="subtitle">Find the right path for your language journey.</p>
     <div class="goal-grid">
-      <div class="goal g1"><div class="ic">🚀</div><h3>Boost</h3><p>Build practical language skills — bangun kemampuan bahasa yang bisa langsung dipakai.</p></div>
-      <div class="goal g2"><div class="ic">💬</div><h3>Speak Active</h3><p>Turn knowledge into conversation — ubah teori jadi percakapan nyata.</p></div>
-      <div class="goal g3"><div class="ic">🎯</div><h3>Test Preparation</h3><p>Prepare with purpose — persiapan IELTS &amp; HSK yang terarah.</p></div>
+      <div class="goal g1"><div class="ic">🚀</div><h3>Boost</h3><p>Build practical language skills for everyday life, study, and work.</p></div>
+      <div class="goal g2"><div class="ic">💬</div><h3>SpeakActive</h3><p>Turn knowledge into confident, real-life conversations.</p></div>
+      <div class="goal g3"><div class="ic">🎯</div><h3>Test Preparation</h3><p>Prepare with purpose. Achieve with confidence.</p></div>
     </div>
   </div>
 </section>
@@ -250,26 +266,26 @@ footer a.c{color:var(--brand)}
 <section class="sec sec-cream" id="programs">
   <div class="wrap">
     <div class="eyebrow">Explore Programs</div>
-    <h2 class="title">Pilih Bahasa &amp; Programmu</h2>
-    <p class="subtitle">English & Mandarin — online atau onsite, guru lokal atau native.</p>
+    <h2 class="title">Find Your Language Program</h2>
+    <p class="subtitle">English &amp; Mandarin · Online or Onsite · Local or International Teachers.</p>
     <div class="prog-grid">
       <div class="pcard en">
         <div class="ph"><div class="flag">🇬🇧</div><div><h3>English</h3><p>Online &amp; Onsite</p></div></div>
         <div class="pb">
-          <div class="pline"><span class="dot"></span><b>Boost English</b> — kemampuan bahasa praktis</div>
-          <div class="pline"><span class="dot"></span><b>Speak Active</b> — fokus percakapan &amp; fluency</div>
-          <div class="pline"><span class="dot"></span><b>IELTS Preparation</b> — persiapan ujian terarah</div>
+          <div class="pline"><span class="dot"></span><b>Boost English</b> — practical language skills</div>
+          <div class="pline"><span class="dot"></span><b>Speak Active</b> — focus on conversation &amp; fluency</div>
+          <div class="pline"><span class="dot"></span><b>IELTS Preparation</b> — focused exam prep</div>
         </div>
       </div>
       <div class="pcard zh">
         <div class="ph"><div class="flag">🇨🇳</div><div><h3>Mandarin</h3><p>Online &amp; Onsite</p></div></div>
         <div class="pb">
-          <div class="pline"><span class="dot"></span><b>Boost Mandarin</b> — dari dasar sampai percakapan</div>
-          <div class="pline"><span class="dot"></span><b>HSK Preparation</b> — persiapan HSK bertingkat</div>
+          <div class="pline"><span class="dot"></span><b>Boost Mandarin</b> — from basics to conversation</div>
+          <div class="pline"><span class="dot"></span><b>HSK Preparation</b> — HSK prep across all levels</div>
         </div>
       </div>
     </div>
-    <p class="subtitle" style="margin:30px auto 0;font-size:14px">💡 Semi-private (maks 4 siswa) atau 1-on-1 private. Kelas pertama gratis, diskon 10% untuk kakak-adik.</p>
+    <p class="subtitle" style="margin:30px auto 0;font-size:14px;text-align:center">👥 Semi-private classes (up to 4 students) or private 1-on-1 lessons.</p>
   </div>
 </section>
 
@@ -277,10 +293,14 @@ footer a.c{color:var(--brand)}
 <section class="sec" id="instructors">
   <div class="wrap">
     <div class="eyebrow">Meet Our Instructors</div>
-    <h2 class="title">Belajar dari Orang yang Tepat</h2>
-    <p class="subtitle">Learn with people who make language learning happen.</p>
-    <div class="tgrid" id="teacherGrid"></div>
-    <p class="subtitle" style="margin:26px auto 0;font-size:13px">📸 Ganti nama, foto &amp; bio guru asli nanti di bagian instruktur.</p>
+    <h2 class="title">Your Learning, Their Expertise</h2>
+    <p class="subtitle">Get to know the people who will guide your language journey. Tap a card to read their bio.</p>
+    <div class="tcarousel">
+      <button class="tnav prev" onclick="slideTeachers(-1)" aria-label="Previous">‹</button>
+      <div class="tscroller" id="teacherGrid"></div>
+      <button class="tnav next" onclick="slideTeachers(1)" aria-label="Next">›</button>
+    </div>
+    <div id="teacherBio" class="tbio" style="display:none"></div>
   </div>
 </section>
 
@@ -289,11 +309,11 @@ footer a.c{color:var(--brand)}
   <div class="wrap">
     <div class="eyebrow">What Our Learners Say</div>
     <h2 class="title">Real Experiences. Real Progress.</h2>
-    <p class="subtitle">Ganti dengan testimoni asli murid Kwelingo.</p>
+    <p class="subtitle">Replace with real testimonials from Kwelingo students.</p>
     <div class="testi">
-      <div class="qcard"><div class="stars">★★★★★</div><p>"Belajarnya santai tapi serius. Anak saya jadi lebih pede ngomong Inggris."</p><div class="who"><div class="av">R</div><div><b>Rina</b><small>Orang tua murid English</small></div></div></div>
-      <div class="qcard"><div class="stars">★★★★★</div><p>"Speak Active-nya bikin cepat lancar, native teacher-nya sabar banget."</p><div class="who"><div class="av">D</div><div><b>Denny</b><small>Murid Speak Active</small></div></div></div>
-      <div class="qcard"><div class="stars">★★★★★</div><p>"Persiapan HSK terstruktur, lulus HSK 3 dengan nilai memuaskan!"</p><div class="who"><div class="av">M</div><div><b>Mei Ling</b><small>Murid HSK Prep</small></div></div></div>
+      <div class="qcard"><div class="stars">★★★★★</div><p>"The learning is relaxed but serious. My child is now much more confident speaking English."</p><div class="who"><div class="av">R</div><div><b>Rina</b><small>Parent of an English student</small></div></div></div>
+      <div class="qcard"><div class="stars">★★★★★</div><p>"Speak Active helped me become fluent fast, and the native teacher was so patient."</p><div class="who"><div class="av">D</div><div><b>Denny</b><small>Speak Active student</small></div></div></div>
+      <div class="qcard"><div class="stars">★★★★★</div><p>"The HSK prep was well structured — I passed HSK 3 with a great score!"</p><div class="who"><div class="av">M</div><div><b>Mei Ling</b><small>HSK Prep student</small></div></div></div>
     </div>
   </div>
 </section>
@@ -302,24 +322,8 @@ footer a.c{color:var(--brand)}
 <section class="final" id="start">
   <div class="wrap">
     <h2>Ready to Start?</h2>
-    <p>Start your language journey with Kwelingo. Datang, rasakan belajar di tempat yang terasa seperti rumah.</p>
-    <a href="portal.html" class="btn btn-white" style="font-size:16px;padding:16px 34px">🏡 Masuk ke Kwelingo Hub</a>
-  </div>
-</section>
-
-<!-- ===== HOMEBUILDER + TEACHERNOTES ===== -->
-<section class="sec" id="homebuilder">
-  <div class="wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch">
-    <div class="tn" style="margin:0;border-color:var(--brand);background:#EAF6FA">
-      <h3>🔨 Be Our Homebuilder!</h3>
-      <p>Mau jadi bagian dari keluarga Kwelingo — jadi guru atau partner? Yuk bangun "rumah" ini bareng kami.</p>
-      <a href="https://bit.ly/growwithkwelingo" target="_blank" rel="noopener" class="btn btn-brand" style="margin-top:14px">Gabung Sekarang</a>
-    </div>
-    <div class="tn" id="teachernotes" style="margin:0">
-      <h3>📝 TeacherNotes</h3>
-      <p>Artikel, tips, &amp; cerita belajar bahasa dari guru-guru Kwelingo. <b>Segera hadir!</b></p>
-      <a href="#" class="btn btn-ghost" style="margin-top:14px">Segera Hadir</a>
-    </div>
+    <p>Begin your language journey with Kwelingo. Book a discovery session and we'll help you find the right program.</p>
+    <a href="#" id="waDiscovery" class="btn btn-white" style="font-size:16px;padding:16px 34px">💬 Book a Discovery Session</a>
   </div>
 </section>
 
@@ -329,14 +333,14 @@ footer a.c{color:var(--brand)}
     <div class="foot-grid">
       <div>
         <div class="brand" style="margin-bottom:14px"><img src="assets/logo.png" alt="Kwelingo" style="height:42px;background:#fff;border-radius:10px;padding:3px"><div><span class="fb" style="font-family:var(--disp)">kwelingo</span><span class="fs" style="display:block">Home for Language Learners</span></div></div>
-        <p>Kwelingo Academy — kursus bahasa Inggris &amp; Mandarin dengan guru lokal &amp; native. A home for language learners.</p>
+        <p>Kwelingo Academy — English &amp; Mandarin language courses with local &amp; native teachers. A home for language learners.</p>
         <p style="margin-top:12px">📞 <a href="https://wa.me/6281945144145" target="_blank" rel="noopener" class="c">0819-45-144-145</a><br>✉️ <a href="mailto:kwelingo.indonesia@gmail.com" class="c">kwelingo.indonesia@gmail.com</a></p>
       </div>
       <div>
-        <h5>Program</h5>
+        <h5>Our Programs</h5>
         <ul>
           <li><a href="#programs">Boost English</a></li>
-          <li><a href="#programs">Speak Active</a></li>
+          <li><a href="#programs">SpeakActive</a></li>
           <li><a href="#programs">IELTS Preparation</a></li>
           <li><a href="#programs">Boost Mandarin &amp; HSK</a></li>
         </ul>
@@ -351,33 +355,59 @@ footer a.c{color:var(--brand)}
         </ul>
       </div>
     </div>
-    <div class="foot-bar">© 2026 Kwelingo Academy. All rights reserved.</div>
+    <div class="foot-social" style="display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0 4px;border-top:1px solid rgba(255,255,255,.14)">
+      <a href="https://wa.me/6281945144145" target="_blank" rel="noopener" class="c" title="WhatsApp">💬 WhatsApp</a>
+      <a href="mailto:kwelingo.indonesia@gmail.com" class="c" title="Email">✉️ Email</a>
+      <a href="https://instagram.com/kwelingo" target="_blank" rel="noopener" class="c" title="Instagram">📷 Instagram</a>
+      <a href="https://threads.net/@kwelingo" target="_blank" rel="noopener" class="c" title="Threads">🧵 Threads</a>
+      <a href="https://facebook.com/kwelingo" target="_blank" rel="noopener" class="c" title="Facebook">👍 Facebook</a>
+    </div>
+    <div class="foot-bar" style="border-top:none">© 2026 Kwelingo Academy. All rights reserved.</div>
   </div>
 </footer>
 
 <script>
 /* WhatsApp */
-const WA="https://wa.me/6281945144145?text="+encodeURIComponent("Halo Kwelingo! Saya mau tanya tentang program & pendaftaran.");
-document.getElementById('waChat').href=WA;
-document.getElementById('waNavMobile').href=WA;
+const WA_NO="6281945144145";
+const WA="https://wa.me/"+WA_NO+"?text="+encodeURIComponent("Hi Kwelingo! I'd like to ask about your programs & registration.");
+const WA_DISCOVERY="https://wa.me/"+WA_NO+"?text="+encodeURIComponent("Hi Kwelingo! I'd like to book a discovery session to find the right program.");
+["waChat","waNavMobile","waHero"].forEach(id=>{const el=document.getElementById(id);if(el)el.href=WA;});
+const wd=document.getElementById('waDiscovery');if(wd)wd.href=WA_DISCOVERY;
 
 /* mobile nav */
 function toggleNav(){document.getElementById('navLinks').classList.toggle('open');}
 function closeNav(){document.getElementById('navLinks').classList.remove('open');}
 document.addEventListener('click',e=>{const n=document.getElementById('navLinks'),h=document.querySelector('.hamburger');if(n.classList.contains('open')&&!n.contains(e.target)&&e.target!==h)closeNav();});
 
-/* instructors (placeholder) */
+/* instructors (placeholder — swap names, photos & bios later) */
 const TEACHERS=[
-  {n:"Ms. Sarah",r:"Boost English",c:"var(--brand-deep)"},
-  {n:"Mr. Adi",r:"Speak Active",c:"var(--cta-deep)"},
-  {n:"老师 Lina",r:"Boost Mandarin",c:"#6c9a63"},
-  {n:"老师 Wang",r:"HSK Preparation",c:"var(--coral)"},
+  {n:"Ms. Sarah",r:"Boost English Instructor",c:"var(--brand-deep)",
+   bio:"Sarah has a background in English Language Education and over 5 years of teaching experience. She loves creating a supportive, engaging classroom where students build practical skills for real-life situations.",
+   chips:["B.A. in English Language Education","5+ yrs teaching teens & adults","Communicative, student-centered"]},
+  {n:"Mr. Adi",r:"SpeakActive Instructor",c:"var(--cta-deep)",
+   bio:"Adi is a communication-focused instructor with a background in International Relations. He helps learners turn existing knowledge into confident, natural conversation through interactive sessions.",
+   chips:["B.A. in International Relations","4+ yrs teaching adults","Conversation & fluency specialist"]},
+  {n:"Ms. Lina",r:"Boost Mandarin Instructor",c:"#6c9a63",
+   bio:"Lina is a native Mandarin speaker who makes learning Chinese approachable and fun, guiding students from their very first characters to everyday conversation.",
+   chips:["Native Mandarin speaker","HSK-aligned teaching","Beginner-friendly"]},
+  {n:"Mr. Wang",r:"HSK Preparation Instructor",c:"var(--coral)",
+   bio:"Wang specializes in structured HSK exam preparation, helping students reach their target level with clear strategies and steady, measurable progress.",
+   chips:["HSK exam specialist","Structured prep plans","Target-level coaching"]},
 ];
 function initials(name){const p=name.replace(/老师|Ms\.|Mr\./g,'').trim().split(/\s+/);return ((p[0]||'?')[0]+(p[1]?p[1][0]:'')).toUpperCase();}
-document.getElementById('teacherGrid').innerHTML=TEACHERS.map(t=>`
-  <div class="tcard"><div class="ava" style="background:${t.c}">${initials(t.n)}</div>
+const tScroller=document.getElementById('teacherGrid');
+tScroller.innerHTML=TEACHERS.map((t,i)=>`
+  <div class="tcard" data-i="${i}" onclick="showBio(${i})"><div class="ava" style="background:${t.c}">${initials(t.n)}</div>
   <h4>${t.n}</h4><div class="role">${t.r}</div>
-  <p>Guru berpengalaman yang siap mendampingi perjalanan belajarmu.</p></div>`).join('');
+  <p>Tap to read bio →</p></div>`).join('');
+function showBio(i){
+  const t=TEACHERS[i];
+  document.querySelectorAll('.tscroller .tcard').forEach(c=>c.classList.toggle('active',+c.dataset.i===i));
+  const box=document.getElementById('teacherBio');
+  box.innerHTML=`<h4>${t.n}</h4><div class="role">${t.r}</div><p>${t.bio}</p><div class="chips">${t.chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>`;
+  box.style.display='block';
+}
+function slideTeachers(dir){ tScroller.scrollBy({left:dir*240,behavior:'smooth'}); }
 
 /* hero houses (SVG, warm palette) */
 document.getElementById('houses').innerHTML=`

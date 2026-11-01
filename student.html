@@ -1,79 +1,133 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student — Kwelingo</title>
+<title>Student Hub — Kwelingo Academy</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#3E8A9E">
+<meta name="theme-color" content="#1F6FEB">
 <link rel="apple-touch-icon" href="assets/icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Kwelingo">
 <link rel="stylesheet" href="assets/style.css">
 <style>
-  .qopt{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:8px;cursor:pointer;transition:.12s;font-size:14px}
-  .qopt:hover{border-color:var(--sky);background:var(--sky-soft)}
-  .qopt input{accent-color:var(--sky-deep)}
-  .qopt.correct{border-color:var(--green2);background:var(--green-soft)}
-  .qopt.wrong{border-color:var(--red);background:var(--red-soft)}
-  .lb-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;background:#fff;border:1px solid var(--line);margin-bottom:8px}
-  .lb-row.me{border-color:var(--sky);background:var(--sky-soft)}
-  .lb-rank{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Poppins';font-weight:800;background:var(--bg);color:var(--muted);flex:0 0 34px}
-  .lb-rank.g1{background:#fff4cc;color:#b8860b}.lb-rank.g2{background:#eef1f5;color:#7a8394}.lb-rank.g3{background:#fce7d6;color:#b5651d}
-  .lb-pts{margin-left:auto;font-weight:800;color:var(--gold);font-size:16px}
-  .lb-pts small{color:var(--muted);font-weight:500;font-size:11px}
-  .disc{max-width:760px}
-  .msg{display:flex;gap:10px;margin-bottom:12px}
-  .msg .av{width:36px;height:36px;border-radius:50%;background:var(--sky-deep);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 36px}
-  .msg .bub{background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 13px;font-size:13.5px}
-  .msg .bub b{color:var(--navy);font-size:12.5px;display:block;margin-bottom:2px}
-  .msg .bub .t{color:var(--muted);font-size:10.5px;margin-top:3px}
-  .msg.me{flex-direction:row-reverse}
-  .msg.me .bub{background:var(--sky-soft);border-color:#bfe6ee}
-  .ann{border-left:4px solid var(--sky);}
+  .welcome h1{font-size:28px}
+  .quote{display:flex;align-items:center;gap:10px;background:#EAF7EE;border-radius:999px;padding:8px 18px 8px 10px;font-size:13px;color:#1E5E36;font-weight:600;font-style:italic}
+  .quote span{font-size:24px;font-style:normal}
+  .row2{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+  .row3{display:grid;grid-template-columns:330px minmax(0,1fr) 300px;gap:16px;align-items:start}
+  .classhero{display:flex;gap:16px;align-items:center;background:linear-gradient(120deg,#EEF4FF,#F7FBFF);border-radius:16px;padding:18px 20px;margin-bottom:16px;flex-wrap:wrap}
+  .classhero .bk{width:58px;height:58px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 4px 12px rgba(31,111,235,.12)}
+  .classhero h2{color:var(--navy);font-size:19px}.classhero small{color:var(--muted);font-size:13px;display:block}
+  .seg2{display:inline-flex;background:#EEF2F8;border-radius:12px;padding:4px;margin-bottom:14px}
+  .seg2 button{border:0;background:none;padding:9px 22px;border-radius:9px;font-weight:700;font-size:13px;color:#5B6680;cursor:pointer}
+  .seg2 button.on{background:var(--blue);color:#fff}
+  .datebox{width:58px;border-radius:12px;background:#F1F5FC;text-align:center;padding:6px 0;flex-shrink:0;line-height:1.15}
+  .datebox small{display:block;font-size:10.5px;font-weight:800;color:var(--muted)}.datebox b{font-size:20px;color:var(--navy);display:block}
+  .up-line{display:flex;gap:14px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}
+  .up-line:last-child{border-bottom:0}
+  .up-line b{color:var(--navy);font-size:13.5px;display:block}.up-line small{color:var(--muted);font-size:12px}
+  .mcal2{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:12px}
+  .mcal2 .dh{font-weight:700;color:var(--muted);font-size:11px;padding:4px 0}
+  .mcal2 .d{height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:600;color:#3C4A6B;cursor:default;margin:0 auto;width:32px}
+  .mcal2 .d.p{background:#22A06B;color:#fff}.mcal2 .d.a{background:#E5E9F0;color:#5B6680}.mcal2 .d.e{background:#F5B83D;color:#fff}.mcal2 .d.u{border:2px solid #9CC3FF}.mcal2 .d.t{background:var(--blue);color:#fff}
+  .mcal2 .d.w{background:#22A06B;color:#fff;cursor:pointer}.mcal2 .d.s{background:var(--blue);color:#fff}.mcal2 .d.c{border:1.5px dashed #B9C6DD;cursor:pointer}
+  .act-line{display:flex;gap:12px;padding:9px 0}
+  .act-line .ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+  .act-line b{font-size:13px;color:var(--navy);display:block;font-weight:600}.act-line small{font-size:11.5px;color:var(--muted)}
+  .prompt2{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .prompt2 .pi{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+  .prompt2 b{color:var(--navy);font-size:15px}.prompt2 .h{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  .prompt2 textarea{width:100%;min-height:84px;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;resize:vertical}
+  .prompt2 .cnt{text-align:right;font-size:11px;color:var(--muted)}
+  .tcard{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:center;cursor:pointer;background:#fff;margin-bottom:10px}
+  .tcard:hover,.tcard.sel{border-color:#9DBBF3;box-shadow:0 0 0 3px rgba(31,111,235,.08)}
+  .tcard .ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+  .tcard b{color:var(--navy);font-size:13.5px;display:block}.tcard small{color:var(--muted);font-size:11.5px;display:block}
+  .chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .chip-row button{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:6px 13px;font-size:12px;font-weight:700;color:#5B6680;cursor:pointer}
+  .chip-row button.on{border-color:var(--blue);color:var(--blue);background:#F4F8FF}
+  .methods{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+  .methods button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 4px;font-size:12px;font-weight:700;color:#5B6680;cursor:pointer}
+  .methods button.on{border-color:var(--blue);color:var(--blue);background:#F4F8FF}
+  .recbox{border:1.5px dashed #9CC3FF;background:#F4F8FF;border-radius:14px;padding:18px;text-align:center}
+  .recbtn{width:58px;height:58px;border-radius:50%;border:0;background:var(--blue);color:#fff;font-size:24px;cursor:pointer;box-shadow:0 6px 16px rgba(31,111,235,.3)}
+  .recbtn.on{background:var(--red);animation:pulse 1.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(229,72,77,.45)}100%{box-shadow:0 0 0 16px rgba(229,72,77,0)}}
+  .qopt2{display:flex;gap:12px;align-items:center;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer;font-size:14px;background:#fff}
+  .qopt2 .l{width:30px;height:30px;border-radius:50%;border:1.5px solid #C7D5EC;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;color:#5B6680;flex-shrink:0}
+  .qopt2.on{border-color:var(--blue);background:#F4F8FF}.qopt2.on .l{background:var(--blue);border-color:var(--blue);color:#fff}
+  .qopt2.ok{border-color:#22A06B;background:#EDF9F2}.qopt2.bad{border-color:#E5484D;background:#FDEEEE}
+  .qnav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .qnav button{height:38px;border-radius:9px;border:1.5px solid var(--line);background:#fff;font-weight:800;color:#5B6680;cursor:pointer}
+  .qnav button.ans{background:#22A06B;border-color:#22A06B;color:#fff}.qnav button.cur{border-color:var(--blue);color:var(--blue)}
+  .timer{display:flex;gap:10px;align-items:center;background:#F1F6FF;border-radius:12px;padding:8px 14px}
+  .timer b{font-size:22px;color:var(--navy)}.timer.low{background:#FDECEC}.timer.low b{color:var(--red)}
+  .cd{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#FDF1F2;border-radius:12px;padding:10px;text-align:center}
+  .cd b{display:block;font-size:20px;color:#C2364A}.cd small{font-size:10.5px;color:var(--muted)}
+  .chk{display:flex;gap:10px;align-items:center;font-size:13px;padding:5px 0;cursor:pointer}
+  .chk input{width:18px;height:18px;accent-color:#22A06B}
+  .unit{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden;background:#fff}
+  .unit>.uh{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:#F5F8FD;cursor:pointer;font-weight:800;color:var(--navy);font-size:14px}
+  .unit .ub{padding:4px 16px}.unit.closed .ub{display:none}
+  .file-row{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.file-row:last-child{border-bottom:0}
+  .file-row b{color:var(--navy);font-size:13.5px;display:block}.file-row small{color:var(--muted);font-size:12px}
+  .file-ic{width:36px;height:36px;border-radius:9px;background:#FDECEC;color:var(--red);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+  .ann2{display:flex;gap:16px;padding:16px 18px;border-radius:14px;border:1px solid var(--line);margin-bottom:12px;background:#fff}
+  .ann2 .ai{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+  .ann2 h4{color:var(--navy);font-size:15px;margin:4px 0 2px}.ann2 p{color:#46557A;font-size:13px;white-space:pre-line}
+  .members .m{display:flex;gap:10px;align-items:center;padding:7px 0;font-size:13px;font-weight:600;color:var(--navy)}
+  .members .m small{display:block;color:var(--muted);font-weight:500;font-size:11px}
+  .reqtl{display:flex;flex-direction:column;gap:14px}
+  .reqtl .s{display:flex;gap:10px}.reqtl .n{width:26px;height:26px;border-radius:50%;background:#E8EEF8;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#7A88A6}
+  .reqtl .s.done .n{background:#22A06B;color:#fff}.reqtl .s b{font-size:13px;color:var(--navy);display:block}.reqtl .s small{font-size:11.5px;color:var(--muted)}
+  #hQuick{grid-template-columns:1fr 1fr;margin-top:0}
+  .lb-mini{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px dashed var(--line)}
+  @media(max-width:1280px){.row3{grid-template-columns:300px minmax(0,1fr)}.row3>.r3side{grid-column:1/-1}}
+  @media(max-width:1100px){.row2{grid-template-columns:minmax(0,1fr)}}
+  @media(max-width:1100px){.row2[style]{grid-template-columns:minmax(0,1fr)!important}}
+  @media(max-width:900px){.row3,.row3[style]{grid-template-columns:minmax(0,1fr)!important}.view .grid[style*="grid-template-columns"]{grid-template-columns:minmax(0,1fr)!important}}
+  @media(max-width:768px){.methods{grid-template-columns:repeat(2,1fr)}.quote{display:none}#view-requests .page-head{flex-wrap:wrap}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN GATE -->
-<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#EAF6FA,#FFF9F0);display:flex;align-items:center;justify-content:center;padding:20px">
-  <div class="card card-pad" style="max-width:380px;width:100%;text-align:center">
-    <img src="assets/logo.png" style="height:78px;margin:0 auto 12px;display:block">
-    <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Login Siswa</h2>
-    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Masuk dengan username &amp; PIN dari admin</p>
-    <div class="field" style="text-align:left"><label>Username</label>
-      <input id="lgName" autocomplete="off" placeholder="cth: ethankwe" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="field" style="text-align:left"><label>PIN (4 digit)</label>
-      <input id="lgPin" maxlength="4" inputmode="numeric" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="btn btn-primary btn-block" onclick="doLogin()">Masuk →</button>
+<!-- ===== LOGIN ===== -->
+<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(160deg,#EEF4FF 0%,#F7FBFF 60%,#FFF6EA 100%);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card card-pad" style="max-width:390px;width:100%;text-align:center;padding:30px 28px">
+    <img src="assets/logo-h.png" onerror="this.src='assets/logo.png'" alt="Kwelingo Academy" style="height:52px;margin:0 auto 10px">
+    <span class="ls-sub" style="display:inline-block;margin-bottom:16px">Student Hub</span>
+    <h2 style="color:var(--navy);font-size:21px;margin-bottom:4px">Hi there 👋</h2>
+    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Log in with your username &amp; 4-digit PIN.</p>
+    <div class="field" style="text-align:left"><label>Username</label><input id="lgName" autocomplete="off" placeholder="e.g. antonkwe" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field" style="text-align:left"><label>PIN (4 digits)</label><input id="lgPin" maxlength="4" inputmode="numeric" type="password" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Log in →</button>
     <div class="help" id="lgErr" style="color:var(--red);margin-top:10px;font-weight:600"></div>
-    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Kembali ke pemilihan portal</a></div>
+    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Back to Kwelingo Hub</a></div>
   </div>
 </div>
 
 <div class="app">
   <aside class="sidebar">
     <div class="sidebar-head" id="logo"></div>
-    <div class="sidebar-role">Menu</div>
     <nav class="nav">
-      <a data-view="dashboard" class="active"><span class="ic">🏠</span> Beranda</a>
-      <a data-view="myclass"><span class="ic">📅</span> Kelas Saya</a>
-      <a data-view="tasks"><span class="ic">📋</span> Tugas <span id="taskDot" class="nav-dot" style="display:none"></span></a>
-      <a data-view="diary"><span class="ic">📔</span> My Diary</a>
-      <a data-view="quiz"><span class="ic">📝</span> Quiz</a>
-      <a data-view="leaderboard"><span class="ic">🏆</span> Leaderboard</a>
-      <a data-view="announce"><span class="ic">📢</span> Pengumuman</a>
-      <a data-view="classboard"><span class="ic">🏫</span> Papan Kelas</a>
-      <a data-view="discuss"><span class="ic">💬</span> Diskusi Kelas</a>
+      <a data-view="home" class="active"><span class="ic">🏠</span> Home</a>
+      <a data-view="learning"><span class="ic">📚</span> My Learning</a>
+      <a data-view="diary"><span class="ic">📔</span> My Learning Diary</a>
+      <a data-view="practice"><span class="ic">📝</span> Extended Practice <span class="nav-dot" id="prDot" style="display:none"></span></a>
+      <a data-view="quizzes"><span class="ic">🏆</span> Quizzes <span class="nav-dot" id="qzDot" style="display:none"></span></a>
+      <a data-view="projects"><span class="ic">🗂️</span> Projects</a>
+      <a data-view="materials"><span class="ic">📁</span> Learning Materials</a>
+      <a data-view="reports"><span class="ic">📄</span> Monthly Reports</a>
+      <a data-view="certs"><span class="ic">🏅</span> Certificates</a>
+      <a data-view="requests"><span class="ic">🔄</span> Requests</a>
+      <a data-view="lounge"><span class="ic">💬</span> Kwelingo Lounge</a>
+      <a data-view="announce"><span class="ic">📣</span> Announcements <span class="nav-dot" id="anDot" style="display:none"></span></a>
+      <a data-view="messages"><span class="ic">✉️</span> Messages <span class="nav-dot" id="msDot" style="display:none"></span></a>
+      <a data-view="account"><span class="ic">⚙️</span> Account Settings</a>
       <div class="divider"></div>
-      <a href="portal.html"><span class="ic">↩️</span> Ganti Portal</a>
-      <a href="index.html"><span class="ic">🚪</span> Keluar</a>
+      <a onclick="logout()"><span class="ic">🚪</span> Log out</a>
     </nav>
-    <div class="sidebar-foot">
-      <div class="avatar" id="savatar">S</div>
-      <div class="who" id="swho">Siswa<small>Student</small></div>
-    </div>
+    <div class="sidebar-help" onclick="openAdminChat()"><span style="font-size:22px">💬</span><div><b>Need help?</b><small>Contact our team</small></div><span class="chev" style="margin-left:auto">›</span></div>
   </aside>
   <div class="backdrop" onclick="toggleSidebar()"></div>
 
@@ -81,585 +135,821 @@
     <div class="topbar">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
       <div class="spacer"></div>
-      <div class="me"><div class="who" id="swho2">Siswa<small>Student</small></div><div class="avatar" id="savatar2">S</div></div>
+      <div class="bell" onclick="go('announce')" title="Notifications">🔔<span class="dot" id="bellDot" style="display:none"></span></div>
+      <div class="me" onclick="go('account')" style="cursor:pointer"><div class="who"><span id="meName">Student</span><small id="meSub"></small></div><div class="avatar" id="meAv">S</div></div>
     </div>
 
     <div class="content">
-      <!-- DASHBOARD -->
-      <section class="view" id="view-dashboard">
-        <div class="page-head"><div><h1 id="hi">Halo 👋</h1><div class="sub" id="today">—</div></div></div>
-        <div class="grid grid-4" style="margin-bottom:22px">
-          <div class="stat tint-amber"><div class="lbl"><span class="icon">⭐</span> Poin Saya</div><div class="val" id="myPoints">0</div></div>
-          <div class="stat tint-purple"><div class="lbl"><span class="icon">🏆</span> Peringkat</div><div class="val" id="myRank">-</div></div>
-          <div class="stat tint-blue"><div class="lbl"><span class="icon">📝</span> Quiz Tersedia</div><div class="val" id="quizCount">0</div></div>
-          <div class="stat tint-green"><div class="lbl"><span class="icon">✅</span> Quiz Dikerjakan</div><div class="val" id="doneCount">0</div></div>
+
+      <!-- ===== HOME ===== -->
+      <section class="view" id="view-home">
+        <div class="page-head welcome"><div><h1 id="hi">Hello!</h1><div class="sub">Here's what's coming up for you.</div></div><div class="quote"><span>🌱</span>“Small steps every day.”</div></div>
+        <div class="grid grid-4" style="margin-bottom:18px">
+          <div class="stat tint-blue" style="cursor:pointer" onclick="go('learning')"><div class="stat-row"><div class="icon">📅</div><div><div class="lbl">Next Class</div><div class="val" style="font-size:17px" id="hNext">–</div><small class="text-muted" id="hNextT"></small></div></div></div>
+          <div class="stat tint-green" style="cursor:pointer" onclick="go('learning')"><div class="stat-row"><div class="icon">✅</div><div><div class="lbl">Attendance</div><div class="val" id="hAtt">–</div><small class="text-muted" id="hAttT"></small></div></div></div>
+          <div class="stat tint-amber" style="cursor:pointer" onclick="go('practice')"><div class="stat-row"><div class="icon">📝</div><div><div class="lbl">Tasks To Do</div><div class="val" id="hTasks">0</div><small class="text-muted">Extended practice &amp; projects</small></div></div></div>
+          <div class="stat tint-purple" style="cursor:pointer" onclick="go('quizzes')"><div class="stat-row"><div class="icon">🏆</div><div><div class="lbl">Quiz Points</div><div class="val" id="hPts">0</div><small class="text-muted" id="hRank"></small></div></div></div>
         </div>
-        <div class="grid grid-2" style="gap:18px">
-          <div class="card card-pad">
-            <div class="card-title">📢 Pengumuman Terbaru</div>
-            <div id="dashAnn"></div>
+        <div class="row2">
+          <div>
+            <div class="card card-pad" style="margin-bottom:18px"><div class="card-title">📅 Upcoming Classes <span class="more" onclick="go('learning')">View all →</span></div><div id="hUp"></div></div>
+            <div class="card card-pad"><div class="card-title">⏰ Upcoming Deadlines <span class="more" onclick="go('practice')">View all →</span></div><div id="hDue"></div></div>
           </div>
-          <div class="card card-pad">
-            <div class="card-title">📝 Ayo Kerjakan Quiz</div>
-            <div id="dashQuiz"></div>
+          <div>
+            <div class="card card-pad" style="margin-bottom:18px"><div class="card-title">📣 Announcements <span class="more" onclick="go('announce')">View all →</span></div><div id="hAnn"></div></div>
+            <div class="card card-pad"><div class="card-title">⚡ Quick Links</div><div class="quick-links" id="hQuick"></div></div>
           </div>
         </div>
       </section>
 
-      <!-- KELAS SAYA -->
-      <section class="view hide" id="view-myclass">
-        <div class="page-head"><div><h1>Kelas Saya</h1><div class="sub">Kehadiran, jadwal, ajukan kelas &amp; sertifikat</div></div>
-          <button class="btn btn-primary" onclick="openReq()">＋ Ajukan Kelas</button></div>
-        <div class="grid grid-4" style="margin-bottom:20px" id="mcStats"></div>
-        <div class="card card-pad" id="certBox" style="display:none;background:linear-gradient(120deg,#FFF6E6,#EAF6FA);border:1.5px solid #F4D98B;margin-bottom:20px">
-          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-            <div style="font-size:34px">🏅</div>
-            <div style="flex:1;min-width:200px"><div style="font-weight:800;color:var(--navy);font-size:16px">Selamat! Kamu memenuhi syarat Certificate of Completion</div>
-              <div class="muted" style="font-size:13px">Kehadiran &amp; penyelesaian tugas sudah memenuhi syarat (<b id="certPct">—</b>, min. 80% keduanya). Unduh sertifikatmu di bawah.</div></div>
-            <button class="btn btn-primary" onclick="downloadCert()">🏅 Download Sertifikat</button>
+      <!-- ===== MY LEARNING ===== -->
+      <section class="view hide" id="view-learning">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📚</div><div><h1>My Learning</h1><div class="sub">Here's your class overview, upcoming schedule, and attendance. Keep going!</div></div></div>
+          <select id="lnClass" onchange="renderLearning()" style="padding:9px 12px;border:1.5px solid var(--line);border-radius:10px"></select></div>
+        <div class="row2">
+          <div>
+            <div class="classhero" id="lnHero"></div>
+            <div class="seg2"><button id="lnT1" class="on" onclick="LN_TAB='class';renderLearning()">My Class</button><button id="lnT2" onclick="LN_TAB='sessions';renderLearning()">Class Sessions</button></div>
+            <div id="lnBody"></div>
+          </div>
+          <div>
+            <div class="card card-pad" style="margin-bottom:16px"><div class="card-title">✅ Attendance</div><div class="donut-row" id="lnDonut"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px"><b style="color:var(--navy)" id="lnCalT"></b><span><button class="btn btn-ghost btn-sm" onclick="LN_CAL=shiftMonth(LN_CAL,-1);drawLnCal()">‹</button><button class="btn btn-ghost btn-sm" onclick="LN_CAL=shiftMonth(LN_CAL,1);drawLnCal()">›</button></span></div>
+              <div class="mcal2" id="lnCal"></div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:10px"><span>🟢 Present</span><span>🟡 Sick/Excused</span><span>⚪ Absent</span><span>⭕ Upcoming</span></div></div>
+            <div class="card card-pad"><div class="card-title">🕘 Recent Class Activity</div><div id="lnAct"></div></div>
           </div>
         </div>
-        <div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">📅 Jadwal &amp; Kehadiran</div></div>
-          <div class="table-wrap"><table class="tbl">
-            <thead><tr><th>Tanggal</th><th>Guru</th><th>Time</th><th>Type</th><th>Status</th><th>Kehadiran</th><th>Rekaman</th><th>Aksi</th></tr></thead>
-            <tbody id="mcBody"></tbody>
-          </table></div>
-        </div>
       </section>
 
-      <!-- TUGAS -->
-      <section class="view hide" id="view-tasks">
-        <div class="page-head"><div><h1>Tugas</h1><div class="sub">Tugas dari guru — tandai kalau sudah selesai</div></div></div>
-        <div class="grid grid-4" style="margin-bottom:18px" id="taskStats"></div>
-        <div id="taskList"></div>
-      </section>
-
-      <!-- MY DIARY -->
+      <!-- ===== DIARY ===== -->
       <section class="view hide" id="view-diary">
-        <div class="page-head"><div><h1>My Diary</h1><div class="sub">Refleksi belajarmu — dibaca &amp; dibalas gurumu</div></div></div>
-        <div class="grid grid-2" style="gap:18px;align-items:start">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📔</div><div><h1>My Learning Diary</h1><div class="sub">Write about your learning, what you find challenging, and how you will improve.</div></div></div><div class="quote"><span>🌱</span>“Reflection helps you grow.”</div></div>
+        <div class="row2">
           <div class="card card-pad">
-            <div class="card-title">✍️ Entry Hari Ini</div>
-            <div class="field"><label>📘 Apa yang saya pahami hari ini?</label><textarea id="dq1" placeholder="Tulis konsep/skill/ide utama yang kamu pelajari…"></textarea></div>
-            <div class="field"><label>😵 Apa yang masih sulit / membingungkan?</label><textarea id="dq2" placeholder="Hal yang masih belum kamu pahami…"></textarea></div>
-            <div class="field"><label>🎯 Apa yang ingin saya pelajari/tingkatkan?</label><textarea id="dq3" placeholder="Pertanyaan / topik / skill berikutnya…"></textarea></div>
-            <div style="text-align:right"><button class="btn btn-primary" onclick="postDiary()">Kirim Entry</button></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line)"><div><b style="color:var(--navy)">Select a Class Date</b><div class="text-muted" style="font-size:12.5px">Choose the class session you want to write about.</div></div>
+              <select id="dyDate" onchange="loadDiaryForm()" style="padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;min-width:280px"></select></div>
+            <div id="dyComment"></div>
+            <div class="prompt2"><div class="pi" style="background:#FFF6DB">💡</div><div style="flex:1"><b>What did I learn today?</b><div class="h">Write about the new words, expressions, skills, or topics you learned in this class.</div><textarea id="dyL" maxlength="500" oninput="dyCount(this)" placeholder="For example: I learned how to talk about daily routines using the present simple…"></textarea><div class="cnt">0/500</div></div></div>
+            <div class="prompt2"><div class="pi" style="background:#FDECEF">🎯</div><div style="flex:1"><b>What did I struggle with?</b><div class="h">Write about anything you found difficult or confusing.</div><textarea id="dyS" maxlength="500" oninput="dyCount(this)" placeholder="For example: I still find it difficult to use the correct form of verbs…"></textarea><div class="cnt">0/500</div></div></div>
+            <div class="prompt2" style="border-bottom:0"><div class="pi" style="background:#EEF4FF">⚙️</div><div style="flex:1"><b>How will I resolve it?</b><div class="h">Write your plan for improvement. What will you do next?</div><textarea id="dyR" maxlength="500" oninput="dyCount(this)" placeholder="For example: I will review my notes, do more practice exercises, and ask my teacher for more examples…"></textarea><div class="cnt">0/500</div></div></div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button class="btn btn-outline" onclick="saveDiary(true)">Save as Draft</button><button class="btn btn-primary" onclick="saveDiary(false)">Save Entry</button></div>
           </div>
-          <div class="card card-pad">
-            <div class="card-title">📔 Riwayat &amp; Balasan Guru</div>
-            <div id="diaryFeed" style="max-height:56vh;overflow:auto"></div>
+          <div>
+            <div class="card card-pad" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--navy)">Diary Calendar</b><span><button class="btn btn-ghost btn-sm" onclick="DY_CAL=shiftMonth(DY_CAL,-1);drawDyCal()">‹</button><b id="dyCalT" style="font-size:12.5px;color:var(--navy)"></b><button class="btn btn-ghost btn-sm" onclick="DY_CAL=shiftMonth(DY_CAL,1);drawDyCal()">›</button></span></div>
+              <div class="mcal2" id="dyCal"></div><div style="display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:10px"><span>🟢 Diary written</span><span>🔵 Selected</span><span>⭕ Class – no entry</span></div></div>
+            <div class="card card-pad"><div class="card-title">My Diary Entries</div><div id="dyList"></div></div>
           </div>
         </div>
       </section>
 
-      <!-- QUIZ -->
-      <section class="view hide" id="view-quiz">
-        <div class="page-head"><div><h1>Quiz</h1><div class="sub">Kerjakan quiz &amp; kumpulkan poin!</div></div></div>
-        <div class="grid grid-3" id="quizList"></div>
+      <!-- ===== EXTENDED PRACTICE ===== -->
+      <section class="view hide" id="view-practice">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📝</div><div><h1>Extended Practice</h1><div class="sub">Complete your tasks, practise what you've learned, and build your skills.</div></div></div><div class="quote"><span>🌱</span>“Practice today, progress tomorrow.”</div></div>
+        <div class="row3">
+          <div>
+            <div class="seg2" id="epTabs"></div>
+            <div class="chip-row" id="epChips"></div>
+            <div id="epList"></div>
+          </div>
+          <div class="card card-pad" id="epDetail"></div>
+          <div class="r3side">
+            <div class="card card-pad" style="margin-bottom:16px"><div class="card-title">Your Progress</div><div class="donut-row" id="epProg"></div></div>
+            <div class="card card-pad" style="margin-bottom:16px"><div class="card-title">Upcoming Deadlines</div><div id="epDue"></div></div>
+            <div class="card card-pad"><div class="card-title">Recent Submissions</div><div id="epRecent"></div></div>
+          </div>
+        </div>
       </section>
 
-      <!-- LEADERBOARD -->
-      <section class="view hide" id="view-leaderboard">
-        <div class="page-head"><div><h1>Leaderboard</h1><div class="sub">Peringkat berdasarkan total poin quiz</div></div></div>
-        <div id="lbList" style="max-width:620px"></div>
+      <!-- ===== QUIZZES ===== -->
+      <section class="view hide" id="view-quizzes">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">🏆</div><div><h1>Quizzes</h1><div class="sub">Check your understanding and see how much you have learned.</div></div></div><div class="quote"><span>💡</span>“Small quizzes lead to big progress.”</div></div>
+        <div class="seg2" id="qzTabs"></div>
+        <div class="row3">
+          <div id="qzList"></div>
+          <div class="card card-pad" id="qzMain"></div>
+          <div class="r3side" id="qzSide"></div>
+        </div>
       </section>
 
-      <!-- ANNOUNCEMENTS -->
+      <!-- ===== PROJECTS ===== -->
+      <section class="view hide" id="view-projects">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">🗂️</div><div><h1>Projects</h1><div class="sub">Show what you've learned through real-life tasks and bigger assignments.</div></div></div><div class="quote"><span>🏁</span>“Turn your learning into real-world skills.”</div></div>
+        <div id="pjBody"></div>
+      </section>
+
+      <!-- ===== MATERIALS ===== -->
+      <section class="view hide" id="view-materials">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📁</div><div><h1>Learning Materials</h1><div class="sub">Download handouts and other learning resources for your class.</div></div></div><div class="quote"><span>📚</span>“All your class materials in one place.”</div></div>
+        <div class="card card-pad" style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><b style="color:var(--navy)">Select Your Class</b><select id="mtClass" onchange="renderMaterials()" style="padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;min-width:260px"></select></div>
+        <div id="mtBody"></div>
+      </section>
+
+      <!-- ===== MONTHLY REPORTS ===== -->
+      <section class="view hide" id="view-reports">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📄</div><div><h1>Monthly Reports</h1><div class="sub">View and download your monthly learning reports. Select your program and month to access the report.</div></div></div></div>
+        <div class="card card-pad" style="margin-bottom:16px"><div class="field-row" style="margin:0"><div class="field" style="margin:0"><label>Program</label><select id="rpProg" onchange="renderReports()"></select></div><div class="field" style="margin:0"><label>Month</label><select id="rpMonth" onchange="renderReports()"></select></div></div></div>
+        <div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Month</th><th>Program</th><th>Report</th><th></th></tr></thead><tbody id="rpBody"></tbody></table></div></div>
+      </section>
+
+      <!-- ===== CERTIFICATES ===== -->
+      <section class="view hide" id="view-certs">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">🏅</div><div><h1>Certificates</h1><div class="sub">View and download your certificates.</div></div></div></div>
+        <div class="card card-pad" style="margin-bottom:16px;max-width:420px"><div class="field" style="margin:0"><label>Program</label><select id="ceProg" onchange="renderCerts()"></select></div></div>
+        <div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Certificate</th><th>Program / Level</th><th>Issue Date</th><th></th></tr></thead><tbody id="ceBody"></tbody></table></div></div>
+        <div class="card card-pad mt-16" id="ceProgress"></div>
+      </section>
+
+      <!-- ===== REQUESTS ===== -->
+      <section class="view hide" id="view-requests">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">🔄</div><div><h1>Requests</h1><div class="sub">Submit and track your reschedule or recovery class requests.</div></div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" onclick="openNewReq('reschedule')">＋ Reschedule</button><button class="btn btn-outline" onclick="openNewReq('recovery')">＋ Recovery Class</button></div></div>
+        <div class="row2" style="grid-template-columns:minmax(0,1fr) 380px" id="rqWrap">
+          <div class="card"><div class="card-pad" style="padding-bottom:6px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><div class="card-title" style="margin:0">My Requests</div>
+            <div style="display:flex;gap:8px"><select id="rqType" onchange="renderRequests()" style="padding:8px 10px;border:1.5px solid var(--line);border-radius:9px"><option value="">All Types</option><option value="reschedule">Reschedule</option><option value="recovery">Recovery</option></select><select id="rqStat" onchange="renderRequests()" style="padding:8px 10px;border:1.5px solid var(--line);border-radius:9px"><option value="">All Statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div></div>
+            <div class="table-wrap"><table class="tbl"><thead><tr><th>Date Submitted</th><th>Type</th><th>Class</th><th>Original Session</th><th>New Date / Notes</th><th>Status</th><th></th></tr></thead><tbody id="rqBody"></tbody></table></div></div>
+          <div class="card card-pad" id="rqSide"></div>
+        </div>
+      </section>
+
+      <!-- ===== LOUNGE ===== -->
+      <section class="view hide" id="view-lounge">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">💬</div><div><h1>Kwelingo Lounge</h1><div class="sub">Talk, share, and practise with your classmates.</div></div></div></div>
+        <div class="card card-pad" style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><b style="color:var(--navy)">Select Your Class</b><select id="lgClass" onchange="renderLounge()" style="padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;min-width:260px"></select></div>
+        <div class="row2" style="grid-template-columns:minmax(0,1fr) 280px">
+          <div class="card chatbox"><div class="card-pad" style="padding:14px 18px;border-bottom:1px solid var(--line)"><b style="color:var(--navy)" id="lgName2">Class</b><div class="text-muted" style="font-size:12px" id="lgSub"></div></div>
+            <div class="feed" id="lgFeed"></div>
+            <div class="send"><input id="lgMsg" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendLounge()"><button class="btn btn-primary" onclick="sendLounge()">➤</button></div></div>
+          <div class="card card-pad"><div class="card-title">Class Members</div><div class="members" id="lgMembers"></div><div class="note-band mt-16" style="font-size:12px">🙂 Be kind and practise in English (or your target language)! Messages are visible to your class and teacher.</div></div>
+        </div>
+      </section>
+
+      <!-- ===== ANNOUNCEMENTS ===== -->
       <section class="view hide" id="view-announce">
-        <div class="page-head"><div><h1>Pengumuman</h1><div class="sub">Info terbaru dari Kwelingo</div></div></div>
-        <div id="annList" style="max-width:760px"></div>
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📣</div><div><h1>Announcements</h1><div class="sub">Important updates and information for your class.</div></div></div>
+          <select id="anClass" onchange="renderAnnounce()" style="padding:9px 12px;border:1.5px solid var(--line);border-radius:10px"></select></div>
+        <div id="anList"></div>
       </section>
 
-      <!-- PAPAN KELAS (class-specific announcements) -->
-      <section class="view hide" id="view-classboard">
-        <div class="page-head"><div><h1>Papan Kelas</h1><div class="sub" id="cbSub">Pengumuman khusus kelasmu (mis. ganti jadwal)</div></div></div>
-        <div id="cbList" style="max-width:760px"></div>
-      </section>
-
-      <!-- DISCUSSION -->
-      <section class="view hide" id="view-discuss">
-        <div class="page-head"><div><h1>Diskusi Kelas</h1><div class="sub" id="discSub">Ngobrol bareng teman sekelas — jaga sopan santun ya 🙂</div></div></div>
-        <div class="card card-pad disc">
-          <div id="discFeed" style="max-height:52vh;overflow:auto;margin-bottom:14px"></div>
-          <div style="display:flex;gap:10px">
-            <input id="discInput" placeholder="Tulis pesan…" style="flex:1;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px" onkeydown="if(event.key==='Enter')postDiscuss()">
-            <button class="btn btn-primary" onclick="postDiscuss()">Kirim</button>
-          </div>
+      <!-- ===== MESSAGES ===== -->
+      <section class="view hide" id="view-messages">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">✉️</div><div><h1>Messages</h1><div class="sub">Chat with your teacher or our admin team.</div></div></div></div>
+        <div class="row3" style="grid-template-columns:300px minmax(0,1fr) 280px">
+          <div class="card card-pad" style="padding:12px"><div class="chip-row" id="msTabs"></div><div id="msList"></div></div>
+          <div class="card chatbox"><div class="card-pad" style="padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px"><span class="av-sm" id="msAv">?</span><div><b style="color:var(--navy)" id="msName">Select a conversation</b><div class="text-muted" style="font-size:12px" id="msSub"></div></div></div>
+            <div class="feed" id="msFeed"><div class="empty">Choose a conversation on the left.</div></div>
+            <div class="send"><input id="msMsg" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">➤</button></div></div>
+          <div class="r3side" id="msInfo"></div>
         </div>
       </section>
 
-      <div class="foot-note">© 2026 Kwelingo. All rights reserved.</div>
+      <!-- ===== ACCOUNT ===== -->
+      <section class="view hide" id="view-account">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">⚙️</div><div><h1>Account Settings</h1><div class="sub">Your profile and login PIN.</div></div></div></div>
+        <div class="grid grid-2" style="align-items:start">
+          <div class="card card-pad"><div class="card-title">👤 Profile</div><div class="kv" id="acProfile"></div><div class="help mt-16">To change your details, please message the admin team.</div></div>
+          <div class="card card-pad"><div class="card-title">🔒 Change PIN</div>
+            <div class="field-row"><div class="field"><label>Current PIN</label><input id="acOld" type="password" maxlength="4" inputmode="numeric"></div><div class="field"><label>New PIN (4 digits)</label><input id="acNew" type="password" maxlength="4" inputmode="numeric"></div></div>
+            <button class="btn btn-primary" onclick="changePin()">Update PIN</button></div>
+        </div>
+      </section>
+
+      <div class="foot-note">© 2026 Kwelingo Academy · Student Hub</div>
     </div>
   </div>
 </div>
 
-<!-- MODAL: kerjakan quiz -->
-<div class="modal-overlay" id="mQuiz">
-  <div class="modal" style="max-width:640px">
-    <div class="modal-head"><h3 id="qTitle">Quiz</h3><button class="x" onclick="closeModal('mQuiz')">×</button></div>
-    <div class="modal-body" id="qBody"></div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mQuiz')">Tutup</button>
-      <button class="btn btn-primary" id="qSubmitBtn" onclick="submitQuiz()">Selesai &amp; Cek Nilai</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: ajukan kelas baru -->
+<!-- ===== MODAL: NEW REQUEST ===== -->
 <div class="modal-overlay" id="mReq">
   <div class="modal">
-    <div class="modal-head"><h3>Ajukan Kelas Baru</h3><button class="x" onclick="closeModal('mReq')">×</button></div>
+    <div class="modal-head"><h3>New Request</h3><button class="x" onclick="closeModal('mReq')">×</button></div>
     <div class="modal-body">
-      <div class="field-row">
-        <div class="field"><label>Tanggal <span class="req">*</span></label><input type="date" id="rqDate"></div>
-        <div class="field"><label>Jam Mulai <span class="req">*</span></label><input type="time" id="rqTime"></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Durasi (menit)</label><input type="number" id="rqDur" value="60"></div>
-        <div class="field"><label>Type</label>
-          <div class="radio-row"><label><input type="radio" name="rqType" value="online" checked> Online</label>
-          <label><input type="radio" name="rqType" value="onsite"> Onsite</label></div></div>
-      </div>
-      <div class="field"><label>Catatan untuk Guru</label><textarea id="rqNote" placeholder="cth: Minta fokus latihan speaking."></textarea></div>
-      <div class="help">Pengajuan akan dikirim ke guru/admin untuk disetujui.</div>
+      <div class="seg2" style="width:100%"><button id="nrT1" style="flex:1" onclick="setReqType('reschedule')">Reschedule Request</button><button id="nrT2" style="flex:1" onclick="setReqType('recovery')">Recovery Class Request</button></div>
+      <div class="note-band" id="nrInfo" style="font-size:12.5px;margin-bottom:12px"></div>
+      <div class="field"><label>Class <span class="req">*</span></label><select id="nrClass" onchange="fillReqSessions()"></select></div>
+      <div class="field" id="nrSesWrap"><label id="nrSesLbl">Session to Reschedule <span class="req">*</span></label><select id="nrSes"></select><div id="nrSesMulti" style="max-height:170px;overflow:auto;border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;display:none"></div></div>
+      <div class="field"><label>Reason <span class="req">*</span></label><select id="nrReason"><option>Illness</option><option>School exam / event</option><option>Family event</option><option>Travel</option><option>Other</option></select></div>
+      <div class="field"><label>Additional Information (optional)</label><textarea id="nrNote" rows="2" placeholder="Add a note (e.g. doctor's note, travel, etc.)"></textarea></div>
+      <div class="field-row"><div class="field"><label>Preferred New Date (optional)</label><input type="date" id="nrDate"></div><div class="field"><label>Preferred Time (optional)</label><input type="time" id="nrTime"></div></div>
     </div>
-    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mReq')">Batal</button>
-      <button class="btn btn-primary" onclick="submitReq()">Kirim Pengajuan</button></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mReq')">Cancel</button><button class="btn btn-primary" onclick="submitReq()">Submit Request</button></div>
   </div>
 </div>
 
-<!-- MODAL: minta reschedule -->
-<div class="modal-overlay" id="mResched">
-  <div class="modal">
-    <div class="modal-head"><h3>Minta Reschedule</h3><button class="x" onclick="closeModal('mResched')">×</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="rsId">
-      <div class="help" id="rsCur" style="margin-bottom:10px"></div>
-      <div class="field-row">
-        <div class="field"><label>Tanggal Baru <span class="req">*</span></label><input type="date" id="rsDate"></div>
-        <div class="field"><label>Jam Baru <span class="req">*</span></label><input type="time" id="rsTime"></div>
-      </div>
-      <div class="field"><label>Alasan</label><textarea id="rsNote" placeholder="cth: Bentrok acara sekolah."></textarea></div>
-    </div>
-    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mResched')">Batal</button>
-      <button class="btn btn-primary" onclick="submitResched()">Kirim Permintaan</button></div>
-  </div>
-</div>
-
-<!-- MODAL: beri rating kelas (rubrik) -->
+<!-- ===== MODAL: CLASS RATING ===== -->
 <div class="modal-overlay" id="mRate">
-  <div class="modal" style="max-width:600px">
-    <div class="modal-head"><h3>Beri Rating Kelas &amp; Guru</h3><button class="x" onclick="closeModal('mRate')">×</button></div>
+  <div class="modal">
+    <div class="modal-head"><h3>⭐ Rate this class</h3><button class="x" onclick="closeModal('mRate')">×</button></div>
     <div class="modal-body">
       <input type="hidden" id="rtClass"><input type="hidden" id="rtTutor">
-      <div class="help" id="rtInfo" style="margin-bottom:4px"></div>
-      <div class="help" style="margin-bottom:10px">Skala: 1 = sangat kurang · 3 = cukup · 5 = sangat baik</div>
+      <div class="note-band" id="rtInfo" style="font-size:12.5px;margin-bottom:10px"></div>
       <div id="rtRubric"></div>
-      <div class="field"><label>Apa yang paling kamu suka dari kelas ini?</label><textarea id="rtLiked" style="min-height:44px"></textarea></div>
-      <div class="field"><label>Apa yang bisa diperbaiki?</label><textarea id="rtImprove" style="min-height:44px"></textarea></div>
-      <div class="field" style="margin-bottom:0"><label>Komentar tambahan (opsional)</label><textarea id="rtComment" style="min-height:44px" placeholder="cth: Penjelasannya jelas, seru!"></textarea></div>
+      <div class="field mt-16"><label>What did you like?</label><textarea id="rtLiked" rows="2"></textarea></div>
+      <div class="field"><label>What could be better?</label><textarea id="rtImprove" rows="2"></textarea></div>
+      <div class="field"><label>Other comments</label><textarea id="rtComment" rows="2"></textarea></div>
     </div>
-    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mRate')">Batal</button>
-      <button class="btn btn-primary" onclick="submitRating()">Kirim Rating</button></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mRate')">Cancel</button><button class="btn btn-primary" onclick="submitRating()">Send Rating</button></div>
   </div>
 </div>
 
-<!-- MODAL: kumpulkan tugas -->
-<div class="modal-overlay" id="mSubmit">
-  <div class="modal">
-    <div class="modal-head"><h3>Kumpulkan Tugas</h3><button class="x" onclick="closeModal('mSubmit')">×</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="subId">
-      <div class="note-band" id="subInfo" style="margin-bottom:12px"></div>
-      <div class="field"><label>Upload File <span class="help" style="display:inline">(pdf / doc / jpg / png)</span></label>
-        <div class="dropzone" onclick="document.getElementById('subFile').click()"><span class="zi">📎</span><div><b>Pilih file</b> atau drag &amp; drop</div></div>
-        <input type="file" id="subFile" accept="application/pdf,.doc,.docx,image/*" class="hide"><div class="help" id="subFileName"></div></div>
-      <div class="field"><label>atau Link <span class="help" style="display:inline">(Google Drive / YouTube / dll)</span></label><input id="subLink" placeholder="https://..."></div>
-      <div class="field" style="margin-bottom:0"><label>Catatan / Jawaban Teks (opsional)</label><textarea id="subText" placeholder="Tulis jawaban di sini kalau tidak pakai file…"></textarea></div>
-    </div>
-    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mSubmit')">Batal</button>
-      <button class="btn btn-primary" onclick="submitTask()">Kumpulkan</button></div>
+<!-- ===== MODAL: INFO ===== -->
+<div class="modal-overlay" id="mInfo">
+  <div class="modal wide">
+    <div class="modal-head"><h3 id="ifTitle">Details</h3><button class="x" onclick="closeModal('mInfo')">×</button></div>
+    <div class="modal-body" id="ifBody"></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mInfo')">Close</button></div>
   </div>
 </div>
 
 <script src="assets/app.js"></script>
 <script>
-document.getElementById('logo').innerHTML = logoBlock('Kwelingo','Portal Siswa');
-document.getElementById('today').textContent = '📅 ' + longToday();
+/* =====================================================================
+   Student Hub (rev6)
+   ===================================================================== */
+document.getElementById('logo').innerHTML=logoBlock('Kwelingo Academy','Student Hub');
+const TODAY=todayStr();
+let ME=null, TUTORS=[], STU_NAMES={}, GROUPS=[], MYGROUPS=[], CLS=[], TASKS=[], QUIZZES=[], RESULTS=[], LB=[], DIARY=[], RES=[], DEVS=[], CERTS=[], ANN=[], RATINGS=[], CHATALL=[];
+let CUR_VIEW='home';
 
-let ME=null, QUIZZES=[], RESULTS=[], LB=[], ANN=[], CUR_QUIZ=null, CUR_ANS={}, CLASSES=[], TUTORS=[], RATINGS=[], TASKS=[];
-function tNameS(id){return (TUTORS.find(t=>t.id===id)||{}).nama||'Guru';}
-function myTutorId(){ return ME.tutor_id || (CLASSES.find(c=>c.tutor_id)||{}).tutor_id || ''; }
+/* ---------- helpers ---------- */
+const tut=id=>TUTORS.find(t=>String(t.id)===String(id))||{id,nama:'Teacher'};
+const grpById=id=>MYGROUPS.find(g=>String(g.id)===String(id))||GROUPS.find(g=>String(g.id)===String(id));
+const grpIds=g=>String((g&&g.student_ids)||'').split(',').map(x=>x.trim()).filter(Boolean);
+function gidOf(c){ if(c.group_id) return c.group_id; const g=MYGROUPS.find(g=>!g.pseudo&&String(g.tutor_id)===String(c.tutor_id)&&g.status!=='Completed'); return g?g.id:'stu:'+ME.id; }
+function myClassRows(gid){ return CLS.filter(c=>gidOf(c)===gid); }
+const isoLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const addDays=(iso,n)=>{ const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()+n); return isoLocal(d); };
+const shiftMonth=(m,n)=>{ const [y,mm]=m.split('-').map(Number); const d=new Date(y,mm-1+n,1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; };
+function endTime(start,dur){ if(!start) return ''; const [h,m]=start.split(':').map(Number); const t=h*60+m+(Number(dur)||90); return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
+function fmt12(t){ if(!t) return ''; let [h,m]=t.split(':').map(Number); const ap=h>=12?'PM':'AM'; h=h%12||12; return h+':'+String(m).padStart(2,'0')+' '+ap; }
+const trng=(s,e,d)=>s?fmt12(s)+' – '+fmt12(e||endTime(s,d)):'-';
+const dShort=iso=>iso?new Date(String(iso).slice(0,10)+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'-';
+const dLong=iso=>new Date(iso+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+const dtShort=ts=>{ if(!ts) return '-'; const d=new Date(ts); return isNaN(d)?dShort(ts):d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+', '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); };
+const dateBox=iso=>{ const d=new Date(iso+'T00:00:00'); return `<div class="datebox"><small>${d.toLocaleDateString('en-US',{weekday:'short'}).toUpperCase()}</small><b>${d.getDate()}</b><small>${d.toLocaleDateString('en-US',{month:'short'}).toUpperCase()}</small></div>`; };
+const realRows=()=>CLS.filter(isSession);
+const isProject=t=>['final_project','peer_case'].includes(t.type);
+const visibleTask=t=>String(t.visible??'1')!=='0'&&t.visible!==false;
+function tStat(t){ const s=taskStatus(t); if(s==='assigned'&&t.due_date&&t.due_date<TODAY) return 'overdue'; return s; }
+const TS_BADGE={assigned:'<span class="badge badge-pending">To Do</span>',overdue:'<span class="badge badge-unpaid">Overdue</span>',submitted:'<span class="badge badge-active">Submitted</span>',graded:'<span class="badge badge-paid">Graded</span>'};
+const TYPE_BG={speaking:'#FDECEF',voice_video:'#FDECEF',writing:'#EAF7EE',reading:'#FFF4DE',listening:'#F1ECFF',other:'#EEF2F8',assignment:'#EEF2F8',lesson_review:'#EEF2F8'};
+function progLabel(g){ return g?(g.name||g.program||'Class'):'Class'; }
 
 /* ---------- login ---------- */
 (function(){ const q=new URLSearchParams(location.search); if(q.get('user')) document.getElementById('lgName').value=q.get('user'); })();
 async function doLogin(){
-  const user=document.getElementById('lgName').value.trim(), pin=document.getElementById('lgPin').value;
-  const err=document.getElementById('lgErr');
-  if(!user){err.textContent='Masukkan username dulu';return;}
-  if(!/^\d{4}$/.test(pin)){err.textContent='PIN harus 4 digit angka';return;}
-  err.textContent='Memeriksa…';
-  try{
-    ME=await API.studentLogin(user,pin);
+  const user=document.getElementById('lgName').value.trim(), pin=document.getElementById('lgPin').value, err=document.getElementById('lgErr');
+  if(!user){ err.textContent='Please enter your username first'; return; }
+  if(!/^\d{4}$/.test(pin)){ err.textContent='PIN must be 4 digits'; return; }
+  err.textContent='Checking…';
+  try{ ME=await API.studentLogin(user,pin); if(!ME.username) ME.username=user;
+    try{ sessionStorage.setItem('kw_stu',JSON.stringify({u:user,p:pin})); }catch(e){}
     document.getElementById('loginGate').style.display='none'; err.textContent='';
-    setMe(); await loadAll();
-  }catch(e){ err.textContent=e.message||'Login gagal'; }
+    await loadAll(); go('home'); }
+  catch(e){ err.textContent=e.message||'Login failed'; }
 }
-function setMe(){
-  const nm=ME.nama||'Siswa';
-  ['savatar','savatar2'].forEach(i=>document.getElementById(i).textContent=(nm[0]||'S').toUpperCase());
-  ['swho','swho2'].forEach(i=>document.getElementById(i).innerHTML=`${nm}<small>${ME.school||'Student'}</small>`);
-  document.getElementById('hi').textContent=`Halo, ${nm}! 👋`;
+function logout(){ try{ sessionStorage.removeItem('kw_stu'); }catch(e){} location.href='index.html'; }
+(async function autoLogin(){ try{ const s=JSON.parse(sessionStorage.getItem('kw_stu')||'null'); if(s){ document.getElementById('lgName').value=s.u; document.getElementById('lgPin').value=s.p; await doLogin(); } }catch(e){} })();
+
+async function loadAll(){
+  const safe=p=>p.catch(()=>[]);
+  let studs;
+  [TUTORS,studs,GROUPS,CLS,TASKS,QUIZZES,RESULTS,LB,DIARY,RES,DEVS,CERTS,ANN,RATINGS]=await Promise.all([safe(API.getTutors()),safe(API.getStudents()),safe(API.getClassGroups()),safe(API.getClasses({student_id:ME.id})),
+    safe(API.getTasks({student_id:ME.id})),safe(API.getQuizzes()),safe(API.getQuizResults({student_id:ME.id})),safe(API.getLeaderboard()),safe(API.getDiary({student_id:ME.id})),safe(API.getResources()),
+    safe(API.list('dev_notes',{student_id:ME.id})),safe(API.list('certificates',{student_id:ME.id})),safe(API.getAnnouncements()),safe(API.getRatings({student_id:ME.id}))]);
+  [TUTORS,GROUPS,CLS,TASKS,QUIZZES,RESULTS,LB,DIARY,RES,DEVS,CERTS,ANN,RATINGS]=[TUTORS,GROUPS,CLS,TASKS,QUIZZES,RESULTS,LB,DIARY,RES,DEVS,CERTS,ANN,RATINGS].map(x=>x||[]);
+  STU_NAMES={}; (studs||[]).forEach(s=>STU_NAMES[s.id]=s.nama);   // names only — nothing else kept
+  TASKS=TASKS.filter(visibleTask);
+  MYGROUPS=GROUPS.filter(g=>grpIds(g).includes(String(ME.id)));
+  if(!MYGROUPS.length||CLS.some(c=>!c.group_id&&!MYGROUPS.some(g=>String(g.tutor_id)===String(c.tutor_id)))) MYGROUPS.push({id:'stu:'+ME.id,pseudo:true,name:(ME.program||'My Class')+(ME.level?' – '+ME.level:''),program:ME.program||'',level:ME.level||'',tutor_id:ME.tutor_id,student_ids:ME.id,total_sessions:32,min_cert:26,start_date:ME.start_date,room:'',status:'In progress'});
+  MYGROUPS.sort((a,b)=>(a.status==='Completed')-(b.status==='Completed'));
+  try{ CHATALL=(await API.getChat({}))||[]; }catch(e){ CHATALL=[]; }
+  CHATALL=CHATALL.filter(m=>myRooms().includes(m.room));
+  document.getElementById('meName').textContent=ME.nama||'Student';
+  const g0=MYGROUPS[0]; document.getElementById('meSub').textContent=g0?((g0.program||'')+(g0.level?' · '+g0.level:'')):'Student';
+  document.getElementById('meAv').textContent=initials(ME.nama||'S');
+  const classSel=['lnClass','mtClass','lgClass','anClass'];
+  classSel.forEach(id=>{ const el=document.getElementById(id); el.innerHTML=(id==='anClass'?'<option value="">All my classes</option>':'')+MYGROUPS.map(g=>`<option value="${esc(g.id)}">${esc(progLabel(g))}${g.status==='Completed'?' (completed)':''}</option>`).join(''); });
+  refreshDots();
+}
+function myRooms(){ const r=[dmRoom('admin',ME.id)]; const tids=new Set(MYGROUPS.map(g=>g.tutor_id).filter(Boolean)); if(ME.tutor_id) tids.add(ME.tutor_id); CLS.forEach(c=>c.tutor_id&&tids.add(c.tutor_id)); tids.forEach(t=>r.push(dmRoom(ME.id,t))); MYGROUPS.forEach(g=>r.push('grp:'+g.id)); return r; }
+function myAnn(){ const list=annFor(ANN,'student',ME,GROUPS); const legacy=ANN.filter(a=>a.class_group&&!a.audience&&a.class_group===ME.class_group); return [...new Map([...list,...legacy].map(a=>[a.id,a])).values()].sort((a,b)=>String(b.publish_at||b.created_at||b.date).localeCompare(String(a.publish_at||a.created_at||a.date))); }
+function readSet(k){ try{ return JSON.parse(localStorage.getItem('kws_'+k+'_'+ME.id)||'{}'); }catch(e){ return {}; } }
+function writeSet(k,v){ try{ localStorage.setItem('kws_'+k+'_'+ME.id,JSON.stringify(v)); }catch(e){} }
+function refreshDots(){
+  const set=(id,n)=>{const d=document.getElementById(id); if(d){ d.textContent=n; d.style.display=n?'inline-flex':'none'; }};
+  const pr=TASKS.filter(t=>!isProject(t)&&tStat(t)==='assigned').length;
+  const done=new Set(RESULTS.map(r=>r.quiz_id)); const qz=myQuizzes().filter(q=>!done.has(q.id)&&(!q.due_date||q.due_date>=TODAY)).length;
+  const seen=readSet('ann'); const an=myAnn().filter(a=>!seen[a.id]).length;
+  const rs=readSet('read'); let ms=0; const by={}; CHATALL.forEach(m=>{(by[m.room]=by[m.room]||[]).push(m);}); Object.entries(by).forEach(([room,l])=>{ if(room.startsWith('grp:')) return; const last=l[l.length-1]; if(last&&String(last.sender_id)!==String(ME.id)&&(rs[room]||0)<l.length) ms++; });
+  set('prDot',pr); set('qzDot',qz); set('anDot',an); set('msDot',ms);
+  const b=document.getElementById('bellDot'); b.textContent=an+ms; b.style.display=(an+ms)?'inline-block':'none';
+  if(typeof refreshShellDots==='function') refreshShellDots();
 }
 
 /* ---------- nav ---------- */
-document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
-  document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');
-  document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));
-  document.getElementById('view-'+a.dataset.view).classList.remove('hide');
-  if(window.innerWidth<768)toggleSidebar();
-  if(a.dataset.view==='myclass') renderMyClass();
-  if(a.dataset.view==='tasks') renderTasks();
-  if(a.dataset.view==='diary') renderDiary();
-  if(a.dataset.view==='quiz') renderQuizList();
-  if(a.dataset.view==='leaderboard') renderLeaderboard();
-  if(a.dataset.view==='announce') renderAnnouncements();
-  if(a.dataset.view==='classboard') renderClassBoard();
-  if(a.dataset.view==='discuss') renderDiscuss(); else discPoller.stop();
-});
+const RENDER={home:renderHome,learning:renderLearning,diary:renderDiary,practice:renderPractice,quizzes:renderQuizzes,projects:renderProjects,materials:renderMaterials,reports:renderReports,certs:renderCerts,requests:renderRequests,lounge:renderLounge,announce:renderAnnounce,messages:renderMessages,account:renderAccount};
+function go(v){
+  CUR_VIEW=v;
+  document.querySelectorAll('.nav a[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===v));
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('hide',s.id!=='view-'+v));
+  lgPoll.stop(); msPoll.stop(); if(v!=='quizzes') stopQuizTimer();
+  try{ (RENDER[v]||(()=>{}))(); }catch(e){ console.error(e); }
+  if(typeof _syncShell==='function') _syncShell(v);
+  if(window.innerWidth<768) closeDrawer();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav a[data-view]').forEach(a=>a.addEventListener('click',()=>go(a.dataset.view)));
 
-/* ---------- load ---------- */
-async function loadAll(){
-  try{ QUIZZES=await API.getQuizzes()||[]; }catch(e){ QUIZZES=[]; }
-  try{ RESULTS=await API.getQuizResults({student_id:ME.id})||[]; }catch(e){ RESULTS=[]; }
-  try{ ANN=await API.getAnnouncements()||[]; }catch(e){ ANN=[]; }
-  try{ LB=await API.getLeaderboard()||[]; }catch(e){ LB=[]; }
-  try{ TUTORS=await API.getTutors()||[]; }catch(e){ TUTORS=[]; }
-  try{ CLASSES=await API.getClasses({student_id:ME.id})||[]; }catch(e){ CLASSES=[]; }
-  try{ RATINGS=await API.getRatings({student_id:ME.id})||[]; }catch(e){ RATINGS=[]; }
-  try{ TASKS=await API.getTasks({student_id:ME.id})||[]; }catch(e){ TASKS=[]; }
-  updateTaskDot();
-  renderDashboard();
+/* ============================== HOME ============================== */
+function renderHome(){
+  document.getElementById('hi').textContent=`Hello, ${(ME.nama||'').split(' ')[0]||'there'}! 👋`;
+  const up=realRows().filter(c=>c.date>=TODAY).sort((a,b)=>(a.date+a.start_time).localeCompare(b.date+b.start_time));
+  const nx=up[0]; document.getElementById('hNext').textContent=nx?(nx.date===TODAY?'Today':dShort(nx.date).replace(/ \d{4}$/,'')):'–'; document.getElementById('hNextT').textContent=nx?trng(nx.start_time,nx.end_time,nx.duration):'No upcoming class';
+  const st=attendanceStats(CLS); document.getElementById('hAtt').textContent=st.counted?st.pct+'%':'–'; document.getElementById('hAttT').textContent=`${st.hadir} of ${st.counted} sessions attended`;
+  document.getElementById('hTasks').textContent=TASKS.filter(t=>tStat(t)==='assigned').length;
+  document.getElementById('hPts').textContent=RESULTS.reduce((a,r)=>a+(Number(r.score)||0),0);
+  const rk=LB.findIndex(x=>String(x.student_id)===String(ME.id)); document.getElementById('hRank').textContent=rk>=0?`Rank #${rk+1} of ${LB.length}`:'Take a quiz to get ranked';
+  document.getElementById('hUp').innerHTML=up.slice(0,4).map((c,i)=>{ const g=grpById(gidOf(c)); return `<div class="up-line">${dateBox(c.date)}<div style="flex:1"><b>${esc(c.topic||progLabel(g))}</b><small>${esc(trng(c.start_time,c.end_time,c.duration))} · ${esc(c.room||(c.type==='online'?'Online':'At School'))} · ${esc(tut(c.tutor_id).nama)}</small></div>${i===0?'<span class="badge badge-pending">Next Class</span>':(c.session_type==='recovery'?'<span class="badge badge-purple">Recovery</span>':'<span class="badge badge-active">Scheduled</span>')}</div>`; }).join('')||'<div class="empty">No upcoming classes.</div>';
+  const due=TASKS.filter(t=>tStat(t)==='assigned').sort((a,b)=>String(a.due_date).localeCompare(String(b.due_date))).slice(0,3).map(t=>({ic:(TASK_TYPE_META[t.type]||{}).ic||'📝',t:t.title,d:t.due_date,go:isProject(t)?`PJ_SEL='${t.id}';go('projects')`:`EP_SEL='${t.id}';go('practice')`}));
+  const done=new Set(RESULTS.map(r=>r.quiz_id)); myQuizzes().filter(q=>!done.has(q.id)&&q.due_date&&q.due_date>=TODAY).slice(0,2).forEach(q=>due.push({ic:'🏆',t:q.title,d:q.due_date,go:`QZ_SEL='${q.id}';go('quizzes')`}));
+  due.sort((a,b)=>String(a.d).localeCompare(String(b.d)));
+  document.getElementById('hDue').innerHTML=due.map(x=>`<div class="up-line" style="cursor:pointer" onclick="${x.go}"><span style="font-size:20px">${x.ic}</span><div style="flex:1"><b>${esc(x.t)}</b><small>Due ${esc(dShort(x.d))}</small></div><span class="chev">›</span></div>`).join('')||'<div class="empty">🎉 Nothing due — great job!</div>';
+  document.getElementById('hAnn').innerHTML=myAnn().slice(0,3).map(a=>`<div class="up-line" style="cursor:pointer" onclick="go('announce')"><span style="font-size:20px">📣</span><div style="min-width:0"><b>${esc(a.title)}</b><small style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px">${esc(a.body||'')}</small></div></div>`).join('')||'<div class="empty">No announcements.</div>';
+  document.getElementById('hQuick').innerHTML=[['📔','Write today\'s diary','diary'],['🔄','Request a reschedule','requests'],['📁','Learning materials','materials'],['📄','Monthly reports','reports']].map(([i,l,v])=>`<a class="qlink" onclick="go('${v}')"><span>${i}</span>${l}</a>`).join('');
 }
-function updateTaskDot(){ const n=TASKS.filter(t=>taskStatus(t)==='assigned').length; const d=document.getElementById('taskDot'); if(d){ d.textContent=n; d.style.display=n?'inline-flex':'none'; } }
 
-/* ---------- Kelas Saya: kehadiran, request, reschedule, sertifikat ---------- */
-async function reloadClasses(){ try{ CLASSES=await API.getClasses({student_id:ME.id})||[]; }catch(e){ CLASSES=[]; } }
-async function renderMyClass(){
-  await reloadClasses();
-  try{ RATINGS=await API.getRatings({student_id:ME.id})||RATINGS; }catch(e){}
-  const st=attendanceStats(CLASSES);
-  document.getElementById('mcStats').innerHTML=[
-    ['tint-blue','Total Sesi',st.total],['tint-green','Hadir',st.hadir],
-    ['tint-amber','Izin / Alpa',st.izin+' / '+st.alpa],['tint-purple','Kehadiran',st.pct+'%'],
-  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
-  const cert=document.getElementById('certBox');
-  try{ TASKS=await API.getTasks({student_id:ME.id})||TASKS; }catch(e){}
-  const ts=taskCompletion(TASKS);
-  if(certEligible(st,ts)){ cert.style.display='block'; document.getElementById('certPct').textContent=st.pct+'% & tugas '+ts.pct+'%'; }
-  else cert.style.display='none';
-  const rows=[...CLASSES].sort((a,b)=>String((b.date||'')).localeCompare(String(a.date||'')));
-  const today=todayStr();
-  document.getElementById('mcBody').innerHTML=rows.map(c=>{
-    const upcoming=isSession(c)&&c.date&&c.date>=today;
-    const canResched=upcoming&&classStatus(c)!=='reschedule';
-    const rated=RATINGS.find(r=>String(r.class_id)===String(c.id));
-    let act;
-    if(canResched) act=`<button class="btn btn-outline btn-sm" onclick="openResched('${c.id}')">🔄 Reschedule</button>`;
-    else if(isSession(c)&&c.date&&c.date<today) act= rated ? starsHTML(rated.stars) : `<button class="btn btn-outline btn-sm" onclick="openRate('${c.id}','${c.tutor_id||''}')">⭐ Rating</button>`;
-    else act='<span class="muted">-</span>';
-    return `<tr><td>${prettyDate(c.date)}</td><td>${tNameS(c.tutor_id)}</td><td>${timeRange(c.start_time,c.end_time)}</td>
-      <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td>
-      <td>${statusBadge(c)}</td><td>${isSession(c)?attendBadgeFor(c):'<span class="muted">-</span>'}</td><td>${recCell(c)}</td><td style="white-space:nowrap">${act}</td></tr>`;
-  }).join('') || '<tr><td colspan="8" class="muted" style="text-align:center;padding:22px">Belum ada kelas. Ajukan kelas lewat tombol di atas.</td></tr>';
+/* ============================== MY LEARNING ============================== */
+let LN_TAB='class', LN_CAL=TODAY.slice(0,7);
+function renderLearning(){
+  const gid=document.getElementById('lnClass').value||(MYGROUPS[0]||{}).id, g=grpById(gid)||{}; const rows=myClassRows(gid).filter(isSession).sort((a,b)=>(a.date+a.start_time).localeCompare(b.date+b.start_time));
+  const total=Number(g.total_sessions)||32, done=rows.filter(c=>c.date<TODAY||c.status==='done').length, pct=Math.min(100,Math.round(done/total*100));
+  const dates=rows.map(c=>c.date); const range=(g.start_date||dates[0])?`${dShort(g.start_date||dates[0])} – ${dShort(g.end_date||dates[dates.length-1]||'')}`:'';
+  document.getElementById('lnHero').innerHTML=`<div class="bk">📖</div><div style="flex:1;min-width:200px"><h2>${esc(progLabel(g))}</h2><small>${esc(g.program||'')}${g.level?' · Level '+esc(g.level):''}${g.class_id&&!g.pseudo?' · '+esc(g.class_id):''}</small><small>${esc(range)}${g.tutor_id?' · '+esc(tut(g.tutor_id).nama):''}</small></div>
+    <div style="min-width:220px"><div class="text-muted" style="font-size:12px">Overall Progress</div><b style="font-size:22px;color:var(--navy)">${pct}%</b> <small class="text-muted">(${done} of ${total} sessions)</small><div class="progress blue"><span style="width:${pct}%"></span></div></div>`;
+  document.getElementById('lnT1').classList.toggle('on',LN_TAB==='class'); document.getElementById('lnT2').classList.toggle('on',LN_TAB==='sessions');
+  const up=rows.filter(c=>c.date>=TODAY), next=up[0];
+  if(LN_TAB==='class'){
+    document.getElementById('lnBody').innerHTML=`<div class="card card-pad" style="margin-bottom:16px"><div class="card-title">Upcoming Class ${next?'<span class="badge badge-pending">Next Class</span>':''}</div>
+      ${next?`<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">${dateBox(next.date)}<div style="flex:1"><b style="color:var(--navy);font-size:16px">${esc(next.topic||progLabel(g))}</b><div class="text-muted" style="font-size:13px;margin-top:4px">🕘 ${esc(trng(next.start_time,next.end_time,next.duration))}<br>📍 ${esc(next.room||(next.type==='online'?'Online':'At School'))}<br>👩‍🏫 ${esc(tut(next.tutor_id).nama)}</div></div>
+        <button class="btn btn-primary" onclick="viewSession('${esc(next.id)}')">View Class Details ›</button></div>`:'<div class="empty">No upcoming class scheduled.</div>'}</div>
+      <div class="card card-pad"><div class="card-title">Upcoming Schedule <span class="more" onclick="LN_TAB='sessions';renderLearning()">View Full Schedule ›</span></div>
+      ${up.slice(0,5).map((c,i)=>`<div class="up-line" style="cursor:pointer" onclick="viewSession('${esc(c.id)}')">${dateBox(c.date)}<div style="flex:1"><b>${esc(c.topic||progLabel(g))}</b><small>${esc(trng(c.start_time,c.end_time,c.duration))}</small></div>${i===0?'<span class="badge badge-pending">Next Class</span>':(c.orig_date?'<span class="badge badge-pending">Rescheduled</span>':'<span class="badge badge-active">Scheduled</span>')}<span class="chev">›</span></div>`).join('')||'<div class="empty">No upcoming sessions.</div>'}</div>`;
+  } else {
+    const all=myClassRows(gid).sort((a,b)=>b.date.localeCompare(a.date));
+    document.getElementById('lnBody').innerHTML=`<div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Time</th><th>Topic</th><th>Status</th><th>Attendance</th><th></th></tr></thead><tbody>${all.map(c=>{ const past=isSession(c)&&c.date<TODAY, rated=RATINGS.find(r=>String(r.class_id)===String(c.id));
+      return `<tr><td style="white-space:nowrap">${esc(dShort(c.date))}</td><td style="white-space:nowrap">${esc(trng(c.start_time,c.end_time,c.duration))}</td><td>${esc(c.topic||'-')}</td><td>${statusBadge(c)}</td><td>${isSession(c)?attendBadgeFor(c):'-'}</td>
+        <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="viewSession('${esc(c.id)}')">Details</button>${past?(rated?' '+starsHTML(rated.stars):` <button class="btn btn-outline btn-sm" onclick="openRate('${esc(c.id)}','${esc(c.tutor_id||'')}')">⭐ Rate</button>`):''}</td></tr>`; }).join('')||'<tr><td colspan="6" class="empty">No sessions yet.</td></tr>'}</tbody></table></div></div>`;
+  }
+  // attendance donut
+  const st=attendanceStats(myClassRows(gid)), upc=rows.filter(c=>c.date>=TODAY).length; const tot=st.hadir+st.izin+st.alpa||1;
+  const a1=st.hadir/tot*360, a2=a1+st.izin/tot*360;
+  document.getElementById('lnDonut').innerHTML=`<div class="donut" style="background:conic-gradient(#22A06B 0deg ${a1}deg,#F5B83D ${a1}deg ${a2}deg,#D7DEEA ${a2}deg 360deg)"><div class="hole"><b>${st.counted?st.pct+'%':'–'}</b><small>${st.hadir} of ${st.counted}</small></div></div>
+    <div class="legend"><span><i style="background:#22A06B"></i>Present <b style="margin-left:auto">${st.hadir}</b></span><span><i style="background:#F5B83D"></i>Sick / Excused <b style="margin-left:auto">${st.izin}</b></span><span><i style="background:#D7DEEA"></i>Absent <b style="margin-left:auto">${st.alpa}</b></span><span><i style="background:#fff;border:2px solid #9CC3FF"></i>Upcoming <b style="margin-left:auto">${upc}</b></span></div>`;
+  drawLnCal();
+  // activity
+  const act=[];
+  myClassRows(gid).filter(c=>c.date<=TODAY&&(c.attend==='hadir'||c.attend==='telat')).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,2).forEach(c=>act.push(['✅','#EAF7EE',`You attended ${c.topic||'class'}`,c.date]));
+  myClassRows(gid).filter(c=>c.material_url&&c.date<=TODAY).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,1).forEach(c=>act.push(['📁','#FDECEF',`New handout: ${c.topic||'class material'}`,c.date]));
+  myClassRows(gid).filter(c=>c.note&&c.date<=TODAY).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,1).forEach(c=>act.push(['💬','#EEF4FF',`Teacher's note: ${c.note}`,c.date]));
+  DIARY.filter(d=>d.teacher_comment).slice(-1).forEach(d=>act.push(['📔','#FFF4DE',`Teacher commented on your diary`,String(d.comment_at||d.class_date).slice(0,10)]));
+  act.sort((a,b)=>String(b[3]).localeCompare(String(a[3])));
+  document.getElementById('lnAct').innerHTML=act.slice(0,4).map(([ic,bg,t,d])=>`<div class="act-line"><div class="ic" style="background:${bg}">${ic}</div><div><b>${esc(t)}</b><small>${esc(dShort(d))}</small></div></div>`).join('')||'<div class="empty">No activity yet.</div>';
 }
-function downloadCert(){
-  const st=attendanceStats(CLASSES);
-  openCertificate({name:ME.nama||'Student', program:(ME.grade?('Grade '+ME.grade+' '):'')+'Language Program', pct:st.pct, sessions:st.counted});
+function drawLnCal(){
+  const gid=document.getElementById('lnClass').value||(MYGROUPS[0]||{}).id; const rows=myClassRows(gid);
+  document.getElementById('lnCalT').textContent=monthLabel(LN_CAL);
+  const map={}; rows.forEach(c=>{ if(!isSession(c)) return; const a=c.attend||(c.date<TODAY?'hadir':''); map[c.date]=c.date>=TODAY?'u':({hadir:'p',telat:'p',sakit:'e',izin:'e',alpa:'a'}[a]||'u'); });
+  document.getElementById('lnCal').innerHTML=miniCal(LN_CAL,d=>{ const k=map[d]; return `<div class="d ${k||''} ${d===TODAY&&!k?'t':''}" title="${k?esc(dShort(d)):''}">${Number(d.slice(8))}</div>`; });
 }
-function openReq(){
-  document.getElementById('rqDate').value=todayStr();
-  document.getElementById('rqTime').value='16:00'; document.getElementById('rqDur').value=60;
-  document.getElementById('rqNote').value=''; document.querySelector('input[name=rqType][value=online]').checked=true;
-  openModal('mReq');
+function miniCal(month,cell){
+  const first=new Date(month+'-01T00:00:00'), off=(first.getDay()+6)%7, days=new Date(first.getFullYear(),first.getMonth()+1,0).getDate();
+  let h=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="dh">${d}</div>`).join('')+'<div></div>'.repeat(off);
+  for(let i=1;i<=days;i++){ h+=cell(`${month}-${String(i).padStart(2,'0')}`); } return h;
+}
+function viewSession(id){
+  const c=CLS.find(x=>String(x.id)===String(id)); if(!c) return; const g=grpById(gidOf(c));
+  const mats=String(c.material_url||'').split(/\n|,(?=https?:)/).map(x=>x.trim()).filter(Boolean);
+  document.getElementById('ifTitle').textContent=(c.topic||progLabel(g))+' — '+dShort(c.date);
+  document.getElementById('ifBody').innerHTML=`<div class="kv" style="margin-bottom:12px"><span class="k">📅 Date</span><span class="v">${esc(dLong(c.date))}</span><span class="k">🕘 Time</span><span class="v">${esc(trng(c.start_time,c.end_time,c.duration))}</span><span class="k">📍 Place</span><span class="v">${esc(c.room||(c.type==='online'?'Online':'At School'))}</span><span class="k">👩‍🏫 Teacher</span><span class="v">${esc(tut(c.tutor_id).nama)}</span><span class="k">📚 Class</span><span class="v">${esc(progLabel(g))}</span><span class="k">Status</span><span class="v">${statusBadge(c)} ${isSession(c)?attendBadgeFor(c):''}</span></div>
+    ${c.note?`<div class="note-band" style="margin-bottom:10px;white-space:pre-line">💬 <b>Teacher's note:</b> ${esc(c.note)}</div>`:''}
+    ${mats.length?`<div style="margin-bottom:10px"><b style="color:var(--navy)">📎 Materials</b><br>${mats.map((m,i)=>`<a class="btn btn-outline btn-sm" style="margin:4px 4px 0 0" target="_blank" href="${esc(m)}">Material ${i+1}</a>`).join('')}</div>`:''}
+    ${hasRec(c)?`<div><b style="color:var(--navy)">🎧 Recording</b><div style="margin-top:6px">${recCell(c)}</div></div>`:''}
+    ${c.date>=TODAY&&isSession(c)?`<button class="btn btn-outline btn-sm mt-16" onclick="closeModal('mInfo');openNewReq('reschedule','${esc(c.id)}')">🔄 Request a reschedule</button>`:''}`;
+  openModal('mInfo');
+}
+/* class rating */
+let CUR_SCORES=[];
+function paintRubric(){ document.getElementById('rtRubric').innerHTML=RATING_CATS.map((cat,ci)=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)"><div style="flex:1;font-size:13px;color:var(--navy)">${ci+1}. ${esc(cat)}</div><div>${[1,2,3,4,5].map(v=>`<span data-c="${ci}" data-v="${v}" style="cursor:pointer;font-size:22px;color:${v<=(CUR_SCORES[ci]||0)?'#F5B83D':'#D7DEEA'}">★</span>`).join('')}</div></div>`).join(''); }
+document.getElementById('rtRubric').addEventListener('click',e=>{ const c=e.target.getAttribute('data-c'), v=e.target.getAttribute('data-v'); if(c!=null&&v!=null){ CUR_SCORES[+c]=+v; paintRubric(); } });
+function openRate(cid,tid){ document.getElementById('rtClass').value=cid; document.getElementById('rtTutor').value=tid; CUR_SCORES=new Array(RATING_CATS.length).fill(0); ['rtLiked','rtImprove','rtComment'].forEach(i=>document.getElementById(i).value='');
+  const c=CLS.find(x=>String(x.id)===String(cid))||{}; document.getElementById('rtInfo').innerHTML=`Class on <b>${esc(dShort(c.date))}</b> with <b>${esc(tut(tid).nama)}</b>`; paintRubric(); openModal('mRate'); }
+async function submitRating(){
+  if(CUR_SCORES.filter(v=>v>0).length<RATING_CATS.length){ toast('Please rate all '+RATING_CATS.length+' items','err'); return; }
+  const avg=Math.round(CUR_SCORES.reduce((a,b)=>a+b,0)/CUR_SCORES.length);
+  try{ await API.addRating({class_id:document.getElementById('rtClass').value,student_id:ME.id,tutor_id:document.getElementById('rtTutor').value,stars:avg,scores:JSON.stringify(CUR_SCORES),liked:document.getElementById('rtLiked').value,improve:document.getElementById('rtImprove').value,comment:document.getElementById('rtComment').value,student_name:ME.nama||''});
+    closeModal('mRate'); toast('Thank you for your rating! ⭐','ok'); RATINGS=await API.getRatings({student_id:ME.id})||RATINGS; renderLearning(); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+
+/* ============================== DIARY ============================== */
+let DY_CAL=TODAY.slice(0,7);
+const diaryOf=date=>DIARY.find(d=>d.author!=='guru'&&d.class_date===date);
+function dyCount(t){ t.parentElement.querySelector('.cnt').textContent=t.value.length+'/500'; }
+function renderDiary(){
+  const ses=realRows().filter(c=>c.date<=TODAY).sort((a,b)=>b.date.localeCompare(a.date));
+  const seen=new Set(); const opts=ses.filter(c=>{ if(seen.has(c.date)) return false; seen.add(c.date); return true; });
+  const sel=document.getElementById('dyDate'), cur=sel.value;
+  sel.innerHTML=opts.map(c=>`<option value="${esc(c.date)}">${esc(dLong(c.date))} · ${esc(trng(c.start_time,c.end_time,c.duration))} — ${esc(progLabel(grpById(gidOf(c))))}${diaryOf(c.date)?(diaryOf(c.date).draft==='1'?' ✏️ draft':' ✅'):''}</option>`).join('')||'<option value="">No past classes yet</option>';
+  if(cur&&opts.some(c=>c.date===cur)) sel.value=cur;
+  loadDiaryForm(); drawDyCal();
+  const list=DIARY.filter(d=>d.author!=='guru'&&(d.learned||d.message)).sort((a,b)=>String(b.class_date||b.created_at).localeCompare(String(a.class_date||a.created_at)));
+  document.getElementById('dyList').innerHTML=list.slice(0,6).map(d=>{ const dt=d.class_date||String(d.created_at).slice(0,10); const x=new Date(dt+'T00:00:00');
+    return `<div class="up-line" style="cursor:pointer" onclick="pickDiary('${esc(dt)}')"><div class="datebox"><b>${x.getDate()}</b><small>${x.toLocaleDateString('en-US',{month:'short'}).toUpperCase()}</small></div><div style="min-width:0;flex:1"><small>${esc(dLong(dt))}${d.draft==='1'?' · <b style="color:var(--orange)">Draft</b>':''}${d.teacher_comment?' · 💬':''}</small><div style="font-size:12.5px;color:#3C4A6B;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(d.learned||d.message||'')}</div></div><span class="chev">›</span></div>`; }).join('')||'<div class="empty">No entries yet. Write your first reflection! ✍️</div>';
+}
+function pickDiary(date){ const sel=document.getElementById('dyDate'); if([...sel.options].some(o=>o.value===date)){ sel.value=date; loadDiaryForm(); drawDyCal(); } else { const d=DIARY.find(x=>x.class_date===date)||{}; document.getElementById('ifTitle').textContent='Diary — '+dShort(date); document.getElementById('ifBody').innerHTML=`<div style="white-space:pre-line">${esc(d.message||d.learned||'')}</div>`; openModal('mInfo'); } }
+function loadDiaryForm(){
+  const date=document.getElementById('dyDate').value, d=diaryOf(date)||{};
+  document.getElementById('dyL').value=d.learned||''; document.getElementById('dyS').value=d.struggle||''; document.getElementById('dyR').value=d.resolve||'';
+  ['dyL','dyS','dyR'].forEach(i=>dyCount(document.getElementById(i)));
+  document.getElementById('dyComment').innerHTML=d.teacher_comment?`<div class="note-band" style="margin-top:12px;background:#F6F2FF;border-color:#DCCFFB;color:#4B2FA8">💬 <b>${esc(tut(d.tutor_id).nama)}:</b> ${esc(d.teacher_comment)}</div>`:'';
+  if(date) DY_CAL=date.slice(0,7);
+}
+function drawDyCal(){
+  document.getElementById('dyCalT').textContent=monthLabel(DY_CAL);
+  const sel=document.getElementById('dyDate').value, cls=new Set(realRows().filter(c=>c.date<=TODAY).map(c=>c.date));
+  document.getElementById('dyCal').innerHTML=miniCal(DY_CAL,d=>{ const w=diaryOf(d)&&diaryOf(d).draft!=='1'; const k=d===sel?'s':(w?'w':(cls.has(d)?'c':'')); return `<div class="d ${k}" ${cls.has(d)?`onclick="pickDiary('${d}')"`:''}>${Number(d.slice(8))}</div>`; });
+}
+async function saveDiary(draft){
+  const date=document.getElementById('dyDate').value; if(!date){ toast('No class session to write about yet','err'); return; }
+  const L=document.getElementById('dyL').value.trim(), S=document.getElementById('dyS').value.trim(), R=document.getElementById('dyR').value.trim();
+  if(!draft&&(!L||!S||!R)){ toast('Please answer all three questions (or save as draft)','err'); return; }
+  const c=realRows().find(x=>x.date===date)||{}, ex=diaryOf(date);
+  const msg=`💡 What I learned: ${L||'-'}\n🎯 What I struggled with: ${S||'-'}\n⚙️ How I will resolve it: ${R||'-'}`;
+  try{ await API.upsert('diary',{id:ex?ex.id:undefined,student_id:ME.id,tutor_id:c.tutor_id||ME.tutor_id||'',group_id:c.group_id||'',author:'murid',class_date:date,learned:L,struggle:S,resolve:R,message:msg,draft:draft?'1':''});
+    DIARY=await API.getDiary({student_id:ME.id})||DIARY; toast(draft?'Draft saved':'Diary entry saved ✍️ — your teacher can now read it','ok'); renderDiary(); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+
+/* ============================== EXTENDED PRACTICE ============================== */
+let EP_TAB='mine', EP_CHIP='all', EP_SEL=null, EP_METHOD='', EP_AUDIO='', EP_FILE='';
+function practiceTasks(){ return TASKS.filter(t=>!isProject(t)); }
+function renderPractice(){
+  const all=practiceTasks();
+  const tabs=[['mine','My Tasks'],['submitted','Submitted'],['past','Past Tasks']];
+  document.getElementById('epTabs').innerHTML=tabs.map(([k,l])=>`<button class="${k===EP_TAB?'on':''}" onclick="EP_TAB='${k}';EP_SEL=null;renderPractice()">${l}</button>`).join('');
+  document.getElementById('epChips').innerHTML=EP_TAB==='mine'?[['all','All'],['assigned','To Do'],['graded','Graded']].map(([k,l])=>`<button class="${k===EP_CHIP?'on':''}" onclick="EP_CHIP='${k}';renderPractice()">${l}</button>`).join(''):'';
+  let list=EP_TAB==='mine'?all.filter(t=>tStat(t)!=='overdue'&&(tStat(t)==='assigned'||tStat(t)==='graded')&&(EP_CHIP==='all'||tStat(t)===EP_CHIP))
+    :EP_TAB==='submitted'?all.filter(t=>tStat(t)==='submitted'):all.filter(t=>tStat(t)==='overdue'||(t.due_date&&t.due_date<addDays(TODAY,-14)&&tStat(t)==='graded'));
+  list.sort((a,b)=>String(a.due_date).localeCompare(String(b.due_date)));
+  if(!EP_SEL||!list.some(t=>t.id===EP_SEL)) EP_SEL=(list[0]||{}).id||null;
+  document.getElementById('epList').innerHTML=list.map(t=>{ const m=TASK_TYPE_META[t.type]||{ic:'📝'}; return `<div class="tcard ${t.id===EP_SEL?'sel':''}" onclick="EP_SEL='${esc(t.id)}';EP_METHOD='';EP_AUDIO='';EP_FILE='';renderPractice()"><div class="ic" style="background:${TYPE_BG[t.type]||'#EEF2F8'}">${m.ic}</div><div style="flex:1;min-width:0"><small>${esc(taskTypeLabel(t.type))}</small><b>${esc(t.title)}</b><small>Due: ${esc(dShort(t.due_date))}</small></div><div>${TS_BADGE[tStat(t)]||''}</div></div>`; }).join('')||'<div class="empty card card-pad">Nothing here. 🎉</div>';
+  drawPracticeDetail();
+  // side
+  const n=k=>all.filter(t=>tStat(t)===k).length, tot=all.length||1, done=n('graded')+n('submitted');
+  document.getElementById('epProg').innerHTML=`<div class="donut" style="background:conic-gradient(#22A06B 0deg ${n('graded')/tot*360}deg,#1F6FEB ${n('graded')/tot*360}deg ${done/tot*360}deg,#E8EEF8 ${done/tot*360}deg 360deg)"><div class="hole"><b>${done}/${all.length}</b><small>completed</small></div></div>
+    <div class="legend"><span><i style="background:#22A06B"></i>Graded <b style="margin-left:auto">${n('graded')}</b></span><span><i style="background:#1F6FEB"></i>Submitted <b style="margin-left:auto">${n('submitted')}</b></span><span><i style="background:#E8EEF8"></i>To Do <b style="margin-left:auto">${n('assigned')+n('overdue')}</b></span></div>`;
+  document.getElementById('epDue').innerHTML=all.filter(t=>tStat(t)==='assigned').slice(0,3).map(t=>`<div class="up-line" style="cursor:pointer" onclick="EP_TAB='mine';EP_SEL='${esc(t.id)}';renderPractice()"><span style="font-size:18px">${(TASK_TYPE_META[t.type]||{}).ic||'📝'}</span><div style="flex:1"><b style="font-size:12.5px">${esc(t.title)}</b><small>${esc(dShort(t.due_date))}</small></div></div>`).join('')||'<div class="empty">No deadlines.</div>';
+  document.getElementById('epRecent').innerHTML=all.filter(t=>t.submit_at).sort((a,b)=>String(b.submit_at).localeCompare(String(a.submit_at))).slice(0,3).map(t=>`<div class="up-line"><span style="font-size:18px">${(TASK_TYPE_META[t.type]||{}).ic||'📝'}</span><div style="flex:1"><b style="font-size:12.5px">${esc(t.title)}</b><small>${esc(dShort(t.submit_at))}</small></div>${tStat(t)==='graded'?`<div style="text-align:right"><span class="badge badge-paid">Graded</span><br><b style="font-size:12px">${esc(t.points||'')}</b></div>`:'<span class="badge badge-active">Submitted</span>'}</div>`).join('')||'<div class="empty">No submissions yet.</div>';
+  refreshDots();
+}
+function defaultMethod(t){ return ['speaking','voice_video','listening'].includes(t.type)?'record':(t.type==='writing'?'text':'file'); }
+function drawPracticeDetail(){
+  const t=TASKS.find(x=>x.id===EP_SEL), box=document.getElementById('epDetail');
+  if(!t){ box.innerHTML='<div class="empty">Select a task to see the details.</div>'; return; }
+  const st=tStat(t), g=grpById(t.group_id||gidOf(t)); if(!EP_METHOD) EP_METHOD=defaultMethod(t);
+  const sub=t.submit_url||t.submit_text?`<div class="note-band" style="margin-top:12px;font-size:12.5px">📤 <b>Your submission</b> (${esc(dShort(t.submit_at))})${t.submit_text?`<div style="white-space:pre-line;margin-top:6px">${esc(t.submit_text)}</div>`:''}${t.submit_url?(String(t.submit_url).startsWith('data:audio')||/\.(webm|mp3|m4a|wav|ogg)(\?|$)/i.test(t.submit_url)?`<audio controls src="${esc(t.submit_url)}" style="width:100%;margin-top:6px"></audio>`:` · <a href="${esc(t.submit_url)}" target="_blank">Open file/link</a>`):''}</div>`:'';
+  const graded=st==='graded'?`<div class="note-band" style="margin-top:12px;background:#EAF7EE;border-color:#BFE6CB;color:#1E7E34">⭐ <b>Score: ${esc(t.points||'-')}</b>${t.feedback?`<br>💬 ${esc(t.feedback)}`:''}</div>`:'';
+  const canSubmit=st==='assigned'||st==='submitted'||st==='overdue';
+  box.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">${taskTypeBadge(t.type)}${TS_BADGE[st]||''}</div>
+    <h3 style="color:var(--navy);margin:10px 0 4px;font-size:18px">${esc(t.title)}</h3>
+    <div class="text-muted" style="font-size:12.5px">📅 Due: ${esc(dShort(t.due_date))}${t.due_time?', '+esc(fmt12(t.due_time)):''} · 📚 ${esc(progLabel(g))}${t.unit?' · '+esc(t.unit):''}</div>
+    <div style="font-weight:800;color:var(--navy);font-size:13.5px;margin:14px 0 6px">Instructions</div><div class="kv-box" style="white-space:pre-line;font-size:13px;color:#3C4A6B">${esc(t.detail||'-')}</div>
+    ${t.attach_url?`<a class="attach" href="${esc(t.attach_url)}" target="_blank">📎 Task attachment</a>`:''}
+    ${graded}${sub}
+    ${canSubmit?`<div style="font-weight:800;color:var(--navy);font-size:13.5px;margin:16px 0 8px">${st==='submitted'?'Update Your Submission':'Submit Your Work'}</div>
+      <div class="methods">${[['record','🎙️ Record'],['file','⬆️ Upload'],['text','✏️ Write'],['link','🔗 Link']].map(([k,l])=>`<button class="${EP_METHOD===k?'on':''}" onclick="EP_METHOD='${k}';drawPracticeDetail()">${l}</button>`).join('')}</div>
+      ${submitArea(EP_METHOD,'ep')}
+      <div class="note-band" style="font-size:12px;margin-top:10px">ℹ️ Make sure your recording is clear and without background noise. Files up to 10 MB.</div>
+      <div style="text-align:right;margin-top:12px"><button class="btn btn-primary" onclick="submitPractice('${esc(t.id)}')">Submit Task</button></div>`:''}`;
+  const et=document.getElementById('epText'); if(et) et.value=t.submit_text||'';
+}
+function submitArea(m,p){
+  if(m==='record') return `<div class="recbox"><button class="recbtn" id="${p}Rec" onclick="toggleRec('${p}')">🎙️</button><div style="font-size:12.5px;margin-top:8px;color:var(--blue);font-weight:700" id="${p}RecLbl">Click to start recording</div><audio id="${p}Audio" controls style="width:100%;margin-top:10px;display:none"></audio></div>`;
+  if(m==='file') return `<div class="dropzone2" onclick="document.getElementById('${p}File').click()">⬆️ Click to upload your file<br><small>PDF, DOCX, PPT, images, audio (MP3/M4A/WAV) · max 10 MB</small><div id="${p}FileName" style="font-weight:700;color:var(--navy);margin-top:4px"></div></div><input type="file" id="${p}File" class="hide" onchange="pickFile(this,'${p}')">`;
+  if(m==='text') return `<textarea id="${p}Text" rows="6" style="width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px" placeholder="Write your answer here…"></textarea>`;
+  return `<input id="${p}Link" placeholder="https://… (Google Drive, YouTube, Canva…)" style="width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px">`;
+}
+let REC_ON=false, REC_T=null, REC_S=0;
+async function toggleRec(p){
+  const btn=document.getElementById(p+'Rec'), lbl=document.getElementById(p+'RecLbl');
+  if(!VoiceRec.supported()){ toast('Recording is not supported in this browser — please upload an audio file instead','err'); return; }
+  if(!REC_ON){ try{ await VoiceRec.start(); REC_ON=true; REC_S=0; btn.classList.add('on'); btn.textContent='■'; REC_T=setInterval(()=>{ REC_S++; lbl.textContent=`Recording… ${Math.floor(REC_S/60)}:${String(REC_S%60).padStart(2,'0')} (click to stop)`; if(REC_S>=180) toggleRec(p); },1000); }
+    catch(e){ toast('Microphone permission was denied','err'); } }
+  else { clearInterval(REC_T); REC_ON=false; btn.classList.remove('on'); btn.textContent='🎙️'; const data=await VoiceRec.stop(); if(p==='ep') EP_AUDIO=data; else PJ_AUDIO=data;
+    const au=document.getElementById(p+'Audio'); au.src=data; au.style.display='block'; lbl.textContent=`✅ Recorded ${Math.floor(REC_S/60)}:${String(REC_S%60).padStart(2,'0')} — click to record again`; }
+}
+async function pickFile(inp,p){ const f=inp.files[0]; if(!f) return; if(f.size>10*1024*1024){ toast('File is larger than 10 MB','err'); inp.value=''; return; } document.getElementById(p+'FileName').textContent='📎 '+f.name; const data=await fileToBase64(f); if(p==='ep'){ EP_FILE=data; EP_FILE_NAME=f.name; } else { PJ_FILE=data; PJ_FILE_NAME=f.name; } }
+let EP_FILE_NAME='';
+async function collectSubmission(p,method,audio,file,fname){
+  let url='', text='';
+  if(method==='record'){ if(!audio) throw new Error('Please record your audio first'); toast('Uploading recording…'); const r=await API.uploadFile(audio,'rec-'+Date.now()+'.webm'); url=(r&&(r.view||r.url))||audio; }
+  else if(method==='file'){ if(!file) throw new Error('Please choose a file first'); toast('Uploading file…'); const r=await API.uploadFile(file,fname||('file-'+Date.now())); url=(r&&(r.view||r.url))||''; }
+  else if(method==='text'){ text=(document.getElementById(p+'Text')||{}).value.trim(); if(!text) throw new Error('Please write your answer first'); }
+  else { url=(document.getElementById(p+'Link')||{}).value.trim(); if(!/^https?:\/\//.test(url)) throw new Error('Please paste a valid link (https://…)'); }
+  return {url,text};
+}
+async function submitPractice(id){
+  if(submitPractice._b) return; submitPractice._b=true;
+  try{ const {url,text}=await collectSubmission('ep',EP_METHOD,EP_AUDIO,EP_FILE,EP_FILE_NAME); const t=TASKS.find(x=>x.id===id);
+    await API.updateTask({id,status:'submitted',submit_url:url||(text?'':t.submit_url||''),submit_text:text||(url?'':t.submit_text||''),submit_at:new Date().toISOString()});
+    TASKS=(await API.getTasks({student_id:ME.id})||TASKS).filter(visibleTask); EP_AUDIO=''; EP_FILE=''; EP_TAB='submitted'; toast('Task submitted! 🎉 Your teacher will review it.','ok'); renderPractice(); }
+  catch(e){ toast(e.message||String(e),'err'); }
+  finally{ submitPractice._b=false; }
+}
+
+/* ============================== QUIZZES ============================== */
+let QZ_TAB='available', QZ_SEL=null, QZ_TIMER=null;
+function myQuizzes(){ return QUIZZES.filter(q=>{ if(q.group_id) return MYGROUPS.some(g=>String(g.id)===String(q.group_id)); if(q.program) return MYGROUPS.some(g=>g.program===q.program)||ME.program===q.program; return true; }); }
+const parseQ=q=>{ try{ return JSON.parse(q.questions||'[]'); }catch(e){ return []; } };
+const qState=id=>{ try{ return JSON.parse(localStorage.getItem('kwq_'+ME.id+'_'+id)||'null'); }catch(e){ return null; } };
+const qSave=(id,s)=>{ try{ s?localStorage.setItem('kwq_'+ME.id+'_'+id,JSON.stringify(s)):localStorage.removeItem('kwq_'+ME.id+'_'+id); }catch(e){} };
+const qLimit=q=>(Number(q.time_limit)||Math.max(5,parseQ(q).length*1.5))*60;
+function qBest(id){ return RESULTS.filter(r=>r.quiz_id===id).sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0))[0]; }
+function renderQuizzes(){
+  const all=myQuizzes(), inprog=all.filter(q=>qState(q.id)&&!qBest(q.id)), done=all.filter(q=>qBest(q.id)), avail=all.filter(q=>!qBest(q.id)&&!qState(q.id));
+  document.getElementById('qzTabs').innerHTML=[['available','Available Quizzes',avail.length],['progress','In Progress',inprog.length],['done','Completed',done.length]].map(([k,l,n])=>`<button class="${k===QZ_TAB?'on':''}" onclick="QZ_TAB='${k}';QZ_SEL=null;renderQuizzes()">${l}${n?' ('+n+')':''}</button>`).join('');
+  const list=QZ_TAB==='available'?avail:QZ_TAB==='progress'?inprog:done;
+  if(!QZ_SEL||!list.some(q=>q.id===QZ_SEL)) QZ_SEL=(list[0]||{}).id||null;
+  document.getElementById('qzList').innerHTML=list.map(q=>{ const b=qBest(q.id), over=q.due_date&&q.due_date<TODAY&&!b;
+    return `<div class="tcard ${q.id===QZ_SEL?'sel':''}" onclick="QZ_SEL='${esc(q.id)}';renderQuizzes()"><div class="ic" style="background:${b?'#EAF7EE':'#FFF4DE'}">📝</div><div style="flex:1;min-width:0"><b>${esc(q.title)}</b><small>${esc(q.unit||q.subject||'')}</small><small>${q.due_date?'Due: '+esc(dShort(q.due_date)):''}</small></div>${b?`<span class="badge badge-paid">${b.score}/${b.total}</span>`:(qState(q.id)?'<span class="badge badge-active">In Progress</span>':(over?'<span class="badge badge-unpaid">Closed</span>':'<span class="badge badge-pending">To Do</span>'))}</div>`; }).join('')||'<div class="empty card card-pad">No quizzes here.</div>';
+  drawQuiz();
+}
+function drawQuiz(){
+  stopQuizTimer();
+  const q=QUIZZES.find(x=>x.id===QZ_SEL), main=document.getElementById('qzMain'), side=document.getElementById('qzSide');
+  const rk=LB.findIndex(x=>String(x.student_id)===String(ME.id));
+  const lbHtml=`<div class="card card-pad"><div class="card-title">🏅 Leaderboard</div>${LB.slice(0,5).map((r,i)=>`<div class="lb-mini" style="${String(r.student_id)===String(ME.id)?'font-weight:800;color:var(--blue)':''}"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(r.name||STU_NAMES[r.student_id]||'Student')}</span><b>${r.points}</b></div>`).join('')||'<div class="empty">No scores yet.</div>'}${rk>=5?`<div class="lb-mini" style="font-weight:800;color:var(--blue)"><span>${rk+1}. You</span><b>${LB[rk].points}</b></div>`:''}</div>`;
+  if(!q){ main.innerHTML='<div class="empty">Select a quiz.</div>'; side.innerHTML=lbHtml; return; }
+  const qs=parseQ(q), st=qState(q.id), best=qBest(q.id), over=q.due_date&&q.due_date<TODAY;
+  const types=[...new Set(qs.map(x=>({mc:'Multiple choice',tf:'True or False',fill:'Fill in the blank'}[x.type||(x.options&&x.options.length?'mc':'fill')])))].join(', ');
+  side.innerHTML=`<div class="card card-pad" style="margin-bottom:16px"><div class="card-title">Quiz Information</div><div class="kv"><span class="k">📄 Questions</span><span class="v">${qs.length}</span><span class="k">⏱️ Time</span><span class="v">${Math.round(qLimit(q)/60)} minutes</span><span class="k">⭐ Points</span><span class="v">${qs.length}</span><span class="k">🧩 Types</span><span class="v">${esc(types||'-')}</span></div></div>
+    ${st&&!best?`<div class="card card-pad" style="margin-bottom:16px"><div class="card-title">Question Navigator</div><div class="qnav">${qs.map((_,i)=>`<button class="${st.cur===i?'cur':''} ${st.ans[i]!=null&&st.ans[i]!==''?'ans':''}" onclick="qGo(${i})">${i+1}</button>`).join('')}</div><div style="display:flex;gap:10px;font-size:11px;color:var(--muted);margin-top:10px"><span>🟢 Answered</span><span>🔵 Current</span><span>⚪ Not answered</span></div></div>`:''}${lbHtml}`;
+  if(best&&!st){ // review
+    let ans={}; try{ ans=JSON.parse(best.answers||'{}'); }catch(e){}
+    main.innerHTML=`<h3 style="color:var(--navy);font-size:20px">${esc(q.title)}</h3><div class="text-muted" style="font-size:12.5px">Completed ${esc(dShort(best.taken_at||best.created_at))}</div>
+      <div class="note-band" style="margin:14px 0;background:#EAF7EE;border-color:#BFE6CB;color:#1E7E34;font-size:15px;font-weight:700;text-align:center">🎉 Your score: ${best.score} / ${best.total} (${Math.round(best.score/best.total*100)}%)</div>
+      ${Object.keys(ans).length?qs.map((x,i)=>`<div style="margin-bottom:14px"><b style="color:var(--navy)">${i+1}. ${esc(x.q)}</b>${x.options&&x.options.length?x.options.map((o,oi)=>`<div class="qopt2 ${oi===Number(x.answer)?'ok':(String(ans[i])===String(oi)?'bad':'')}" style="cursor:default;padding:8px 12px;margin:6px 0 0"><span class="l">${'ABCD'[oi]}</span>${esc(o)}</div>`).join(''):`<div class="qopt2 ${String(ans[i]||'').trim().toLowerCase()===String(x.answer).trim().toLowerCase()?'ok':'bad'}" style="cursor:default;margin-top:6px">Your answer: <b>${esc(ans[i]||'–')}</b> · Correct: <b>${esc(x.answer)}</b></div>`}</div>`).join(''):''}
+      <button class="btn btn-outline" onclick="startQuiz('${esc(q.id)}')">↻ Retake quiz</button>`;
+    return;
+  }
+  if(!st){
+    main.innerHTML=`<h3 style="color:var(--navy);font-size:20px">${esc(q.title)}</h3><div class="text-muted" style="font-size:12.5px">${esc(q.unit||'')}${q.due_date?' · Due '+esc(dShort(q.due_date)):''}</div>
+      <div class="kv-box" style="margin:16px 0"><div style="font-size:13px;line-height:1.7">📄 ${qs.length} questions · ⏱️ ${Math.round(qLimit(q)/60)} minutes<br>• Answer all questions before the time runs out.<br>• You can change your answers before submitting.<br>• Once you click <b>Submit Quiz</b>, your answers are final.<br>• The timer keeps running even if you leave this page.</div></div>
+      ${over?'<div class="note-band">This quiz is closed (the due date has passed).</div>':`<button class="btn btn-primary" onclick="startQuiz('${esc(q.id)}')">▶ Start Quiz</button>`}`;
+    return;
+  }
+  // in progress
+  const i=st.cur||0, x=qs[i]||{}; const isMC=x.options&&x.options.length;
+  main.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap"><div><h3 style="color:var(--navy);font-size:20px">${esc(q.title)}</h3><div class="text-muted" style="font-size:12.5px">${esc(q.unit||'')}${q.due_date?' · Due '+esc(dShort(q.due_date)):''}</div></div><div class="timer" id="qzTimer"><span style="font-size:22px">⏱️</span><div><small class="text-muted" style="font-size:11px">Time Left</small><br><b id="qzLeft">--:--</b></div></div></div>
+    <div style="display:flex;align-items:center;gap:12px;margin:14px 0"><div class="progress blue" style="flex:1;margin:0"><span style="width:${(i+1)/qs.length*100}%"></span></div><small class="text-muted">Question ${i+1} of ${qs.length}</small></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span class="badge badge-grey">${isMC?(x.type==='tf'?'True or False':'Multiple Choice'):'Fill in the blank'}</span><small class="text-muted">1 point</small></div>
+    <div style="font-size:17px;font-weight:700;color:var(--navy);margin:8px 0 14px">${i+1}. ${esc(x.q)}</div>
+    ${isMC?x.options.map((o,oi)=>`<div class="qopt2 ${String(st.ans[i])===String(oi)?'on':''}" onclick="qAnswer(${oi})"><span class="l">${'ABCDEF'[oi]}</span>${esc(o)}</div>`).join('')
+      :`<input id="qzFill" value="${esc(st.ans[i]||'')}" oninput="qAnswer(this.value,true)" placeholder="Type your answer…" style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px">`}
+    <div style="display:flex;justify-content:space-between;margin-top:16px;gap:10px"><button class="btn btn-outline" ${i===0?'disabled':''} onclick="qGo(${i-1})">← Previous</button>${i<qs.length-1?`<button class="btn btn-primary" onclick="qGo(${i+1})">Next →</button>`:`<button class="btn btn-green" onclick="submitQuiz()">✔ Submit Quiz</button>`}</div>`;
+  startQuizTimer(q);
+}
+function startQuiz(id){ const q=QUIZZES.find(x=>x.id===id); if(!q) return; qSave(id,{start:Date.now(),ans:{},cur:0}); RESULTS=RESULTS.filter(r=>!(r.quiz_id===id&&r._local)); QZ_TAB='progress'; QZ_SEL=id;
+  const b=qBest(id); if(b){ RESULTS=RESULTS.filter(r=>r.quiz_id!==id); } renderQuizzes(); }
+function qGo(i){ const s=qState(QZ_SEL); if(!s) return; s.cur=Math.max(0,Math.min(i,parseQ(QUIZZES.find(x=>x.id===QZ_SEL)).length-1)); qSave(QZ_SEL,s); drawQuiz(); }
+function qAnswer(v,typing){ const s=qState(QZ_SEL); if(!s) return; s.ans[s.cur]=v; qSave(QZ_SEL,s); if(!typing) drawQuiz(); else { const b=document.querySelectorAll('.qnav button')[s.cur]; if(b) b.classList.toggle('ans',String(v).trim()!==''); } }
+function startQuizTimer(q){ const tick=()=>{ const s=qState(q.id); if(!s){ stopQuizTimer(); return; } const left=Math.round(qLimit(q)-(Date.now()-s.start)/1000); const el=document.getElementById('qzLeft'); if(!el){ stopQuizTimer(); return; }
+  if(left<=0){ el.textContent='00:00'; stopQuizTimer(); toast('⏰ Time is up — submitting your answers','err'); submitQuiz(true); return; }
+  el.textContent=`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`; document.getElementById('qzTimer').classList.toggle('low',left<60); }; tick(); QZ_TIMER=setInterval(tick,1000); }
+function stopQuizTimer(){ clearInterval(QZ_TIMER); QZ_TIMER=null; }
+async function submitQuiz(auto){
+  const q=QUIZZES.find(x=>x.id===QZ_SEL), s=qState(QZ_SEL); if(!q||!s) return; const qs=parseQ(q);
+  const unanswered=qs.filter((_,i)=>s.ans[i]==null||s.ans[i]==='').length;
+  if(!auto&&unanswered&&!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
+  let score=0; qs.forEach((x,i)=>{ const a=s.ans[i]; if(x.options&&x.options.length){ if(String(a)===String(x.answer)) score++; } else if(String(a||'').trim().toLowerCase()===String(x.answer).trim().toLowerCase()) score++; });
+  stopQuizTimer();
+  try{ await API.saveQuizResult({quiz_id:q.id,student_id:ME.id,student_name:ME.nama||'',score,total:qs.length,taken_at:TODAY,answers:JSON.stringify(s.ans)}); }catch(e){ toast('Saved on this device — sync failed: '+(e.message||e),'err'); }
+  RESULTS.push({quiz_id:q.id,student_id:ME.id,score,total:qs.length,taken_at:TODAY,answers:JSON.stringify(s.ans)}); qSave(q.id,null);
+  try{ LB=await API.getLeaderboard()||LB; }catch(e){}
+  toast(`🎉 Quiz submitted — score ${score}/${qs.length}`,'ok'); QZ_TAB='done'; renderQuizzes(); refreshDots();
+}
+
+/* ============================== PROJECTS ============================== */
+let PJ_SEL=null, PJ_TAB='brief', PJ_METHOD='file', PJ_AUDIO='', PJ_FILE='', PJ_FILE_NAME='', PJ_CD=null;
+function renderProjects(){
+  clearInterval(PJ_CD); const list=TASKS.filter(isProject).sort((a,b)=>String(b.due_date).localeCompare(String(a.due_date))); const box=document.getElementById('pjBody');
+  const t=TASKS.find(x=>x.id===PJ_SEL&&isProject(x));
+  if(!t){ box.innerHTML=`<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">${list.map(p=>`<div class="card card-pad" style="cursor:pointer" onclick="PJ_SEL='${esc(p.id)}';PJ_TAB='brief';renderProjects()"><div style="display:flex;justify-content:space-between">${taskTypeBadge(p.type)}${TS_BADGE[tStat(p)]||''}</div><h3 style="color:var(--navy);margin:10px 0 4px">${esc(p.title)}</h3><div class="text-muted" style="font-size:12.5px">📅 Due ${esc(dShort(p.due_date))}</div><p style="font-size:13px;color:#46557A;margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${esc(p.detail||'')}</p></div>`).join('')}</div>`+(list.length?'':'<div class="card card-pad empty">No projects yet. Your teacher will post them here. 🚀</div>'); return; }
+  const st=tStat(t), g=grpById(t.group_id||gidOf(t)), ck=readSet('pj')[t.id]||{};
+  const auto={submit:st==='submitted'||st==='graded',feedback:st==='graded'};
+  const items=[['brief','Read the project brief'],['req','Check the requirements'],['prep','Prepare your work'],['submit','Submit your project'],['feedback','Receive feedback']];
+  const doneN=items.filter(([k])=>ck[k]||auto[k]).length;
+  box.innerHTML=`<div class="row2" style="grid-template-columns:minmax(0,1fr) 320px"><div class="card card-pad">
+      <a class="more" style="cursor:pointer;font-size:13px" onclick="PJ_SEL=null;renderProjects()">‹ Back to Projects</a>
+      <div style="display:flex;gap:16px;margin:12px 0 16px;flex-wrap:wrap"><div style="width:150px;height:110px;border-radius:14px;background:linear-gradient(135deg,#22B2DC,#1F6FEB);display:flex;align-items:center;justify-content:center;font-size:48px;flex-shrink:0">🏁</div>
+        <div style="flex:1;min-width:220px"><div style="display:flex;gap:6px">${taskTypeBadge(t.type)}${TS_BADGE[st]||''}</div><h2 style="color:var(--navy);margin:8px 0 4px;font-size:21px">${esc(t.title)}</h2><div class="text-muted" style="font-size:12.5px">📚 ${esc(progLabel(g))} · 📅 Due ${esc(dShort(t.due_date))}${t.due_time?', '+esc(fmt12(t.due_time)):''}</div></div></div>
+      <div class="utabs" style="display:flex;gap:4px;border-bottom:1.5px solid var(--line);margin-bottom:16px">${[['brief','Instructions'],['submit','My Submission'],['feedback','Teacher Feedback']].map(([k,l])=>`<button style="background:none;border:0;padding:10px 16px;font-weight:700;cursor:pointer;color:${PJ_TAB===k?'var(--blue)':'#5B6680'};border-bottom:2.5px solid ${PJ_TAB===k?'var(--blue)':'transparent'};margin-bottom:-1.5px" onclick="PJ_TAB='${k}';renderProjects()">${l}</button>`).join('')}</div>
+      <div id="pjTab"></div></div>
+    <div><div class="card card-pad" style="margin-bottom:14px"><div class="card-title">Submission Status</div>${st==='graded'?'<span class="badge badge-paid">Graded</span>':st==='submitted'?'<span class="badge badge-active">Submitted</span>':'<span class="badge badge-pending">Not Submitted</span>'}<div class="text-muted" style="font-size:12.5px;margin-top:6px">${st==='assigned'?'You have not submitted your project yet. Make sure to submit before the deadline.':st==='overdue'?'The deadline has passed — you can still submit, but it will be marked late.':'Submitted '+esc(dShort(t.submit_at))}</div></div>
+      <div class="card card-pad" style="margin-bottom:14px"><div class="card-title">Deadline</div><b style="color:var(--navy)">${esc(dLong(t.due_date))}</b> <small class="text-muted">${esc(fmt12(t.due_time||'23:59'))} (WIB)</small><div class="cd mt-16" id="pjCd"></div></div>
+      <div class="card card-pad" style="margin-bottom:14px"><div class="card-title">Project Checklist</div><small class="text-muted">${doneN} / 5 completed</small><div class="progress" style="margin:6px 0 10px"><span style="width:${doneN*20}%"></span></div>${items.map(([k,l])=>`<label class="chk"><input type="checkbox" ${ck[k]||auto[k]?'checked':''} ${auto[k]?'disabled':''} onchange="pjCheck('${esc(t.id)}','${k}',this.checked)"> ${l}</label>`).join('')}</div>
+      <div class="card card-pad"><div class="card-title">Need Help?</div><div class="text-muted" style="font-size:12.5px;margin-bottom:10px">If you have any questions about this project, you can send a message to your teacher.</div><button class="btn btn-outline btn-block" onclick="openTeacherChat('${esc(t.tutor_id)}')">💬 Message Teacher</button></div></div></div>`;
+  const tab=document.getElementById('pjTab');
+  if(PJ_TAB==='brief') tab.innerHTML=`<div class="kv-box" style="white-space:pre-line;font-size:13.5px;line-height:1.6;color:#3C4A6B">${esc(t.detail||'-')}</div>${t.attach_url?`<a class="attach" href="${esc(t.attach_url)}" target="_blank">📎 Project brief / attachment</a>`:''}<div class="note-band mt-16" style="font-size:12.5px">📌 Submission: upload a file (PDF, DOCX, PPT), an audio recording, or a video link (YouTube, Google Drive, Canva).</div>`;
+  else if(PJ_TAB==='submit'){ tab.innerHTML=`${t.submit_url||t.submit_text?`<div class="note-band" style="margin-bottom:12px;font-size:12.5px">📤 Last submitted ${esc(dShort(t.submit_at))}${t.submit_url?` · <a href="${esc(t.submit_url)}" target="_blank">open</a>`:''}${t.submit_text?`<div style="white-space:pre-line;margin-top:4px">${esc(t.submit_text)}</div>`:''}</div>`:''}
+      ${st==='graded'?'<div class="note-band">Your project has been graded. See Teacher Feedback.</div>':`<b style="color:var(--navy)">Submit Your Project</b><div class="text-muted" style="font-size:12.5px;margin-bottom:10px">Choose the method that matches your project.</div>
+      <div class="methods" style="grid-template-columns:repeat(3,1fr)">${[['file','📄 Upload a file'],['record','🎙️ Audio recording'],['link','🔗 Video link']].map(([k,l])=>`<button class="${PJ_METHOD===k?'on':''}" onclick="PJ_METHOD='${k}';renderProjects()">${l}</button>`).join('')}</div>
+      ${submitArea(PJ_METHOD,'pj')}
+      <div class="field mt-16"><label>Message to Teacher (optional)</label><textarea id="pjMsg" rows="2" maxlength="500" placeholder="Write a short message about your project…"></textarea></div>
+      <button class="btn btn-primary btn-block" onclick="submitProject('${esc(t.id)}')">📨 Submit Project</button>`}`; }
+  else tab.innerHTML=st==='graded'?`<div class="note-band" style="background:#EAF7EE;border-color:#BFE6CB;color:#1E7E34;font-size:14px">⭐ <b>Score: ${esc(t.points||'-')}</b>${t.feedback?`<div style="margin-top:8px;white-space:pre-line">💬 ${esc(t.feedback)}</div>`:''}</div>`:'<div class="empty">No feedback yet. Your teacher will review your project after you submit it.</div>';
+  const due=new Date((t.due_date||TODAY)+'T'+(t.due_time||'23:59')+':00');
+  const cd=()=>{ const el=document.getElementById('pjCd'); if(!el){ clearInterval(PJ_CD); return; } let s=Math.max(0,Math.floor((due-new Date())/1000)); const D=Math.floor(s/86400); s%=86400; const H=Math.floor(s/3600); s%=3600; const M=Math.floor(s/60), S=s%60;
+    el.innerHTML=[[D,'Days'],[H,'Hours'],[M,'Minutes'],[S,'Seconds']].map(([v,l])=>`<div><b>${String(v).padStart(2,'0')}</b><small>${l}</small></div>`).join(''); };
+  cd(); PJ_CD=setInterval(cd,1000);
+}
+function pjCheck(id,k,v){ const all=readSet('pj'); all[id]=all[id]||{}; all[id][k]=v; writeSet('pj',all); renderProjects(); }
+async function submitProject(id){
+  if(submitProject._b) return; submitProject._b=true;
+  try{ const {url,text}=await collectSubmission('pj',PJ_METHOD,PJ_AUDIO,PJ_FILE,PJ_FILE_NAME); const msg=(document.getElementById('pjMsg')||{}).value||'';
+    await API.updateTask({id,status:'submitted',submit_url:url,submit_text:[text,msg&&('Message: '+msg)].filter(Boolean).join('\n\n'),submit_at:new Date().toISOString()});
+    TASKS=(await API.getTasks({student_id:ME.id})||TASKS).filter(visibleTask); PJ_AUDIO=''; PJ_FILE=''; toast('Project submitted! 🎉','ok'); renderProjects(); }
+  catch(e){ toast(e.message||String(e),'err'); }
+  finally{ submitProject._b=false; }
+}
+
+/* ============================== MATERIALS ============================== */
+function renderMaterials(){
+  const gid=document.getElementById('mtClass').value||(MYGROUPS[0]||{}).id, g=grpById(gid)||{};
+  const prog=String(g.program||ME.program||'').toLowerCase();
+  const res=RES.filter(r=>r.kind==='student'&&(!r.program||String(r.program).toLowerCase().startsWith(prog)||prog.startsWith(String(r.program).toLowerCase())));
+  const units={}; res.forEach(r=>{ (units[r.unit||'General']=units[r.unit||'General']||[]).push({t:r.title,s:[r.size,'Uploaded '+dShort(r.created_at)].filter(Boolean).join(' | '),u:r.file_url,n:r.note}); });
+  // class handouts from session reports
+  myClassRows(gid).filter(c=>c.material_url&&c.date<=TODAY).sort((a,b)=>b.date.localeCompare(a.date)).forEach(c=>{ String(c.material_url).split(/\n|,(?=https?:)/).map(x=>x.trim()).filter(Boolean).forEach((m,i)=>{ (units['Class Handouts']=units['Class Handouts']||[]).push({t:(c.topic||'Class')+(i?' ('+(i+1)+')':''),s:'From class on '+dShort(c.date),u:/^https?:|^#/.test(m)?m:'#',n:''}); }); });
+  const keys=Object.keys(units).sort((a,b)=>(a==='Class Handouts')-(b==='Class Handouts')||a.localeCompare(b,undefined,{numeric:true}));
+  const open=readSet('units');
+  document.getElementById('mtBody').innerHTML=keys.length?`<div class="card card-pad">${keys.map((k,i)=>`<div class="unit ${open[k]===false||(open[k]===undefined&&i>0)?'closed':''}"><div class="uh" onclick="toggleUnit(this,'${esc(k)}')"><span>${k==='Class Handouts'?'📎 ':''}${esc(k)} <small class="text-muted" style="font-weight:600">(${units[k].length})</small></span><span>⌄</span></div><div class="ub">${units[k].map(f=>`<div class="file-row"><span class="file-ic">PDF</span><div style="flex:1;min-width:0"><b>${esc(f.t)}</b><small>${esc(f.s)}${f.n?' · '+esc(f.n):''}</small></div><a class="btn btn-outline btn-sm" href="${esc(f.u||'#')}" target="_blank" ${!f.u||f.u==='#'?'onclick="toast(\'Demo file — no download in demo mode\');return false"':''}>⬇️ Download</a></div>`).join('')}</div></div>`).join('')}</div>`
+    :'<div class="card card-pad empty">No materials for this class yet.</div>';
+}
+function toggleUnit(el,k){ const u=el.parentElement; u.classList.toggle('closed'); const o=readSet('units'); o[k]=!u.classList.contains('closed'); writeSet('units',o); }
+
+/* ============================== MONTHLY REPORTS ============================== */
+function reportPrograms(){ return [...new Map(DEVS.map(d=>{ const g=grpById(d.group_id)||MYGROUPS[0]||{}; return [g.id||'x',g]; })).values()]; }
+function renderReports(){
+  const ps=reportPrograms(), pSel=document.getElementById('rpProg'), mSel=document.getElementById('rpMonth');
+  if(!pSel.options.length||pSel.options.length!==ps.length+1) pSel.innerHTML='<option value="">All Programs</option>'+ps.map(g=>`<option value="${esc(g.id)}">${esc(progLabel(g))}</option>`).join('');
+  const months=[...new Set(DEVS.map(d=>String(d.date).slice(0,7)))].sort().reverse(); const mv=mSel.value;
+  mSel.innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${esc(monthLabel(m))}</option>`).join(''); if(months.includes(mv)) mSel.value=mv;
+  const rows=[]; months.forEach(m=>{ const byG={}; DEVS.filter(d=>String(d.date).slice(0,7)===m).forEach(d=>{ (byG[d.group_id||'x']=byG[d.group_id||'x']||[]).push(d); });
+    Object.entries(byG).forEach(([gid,list])=>rows.push({m,gid,list})); });
+  const fl=rows.filter(r=>(!pSel.value||r.gid===pSel.value)&&(!mSel.value||r.m===mSel.value));
+  document.getElementById('rpBody').innerHTML=fl.map(r=>{ const g=grpById(r.gid)||MYGROUPS[0]||{}; const final=r.m<TODAY.slice(0,7);
+    return `<tr><td><b>${esc(monthLabel(r.m))}</b></td><td>${esc(progLabel(g))}</td><td><div style="display:flex;gap:10px;align-items:center"><span class="file-ic">PDF</span><div><b style="color:var(--navy)">${esc(monthLabel(r.m))} Learning Report</b><br><small class="text-muted">${r.list.length} session note${r.list.length>1?'s':''}${final?'':' · in progress'}</small></div></div></td><td><button class="btn btn-primary btn-sm" onclick="downloadReport('${r.m}','${esc(r.gid)}')">⬇️ Download</button></td></tr>`; }).join('')||'<tr><td colspan="4" class="empty">No reports yet. Your teacher writes development notes after each class; the monthly report appears here.</td></tr>';
+}
+function downloadReport(m,gid){
+  const g=grpById(gid)||MYGROUPS[0]||{}; const list=DEVS.filter(d=>String(d.date).slice(0,7)===m&&(d.group_id||'x')===gid).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  openMonthlyReport({student:ME.nama,program:g.program||ME.program,level:g.level||ME.level,teacher:tut((list[0]||{}).tutor_id||g.tutor_id).nama,month:m,rows:list});
+}
+
+/* ============================== CERTIFICATES ============================== */
+function renderCerts(){
+  const sel=document.getElementById('ceProg'); const progs=[...new Set([...CERTS.map(c=>c.program),...MYGROUPS.map(g=>g.program)].filter(Boolean))];
+  if(sel.options.length!==progs.length+1) sel.innerHTML='<option value="">All Programs</option>'+progs.map(p=>`<option>${esc(p)}</option>`).join('');
+  const list=CERTS.filter(c=>!sel.value||c.program===sel.value).sort((a,b)=>String(b.issued_at).localeCompare(String(a.issued_at)));
+  document.getElementById('ceBody').innerHTML=list.map(c=>`<tr><td><div style="display:flex;gap:12px;align-items:center"><div class="cert-prev" style="width:92px;padding:6px;flex-shrink:0"><small style="font-size:8px;font-weight:800;color:var(--navy)">CERTIFICATE</small><small style="font-size:7px">of ${c.mode==='upload'?'Achievement':'Completion'}</small></div><div><b style="color:var(--navy)">Certificate of ${c.mode==='upload'&&c.note?esc(c.note):'Completion'}</b><br><small class="text-muted">No. ${esc(c.cert_no||'-')}</small></div></div></td>
+    <td>${esc(c.program||'-')}${c.level?' – '+esc(c.level):''}</td><td>${esc(dShort(c.issued_at))}</td><td><button class="btn btn-primary btn-sm" onclick="downloadCert('${esc(c.id)}')">⬇️ Download</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No certificates yet — keep going! 💪</td></tr>';
+  // progress towards next certificate
+  const act=MYGROUPS.filter(g=>!g.pseudo&&g.status!=='Completed');
+  document.getElementById('ceProgress').innerHTML=act.length?`<div class="card-title">🎯 Progress towards your next certificate</div>${act.map(g=>{ const st=attendanceStats(myClassRows(g.id)), min=Number(g.min_cert)||26, tot=Number(g.total_sessions)||32;
+    return `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px"><b style="color:var(--navy)">${esc(progLabel(g))}</b><span>${st.hadir} / ${min} sessions attended</span></div><div class="progress ${st.hadir>=min?'':'blue'}"><span style="width:${Math.min(100,st.hadir/min*100)}%"></span></div><small class="text-muted">You need to attend at least ${min} of ${tot} sessions to receive the certificate. Missed a class? <a style="cursor:pointer;color:var(--blue)" onclick="openNewReq('recovery')">Request a recovery class</a>.</small></div>`; }).join('')}`:'';
+}
+function downloadCert(id){ const c=CERTS.find(x=>x.id===id); if(!c) return; if(c.mode==='upload'&&c.file_url){ window.open(c.file_url,'_blank'); return; }
+  const [a,t]=String(c.attendance||'').split('/').map(Number); openCertificate({name:ME.nama,program:c.program,level:c.level,pct:t?Math.round(a/t*100):'',sessions:a||'',no:c.cert_no,date:dShort(c.completion_date||c.issued_at)}); }
+
+/* ============================== REQUESTS ============================== */
+let RQ_SEL=null, NR_TYPE='reschedule', NR_PRE=null;
+const myReqs=()=>CLS.filter(c=>(c.req_kind||c.status==='reschedule'||(c.status==='requested'))&&c.req_by!=='admin');
+const rqStat=c=>c.req_status||((c.status==='reschedule'||c.status==='requested')?'pending':(c.status==='declined'?'rejected':'approved'));
+const rqKind=c=>c.req_kind||(c.session_type==='recovery'?'recovery':(c.status==='requested'?'extra':'reschedule'));
+function renderRequests(){
+  const ty=document.getElementById('rqType').value, st=document.getElementById('rqStat').value;
+  const list=myReqs().filter(c=>(!ty||rqKind(c)===ty)&&(!st||rqStat(c)===st)).sort((a,b)=>String(b.req_at||b.date).localeCompare(String(a.req_at||a.date)));
+  const SB={pending:'<span class="badge badge-pending">Pending</span>',approved:'<span class="badge badge-paid">Approved</span>',rejected:'<span class="badge badge-unpaid">Rejected</span>'};
+  const KB={reschedule:'<span class="badge badge-active">Reschedule</span>',recovery:'<span class="badge badge-purple">Recovery</span>',extra:'<span class="badge badge-grey">Extra class</span>'};
+  document.getElementById('rqBody').innerHTML=list.map(c=>{ const k=rqKind(c), s=rqStat(c), g=grpById(gidOf(c));
+    const orig=k==='reschedule'?`${esc(dShort(c.orig_date||c.date))}<br><small class="text-muted">${esc(c.orig_time||c.start_time||'')}</small>`:(c.orig_date?`Missed ${esc(dShort(c.orig_date))}`:'-');
+    const nw=k==='reschedule'?(s==='approved'?`<b>${esc(dShort(c.date))}</b><br><small class="text-muted">${esc(c.start_time||'')}</small>`:(c.resched_date?`${esc(dShort(c.resched_date))}<br><small class="text-muted">${esc(c.resched_time||'')}</small>`:'<small class="text-muted">Any time</small>')):(s==='approved'?`<b>${esc(dShort(c.date))}</b><br><small class="text-muted">${esc(c.start_time||'')}</small>`:`Recovery 1 session${c.fee?'<br><small class="text-muted">'+fmtRp(c.fee)+'</small>':''}`);
+    return `<tr><td style="white-space:nowrap">${esc(dtShort(c.req_at||c.created_at||c.date))}</td><td>${KB[k]}</td><td>${esc(progLabel(g))}</td><td>${orig}</td><td>${nw}</td><td>${SB[s]}</td><td><button class="btn btn-outline btn-sm" onclick="RQ_SEL='${esc(c.id)}';renderRequests()">View</button></td></tr>`; }).join('')||'<tr><td colspan="7" class="empty">No requests yet.</td></tr>';
+  const c=CLS.find(x=>String(x.id)===String(RQ_SEL)), side=document.getElementById('rqSide');
+  if(!c){ side.innerHTML=`<div class="card-title">How requests work</div><div style="font-size:13px;color:#46557A;line-height:1.6">🔄 <b>Reschedule</b> — can't attend a class? Ask to move it (at least 24 hours before it starts).<br><br>♻️ <b>Recovery class</b> — missed a class? Book a recovery session so you still reach the <b>26 of 32</b> sessions needed for your certificate. Fee: <b>Rp 50,000 / session</b>.<br><br>The Kwelingo team reviews every request and you'll see the result here.</div><button class="btn btn-primary btn-block mt-16" onclick="openNewReq('reschedule')">＋ New Request</button>`; return; }
+  const k=rqKind(c), s=rqStat(c), g=grpById(gidOf(c));
+  const steps=[['Request Submitted',dtShort(c.req_at||c.created_at),true],['Reviewed by Operations',s==='pending'?'Waiting for review':'Done',s!=='pending'],[s==='rejected'?'Rejected':'Approved',s==='pending'?'Pending':(c.admin_note||''),s!=='pending'],['New session scheduled',s==='approved'?`${dShort(c.date)}, ${c.start_time||''} — see My Learning`:'You will see the updated schedule in My Learning',s==='approved']];
+  side.innerHTML=`<div class="card-title">Request Details <button class="btn btn-ghost btn-sm" onclick="RQ_SEL=null;renderRequests()">✕</button></div>
+    <div style="margin-bottom:10px">${k==='recovery'?'<span class="badge badge-purple">Recovery Class Request</span>':'<span class="badge badge-active">Reschedule Request</span>'} ${s==='approved'?'<span class="badge badge-paid">✔ Approved</span>':s==='rejected'?'<span class="badge badge-unpaid">Rejected</span>':'<span class="badge badge-pending">Pending</span>'}</div>
+    <div class="kv-box"><div class="kv"><span class="k">Submitted on</span><span class="v">${esc(dtShort(c.req_at||c.created_at||c.date))}</span><span class="k">Class</span><span class="v">${esc(progLabel(g))}</span>
+      ${k==='reschedule'?`<span class="k">Original Session</span><span class="v">${esc(dShort(c.orig_date||c.date))}, ${esc(c.orig_time||c.start_time||'')}</span><span class="k">New Session</span><span class="v">${s==='approved'?esc(dShort(c.date)+', '+(c.start_time||'')):esc(c.resched_date?dShort(c.resched_date)+', '+(c.resched_time||''):'To be confirmed')}</span>`
+        :`<span class="k">Missed Session</span><span class="v">${esc(c.orig_date?dShort(c.orig_date):'-')}</span><span class="k">Recovery Session</span><span class="v">${s==='approved'?esc(dShort(c.date)+', '+(c.start_time||'')):'To be confirmed'}</span><span class="k">Fee</span><span class="v">${c.fee?fmtRp(c.fee):'-'}</span>`}
+      <span class="k">Reason</span><span class="v">${esc(c.req_reason||'-')}</span><span class="k">Additional Info</span><span class="v">${esc(c.resched_note||c.req_note||'-')}</span>${c.admin_note?`<span class="k">Admin Note</span><span class="v">${esc(c.admin_note)}</span>`:''}</div></div>
+    <div class="reqtl mt-16">${steps.map(([t,sub,ok],i)=>`<div class="s ${ok?'done':''}"><div class="n">${ok?'✓':i+1}</div><div><b>${esc(t)}</b><small>${esc(sub)}</small></div></div>`).join('')}</div>`;
+}
+function setReqType(t){ NR_TYPE=t; document.getElementById('nrT1').classList.toggle('on',t==='reschedule'); document.getElementById('nrT2').classList.toggle('on',t==='recovery');
+  document.getElementById('nrInfo').innerHTML=t==='reschedule'?'📅 Use this form to request a new date for a class you cannot attend. Please submit at least <b>24 hours</b> before the class starts.':'♻️ Use this form to request a recovery class if you were unable to attend a class and your attendance is at risk (below <b>26 of 32</b> sessions). The recovery class fee is <b>Rp 50,000 per session</b>.';
+  document.getElementById('nrSesLbl').innerHTML=t==='reschedule'?'Session to Reschedule <span class="req">*</span>':'Session(s) to Recover <span class="req">*</span>';
+  fillReqSessions(); }
+function openNewReq(type,pre){ NR_PRE=pre||null; const cs=document.getElementById('nrClass'); cs.innerHTML=MYGROUPS.filter(g=>g.status!=='Completed').map(g=>`<option value="${esc(g.id)}">${esc(progLabel(g))}${g.room?' – '+esc(g.room):''}${g.tutor_id?' ('+esc(tut(g.tutor_id).nama)+')':''}</option>`).join('');
+  if(pre){ const c=CLS.find(x=>x.id===pre); if(c) cs.value=gidOf(c); }
+  ['nrNote','nrDate','nrTime'].forEach(i=>document.getElementById(i).value=''); document.getElementById('nrReason').selectedIndex=0;
+  setReqType(type); if(CUR_VIEW!=='requests') go('requests'); openModal('mReq'); }
+function fillReqSessions(){
+  const gid=document.getElementById('nrClass').value, rows=myClassRows(gid).sort((a,b)=>a.date.localeCompare(b.date)), sel=document.getElementById('nrSes'), multi=document.getElementById('nrSesMulti');
+  if(NR_TYPE==='reschedule'){ const up=rows.filter(c=>isSession(c)&&c.date>=TODAY&&c.status!=='reschedule'); sel.style.display=''; multi.style.display='none';
+    sel.innerHTML=up.map(c=>`<option value="${esc(c.id)}">${esc(dLong(c.date))}, ${esc(trng(c.start_time,c.end_time,c.duration))}</option>`).join('')||'<option value="">No upcoming sessions</option>'; if(NR_PRE&&up.some(c=>c.id===NR_PRE)) sel.value=NR_PRE; }
+  else { const already=new Set(CLS.filter(c=>c.req_kind==='recovery'&&rqStat(c)!=='rejected').map(c=>c.orig_date)); const missed=rows.filter(c=>isSession(c)&&c.date<TODAY&&['sakit','izin','alpa'].includes(c.attend)&&!already.has(c.date));
+    sel.style.display='none'; multi.style.display='block';
+    multi.innerHTML=missed.map(c=>`<label class="chk"><input type="checkbox" value="${esc(c.id)}" checked> ${esc(dLong(c.date))}, ${esc(trng(c.start_time,c.end_time,c.duration))} <span class="badge badge-grey" style="margin-left:auto">${esc((ATTEND_META[c.attend]||{}).label||'')}</span></label>`).join('')||'<div class="text-muted" style="font-size:12.5px;padding:6px 0">No missed sessions found for this class. 🎉</div>'; }
 }
 async function submitReq(){
-  if(submitReq._busy)return;
-  const p={student_id:ME.id, tutor_id:ME.tutor_id||'', date:document.getElementById('rqDate').value,
-    start_time:document.getElementById('rqTime').value, duration:document.getElementById('rqDur').value,
-    type:document.querySelector('input[name=rqType]:checked').value, status:'requested', req_by:'murid',
-    req_note:document.getElementById('rqNote').value };
-  if(!p.date||!p.start_time){ toast('Isi tanggal & jam dulu','err'); return; }
-  const btn=document.querySelector('#mReq .btn-primary'); submitReq._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Mengirim…';}
-  try{ await API.addClass(p); closeModal('mReq'); toast('Pengajuan terkirim — tunggu persetujuan','ok'); renderMyClass(); }
-  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
-  finally{ submitReq._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Kirim Pengajuan';} }
-}
-function openResched(id){
-  const c=CLASSES.find(x=>x.id===id); if(!c)return;
-  document.getElementById('rsId').value=id;
-  document.getElementById('rsCur').innerHTML='Jadwal sekarang: <b>'+prettyDate(c.date)+' '+(c.start_time||'')+'</b>';
-  document.getElementById('rsDate').value=c.date||todayStr(); document.getElementById('rsTime').value=c.start_time||'16:00';
-  document.getElementById('rsNote').value='';
-  openModal('mResched');
-}
-async function submitResched(){
-  if(submitResched._busy)return;
-  const id=document.getElementById('rsId').value;
-  const p={id,status:'reschedule',resched_date:document.getElementById('rsDate').value,
-    resched_time:document.getElementById('rsTime').value,resched_note:document.getElementById('rsNote').value,req_by:'murid'};
-  if(!p.resched_date||!p.resched_time){ toast('Isi tanggal & jam baru','err'); return; }
-  const btn=document.querySelector('#mResched .btn-primary'); submitResched._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Mengirim…';}
-  try{ await API.updateClass(p); closeModal('mResched'); toast('Permintaan reschedule terkirim','ok'); renderMyClass(); }
-  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
-  finally{ submitResched._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Kirim Permintaan';} }
-}
-function myPoints(){ return RESULTS.reduce((a,r)=>a+(Number(r.score)||0),0); }
-function myRankNum(){ const i=LB.findIndex(x=>String(x.student_id)===String(ME.id)); return i>=0?i+1:'-'; }
-
-function renderDashboard(){
-  document.getElementById('myPoints').textContent=myPoints();
-  document.getElementById('myRank').textContent=myRankNum()==='-'?'-':('#'+myRankNum());
-  document.getElementById('quizCount').textContent=QUIZZES.length;
-  document.getElementById('doneCount').textContent=new Set(RESULTS.map(r=>r.quiz_id)).size;
-  document.getElementById('dashAnn').innerHTML=(ANN.slice(0,3).map(a=>`<div class="ann" style="padding:8px 12px;margin-bottom:8px;background:var(--sky-soft);border-radius:0 10px 10px 0">
-    <b style="color:var(--navy);font-size:13.5px">${esc(a.title||'')}</b><div class="muted" style="font-size:11px">${a.date?prettyDate(a.date):''}</div></div>`).join(''))
-    || '<div class="muted" style="font-size:13px">Belum ada pengumuman.</div>';
-  const done=new Set(RESULTS.map(r=>r.quiz_id));
-  document.getElementById('dashQuiz').innerHTML=(QUIZZES.slice(0,4).map(q=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)">
-    <span style="font-size:13.5px;font-weight:600;color:var(--navy);flex:1">${esc(q.title||'Quiz')}</span>
-    ${done.has(q.id)?'<span class="badge badge-paid">✅ Selesai</span>':`<button class="btn btn-primary btn-sm" onclick="startQuiz('${q.id}')">Kerjakan</button>`}</div>`).join(''))
-    || '<div class="muted" style="font-size:13px">Belum ada quiz.</div>';
-}
-
-/* ---------- rating kelas (rubrik 8 kategori) ---------- */
-let CUR_SCORES=[];
-function paintRubric(){
-  document.getElementById('rtRubric').innerHTML=RATING_CATS.map((cat,ci)=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)">
-      <div style="flex:1;font-size:13px;color:var(--navy)">${ci+1}. ${esc(cat)}</div>
-      <div style="display:flex;gap:4px">${[1,2,3,4,5].map(v=>`<span class="rbStar" data-c="${ci}" data-v="${v}" style="cursor:pointer;font-size:22px;color:${v<=(CUR_SCORES[ci]||0)?'#F4C544':'#dcd3c4'}">★</span>`).join('')}</div>
-    </div>`).join('');
-}
-document.getElementById('rtRubric').addEventListener('click',e=>{
-  const c=e.target.getAttribute('data-c'), v=e.target.getAttribute('data-v');
-  if(c!=null&&v!=null){ CUR_SCORES[+c]=+v; paintRubric(); }
-});
-function openRate(classId,tutorId){
-  document.getElementById('rtClass').value=classId;
-  document.getElementById('rtTutor').value=tutorId||myTutorId();
-  CUR_SCORES=new Array(RATING_CATS.length).fill(0);
-  ['rtLiked','rtImprove','rtComment'].forEach(id=>document.getElementById(id).value='');
-  const c=CLASSES.find(x=>x.id===classId)||{};
-  document.getElementById('rtInfo').innerHTML=`Kelas <b>${prettyDate(c.date)}</b> dengan <b>${tNameS(tutorId)}</b>`;
-  paintRubric(); openModal('mRate');
-}
-async function submitRating(){
-  const filled=CUR_SCORES.filter(v=>v>0).length;
-  if(filled<RATING_CATS.length){ toast('Mohon isi semua '+RATING_CATS.length+' penilaian dulu','err'); return; }
-  const avg=Math.round(CUR_SCORES.reduce((a,b)=>a+b,0)/CUR_SCORES.length);
-  const p={class_id:document.getElementById('rtClass').value,student_id:ME.id,tutor_id:document.getElementById('rtTutor').value,
-    stars:avg, scores:JSON.stringify(CUR_SCORES), liked:document.getElementById('rtLiked').value,
-    improve:document.getElementById('rtImprove').value, comment:document.getElementById('rtComment').value, student_name:ME.nama||''};
-  try{ await API.addRating(p); closeModal('mRate'); toast('Terima kasih atas ratingnya! ⭐','ok');
-    RATINGS=await API.getRatings({student_id:ME.id})||RATINGS; renderMyClass(); }
-  catch(e){ toast('Gagal: '+(e.message||e),'err'); }
-}
-
-/* ---------- tugas ---------- */
-async function renderTasks(){
-  try{ TASKS=await API.getTasks({student_id:ME.id})||[]; }catch(e){ TASKS=[]; }
-  updateTaskDot();
-  const done=TASKS.filter(t=>taskStatus(t)!=='assigned').length, graded=TASKS.filter(t=>taskStatus(t)==='graded').length, total=TASKS.length;
-  document.getElementById('taskStats').innerHTML=[
-    ['tint-blue','Total Tugas',total],['tint-green','Dikumpulkan',done],
-    ['tint-amber','Belum',total-done],['tint-purple','Sudah Dinilai',graded],
-  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
-  const box=document.getElementById('taskList');
-  const today=todayStr();
-  const ord={assigned:0,submitted:1,graded:2};
-  box.innerHTML=[...TASKS].sort((a,b)=>(ord[taskStatus(a)]-ord[taskStatus(b)])||String(a.due_date||'').localeCompare(String(b.due_date||''))).map(t=>{
-    const st=taskStatus(t);
-    const overdue=st==='assigned'&&t.due_date&&t.due_date<today;
-    let sub='';
-    if(st==='submitted') sub=`<div class="note-band" style="margin-top:8px;font-size:12px">📤 Sudah dikumpulkan ${t.submit_at?prettyDate(String(t.submit_at).slice(0,10)):''} — menunggu dinilai guru.${t.submit_url?` · <a href="${t.submit_url}" target="_blank" style="color:var(--blue)">lihat jawaban</a>`:''}</div>`;
-    if(st==='graded') sub=`<div class="note-band" style="margin-top:8px;font-size:12.5px;background:var(--green-soft);border-color:#bfe6cf;color:#1e7e34"><b>⭐ Nilai: ${esc(t.points||'-')}</b>${t.feedback?` — ${esc(t.feedback)}`:''}${t.submit_url?` · <a href="${t.submit_url}" target="_blank" style="color:var(--blue)">jawabanmu</a>`:''}</div>`;
-    const btn = st==='graded' ? '' :
-      `<button class="btn ${st==='assigned'?'btn-primary':'btn-outline'} btn-sm" onclick="openSubmit('${t.id}')">${st==='assigned'?'📤 Kumpulkan':'✏️ Ubah'}</button>`;
-    return `<div class="card card-pad" style="margin-bottom:12px;display:flex;gap:14px;align-items:flex-start">
-      <div style="font-size:24px">${st==='graded'?'⭐':st==='submitted'?'📤':'📋'}</div>
-      <div style="flex:1">
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="badge badge-active">${esc(taskTypeLabel(t.type))}</span><b style="color:var(--navy)">${esc(t.title||'Tugas')}</b></div>
-        ${t.detail?`<div class="muted" style="font-size:13px;white-space:pre-line;margin-top:4px">${esc(t.detail)}</div>`:''}
-        <div style="font-size:12px;margin-top:6px">${t.due_date?`<span style="color:${overdue?'var(--red)':'var(--muted)'}">📅 Deadline ${prettyDate(t.due_date)}${overdue?' (lewat)':''}</span> · `:''}${taskBadge(st)}</div>
-        ${sub}
-      </div>
-      <div>${btn}</div>
-    </div>`;
-  }).join('') || '<div class="card card-pad muted" style="text-align:center">Belum ada tugas dari guru. 🎉</div>';
-}
-function openSubmit(id){
-  const t=TASKS.find(x=>x.id===id); if(!t)return;
-  document.getElementById('subId').value=id;
-  document.getElementById('subInfo').innerHTML=`<b>${esc(taskTypeLabel(t.type))}:</b> ${esc(t.title||'')}`;
-  document.getElementById('subLink').value=t.submit_url&&!String(t.submit_url).startsWith('data:')?t.submit_url:'';
-  document.getElementById('subText').value=t.submit_text||'';
-  document.getElementById('subFile').value=''; document.getElementById('subFileName').textContent='';
-  SUB_DATA='';
-  openModal('mSubmit');
-}
-let SUB_DATA='';
-document.getElementById('subFile').onchange=async e=>{
-  const f=e.target.files[0]; if(!f){SUB_DATA='';document.getElementById('subFileName').textContent='';return;}
-  document.getElementById('subFileName').textContent='📎 '+f.name;
-  try{ SUB_DATA=await fileToBase64(f); }catch(err){ SUB_DATA=''; }
-};
-async function submitTask(){
-  if(submitTask._busy)return;
-  const id=document.getElementById('subId').value;
-  const link=document.getElementById('subLink').value.trim();
-  const text=document.getElementById('subText').value.trim();
-  if(!link && !text && !SUB_DATA){ toast('Upload file, tempel link, atau tulis jawaban dulu','err'); return; }
-  const btn=document.querySelector('#mSubmit .btn-primary'); submitTask._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Mengirim…';}
+  if(submitReq._b) return; const reason=document.getElementById('nrReason').value, note=document.getElementById('nrNote').value.trim(), pd=document.getElementById('nrDate').value, pt=document.getElementById('nrTime').value, now=new Date().toISOString();
+  submitReq._b=true;
   try{
-    let url=link;
-    if(SUB_DATA){ toast('Mengupload file…'); const r=await API.uploadFile(SUB_DATA,'tugas-'+Date.now()); url=(r&&(r.view||r.url))||url; }
-    await API.updateTask({id,status:'submitted',submit_url:url||'',submit_text:text,submit_at:todayStr()});
-    closeModal('mSubmit'); toast('Tugas dikumpulkan! 🎉','ok'); renderTasks();
-  }catch(e){ toast('Gagal: '+(e.message||e),'err'); }
-  finally{ submitTask._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Kumpulkan';} }
+    if(NR_TYPE==='reschedule'){ const id=document.getElementById('nrSes').value; const c=CLS.find(x=>x.id===id); if(!c){ toast('Choose the session to reschedule','err'); return; }
+      const start=new Date(c.date+'T'+(c.start_time||'00:00')+':00'); if(start-new Date()<24*3600*1000&&!confirm('This class starts in less than 24 hours. Requests this late may not be approved. Send anyway?')) return;
+      await API.updateClass({id,status:'reschedule',req_kind:'reschedule',req_status:'pending',req_by:'murid',req_at:now,req_reason:reason,resched_note:note,resched_date:pd,resched_time:pt||(pd?c.start_time:''),admin_note:''}); }
+    else { const ids=[...document.querySelectorAll('#nrSesMulti input:checked')].map(i=>i.value); if(!ids.length){ toast('Select at least one missed session','err'); return; }
+      if(!confirm(`Request ${ids.length} recovery session${ids.length>1?'s':''}? Fee: ${fmtRp(50000*ids.length)} (Rp 50,000 / session).`)) return;
+      for(const id of ids){ const c=CLS.find(x=>x.id===id); await API.addClass({student_id:ME.id,tutor_id:c.tutor_id,group_id:c.group_id||'',date:pd||'',start_time:pt||c.start_time||'',end_time:'',duration:c.duration||90,type:c.type||'onsite',room:'',status:'requested',session_type:'recovery',req_kind:'recovery',req_status:'pending',req_by:'murid',req_at:now,fee:50000,orig_date:c.date,req_reason:reason,req_note:note}); } }
+    CLS=await API.getClasses({student_id:ME.id})||CLS; closeModal('mReq'); toast('Request sent ✅ — the Kwelingo team will review it','ok'); RQ_SEL=null; renderRequests();
+  }catch(e){ toast('Failed: '+(e.message||e),'err'); }
+  finally{ submitReq._b=false; }
 }
 
-/* ---------- my diary ---------- */
-async function renderDiary(){
-  const feed=document.getElementById('diaryFeed'); feed.innerHTML='<div class="muted">Memuat…</div>';
-  let list=[]; try{ list=await API.getDiary({student_id:ME.id})||[]; }catch(e){ feed.innerHTML='<div style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
-  feed.innerHTML=list.map(m=>{
-    const me=m.author!=='guru';
-    const who=me?(ME.nama||'Saya'):('👩‍🏫 '+tNameS(m.tutor_id));
-    return `<div class="msg ${me?'me':''}"><div class="av">${me?'🙂':'👩‍🏫'}</div>
-      <div class="bub"><b>${esc(who)}</b>${esc(m.message||'')}<div class="t">${m.created_at?prettyDate(String(m.created_at).slice(0,10)):''}</div></div></div>`;
-  }).join('') || '<div class="muted" style="text-align:center;padding:20px">Belum ada catatan. Tulis sesuatu untuk gurumu 👇</div>';
-  feed.scrollTop=feed.scrollHeight;
+/* ============================== LOUNGE ============================== */
+const lgPoll=makeChatPoller(list=>renderChatFeed(document.getElementById('lgFeed'),list,ME.id),4000);
+function renderLounge(){
+  const gid=document.getElementById('lgClass').value||(MYGROUPS[0]||{}).id, g=grpById(gid)||{};
+  const ids=g.pseudo?[ME.id]:grpIds(g);
+  document.getElementById('lgName2').textContent=progLabel(g); document.getElementById('lgSub').textContent=`${ids.length+(g.tutor_id?1:0)} members`;
+  document.getElementById('lgMembers').innerHTML=(g.tutor_id?`<div class="m"><span class="av-sm" style="background:#FFF4DE;color:#B26A00">${esc(initials(tut(g.tutor_id).nama))}</span><div>${esc(tut(g.tutor_id).nama)}<small>Teacher</small></div></div>`:'')+ids.map(id=>`<div class="m"><span class="av-sm">${esc(initials(String(id)===String(ME.id)?ME.nama:(STU_NAMES[id]||'?')))}</span><div>${String(id)===String(ME.id)?'You':esc(STU_NAMES[id]||'Classmate')}<small>Student</small></div></div>`).join('');
+  lgPoll.start('grp:'+gid);
 }
-async function postDiary(){
-  const q1=document.getElementById('dq1').value.trim(), q2=document.getElementById('dq2').value.trim(), q3=document.getElementById('dq3').value.trim();
-  if(!q1&&!q2&&!q3){ toast('Isi minimal satu pertanyaan dulu','err'); return; }
-  const msg=`📘 Yang saya pahami: ${q1||'-'}\n😵 Yang masih sulit: ${q2||'-'}\n🎯 Ingin dipelajari: ${q3||'-'}`;
-  try{ await API.addDiary({student_id:ME.id,tutor_id:myTutorId(),author:'murid',message:msg});
-    ['dq1','dq2','dq3'].forEach(id=>document.getElementById(id).value=''); toast('Entry terkirim ✍️','ok'); renderDiary(); }
-  catch(e){ toast('Gagal kirim: '+(e.message||e),'err'); }
+async function sendLounge(){ const i=document.getElementById('lgMsg'), m=i.value.trim(); if(!m) return; i.value=''; const gid=document.getElementById('lgClass').value||(MYGROUPS[0]||{}).id;
+  try{ await API.addChat({room:'grp:'+gid,sender_id:ME.id,sender_name:ME.nama,role:'murid',message:m}); lgPoll.refresh(); }catch(e){ toast('Failed: '+(e.message||e),'err'); i.value=m; } }
+
+/* ============================== ANNOUNCEMENTS ============================== */
+function renderAnnounce(){
+  const gid=document.getElementById('anClass').value; const g=grpById(gid);
+  const list=myAnn().filter(a=>!gid||!a.program||a.program===(g||{}).program).filter(a=>!gid||!a.group_id||a.group_id===gid);
+  const kind=a=>{ const t=(a.title+' '+a.body).toLowerCase(); if(/resched|cancel|closed|holiday/.test(t)) return ['Schedule','#FDECEF','📅','badge-unpaid']; if(/quiz/.test(t)) return ['New Quiz','#EEF4FF','📝','badge-active']; if(/practice|homework|task/.test(t)) return ['Extended Practice','#EAF7EE','✏️','badge-paid']; if(/material|handout|worksheet/.test(t)) return ['Learning Materials','#F1ECFF','📄','badge-purple']; return ['General','#FFF4DE','👥','badge-pending']; };
+  document.getElementById('anList').innerHTML=list.map(a=>{ const [k,bg,ic,bc]=kind(a); return `<div class="ann2" style="background:${bg}40"><div class="ai" style="background:${bg}">${ic}</div><div style="flex:1;min-width:0"><span class="badge ${bc}">${k}</span>${a.program?` <span class="badge badge-grey">${esc(a.program)}${a.level?' '+esc(a.level):''}</span>`:''}<h4>${esc(a.title)}</h4><p>${esc(a.body||'')}</p>${a.attach_url?`<a class="attach" href="${esc(a.attach_url)}" target="_blank">📎 ${esc(a.attach_name||'Attachment')}</a>`:''}</div><div class="text-muted" style="font-size:12px;text-align:right;white-space:nowrap">${esc(dtShort(a.publish_at||a.created_at||a.date))}</div></div>`; }).join('')||'<div class="card card-pad empty">No announcements yet.</div>';
+  const seen=readSet('ann'); myAnn().forEach(a=>seen[a.id]=1); writeSet('ann',seen); refreshDots();
 }
 
-/* ---------- quiz ---------- */
-function parseQ(q){ try{ return JSON.parse(q.questions||'[]'); }catch(e){ return []; } }
-function renderQuizList(){
-  const done=new Set(RESULTS.map(r=>r.quiz_id));
-  document.getElementById('quizList').innerHTML=QUIZZES.map(q=>{
-    const n=parseQ(q).length;
-    const res=RESULTS.filter(r=>r.quiz_id===q.id).sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0))[0];
-    return `<div class="card card-pad">
-      <div style="font-size:24px">📝</div>
-      <div style="font-weight:800;color:var(--navy);margin-top:6px">${esc(q.title||'Quiz')}</div>
-      <div class="muted" style="font-size:12.5px">${esc([q.subject,q.level].filter(Boolean).join(' · ')||'-')} · ${n} soal</div>
-      ${res?`<div style="margin-top:8px;font-size:12.5px">Nilai terbaik: <b class="text-green">${res.score}/${res.total}</b></div>`:''}
-      <button class="btn ${res?'btn-outline':'btn-primary'} btn-sm" style="margin-top:12px" onclick="startQuiz('${q.id}')">${res?'Kerjakan Lagi':'Kerjakan'}</button>
-    </div>`;
-  }).join('') || '<div class="card card-pad muted" style="text-align:center">Belum ada quiz dari guru.</div>';
+/* ============================== MESSAGES ============================== */
+let MS_ROOM=null, MS_TAB='all';
+const msPoll=makeChatPoller(list=>{ renderChatFeed(document.getElementById('msFeed'),list,ME.id); const r=readSet('read'); r[MS_ROOM]=list.length; writeSet('read',r); },4000);
+function convList(){
+  const tids=[...new Set([...MYGROUPS.map(g=>g.tutor_id),ME.tutor_id,...CLS.map(c=>c.tutor_id)].filter(Boolean))];
+  const L=[{room:dmRoom('admin',ME.id),name:'Kwelingo Admin',sub:'Support Team',kind:'Admin',ic:'👥'}].concat(tids.map(t=>({room:dmRoom(ME.id,t),name:tut(t).nama,sub:`Your ${(MYGROUPS.find(g=>g.tutor_id===t)||{}).program||''} Teacher`,kind:'Teacher',tid:t})));
+  const rs=readSet('read'); L.forEach(c=>{ const msgs=CHATALL.filter(m=>m.room===c.room); c.last=msgs[msgs.length-1]; c.unread=c.last&&String(c.last.sender_id)!==String(ME.id)&&(rs[c.room]||0)<msgs.length; });
+  return L;
 }
-function startQuiz(id){
-  CUR_QUIZ=QUIZZES.find(q=>q.id===id); if(!CUR_QUIZ)return;
-  CUR_ANS={};
-  const qs=parseQ(CUR_QUIZ);
-  document.getElementById('qTitle').textContent=CUR_QUIZ.title||'Quiz';
-  document.getElementById('qSubmitBtn').style.display='';
-  document.getElementById('qBody').innerHTML=qs.map((item,qi)=>`
-    <div class="card card-pad" style="margin-bottom:12px;box-shadow:none;border:1px solid var(--line)">
-      <div style="font-weight:700;color:var(--navy);margin-bottom:10px">${qi+1}. ${esc(item.q||'')}</div>
-      ${(item.options||[]).map((op,oi)=>`<label class="qopt" data-q="${qi}"><input type="radio" name="q${qi}" value="${oi}" onchange="CUR_ANS[${qi}]=${oi}"> <span>${esc(op)}</span></label>`).join('')}
-    </div>`).join('') || '<div class="muted">Quiz ini belum punya soal.</div>';
-  openModal('mQuiz');
+function renderMessages(){
+  document.getElementById('msTabs').innerHTML=[['all','All'],['Teacher','Teacher'],['Admin','Admin']].map(([k,l])=>`<button class="${k===MS_TAB?'on':''}" onclick="MS_TAB='${k}';renderMessages()">${l}</button>`).join('');
+  const L=convList().filter(c=>MS_TAB==='all'||c.kind===MS_TAB);
+  document.getElementById('msList').innerHTML=L.map(c=>`<div class="room ${c.room===MS_ROOM?'on':''}" onclick="openConv('${esc(c.room)}')"><div class="ri">${c.ic||esc(initials(c.name))}</div><div style="min-width:0;flex:1"><b>${esc(c.name)}</b><small>${esc(c.sub)}</small><small>${esc(c.last?c.last.message:'No messages yet')}</small></div>${c.unread?'<span class="nav-dot" style="display:inline-flex">1</span>':''}</div>`).join('');
+  if(MS_ROOM) openConv(MS_ROOM,true);
 }
-async function submitQuiz(){
-  const qs=parseQ(CUR_QUIZ); if(!qs.length){ closeModal('mQuiz'); return; }
-  let score=0;
-  qs.forEach((item,qi)=>{
-    const chosen=CUR_ANS[qi];
-    const correct=Number(item.answer);
-    document.querySelectorAll(`.qopt[data-q="${qi}"]`).forEach((el,oi)=>{
-      if(oi===correct) el.classList.add('correct');
-      if(oi===chosen && chosen!==correct) el.classList.add('wrong');
-      el.querySelector('input').disabled=true;
-    });
-    if(chosen===correct) score++;
-  });
-  document.getElementById('qSubmitBtn').style.display='none';
-  const total=qs.length;
-  const head=document.createElement('div');
-  head.className='note-band'; head.style.cssText='background:var(--green-soft);border-color:#bfe6cf;color:#1e7e34;font-size:15px;font-weight:700;margin-bottom:12px;text-align:center';
-  head.innerHTML=`🎉 Nilai kamu: ${score}/${total} — dapat ${score} poin!`;
-  document.getElementById('qBody').prepend(head);
-  try{
-    await API.saveQuizResult({quiz_id:CUR_QUIZ.id, student_id:ME.id, student_name:ME.nama||'', score, total, taken_at:todayStr()});
-    RESULTS.push({quiz_id:CUR_QUIZ.id, student_id:ME.id, score, total});
-    LB=await API.getLeaderboard()||LB;
-    renderDashboard();
-  }catch(e){ toast('Nilai tersimpan lokal, gagal sinkron: '+(e.message||e),'err'); }
+function openConv(room,keep){
+  MS_ROOM=room; const c=convList().find(x=>x.room===room)||{name:'Chat',sub:''};
+  document.getElementById('msAv').textContent=c.ic||initials(c.name); document.getElementById('msName').textContent=c.name; document.getElementById('msSub').textContent=c.sub;
+  document.getElementById('msInfo').innerHTML=`<div class="card card-pad" style="margin-bottom:14px"><div class="card-title">Chat with</div><div style="display:flex;gap:10px;align-items:center"><span class="av-sm">${c.ic||esc(initials(c.name))}</span><div><b style="color:var(--navy)">${esc(c.name)}</b><div class="text-muted" style="font-size:12px">${esc(c.sub)}</div></div></div>
+    <div class="note-band mt-16" style="font-size:12px">${c.kind==='Teacher'?'ℹ️ This chat is only for academic questions related to your class.':'ℹ️ For scheduling, payments, technical support, or other general inquiries.'}</div></div>
+    ${c.kind==='Teacher'?`<div class="card card-pad"><div class="card-title">Need help with other matters?</div><div class="text-muted" style="font-size:12.5px;margin-bottom:10px">Chat with Kwelingo Admin for scheduling, payments, technical support, or general inquiries.</div><button class="btn btn-outline btn-block" onclick="openAdminChat()">Go to Admin Chat →</button></div>`:''}`;
+  if(!keep) renderMessages();
+  msPoll.start(room);
 }
+function openAdminChat(){ MS_ROOM=dmRoom('admin',ME.id); go('messages'); }
+function openTeacherChat(tid){ MS_ROOM=dmRoom(ME.id,tid||ME.tutor_id); go('messages'); }
+async function sendMsg(){ if(!MS_ROOM){ toast('Choose a conversation first','err'); return; } const i=document.getElementById('msMsg'), m=i.value.trim(); if(!m) return; i.value='';
+  try{ await API.addChat({room:MS_ROOM,sender_id:ME.id,sender_name:ME.nama,role:'murid',message:m}); msPoll.refresh(); CHATALL.push({room:MS_ROOM,sender_id:ME.id,message:m,created_at:new Date().toISOString()}); }catch(e){ toast('Failed: '+(e.message||e),'err'); i.value=m; } }
 
-/* ---------- leaderboard ---------- */
-async function renderLeaderboard(){
-  const box=document.getElementById('lbList'); box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
-  try{ LB=await API.getLeaderboard()||[]; }catch(e){ box.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
-  box.innerHTML=LB.map((r,i)=>`<div class="lb-row ${String(r.student_id)===String(ME.id)?'me':''}">
-    <div class="lb-rank ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i<3?['🥇','🥈','🥉'][i]:(i+1)}</div>
-    <div><b style="color:var(--navy)">${esc(r.name||'Siswa')}</b><div class="muted" style="font-size:11.5px">${r.quizzes||0} quiz</div></div>
-    <div class="lb-pts">${r.points||0}<small> poin</small></div></div>`).join('')
-    || '<div class="card card-pad muted" style="text-align:center">Belum ada yang mengerjakan quiz. Jadilah yang pertama! 🚀</div>';
+/* ============================== ACCOUNT ============================== */
+function renderAccount(){
+  const g=MYGROUPS[0]||{};
+  document.getElementById('acProfile').innerHTML=`<span class="k">Name</span><span class="v">${esc(ME.nama||'-')}</span><span class="k">Username</span><span class="v">${esc(ME.username||'-')}</span><span class="k">School</span><span class="v">${esc(ME.school||'-')}</span><span class="k">Program</span><span class="v">${esc(g.program||ME.program||'-')} ${esc(g.level||ME.level||'')}</span><span class="k">Class</span><span class="v">${MYGROUPS.map(x=>esc(progLabel(x))).join('<br>')||'-'}</span><span class="k">Parent</span><span class="v">${esc(ME.parent_name||'-')}</span>`;
 }
-
-/* ---------- announcements ---------- */
-function annCard(a,color){
-  return `<div class="card card-pad ann" style="margin-bottom:12px;border-left:4px solid ${color}">
-    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">
-      <div style="font-weight:800;color:var(--navy);font-size:16px">${esc(a.title||'')}</div>
-      <span class="muted" style="font-size:11.5px">${a.author?esc(a.author)+' · ':''}${a.date?prettyDate(a.date):''}</span></div>
-    <div style="white-space:pre-line;color:#374151;font-size:14px;margin-top:6px">${esc(a.body||'')}</div></div>`;
-}
-async function renderAnnouncements(){
-  const box=document.getElementById('annList'); box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
-  try{ ANN=await API.getAnnouncements()||[]; }catch(e){ box.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
-  box.innerHTML=ANN.filter(a=>!a.class_group).map(a=>annCard(a,'var(--sky)')).join('')
-    || '<div class="card card-pad muted" style="text-align:center">Belum ada pengumuman.</div>';
-}
-async function renderClassBoard(){
-  const box=document.getElementById('cbList'); box.innerHTML='<div class="card card-pad muted">Memuat…</div>';
-  document.getElementById('cbSub').textContent=ME.class_group?('Kelas: '+ME.class_group):'Pengumuman khusus kelasmu';
-  if(!ME.class_group){ box.innerHTML='<div class="card card-pad muted" style="text-align:center">Kamu belum dimasukkan ke kelas/grup. Hubungi admin.</div>'; return; }
-  try{ ANN=await API.getAnnouncements()||[]; }catch(e){ box.innerHTML='<div class="card card-pad" style="color:var(--red)">Gagal: '+esc(e.message||e)+'</div>'; return; }
-  box.innerHTML=ANN.filter(a=>a.class_group===ME.class_group).map(a=>annCard(a,'var(--orange)')).join('')
-    || '<div class="card card-pad muted" style="text-align:center">Belum ada pengumuman kelas.</div>';
-}
-
-/* ---------- diskusi kelas (per grup kelas, polling) ---------- */
-function myRoom(){ return ME.class_group ? ('kelas:'+ME.class_group) : ''; }
-const discPoller=makeChatPoller(list=>renderChatFeed(document.getElementById('discFeed'),list,ME.id),4000);
-async function renderDiscuss(){
-  const feed=document.getElementById('discFeed'); const sub=document.getElementById('discSub');
-  const room=myRoom();
-  if(!room){ feed.innerHTML='<div class="muted" style="text-align:center;padding:24px">Kamu belum dimasukkan ke kelas/grup. Hubungi admin untuk diatur dulu ya.</div>'; sub.textContent='Belum ada kelas'; return; }
-  sub.textContent='Kelas: '+ME.class_group+' — ngobrol bareng teman sekelas 🙂';
-  feed.innerHTML='<div class="muted">Memuat…</div>';
-  discPoller.start(room);
-}
-async function postDiscuss(){
-  const room=myRoom(); if(!room){ toast('Belum ada kelas/grup','err'); return; }
-  const inp=document.getElementById('discInput'); const msg=inp.value.trim();
-  if(!msg) return; inp.value='';
-  try{
-    await API.addChat({room, sender_id:ME.id, sender_name:ME.nama||'Siswa', role:'murid', message:msg});
-    discPoller.refresh();
-  }catch(e){ toast('Gagal kirim: '+(e.message||e),'err'); inp.value=msg; }
+async function changePin(){
+  const o=document.getElementById('acOld').value, n=document.getElementById('acNew').value;
+  if(String(o)!==String(ME.pin)){ toast('Current PIN is incorrect','err'); return; }
+  if(!/^\d{4}$/.test(n)){ toast('New PIN must be 4 digits','err'); return; }
+  try{ await API.updateStudent({id:ME.id,pin:n}); ME.pin=n; ['acOld','acNew'].forEach(i=>document.getElementById(i).value=''); try{ const s=JSON.parse(sessionStorage.getItem('kw_stu')||'null'); if(s){ s.p=n; sessionStorage.setItem('kw_stu',JSON.stringify(s)); } }catch(e){} toast('PIN updated ✅','ok'); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
 }
 </script>
 <script>

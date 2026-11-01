@@ -33,7 +33,7 @@ const STAR_SVG = `
 </svg>`;
 
 function logoBlock(name, sub){
-  return `<div class="ls-logo"><img src="assets/logo.png" class="ls-logo-img" alt="Kwelingo">${sub?`<span class="ls-sub">${sub}</span>`:''}</div>`;
+  return `<div class="ls-logo"><img src="assets/logo-h.png" class="ls-logo-img" alt="Kwelingo Academy" onerror="this.onerror=null;this.src='assets/logo.png'">${sub?`<span class="ls-sub">${sub}</span>`:''}</div>`;
 }
 
 /* ---- Formatting -------------------------------------------- */
@@ -53,12 +53,12 @@ function prettyDate(iso){
   const d=new Date(iso+ (iso.length===10?'T00:00:00':''));
   if(isNaN(d)) return iso;
   const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const mon=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return `${d.getDate()} ${mon[d.getMonth()]} ${d.getFullYear()}`;
 }
 function dayName(iso){
   const d=new Date(iso+'T00:00:00'); if(isNaN(d)) return '';
-  return ['Min','Sen','Sel','Rab','Kam','Jum','Sab'][d.getDay()];
+  return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
 }
 function longToday(){
   const d=new Date();
@@ -201,7 +201,7 @@ const SCRIPT_API = {
   async _post(payload){
     if(DEMO_MODE) return DEMO.handle(payload);
     const isWrite=/^(add|update|delete|save|change)/.test(payload.action||'');
-    if(isWrite && SCRIPT_API._busy) throw new Error('Masih menyimpan permintaan sebelumnya — tunggu sebentar, jangan klik dua kali.');
+    if(isWrite && SCRIPT_API._busy) throw new Error('Still saving the previous request — please wait a moment, do not double-click.');
     if(isWrite) SCRIPT_API._busy=true;
     const tries = isWrite ? 1 : 3;   // baca (get/login) di-retry kalau server ngadat sesaat
     try{
@@ -212,14 +212,14 @@ const SCRIPT_API = {
           text=await r.text();
         }catch(netErr){
           if(i<tries-1){ await new Promise(res=>setTimeout(res,600*(i+1))); continue; }
-          throw new Error('Koneksi ke server gagal. Coba refresh halaman.');
+          throw new Error('Connection to the server failed. Please refresh the page.');
         }
         let j=null; try{ j=JSON.parse(text); }catch(_){ j=null; }
         if(j===null){   // dapat HTML/non-JSON (server ngadat sesaat)
           if(i<tries-1){ await new Promise(res=>setTimeout(res,600*(i+1))); continue; }
           throw new Error(isWrite
-            ? 'Server sesaat tidak merespons dengan benar. Data KEMUNGKINAN sudah tersimpan — refresh & cek dulu sebelum menyimpan ulang.'
-            : 'Server sedang sibuk, gagal memuat data. Silakan refresh halaman.');
+            ? 'The server did not respond correctly for a moment. Your data was MOST LIKELY saved — refresh & check before saving again.'
+            : 'The server is busy and failed to load data. Please refresh the page.');
         }
         if(j.status==='error') throw new Error(j.message);   // error asli dari server → jangan diulang
         return j.data;
@@ -259,6 +259,9 @@ const SCRIPT_API = {
   saveTutorBonus:(d)   => SCRIPT_API._post({action:'saveTutorBonus',...d}),
 
   uploadFile  : (base64,filename) => SCRIPT_API._post({action:'uploadFile',base64,filename}),
+  list   : (table,filters={},order) => SCRIPT_API._post({action:'list',table,filters,order}),
+  upsert : (table,d) => SCRIPT_API._post({action:'upsert',table,d}),
+  remove : (table,id) => SCRIPT_API._post({action:'remove',table,id}),
 
   // Teaching Resources (modul PDF — owner upload, guru view-only)
   getResources : ()  => SCRIPT_API._post({action:'getResources'}),
@@ -268,6 +271,12 @@ const SCRIPT_API = {
   getPayroll   : (o={}) => SCRIPT_API._post({action:'getPayroll',...o}),
   savePayroll  : (d) => SCRIPT_API._post({action:'savePayroll',...d}),
   deletePayroll:(id)=> SCRIPT_API._post({action:'deletePayroll',id}),
+  getParents:()=> SCRIPT_API._post({action:'getParents'}),
+  saveParent:(d)=> SCRIPT_API._post({action:'saveParent',...d}),
+  deleteParent:(id)=> SCRIPT_API._post({action:'deleteParent',id}),
+  getClassGroups:()=> SCRIPT_API._post({action:'getClassGroups'}),
+  saveClassGroup:(d)=> SCRIPT_API._post({action:'saveClassGroup',...d}),
+  deleteClassGroup:(id)=> SCRIPT_API._post({action:'deleteClassGroup',id}),
   // Student portal: pengumuman, quiz, leaderboard, diskusi
   getAnnouncements:() => SCRIPT_API._post({action:'getAnnouncements'}),
   addAnnouncement:(d) => SCRIPT_API._post({action:'addAnnouncement',...d}),
@@ -304,22 +313,30 @@ const SCRIPT_API = {
    SB_API — Supabase (PostgREST) backend UTAMA
    ============================================================ */
 const SB_COLS = {
-  students:['id','nama','username','school','address','dob','grade','parent_name','wa_ortu','tutor_id','schedule','class_group','fee_per_meeting','fee_tentor','meeting_minutes','deposit_meetings','add_fee','add_fee_note','pin','active','link_id'],
-  tutors:['id','nama','username','subject','level','address','dob','wa','pin'],
-  classes:['id','date','student_id','tutor_id','start_time','end_time','duration','type','topic','note','material_url','doc_url','stu_in','stu_out','tut_in','tut_out','lesson_plan','status','req_by','req_note','attend','resched_date','resched_time','resched_note','rec_audio','rec_video'],
+  students:['id','nama','username','school','address','dob','grade','gender','student_wa','parent_name','wa_ortu','tutor_id','schedule','class_group','program','level','class_type','class_id','start_date','learning_mode','course_due','status','fee_per_meeting','fee_tentor','meeting_minutes','deposit_meetings','add_fee','add_fee_note','pin','active','link_id','notes','email','parent_relation'],
+  tutors:['id','nama','username','subject','level','address','dob','wa','pin','category','age_group','employment_type','joining_date','teaching_location','program','bank_name','bank_holder','bank_account','status','photo_url','gender','email','bio','notes'],
+  parents:['id','parent_id','nama','wa','linked_students','status','relation'],
+  class_groups:['id','class_id','name','program','tutor_id','student_ids','schedule','start_date','total_sessions','min_cert','status','level','room','mode','days','start_time','end_time','end_date','admin_notes','max_students'],
+  lesson_plans:['id','tutor_id','group_id','date','unit','topic','objectives','reading','listening','speaking','writing','practice','production','extended','status','admin_note','submitted_at'],
+  dev_notes:['id','student_id','tutor_id','group_id','date','topic','strengths','improve','strategy','encourage'],
+  class_applications:['id','group_id','tutor_id','status','note','responded_at'],
+  classes:['id','date','student_id','tutor_id','start_time','end_time','duration','type','topic','note','material_url','doc_url','stu_in','stu_out','tut_in','tut_out','lesson_plan','status','req_by','req_note','attend','resched_date','resched_time','resched_note','rec_audio','rec_video','attend_note','group_id','room','session_type','req_kind','req_status','req_at','admin_note','orig_date','orig_time','fee','req_reason'],
   deposit:['student_id','paid_meetings','minutes_total','minutes_used','fee_per_meeting','last_paid','status'],
-  payments:['id','student_id','month','pay_date','meetings','price_per_meet','duration','deposit_total','carry_in','extra_minutes','add_fee1','add_fee2','add_fee2_note','next_meetings','next_deposit','grand_total','status','proof_url'],
-  resources:['id','title','subject','level','file_url','note'],
-  payroll:['id','tutor_id','month','amount','transfer_date','proof_url','note','status'],
-  announcements:['id','title','body','date','class_group','author'],
-  quizzes:['id','title','subject','level','questions'],
-  quiz_results:['id','quiz_id','student_id','student_name','score','total','taken_at'],
+  payments:['id','student_id','month','pay_date','meetings','price_per_meet','duration','deposit_total','carry_in','extra_minutes','add_fee1','add_fee2','add_fee2_note','next_meetings','next_deposit','grand_total','status','proof_url','invoice_no','issue_date','due_date','program','level','note','reminder_at','paid_at','method'],
+  resources:['id','title','subject','level','file_url','note','program','unit','kind','category','size','status','updated_at'],
+  payroll:['id','tutor_id','month','amount','transfer_date','proof_url','note','status','sessions','generated_at','confirmed_at','processing_at','sent_at'],
+  announcements:['id','title','body','date','class_group','author','audience','program','level','group_id','status','publish_at','attach_url','attach_name'],
+  teacher_requests:['id','tutor_id','kind','group_id','class_date','start_time','new_date','new_time','start_date','end_date','leave_type','reason','note','attach_url','status','admin_note','decided_at','decided_by'],
+  programs:['id','name','code','category','audience','levels','duration','sessions','min_cert','price','status','description','objectives','curriculum','color'],
+  certificates:['id','student_id','group_id','program','level','attendance','cert_no','mode','file_url','status','issued_at','completion_date','note','issued_by'],
+  quizzes:['id','title','subject','level','questions','time_limit','due_date','program','group_id','unit'],
+  quiz_results:['id','quiz_id','student_id','student_name','score','total','taken_at','answers'],
   discussion:['id','student_id','name','message'],
   ratings:['id','class_id','student_id','tutor_id','stars','comment','scores','liked','improve'],
-  diary:['id','student_id','tutor_id','author','message'],
-  tasks:['id','student_id','tutor_id','title','detail','type','due_date','status','done_at','submit_url','submit_text','submit_at','points','feedback','graded_at'],
+  diary:['id','student_id','tutor_id','author','message','group_id','class_date','learned','struggle','resolve','teacher_comment','comment_at','draft'],
+  tasks:['id','student_id','tutor_id','title','detail','type','due_date','status','done_at','submit_url','submit_text','submit_at','points','feedback','graded_at','group_id','batch_id','unit','attach_url','due_time','visible'],
   chat:['id','room','sender_id','sender_name','role','message'],
-  tboard:['id','title','body','date','author'],
+  tboard:['id','title','body','date','author','program','attach_url','attach_name'],
   tboard_read:['id','board_id','reader_id','reader_name','read_at'],
 };
 const sbPick=(o,cols)=>{const r={};cols.forEach(k=>{ if(o[k]!==undefined && o[k]!==null) r[k]=o[k]; });return r;};
@@ -327,7 +344,7 @@ const SB = {
   base: (SUPABASE_URL||'').replace(/\/$/,'')+'/rest/v1/',
   _busy:false,
   async req(path,{method='GET',body=null,prefer=null,isWrite=false}={}){
-    if(isWrite && SB._busy) throw new Error('Masih menyimpan permintaan sebelumnya — tunggu sebentar, jangan klik dua kali.');
+    if(isWrite && SB._busy) throw new Error('Still saving the previous request — please wait a moment, do not double-click.');
     if(isWrite) SB._busy=true;
     const headers={apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY};
     if(body) headers['Content-Type']='application/json';
@@ -341,7 +358,7 @@ const SB = {
           text=await res.text();
         }catch(netErr){
           if(i<tries-1){ await new Promise(r=>setTimeout(r,500*(i+1))); continue; }
-          throw new Error('Koneksi ke server gagal. Coba refresh halaman.');
+          throw new Error('Connection to the server failed. Please refresh the page.');
         }
         if(!res.ok){
           if(!isWrite && res.status>=500 && i<tries-1){ await new Promise(r=>setTimeout(r,500*(i+1))); continue; }
@@ -358,9 +375,9 @@ const SB = {
 async function sbLogin(table,login,pin){
   const v=SB.enc(String(login||'').trim());
   const rows=await SB.req(`${table}?or=(username.ilike.${v},nama.ilike.${v},id.eq.${v})&select=*`);
-  if(!rows.length) throw new Error(table==='students'?'Murid tidak ditemukan':'Guru tidak ditemukan');
+  if(!rows.length) throw new Error(table==='students'?'Student not found':'Teacher not found');
   const hit=rows.find(x=>String(x.pin)===String(pin));
-  if(!hit) throw new Error('PIN salah');
+  if(!hit) throw new Error('Incorrect PIN');
   return hit;
 }
 function sbClassQuery(o){
@@ -385,8 +402,8 @@ const SB_API = {
     const key=role==='master'?'MASTER_PIN':'ADMIN_PIN';
     const rows=await SB.req(`app_settings?key=eq.${key}&select=value`);
     const cur=rows[0]?rows[0].value:'1234';
-    if(String(oldPin)!==String(cur)) return {ok:false,message:'Password lama salah.'};
-    if(!/^\d{4,10}$/.test(String(newPin||''))) return {ok:false,message:'Password baru harus 4–10 digit angka.'};
+    if(String(oldPin)!==String(cur)) return {ok:false,message:'Old password is incorrect.'};
+    if(!/^\d{4,10}$/.test(String(newPin||''))) return {ok:false,message:'New password must be 4–10 digits.'};
     await SB.req('app_settings',{method:'POST',body:{key,value:String(newPin)},prefer:'resolution=merge-duplicates,return=minimal',isWrite:true});
     return {ok:true};
   },
@@ -478,6 +495,14 @@ const SB_API = {
     return {id};
   },
   async deletePayroll(id){ await SB.req('payroll?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
+  // ---- Parents ----
+  getParents:()=> SB.req('parents?select=*&order=nama.asc'),
+  async saveParent(d){ const id=d.id||uid(); const row=sbPick({...d,id},SB_COLS.parents); await SB.req('parents',{method:'POST',body:row,prefer:'resolution=merge-duplicates,return=minimal',isWrite:true}); return {id}; },
+  async deleteParent(id){ await SB.req('parents?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
+  // ---- Class groups (cohorts) ----
+  getClassGroups:()=> SB.req('class_groups?select=*&order=created_at.desc'),
+  async saveClassGroup(d){ const id=d.id||uid(); const row=sbPick({...d,id},SB_COLS.class_groups); await SB.req('class_groups',{method:'POST',body:row,prefer:'resolution=merge-duplicates,return=minimal',isWrite:true}); return {id}; },
+  async deleteClassGroup(id){ await SB.req('class_groups?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
   // ---- Pengumuman ----
   getAnnouncements:()=> SB.req('announcements?select=*&order=created_at.desc'),
   async addAnnouncement(d){
@@ -592,12 +617,26 @@ const SB_API = {
     if(!res.ok){
       const t=await res.text().catch(()=> '');
       if(res.status===400||res.status===404||/bucket/i.test(t))
-        throw new Error("Bucket 'materials' belum ada di Supabase. Jalankan supabase-storage.sql dulu.");
-      throw new Error('Upload gagal: '+(t||('HTTP '+res.status)));
+        throw new Error("The 'materials' bucket does not exist in Supabase yet. Run supabase-storage.sql first.");
+      throw new Error('Upload failed: '+(t||('HTTP '+res.status)));
     }
     const url=`${(SUPABASE_URL||'').replace(/\/$/,'')}/storage/v1/object/public/${bucket}/${path}`;
     return {url,view:url,name:filename};
   },
+  // ---- Generic CRUD (rev4+ modules): list / upsert / remove ----
+  list(table,filters={},order='created_at.desc'){
+    let q=table+'?select=*';
+    Object.entries(filters||{}).forEach(([k,v])=>{ if(v!==undefined&&v!==null&&v!=='') q+='&'+k+'=eq.'+SB.enc(v); });
+    if(order) q+='&order='+order;
+    return SB.req(q);
+  },
+  async upsert(table,d){
+    const id=d.id||uid();
+    const row=sbPick({...d,id},SB_COLS[table]||Object.keys(d));
+    await SB.req(table,{method:'POST',body:row,prefer:'resolution=merge-duplicates,return=minimal',isWrite:true});
+    return {id};
+  },
+  async remove(table,id){ await SB.req(table+'?id=eq.'+SB.enc(id),{method:'DELETE',prefer:'return=minimal',isWrite:true}); return {deleted:id}; },
 };
 // data URL (base64) → Blob untuk upload ke Storage
 function dataURLtoBlob(dataurl){
@@ -619,7 +658,7 @@ function matLinks(u){
   return String(u).split('|').filter(Boolean).map((x,i)=>{
     const name=(x.split('/').pop().split('?')[0]||('File '+(i+1))).slice(0,26);
     const real = x.startsWith('http')||x.startsWith('data:');
-    if(!real) return `<span class="muted" title="File lama belum ter-upload — minta guru upload ulang">📄 ${name}</span>`;
+    if(!real) return `<span class="muted" title="Old file not uploaded yet — ask the teacher to re-upload">📄 ${name}</span>`;
     const isData=x.startsWith('data:');
     const isImg=/\.(jpe?g|png)(\?|$)/i.test(x)||x.startsWith('data:image');
     const isPdf=/\.pdf(\?|$)/i.test(x)||/^data:application\/pdf/i.test(x);
@@ -644,11 +683,12 @@ function matLinks(u){
    · 'declined' (ditolak) · 'reschedule' (minta ganti jadwal, nunggu ACC) · 'done' (selesai).
    Kelas lama tanpa status dianggap 'scheduled'. */
 const CLASS_STATUS = {
-  requested:{label:'Menunggu ACC',cls:'badge-pending',ic:'🕒'},
-  scheduled:{label:'Terjadwal',cls:'badge-active',ic:'📅'},
-  reschedule:{label:'Minta Reschedule',cls:'badge-pending',ic:'🔄'},
-  declined:{label:'Ditolak',cls:'badge-off',ic:'✖️'},
-  done:{label:'Selesai',cls:'badge-paid',ic:'✅'},
+  requested:{label:'Awaiting Approval',cls:'badge-pending',ic:'🕒'},
+  scheduled:{label:'Scheduled',cls:'badge-active',ic:'📅'},
+  reschedule:{label:'Reschedule Requested',cls:'badge-pending',ic:'🔄'},
+  declined:{label:'Declined',cls:'badge-off',ic:'✖️'},
+  done:{label:'Done',cls:'badge-paid',ic:'✅'},
+  cancelled:{label:'Cancelled',cls:'badge-off',ic:'🚫'},
 };
 function classStatus(c){ return (c&&c.status) ? c.status : 'scheduled'; }
 function statusBadge(c){
@@ -660,32 +700,36 @@ function isSession(c){ const s=classStatus(c); return s==='scheduled'||s==='done
 
 /* Attendance absensi: '', 'hadir', 'izin', 'alpa' (alpha). */
 const ATTEND_META = {
-  hadir:{label:'Hadir',cls:'badge-paid',ic:'✅'},
-  izin:{label:'Izin',cls:'badge-pending',ic:'📝'},
-  alpa:{label:'Alpa',cls:'badge-off',ic:'❌'},
+  hadir:{label:'Present',cls:'badge-paid',ic:'✅'},
+  telat:{label:'Late',cls:'badge-purple',ic:'🕒'},
+  sakit:{label:'Sick',cls:'badge-pending',ic:'🤒'},
+  izin:{label:'Excused',cls:'badge-active',ic:'📝'},
+  alpa:{label:'Absent',cls:'badge-off',ic:'❌'},
 };
 function attendBadge(v){
   const a=ATTEND_META[v];
   if(a) return `<span class="badge ${a.cls}">${a.ic} ${a.label.toUpperCase()}</span>`;
-  return '<span class="badge badge-pending">🕒 TERJADWAL</span>';
+  return '<span class="badge badge-pending">🕒 SCHEDULED</span>';
 }
 // Badge yang konsisten dengan perhitungan %: sesi lampau yang belum ditandai dianggap hadir.
 function attendBadgeFor(c){
   if(c.attend) return attendBadge(c.attend);
   if(isSession(c) && c.date && c.date<todayStr())
-    return '<span class="badge badge-paid" title="Belum ditandai guru — dihitung hadir">✅ HADIR</span>';
-  return '<span class="badge badge-pending">🕒 TERJADWAL</span>';
+    return '<span class="badge badge-paid" title="Not marked by teacher — counted as present">✅ PRESENT</span>';
+  return '<span class="badge badge-pending">🕒 SCHEDULED</span>';
 }
 /* Hitung statistik kehadiran dari array kelas (1 murid).
    pct = hadir / (sesi yang sudah di-mark hadir/izin/alpa) × 100.
    Sesi lampau tanpa mark dianggap hadir (kompatibel data lama). */
 function attendanceStats(classes){
   const ses=(classes||[]).filter(isSession);
-  let hadir=0,izin=0,alpa=0,belum=0;
+  let hadir=0,izin=0,alpa=0,belum=0,telat=0,sakit=0;
   const today=todayStr();
   ses.forEach(c=>{
     const a=c.attend;
     if(a==='hadir')hadir++;
+    else if(a==='telat'){hadir++;telat++;}       // late still counts as attended
+    else if(a==='sakit'){izin++;sakit++;}        // sick = not attended (eligible for recovery)
     else if(a==='izin')izin++;
     else if(a==='alpa')alpa++;
     else if(c.date && c.date<today) hadir++;    // sesi lampau belum di-mark → anggap hadir
@@ -693,7 +737,7 @@ function attendanceStats(classes){
   });
   const counted=hadir+izin+alpa;
   const pct=counted?Math.round(hadir/counted*100):0;
-  return {total:ses.length,hadir,izin,alpa,belum,counted,pct};
+  return {total:ses.length,hadir,izin,alpa,belum,counted,pct,telat,sakit};
 }
 const CERT_MIN=80;   // ambang kehadiran & penyelesaian tugas untuk Certificate of Completion
 // Penyelesaian Extended Practice (tugas). Tanpa tugas → dianggap 100% (tidak menghalangi).
@@ -714,78 +758,66 @@ function certEligible(stats,tstats){
 function openCertificate(o){
   o=o||{};
   const nm=esc(o.name||'Student');
-  const prog=esc(o.program||'Language Program');
+  const prog=esc(o.program||'Language Program'), lvl=esc(o.level||'');
   const pct=o.pct!=null?o.pct:'';
-  const period=esc(o.period||'');
   const sessions=o.sessions!=null?o.sessions:'';
-  const issuer=esc(o.issuer||'Kwelingo Academy');
   const dateStr=esc(o.date||longToday());
   const no=esc(o.no||('KWE/'+new Date().getFullYear()+'/'+Math.floor(1000+Math.random()*9000)));
-  const logo=location.href.replace(/[^/]*$/,'')+'assets/logo.png';
+  const base=location.href.replace(/[^/]*$/,'');
+  const logo=base+'assets/logo-h.png', logo2=base+'assets/logo.png';
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Certificate — ${nm}</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Great+Vibes&display=swap');
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Poppins',sans-serif;background:#f3ece0;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-  .cert{width:1000px;max-width:100%;aspect-ratio:1.414/1;background:#FFF9F0;position:relative;padding:60px 64px;
-    border:3px solid #E9A77C;border-radius:14px;box-shadow:0 14px 50px rgba(0,0,0,.14);overflow:hidden}
-  .cert:before{content:"";position:absolute;inset:14px;border:1.5px solid #8EC9D9;border-radius:8px;pointer-events:none}
-  .blob{position:absolute;border-radius:50%;opacity:.5}
-  .b1{width:220px;height:220px;background:#F4D98B;top:-90px;right:-70px}
-  .b2{width:180px;height:180px;background:#A8C9A0;bottom:-80px;left:-60px}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:#EEF3FA;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:60px 24px 24px}
+  .cert{width:1000px;max-width:100%;aspect-ratio:1.414/1;background:#fff;position:relative;padding:56px 70px;border-radius:10px;box-shadow:0 14px 50px rgba(19,35,91,.16);overflow:hidden}
+  .w1{position:absolute;left:-120px;top:-140px;width:420px;height:420px;border-radius:50%;background:linear-gradient(135deg,#22B2DC,#1F6FEB);opacity:.9}
+  .w2{position:absolute;left:-60px;top:-170px;width:380px;height:380px;border-radius:50%;background:#F99400;opacity:.85}
+  .w3{position:absolute;right:-140px;bottom:-160px;width:440px;height:440px;border-radius:50%;background:linear-gradient(135deg,#F99400,#FFC24D);opacity:.9}
+  .w4{position:absolute;right:-60px;bottom:-200px;width:380px;height:380px;border-radius:50%;background:#22B2DC;opacity:.85}
   .inner{position:relative;z-index:2;text-align:center}
-  .brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px}
-  .brand img{height:52px}
-  .brand .bn{font-family:'Fredoka';font-size:26px;font-weight:700;color:#8EC9D9}
-  .cap{letter-spacing:4px;font-size:12px;color:#B08968;margin:14px 0 4px}
-  .title{font-family:'Fredoka';font-size:40px;font-weight:700;color:#4B4540;margin-bottom:18px}
-  .pre{font-size:13px;color:#6b6258}
-  .name{font-family:'Fredoka';font-size:38px;font-weight:700;color:#E9A77C;margin:10px 0 6px;border-bottom:2px dashed #e0cdb6;display:inline-block;padding:0 26px 8px}
-  .desc{font-size:14px;color:#4B4540;max-width:640px;margin:16px auto 0;line-height:1.6}
-  .desc b{color:#3E8A9E}
-  .meta{display:flex;justify-content:center;gap:40px;margin-top:26px}
-  .meta .m .v{font-family:'Fredoka';font-size:22px;font-weight:700;color:#7FB37A}
-  .meta .m .l{font-size:11px;color:#8a8178;letter-spacing:1px}
-  .foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;padding:0 20px}
-  .sig{text-align:center;min-width:200px}
-  .sig .ln{border-top:1.5px solid #4B4540;margin-bottom:6px}
-  .sig .r{font-size:11px;color:#8a8178}
-  .sig b{color:#4B4540;font-size:13px}
-  .seal{width:92px;height:92px;border-radius:50%;background:radial-gradient(circle,#F4D98B,#E9A77C);display:flex;align-items:center;justify-content:center;
-    font-family:'Fredoka';font-weight:700;color:#fff;font-size:12px;text-align:center;line-height:1.1;box-shadow:0 4px 14px rgba(233,167,124,.5)}
-  .no{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:10.5px;color:#b3a898;z-index:2}
-  .pbar{position:fixed;top:0;left:0;right:0;background:#3E8A9E;color:#fff;padding:10px;text-align:center;font-size:13px;z-index:99}
-  .pbar button{background:#fff;color:#3E8A9E;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px;font-family:'Poppins'}
-  @media print{.pbar{display:none}body{background:#fff;padding:0}.cert{box-shadow:none;border-color:#E9A77C}@page{size:A4 landscape;margin:0}}
+  .logo{height:64px;margin-bottom:8px}
+  .title{font-size:58px;font-weight:800;color:#13235B;letter-spacing:4px;line-height:1;margin-top:6px}
+  .sub{font-size:15px;letter-spacing:6px;color:#13235B;font-weight:700;margin:6px 0 22px}
+  .pre{font-size:14px;color:#55627F}
+  .name{font-family:'Great Vibes',cursive;font-size:62px;color:#13235B;margin:4px 0 2px;border-bottom:2px solid #E2C88E;display:inline-block;padding:0 40px 2px;min-width:420px}
+  .desc{font-size:15px;color:#3C4A6B;max-width:640px;margin:16px auto 0;line-height:1.6}
+  .desc b{color:#13235B}
+  .meta{font-size:12px;color:#7A88A6;margin-top:10px}
+  .foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:34px;padding:0 30px}
+  .sig{text-align:center;min-width:210px}
+  .sig .s{font-family:'Great Vibes',cursive;font-size:30px;color:#13235B;height:38px}
+  .sig .ln{border-top:1.5px solid #13235B;margin-bottom:6px}
+  .sig b{color:#13235B;font-size:13px;display:block}.sig .r{font-size:11px;color:#7A88A6}
+  .seal{width:104px;height:104px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE08A,#F99400 70%);display:flex;align-items:center;justify-content:center;border:5px solid #FFD36B;box-shadow:0 6px 18px rgba(249,148,0,.45);font-weight:800;color:#fff;font-size:34px;position:relative}
+  .seal:after{content:"";position:absolute;bottom:-34px;left:26px;width:0;height:0;border-left:24px solid transparent;border-right:24px solid transparent;border-top:40px solid #D8352A;z-index:-1}
+  .no{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-size:10.5px;color:#9AA6BF;z-index:2}
+  .pbar{position:fixed;top:0;left:0;right:0;background:#1F6FEB;color:#fff;padding:10px;text-align:center;font-size:13px;z-index:99}
+  .pbar button{background:#fff;color:#1F6FEB;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px}
+  @media print{.pbar{display:none}body{background:#fff;padding:0}.cert{box-shadow:none;border-radius:0}@page{size:A4 landscape;margin:0}}
 </style></head><body>
-  <div class="pbar">💾 Simpan sebagai PDF lewat tombol ini → pilih <b>Save as PDF</b>
-    <button onclick="window.print()">🖨️ Download / Print</button></div>
+  <div class="pbar">💾 Save as PDF: click the button → choose <b>Save as PDF</b> <button onclick="window.print()">⬇️ Download / Print</button></div>
   <div class="cert">
-    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="w1"></div><div class="w2"></div><div class="w3"></div><div class="w4"></div>
     <div class="inner">
-      <div class="brand"><img src="${logo}" alt=""><span class="bn">${issuer}</span></div>
-      <div class="cap">HOME FOR LANGUAGE LEARNERS</div>
-      <div class="title">Certificate of Completion</div>
-      <div class="pre">This certificate is proudly presented to</div>
+      <img class="logo" src="${logo}" onerror="this.src='${logo2}'" alt="Kwelingo Academy">
+      <div class="title">CERTIFICATE</div>
+      <div class="sub">OF COMPLETION</div>
+      <div class="pre">This is to certify that</div>
       <div class="name">${nm}</div>
-      <div class="desc">for successfully completing the <b>${prog}</b> program at ${issuer}
-        with an attendance of <b>${pct}%</b>${period?` during <b>${period}</b>`:''}, demonstrating
-        dedication, consistency, and a genuine love for learning languages.</div>
-      <div class="meta">
-        <div class="m"><div class="v">${pct}%</div><div class="l">ATTENDANCE</div></div>
-        ${sessions!==''?`<div class="m"><div class="v">${sessions}</div><div class="l">SESSIONS</div></div>`:''}
-      </div>
+      <div class="desc">has successfully completed<br><b>${prog}${lvl?' – Level '+lvl:''}</b><br>at Kwelingo Academy.</div>
+      ${pct!==''||sessions!==''?`<div class="meta">${pct!==''?`Attendance ${pct}%`:''}${pct!==''&&sessions!==''?' · ':''}${sessions!==''?`${sessions} sessions attended`:''}</div>`:''}
       <div class="foot">
-        <div class="sig"><div class="ln"></div><b>${issuer}</b><div class="r">Academy Director</div></div>
-        <div class="seal">KWE<br>HOME</div>
-        <div class="sig"><div class="ln"></div><b>${dateStr}</b><div class="r">Date Issued</div></div>
+        <div class="sig"><div class="s">Kwelingo</div><div class="ln"></div><b>Director</b><div class="r">Kwelingo Academy</div></div>
+        <div class="seal">K</div>
+        <div class="sig"><div class="s" style="font-family:'Plus Jakarta Sans';font-size:16px;font-weight:700;padding-top:14px">${dateStr}</div><div class="ln"></div><b>Date of Issue</b><div class="r">&nbsp;</div></div>
       </div>
     </div>
     <div class="no">Certificate No. ${no}</div>
   </div>
 </body></html>`;
   const w=window.open('','_blank');
-  if(!w){ toast('Izinkan pop-up untuk membuka sertifikat','err'); return; }
+  if(!w){ toast('Please allow pop-ups to open the certificate','err'); return; }
   w.document.write(html); w.document.close();
 }
 
@@ -795,23 +827,31 @@ function openCertificate(o){
 /* Status pembayaran murid: LUNAS / TERVERIFIKASI (lunas) ·
    MENUNGGU VERIFIKASI (bukti dikirim ortu) · BELUM BAYAR (tagihan). */
 const PAY_STATUS = {
-  'LUNAS':{cls:'badge-paid',ic:'✅'},
-  'TERVERIFIKASI':{cls:'badge-paid',ic:'✅'},
-  'MENUNGGU VERIFIKASI':{cls:'badge-pending',ic:'🕒'},
-  'BELUM BAYAR':{cls:'badge-off',ic:'📌'},
+  'LUNAS':{cls:'badge-paid',ic:'✅',label:'PAID'},
+  'TERVERIFIKASI':{cls:'badge-paid',ic:'✅',label:'VERIFIED'},
+  'MENUNGGU VERIFIKASI':{cls:'badge-pending',ic:'🕒',label:'AWAITING VERIFICATION'},
+  'BELUM BAYAR':{cls:'badge-off',ic:'📌',label:'UNPAID'},
 };
-function payStatusBadge(s){ s=String(s||'LUNAS').toUpperCase(); const m=PAY_STATUS[s]||PAY_STATUS['LUNAS']; return `<span class="badge ${m.cls}">${m.ic} ${s}</span>`; }
+function payStatusBadge(s){ s=String(s||'LUNAS').toUpperCase(); const m=PAY_STATUS[s]||PAY_STATUS['LUNAS']; return `<span class="badge ${m.cls}">${m.ic} ${m.label||s}</span>`; }
 function isPaid(s){ s=String(s||'').toUpperCase(); return s==='LUNAS'||s==='TERVERIFIKASI'; }
 
 /* ===== Notifikasi: status pembayaran ortu & status gaji guru ===== */
 const PAYROLL_PAID = ['DIBAYAR','DITERIMA','LUNAS','TRANSFER','SUDAH DIBAYAR','PAID','TERKIRIM'];
 function payrollPaid(s){ return PAYROLL_PAID.includes(String(s||'').toUpperCase().trim()); }
+/* Prepayment-slip workflow: GENERATED (by admin) → CONFIRMED (by teacher) → PROCESSING → DIBAYAR (sent) */
+const PAYROLL_FLOW={
+  GENERATED:{step:2,label:'Awaiting your confirmation',badge:'<span class="badge badge-pending">🕒 AWAITING CONFIRMATION</span>'},
+  CONFIRMED:{step:3,label:'Confirmed by teacher',badge:'<span class="badge badge-active">✔️ CONFIRMED</span>'},
+  PROCESSING:{step:3,label:'Payment processing',badge:'<span class="badge badge-purple">⏳ PROCESSING</span>'},
+  DIPROSES:{step:3,label:'Payment processing',badge:'<span class="badge badge-purple">⏳ PROCESSING</span>'},
+};
 function payrollStatusInfo(s){
   const raw=String(s||'DIPROSES').toUpperCase().trim();
-  if(payrollPaid(raw)) return {paid:true,label:'Sudah dibayar',badge:'<span class="badge badge-paid">✅ SUDAH DIBAYAR</span>'};
-  return {paid:false,label:'Belum / sedang diproses',badge:'<span class="badge badge-pending">🕒 '+(raw||'DIPROSES')+'</span>'};
+  if(payrollPaid(raw)) return {paid:true,step:4,label:'Paid',badge:'<span class="badge badge-paid">✅ PAID</span>'};
+  const f=PAYROLL_FLOW[raw]; if(f) return {paid:false,...f};
+  return {paid:false,step:2,label:'Pending',badge:'<span class="badge badge-pending">🕒 PENDING</span>'};
 }
-function monthName(m){ try{ return new Date(String(m)+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'}); }catch(e){ return m||''; } }
+function monthName(m){ try{ return new Date(String(m)+'-01').toLocaleDateString('en-US',{month:'long',year:'numeric'}); }catch(e){ return m||''; } }
 function rupiah(n){ return 'Rp '+(Number(n)||0).toLocaleString('id-ID'); }
 
 /* Render daftar notifikasi ke sebuah container. items:[{level:'warn|ok|info',icon,title,sub}] */
@@ -821,7 +861,7 @@ function renderNotif(box, items){
   box.style.display='';
   const col={warn:'var(--orange)',ok:'var(--green2)',info:'var(--blue)'};
   box.innerHTML='<div class="card card-pad" style="margin-bottom:18px;padding:14px 16px;border-left:4px solid var(--orange)">'
-    + '<div style="font-weight:700;color:var(--navy);margin-bottom:6px">🔔 Notifikasi <span style="background:var(--orange);color:#fff;border-radius:999px;font-size:11px;padding:1px 8px;margin-left:4px">'+items.length+'</span></div>'
+    + '<div style="font-weight:700;color:var(--navy);margin-bottom:6px">🔔 Notifications <span style="background:var(--orange);color:#fff;border-radius:999px;font-size:11px;padding:1px 8px;margin-left:4px">'+items.length+'</span></div>'
     + items.map(n=>`<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)">
         <span style="font-size:18px;line-height:1.3">${n.icon||'•'}</span>
         <div style="flex:1"><div style="font-weight:600;color:var(--ink);border-left:3px solid ${col[n.level]||col.info};padding-left:8px">${esc(n.title)}</div>
@@ -835,8 +875,8 @@ async function teacherPayNotifs(tutorId){
   rows=rows.slice().sort((a,b)=>String(b.month||'').localeCompare(String(a.month||'')));
   return rows.slice(0,3).map(r=>{
     const inf=payrollStatusInfo(r.status); const per=monthName(r.month);
-    if(inf.paid) return {level:'ok',icon:'💰',title:`Gaji ${per} sudah dikirim`,sub:(r.transfer_date?('Ditransfer '+prettyDate(r.transfer_date)+(r.amount?' · ':'')):'')+(r.amount?rupiah(r.amount):'')+(r.note?(' · '+r.note):'')};
-    return {level:'warn',icon:'⏳',title:`Gaji ${per} belum dikonfirmasi dikirim`,sub:'Status: '+(r.status||'sedang diproses')+'. Menunggu admin konfirmasi transfer.'};
+    if(inf.paid) return {level:'ok',icon:'💰',title:`Salary for ${per} has been sent`,sub:(r.transfer_date?('Transferred '+prettyDate(r.transfer_date)+(r.amount?' · ':'')):'')+(r.amount?rupiah(r.amount):'')+(r.note?(' · '+r.note):'')};
+    return {level:'warn',icon:'⏳',title:`Salary for ${per} not yet confirmed sent`,sub:'Status: '+inf.label+'. Awaiting admin transfer confirmation.'};
   });
 }
 
@@ -846,15 +886,15 @@ async function parentPayNotifs(studentId){
   return rows.filter(p=>!isPaid(p.status)).sort((a,b)=>String(a.month||'').localeCompare(String(b.month||''))).map(p=>{
     const per=monthName(p.month); const amt=p.grand_total||p.amount||p.next_deposit;
     const st=String(p.status||'').toUpperCase().trim();
-    if(st==='MENUNGGU VERIFIKASI') return {level:'info',icon:'🕒',title:`Pembayaran ${per} menunggu verifikasi`,sub:'Bukti sudah dikirim — menunggu admin memverifikasi.'};
-    return {level:'warn',icon:'📌',title:`Tagihan ${per} belum dibayar`,sub:(amt?('Jumlah: '+rupiah(amt)+' · '):'')+'Silakan bayar lalu upload bukti di menu Pembayaran.'};
+    if(st==='MENUNGGU VERIFIKASI') return {level:'info',icon:'🕒',title:`Payment for ${per} awaiting verification`,sub:'Proof submitted — awaiting admin verification.'};
+    return {level:'warn',icon:'📌',title:`Invoice for ${per} is unpaid`,sub:(amt?('Amount: '+rupiah(amt)+' · '):'')+'Please pay and upload proof in the Payment menu.'};
   });
 }
 
 /* Slip Pembayaran Fee Guru (bisa dipakai sebagai prepayment slip) — buka tab print/PDF */
 function openPayrollSlip(o){
   o=o||{};
-  const nm=esc(o.name||'Guru');
+  const nm=esc(o.name||'Teacher');
   const period=esc(o.period||'');
   const sessions=o.sessions!=null?o.sessions:'-';
   const fee=Number(o.fee)||0, bonus=Number(o.bonus)||0, total=(o.total!=null?Number(o.total):fee+bonus);
@@ -924,7 +964,7 @@ function openPayrollSlip(o){
   </div>
 </body></html>`;
   const w=window.open('','_blank');
-  if(!w){ toast('Izinkan pop-up untuk membuka slip','err'); return; }
+  if(!w){ toast('Please allow pop-ups to open the slip','err'); return; }
   w.document.write(html); w.document.close();
 }
 
@@ -938,29 +978,82 @@ function starsHTML(n,max){
 }
 function avgStars(list){ if(!list||!list.length) return 0; return list.reduce((a,r)=>a+(Number(r.stars)||0),0)/list.length; }
 const TASK_STATUS={
-  assigned:{label:'Ditugaskan',cls:'badge-pending',ic:'🕒'},
-  submitted:{label:'Dikumpulkan',cls:'badge-active',ic:'📤'},
-  graded:{label:'Dinilai',cls:'badge-paid',ic:'⭐'},
-  done:{label:'Selesai',cls:'badge-paid',ic:'✅'},   // kompatibel data lama
+  assigned:{label:'Assigned',cls:'badge-pending',ic:'🕒'},
+  submitted:{label:'Submitted',cls:'badge-active',ic:'📤'},
+  graded:{label:'Graded',cls:'badge-paid',ic:'⭐'},
+  done:{label:'Done',cls:'badge-paid',ic:'✅'},   // kompatibel data lama
 };
 function taskStatus(t){ const s=(t&&t.status)||'assigned'; return s==='done'?'submitted':s; }
 function taskBadge(s){ const m=TASK_STATUS[s||'assigned']||TASK_STATUS.assigned; return `<span class="badge ${m.cls}">${m.ic} ${m.label.toUpperCase()}</span>`; }
 // Jenis Extended Practice
 const TASK_TYPES={
-  assignment:'Assignment', writing:'Writing', lesson_review:'Lesson Review',
+  writing:'Writing', speaking:'Speaking', reading:'Reading', listening:'Listening', other:'Other',
+  assignment:'Assignment', lesson_review:'Lesson Review',
   final_project:'Final Project', peer_case:'Peer Case-Study', voice_video:'Voice/Video Recording',
 };
-function taskTypeLabel(t){ return TASK_TYPES[t]||'Tugas'; }
+const TASK_TYPE_META={
+  writing:{ic:'📝',cls:'badge-purple'}, speaking:{ic:'🎙️',cls:'badge-off'}, reading:{ic:'📖',cls:'badge-active'},
+  listening:{ic:'🎧',cls:'badge-paid'}, other:{ic:'☰',cls:'badge-pending'}, voice_video:{ic:'🎙️',cls:'badge-off'},
+  assignment:{ic:'📄',cls:'badge-grey'}, final_project:{ic:'🏁',cls:'badge-pending'}, lesson_review:{ic:'🔁',cls:'badge-grey'}, peer_case:{ic:'🤝',cls:'badge-grey'},
+};
+function taskTypeLabel(t){ return TASK_TYPES[t]||'Task'; }
+function taskTypeBadge(t){ const m=TASK_TYPE_META[t]||{ic:'📄',cls:'badge-grey'}; return `<span class="badge ${m.cls}">${m.ic} ${esc(taskTypeLabel(t))}</span>`; }
+
+/* ---- shared helpers for rev4–6 portals ---- */
+// Direct-message room id (order-independent): dm:<a>|<b>
+function dmRoom(a,b){ return 'dm:'+[String(a),String(b)].sort().join('|'); }
+// Teacher fee for one student-session, prorated by duration (same rule as Super Admin)
+function sessionFee(stu,c){
+  const norm=Number((stu||{}).meeting_minutes)||90, per=Number((stu||{}).fee_tentor)||0, dur=Number((c||{}).duration)||norm;
+  return Math.round(per/norm*dur);
+}
+function initials(name){ const p=String(name||'?').replace(/^(ms|mr|mrs|miss)\.?\s+/i,'').trim().split(/\s+/); return ((p[0]||'?')[0]+(p[1]?p[1][0]:'')).toUpperCase(); }
+function monthLabel(m){ try{ return new Date(String(m)+'-01T00:00:00').toLocaleDateString('en-US',{month:'long',year:'numeric'}); }catch(e){ return m; } }
+function shortDate(iso){ if(!iso) return '-'; const d=new Date(String(iso).slice(0,10)+'T00:00:00'); return isNaN(d)?iso:d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+
+/* Monthly Learning Report (rev6 format) — printable / Save as PDF.
+   o = {student, program, level, teacher, month:'YYYY-MM', rows:[{date,topic,strengths,improve,strategy}]} */
+function openMonthlyReport(o){
+  o=o||{}; const rows=o.rows||[];
+  const logo=location.href.replace(/[^/]*$/,'')+'assets/logo-h.png';
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Monthly Learning Report — ${esc(o.student||'')} — ${esc(monthLabel(o.month))}</title>
+<style>
+ @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+ *{box-sizing:border-box;margin:0;padding:0} body{font-family:'Plus Jakarta Sans',sans-serif;color:#1E2A4A;background:#F4F7FC;padding:24px}
+ .page{max-width:900px;margin:auto;background:#fff;border-radius:18px;padding:28px 30px;box-shadow:0 10px 40px rgba(19,35,91,.10)}
+ .hd{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:20px}
+ .hd img{height:58px} .ttl{background:#EEF4FF;border-radius:16px;padding:16px 26px;text-align:right}
+ .ttl h1{font-size:26px;color:#13235B;font-weight:800;line-height:1.1} .ttl h2{font-size:20px;color:#13235B;font-weight:800}
+ .info{background:#F5F8FD;border-radius:14px;padding:14px 18px;display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:13.5px;margin-bottom:18px;max-width:440px}
+ .info .k{color:#6B7A99}.info .v{font-weight:800;color:#13235B}
+ table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;border:1px solid #E6ECF5;border-radius:14px;overflow:hidden}
+ th{padding:12px 10px;text-align:left;font-size:12px;color:#13235B} td{padding:12px 10px;vertical-align:top;border-top:1px solid #E6ECF5;line-height:1.45}
+ th.d,td.d{width:84px;text-align:center} th.t{background:#EEF4FF} th.s{background:#E7F6EE} th.i{background:#FDECEC} th.g{background:#FFF5E2} th.d{background:#EEF4FF}
+ td.d b{display:block;font-size:16px;color:#13235B} td.d small{color:#6B7A99}
+ .empty{padding:30px;text-align:center;color:#6B7A99}
+ .bar{max-width:900px;margin:0 auto 14px;text-align:right} .bar button{background:#1F6FEB;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;font-family:inherit}
+ @media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.bar{display:none}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body>
+<div class="bar"><button onclick="window.print()">⬇️ Download / Save as PDF</button></div>
+<div class="page">
+ <div class="hd"><img src="${logo}" alt="Kwelingo Academy"><div class="ttl"><h1>Monthly Learning Report</h1><h2>${esc(monthLabel(o.month))}</h2></div></div>
+ <div class="info"><span class="k">Student Name</span><span class="v">${esc(o.student||'-')}</span><span class="k">Program</span><span class="v">${esc(o.program||'-')}</span><span class="k">Level</span><span class="v">${esc(o.level||'-')}</span><span class="k">Teacher</span><span class="v">${esc(o.teacher||'-')}</span></div>
+ <table><thead><tr><th class="d"># Date</th><th class="t">Topic</th><th class="s">⭐ Strengths<br><small>(Teacher's Comment)</small></th><th class="i">🎯 Areas to Improve<br><small>(Teacher's Comment)</small></th><th class="g">💡 Improvement Strategies<br><small>(Teacher's Comment)</small></th></tr></thead>
+ <tbody>${rows.length?rows.map((r,i)=>`<tr><td class="d"><b>${i+1}</b><small>${esc(shortDate(r.date))}</small></td><td>${esc(r.topic||'-')}</td><td>${esc(r.strengths||'-')}</td><td>${esc(r.improve||'-')}</td><td>${esc(r.strategy||'-')}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">No development notes for this month yet.</td></tr>'}</tbody></table>
+</div></body></html>`;
+  const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the report','err'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+}
 // Kategori rating kelas & guru (rubrik 1-5)
 const RATING_CATS=[
-  'Guru menjelaskan materi dengan jelas',
-  'Materi kelas bermanfaat',
-  'Pelajaran tersusun rapi',
-  'Guru mendorong partisipasi murid',
-  'Aktivitas kelas menarik',
-  'Tugas sesuai & pas',
-  'Suasana kelas nyaman',
-  'Secara keseluruhan saya puas dengan kelas ini',
+  'The teacher explains the material clearly',
+  'The class material is useful',
+  'The lesson is well organized',
+  'The teacher encourages student participation',
+  'The class activities are engaging',
+  'The assignments are appropriate',
+  'The class atmosphere is comfortable',
+  'Overall I am satisfied with this class',
 ];
 function parseScores(r){ try{ return r&&r.scores?(typeof r.scores==='string'?JSON.parse(r.scores):r.scores):[]; }catch(e){ return []; } }
 
@@ -972,10 +1065,10 @@ function renderChatFeed(el,list,meId){
   if(!el) return;
   el.innerHTML=(list||[]).map(m=>{
     const me=String(m.sender_id)===String(meId);
-    const role=m.role?`<span style="color:var(--muted);font-weight:500;font-size:10px"> · ${esc(m.role)}</span>`:'';
+    const RL={guru:'teacher',murid:'student',ortu:'parent',admin:'admin'}; const role=m.role?`<span style="color:var(--muted);font-weight:500;font-size:10px"> · ${esc(RL[m.role]||m.role)}</span>`:'';
     return `<div class="msg ${me?'me':''}"><div class="av">${(String(m.sender_name||'?')[0]||'?').toUpperCase()}</div>
       <div class="bub"><b>${esc(m.sender_name||'')}${role}</b>${esc(m.message||'')}<div class="t">${m.created_at?prettyDate(String(m.created_at).slice(0,10)):''}</div></div></div>`;
-  }).join('') || '<div class="muted" style="text-align:center;padding:20px">Belum ada pesan. Mulai percakapan 👋</div>';
+  }).join('') || '<div class="muted" style="text-align:center;padding:20px">No messages yet. Start the conversation 👋</div>';
   el.scrollTop=el.scrollHeight;
 }
 // Polling chat: panggil start(room) untuk mulai, stop() saat pindah view
@@ -1028,19 +1121,19 @@ function recCell(c){
    ============================================================ */
 const DEMO = {
   tutors:[
-    {id:'t1',nama:'Mr. Yesaya',subject:'Math',   level:'Upper Secondary (SMA)',address:'Jl. Ngagel 3, Surabaya',dob:'1995-04-10',wa:'081200000001',pin:'2468'},
-    {id:'t2',nama:'Ms. Dian',  subject:'Science',level:'Lower Secondary (SMP)',address:'Jl. Manyar 7, Surabaya',dob:'1996-11-02',wa:'081200000002',pin:'1357'},
-    {id:'t3',nama:'Mr. Kevin', subject:'English',level:'Primary (SD)',         address:'Jl. Darmo 21, Surabaya',dob:'1994-07-19',wa:'081200000003',pin:'9753'},
+    {id:'t1',nama:'Mr. Yesaya',subject:'Math',   level:'Upper Secondary (SMA)',address:'Jl. Ngagel 3, Surabaya',dob:'1995-04-10',wa:'081200000001',pin:'2468',category:'Local',age_group:'Teens',employment_type:'Full time',joining_date:'2024-01-15',teaching_location:'Hybrid',program:'Boost English',bank_name:'BCA',bank_holder:'Yesaya',bank_account:'0520111222',status:'Active'},
+    {id:'t2',nama:'Ms. Dian',  subject:'Science',level:'Lower Secondary (SMP)',address:'Jl. Manyar 7, Surabaya',dob:'1996-11-02',wa:'081200000002',pin:'1357',category:'Local',age_group:'Teens',employment_type:'Part time',joining_date:'2024-06-01',teaching_location:'Online',program:'Speak Active',bank_name:'BCA',bank_holder:'Dian',bank_account:'0520333444',status:'Active'},
+    {id:'t3',nama:'Mr. Kevin', subject:'English',level:'Primary (SD)',         address:'Jl. Darmo 21, Surabaya',dob:'1994-07-19',wa:'081200000003',pin:'9753',category:'International',age_group:'Kids',employment_type:'Part time',joining_date:'2025-02-10',teaching_location:'Onsite',program:'Boost English',bank_name:'BCA',bank_holder:'Kevin',bank_account:'0520555666',status:'Active'},
   ],
   students:[
-    {id:'s1',nama:'Anton Wijaya',school:'SMP Petra 1',address:'Jl. Kertajaya 12, Surabaya',dob:'2013-05-14',grade:'7',parent_name:'Ibu Rina Wijaya',wa_ortu:'081234567890',
-     tutor_id:'t1',schedule:'Sen & Kam · 19.00',class_group:'English A · Sen&Kam 19.00',fee_per_meeting:150000,fee_tentor:90000,meeting_minutes:90,
-     deposit_meetings:16,add_fee:300000,add_fee_note:'Biaya les olimpiade (Agustus)',pin:'1111',active:'aktif',link_id:'anton-s1'},
-    {id:'s2',nama:'Budi Santoso',school:'SMP Cita Hati',address:'Jl. Diponegoro 45, Surabaya',dob:'2012-09-03',grade:'8',parent_name:'Bpk. Hadi',wa_ortu:'081234500011',
-     tutor_id:'t2',schedule:'Sel · 16.00',class_group:'English A · Sen&Kam 19.00',fee_per_meeting:150000,fee_tentor:90000,meeting_minutes:90,
+    {id:'s1',nama:'Anton Wijaya',school:'SMP Petra 1',address:'Jl. Kertajaya 12, Surabaya',dob:'2013-05-14',grade:'7',gender:'Male',student_wa:'',parent_name:'Mrs. Rina Wijaya',wa_ortu:'081234567890',
+     tutor_id:'t1',schedule:'Mon & Thu · 19.00',class_group:'English A · Mon&Thu 19.00',program:'Boost English',level:'A2',class_type:'Semi-Private',class_id:'CLS-0001',start_date:'2026-06-01',learning_mode:'Onsite',course_due:'2026-11-01',status:'Active',fee_per_meeting:150000,fee_tentor:90000,meeting_minutes:90,
+     deposit_meetings:16,add_fee:300000,add_fee_note:'Olympiad class fee (August)',pin:'1111',active:'aktif',link_id:'anton-s1'},
+    {id:'s2',nama:'Budi Santoso',school:'SMP Cita Hati',address:'Jl. Diponegoro 45, Surabaya',dob:'2012-09-03',grade:'8',gender:'Male',student_wa:'',parent_name:'Mr. Hadi',wa_ortu:'081234500011',
+     tutor_id:'t2',schedule:'Tue · 16.00',class_group:'English A · Mon&Thu 19.00',program:'Boost English',level:'A2',class_type:'Semi-Private',class_id:'CLS-0001',start_date:'2026-06-01',learning_mode:'Online',course_due:'2026-11-01',status:'Active',fee_per_meeting:150000,fee_tentor:90000,meeting_minutes:90,
      deposit_meetings:8,pin:'2222',active:'aktif',link_id:'budi-s2'},
-    {id:'s3',nama:'Clara Halim',school:'SD Gloria',address:'Jl. Mayjend Sungkono 8, Surabaya',dob:'2014-01-22',grade:'6',parent_name:'Ibu Mega',wa_ortu:'081234500022',
-     tutor_id:'t3',schedule:'Rab & Jum · 15.30',fee_per_meeting:140000,fee_tentor:85000,meeting_minutes:90,
+    {id:'s3',nama:'Clara Halim',school:'SD Gloria',address:'Jl. Mayjend Sungkono 8, Surabaya',dob:'2014-01-22',grade:'6',gender:'Female',student_wa:'',parent_name:'Mrs. Mega',wa_ortu:'081234500022',
+     tutor_id:'t3',schedule:'Wed & Fri · 15.30',program:'Boost Mandarin',level:'HSK 1',class_type:'Private',class_id:'',start_date:'2026-07-01',learning_mode:'Onsite',course_due:'2026-11-15',status:'Active',fee_per_meeting:140000,fee_tentor:85000,meeting_minutes:90,
      deposit_meetings:12,pin:'3333',active:'aktif',link_id:'clara-s3'},
   ],
   classes:[
@@ -1050,20 +1143,20 @@ const DEMO = {
      stu_in:'',stu_out:'',tut_in:'',tut_out:''},
     // history for Anton
     {id:'c1',date:'2026-07-28',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',
-     topic:'Linear Equation (Persamaan Linear)',note:'Anton cukup aktif dan memahami materi dengan baik.',material_url:'materi/linear-equation.pdf',doc_url:'doc1'},
+     topic:'Linear Equation (Persamaan Linear)',note:'Anton is quite active and understands the material well.',material_url:'materi/linear-equation.pdf',doc_url:'doc1'},
     {id:'c2',date:'2026-07-21',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',status:'done',attend:'izin',
-     topic:'Algebraic Fractions',note:'Perlu latihan lebih banyak soal cerita.',material_url:'materi/algebraic-fractions.pdf',doc_url:'doc2'},
+     topic:'Algebraic Fractions',note:'Needs more practice with word problems.',material_url:'materi/algebraic-fractions.pdf',doc_url:'doc2'},
     {id:'c3',date:'2026-07-14',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'21:00',duration:120,type:'onsite',
-     topic:'Linear Inequalities',note:'Kelas ditambah 30 menit.',material_url:'materi/inequalities.pdf',doc_url:'doc3'},
+     topic:'Linear Inequalities',note:'Class extended by 30 minutes.',material_url:'materi/inequalities.pdf',doc_url:'doc3'},
     {id:'c4',date:'2026-07-07',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',
-     topic:'Integers (Bilangan Bulat)',note:'Anton sudah mulai terbiasa.',material_url:'materi/integers.pdf',doc_url:'doc4'},
+     topic:'Integers',note:'Anton is getting used to it.',material_url:'materi/integers.pdf',doc_url:'doc4'},
     {id:'c5',date:'2026-06-30',student_id:'s1',tutor_id:'t1',start_time:'19:00',end_time:'20:30',duration:90,type:'onsite',status:'done',attend:'hadir',
      topic:'Introduction to Algebra',note:'Good job!',material_url:'materi/intro-algebra.pdf',doc_url:'doc5',rec_video:'https://youtu.be/dQw4w9WgXcQ'},
     // --- demo permintaan kelas (status requested / reschedule) ---
     {id:'r1',date:'2026-09-20',student_id:'s2',tutor_id:'t2',start_time:'16:00',end_time:'',duration:90,type:'online',status:'requested',req_by:'ortu',
-     req_note:'Minta tambahan sesi Science sebelum ujian.',topic:'',note:''},
+     req_note:'Requesting an extra Science session before the exam.',topic:'',note:''},
     {id:'r2',date:'2026-09-18',student_id:'s3',tutor_id:'t3',start_time:'15:30',end_time:'',duration:90,type:'onsite',status:'reschedule',req_by:'murid',
-     resched_date:'2026-09-19',resched_time:'16:30',resched_note:'Bentrok acara sekolah, mohon digeser.',topic:'',note:''},
+     resched_date:'2026-09-19',resched_time:'16:30',resched_note:'Clashes with a school event, please reschedule.',topic:'',note:''},
   ],
   deposits:{
     s1:{paid_meetings:16,minutes_total:1440,minutes_used:900,fee_per_meeting:150000,last_paid:'2026-07-20'},
@@ -1077,38 +1170,85 @@ const DEMO = {
      deposit_total:1200000,carry_in:0,extra_minutes:0,add_fee1:0,add_fee2:0,add_fee2_note:'',next_meetings:8,next_deposit:1200000,grand_total:1200000,status:'BELUM BAYAR'},
   ],
   payroll:[
-    {id:'pr1',tutor_id:'t1',month:'2026-08',amount:2400000,transfer_date:'2026-09-03',proof_url:'',note:'Gaji + bonus Agustus',status:'DIBAYAR',created_at:'2026-09-03T09:00:00'},
-    {id:'pr2',tutor_id:'t1',month:'2026-09',amount:2550000,transfer_date:'',proof_url:'',note:'',status:'DIPROSES',created_at:'2026-10-01T09:00:00'},
+    {id:'pr1',tutor_id:'t1',month:'2026-08',amount:2400000,transfer_date:'2026-09-03',proof_url:'',note:'Salary + August bonus',status:'DIBAYAR',created_at:'2026-09-03T09:00:00'},
+    {id:'pr2',tutor_id:'t1',month:'2026-09',amount:2550000,transfer_date:'2026-10-03',proof_url:'',note:'September teaching fee',status:'DIBAYAR',generated_at:'2026-09-30T10:00:00',confirmed_at:'2026-10-01T08:00:00',sent_at:'2026-10-03T09:00:00',created_at:'2026-10-01T09:00:00'},
+    {id:'pr3',tutor_id:'t1',month:'2026-10',amount:0,transfer_date:'',proof_url:'',note:'',status:'GENERATED',generated_at:'2026-10-27T10:15:00',created_at:'2026-10-27T10:15:00'},
+  ],
+  parents:[
+    {id:'pa1',parent_id:'PAR-0001',nama:'Mrs. Rina Wijaya',wa:'081234567890',linked_students:'Anton Wijaya (s1)',status:'Active'},
+    {id:'pa2',parent_id:'PAR-0002',nama:'Mr. Hadi',wa:'081234500011',linked_students:'Budi Santoso (s2)',status:'Active'},
+  ],
+  class_groups:[
+    {id:'cg1',class_id:'CLS-0001',name:'Boost English (Teens) – A2',program:'Boost English',level:'A2',tutor_id:'t1',student_ids:'s1,s2',schedule:'Mon & Thu · 19.00',days:'Mon,Thu',start_time:'19:00',end_time:'20:30',room:'Room 2',mode:'Onsite',start_date:'2026-09-01',end_date:'2026-12-20',total_sessions:32,min_cert:26,status:'In progress',created_at:'2026-09-01T09:00:00'},
+    {id:'cg2',class_id:'CLS-0002',name:'Boost English (Teens) – B1',program:'Boost English',level:'B1',tutor_id:'',student_ids:'',max_students:8,schedule:'Tue & Thu · 16.00',days:'Tue,Thu',start_time:'16:00',end_time:'17:30',room:'Room 1',mode:'Onsite',start_date:'2026-11-12',end_date:'2027-02-28',total_sessions:32,min_cert:26,status:'Open',admin_notes:'Looking for a teacher with experience teaching teens. The class will focus on communication and practical speaking skills.',created_at:'2026-10-24T09:00:00'},
+    {id:'cg3',class_id:'CLS-0003',name:'Speak Active – Speaking Club',program:'Speak Active',level:'A2',tutor_id:'',student_ids:'',max_students:10,schedule:'Sat · 10.00',days:'Sat',start_time:'10:00',end_time:'11:30',room:'Room 1',mode:'Onsite',start_date:'2026-11-21',end_date:'2027-02-28',total_sessions:16,min_cert:13,status:'Open',admin_notes:'Fun, conversation-focused club for teens.',created_at:'2026-10-25T09:00:00'},
+    {id:'cg4',class_id:'CLS-0004',name:'IELTS Preparation – B1',program:'IELTS Preparation',level:'B1',tutor_id:'t3',student_ids:'',max_students:6,schedule:'Tue & Thu · 19.00',days:'Tue,Thu',start_time:'19:00',end_time:'20:30',room:'Zoom',mode:'Online',start_date:'2026-11-08',end_date:'2027-02-28',total_sessions:32,min_cert:26,status:'Filled',admin_notes:'',created_at:'2026-10-20T09:00:00'},
+  ],
+  class_applications:[
+    {id:'ca1',group_id:'cg1',tutor_id:'t1',status:'accepted',responded_at:'2026-08-25T10:00:00',created_at:'2026-08-25T10:00:00'},
+  ],
+  lesson_plans:[
+    {id:'lp1',tutor_id:'t1',group_id:'cg1',date:'2026-10-19',unit:'Unit 1 – Everyday Life',topic:'Introducing Yourself and Others',objectives:'Use basic personal information to introduce themselves and others.\nAsk and answer simple questions about name, age, nationality and hobbies.',reading:'Short profile texts (student introductions)',listening:'Listen to a model conversation (introductions)',speaking:'Pair work: introduce themselves\nRole play: meeting a new classmate',writing:'Complete a short self-introduction paragraph',practice:'Matching activity (names and information)\nGuided conversation in pairs',production:'Mini presentation: introduce a classmate',extended:'Write a short paragraph introducing themselves (80–100 words).',status:'Submitted',submitted_at:'2026-10-18T20:00:00',created_at:'2026-10-18T20:00:00'},
+    {id:'lp2',tutor_id:'t1',group_id:'cg1',date:'2026-10-22',unit:'Unit 1 – Everyday Life',topic:'Daily Routines',objectives:'Talk about daily routines using the present simple.\nUse time expressions (in the morning, at night).',reading:'',listening:'Short audio about a student\'s day',speaking:'Pair work: ask and answer about daily routines',writing:'5 sentences about your routine',practice:'Vocabulary matching: daily activities',production:'Create your own daily schedule',extended:'Record a 1-minute voice note about your day.',status:'Submitted',submitted_at:'2026-10-21T21:00:00',created_at:'2026-10-21T21:00:00'},
+    {id:'lp3',tutor_id:'t1',group_id:'cg1',date:'2026-10-29',unit:'Unit 2 – Hobbies',topic:'Hobbies and Interests',objectives:'Talk about hobbies and give reasons.',status:'Draft',created_at:'2026-10-26T21:00:00'},
+  ],
+  dev_notes:[
+    {id:'dn1',student_id:'s1',tutor_id:'t1',group_id:'cg1',date:'2026-10-19',topic:'Introducing Yourself and Others',strengths:'Confident in self-introduction; uses common greetings correctly.',improve:'Needs more variety in follow-up questions; pronunciation of the "th" sound.',strategy:'Practise asking at least 3 follow-up questions in each conversation; listen and repeat "th" words.',encourage:'Great start, Anton! You are already speaking with more confidence.',created_at:'2026-10-19T21:00:00'},
+    {id:'dn2',student_id:'s1',tutor_id:'t1',group_id:'cg1',date:'2026-10-22',topic:'Daily Routines',strengths:'Uses correct present tense structure; good use of time expressions.',improve:'Needs to expand vocabulary for daily activities.',strategy:'Learn and use 5 new daily-activity words in sentences.',encourage:'Nice work! Your sentences are getting longer and clearer.',created_at:'2026-10-22T21:00:00'},
+    {id:'dn3',student_id:'s2',tutor_id:'t1',group_id:'cg1',date:'2026-10-22',topic:'Daily Routines',strengths:'Good listening comprehension.',improve:'Third person -s.',strategy:'Make 5 sentences about a family member\'s routine.',encourage:'Keep it up, Budi!',created_at:'2026-10-22T21:10:00'},
+  ],
+  resources:[
+    {id:'rs1',title:'Unit 1 – Teacher\'s Guide.pdf',note:'Overview, teaching notes and lesson flow.',program:'Boost English (Teens)',unit:'Unit 1 – Everyday Life',kind:'material',size:'2.1 MB',file_url:'#',created_at:'2026-09-01T09:00:00'},
+    {id:'rs2',title:'Unit 1 – Student Book.pdf',note:'Student materials and activities.',program:'Boost English (Teens)',unit:'Unit 1 – Everyday Life',kind:'material',size:'5.4 MB',file_url:'#',created_at:'2026-09-01T09:01:00'},
+    {id:'rs3',title:'Unit 1 – Worksheets.pdf',note:'Extra practice worksheets.',program:'Boost English (Teens)',unit:'Unit 1 – Everyday Life',kind:'material',size:'1.8 MB',file_url:'#',created_at:'2026-09-01T09:02:00'},
+    {id:'rs4',title:'Unit 2 – Teacher\'s Guide.pdf',note:'Hobbies unit teaching notes.',program:'Boost English (Teens)',unit:'Unit 2 – Hobbies',kind:'material',size:'1.9 MB',file_url:'#',created_at:'2026-09-01T09:03:00'},
+    {id:'rs5',title:'Speaking Club – Activity Pack.pdf',note:'Warm-ups and conversation games.',program:'Speak Active',unit:'Unit 1 – Getting to Know You',kind:'material',size:'1.2 MB',file_url:'#',created_at:'2026-09-01T09:04:00'},
+    {id:'rs6',title:'HSK 1 – Vocabulary List.pdf',note:'Key vocabulary and phrases.',program:'Boost Mandarin',unit:'Unit 1 – Greetings',kind:'material',size:'0.9 MB',file_url:'#',created_at:'2026-09-01T09:05:00'},
+    {id:'sop1',title:'Teacher Handbook.pdf',category:'General',kind:'sop',size:'1.2 MB',file_url:'#',created_at:'2026-10-15T09:00:00'},
+    {id:'sop2',title:'Teaching Guidelines.pdf',category:'Teaching',kind:'sop',size:'1.5 MB',file_url:'#',created_at:'2026-10-15T09:01:00'},
+    {id:'sop3',title:'Class Management SOP.pdf',category:'Class Management',kind:'sop',size:'1.1 MB',file_url:'#',created_at:'2026-10-15T09:02:00'},
+    {id:'sop4',title:'Attendance Policy.pdf',category:'General',kind:'sop',size:'800 KB',file_url:'#',created_at:'2026-10-10T09:00:00'},
+    {id:'sop5',title:'Rescheduling & Recovery Class SOP.pdf',category:'Class Management',kind:'sop',size:'900 KB',file_url:'#',created_at:'2026-10-10T09:01:00'},
+    {id:'sop6',title:'Payment & Prepayment Guidelines.pdf',category:'Admin & Payment',kind:'sop',size:'1.3 MB',file_url:'#',created_at:'2026-10-10T09:02:00'},
   ],
   ratings:[
-    {id:'rt1',class_id:'c5',student_id:'s1',tutor_id:'t1',stars:5,scores:[5,5,5,4,5,5,5,5],liked:'Cara ngajarnya seru!',improve:'Mungkin lebih banyak latihan soal.',comment:'Penjelasannya jelas banget, makasih Mr. Yesaya!',created_at:'2026-06-30T20:40:00'},
+    {id:'rt1',class_id:'c5',student_id:'s1',tutor_id:'t1',stars:5,scores:[5,5,5,4,5,5,5,5],liked:'The teaching style is fun!',improve:'Maybe more practice exercises.',comment:'The explanations are super clear, thank you Mr. Yesaya!',created_at:'2026-06-30T20:40:00'},
   ],
   tboard:[
-    {id:'tb1',title:'Rapat Koordinasi Bulanan',body:'Semua guru wajib hadir rapat koordinasi Sabtu 13 Sep pukul 10.00 via Zoom. Agenda: evaluasi kelas & jadwal baru.',date:'2026-09-08',author:'Owner',created_at:'2026-09-08T08:00:00'},
-    {id:'tb2',title:'Template Laporan Baru',body:'Mulai bulan ini gunakan template LDS yang baru ya. Link ada di Teaching Resources.',date:'2026-09-01',author:'Admin',created_at:'2026-09-01T09:00:00'},
+    {id:'tb1',program:'General',title:'Monthly Coordination Meeting',body:'All teachers must attend the coordination meeting on Saturday 13 Sep at 10.00 via Zoom. Agenda: class evaluation & new schedule.',date:'2026-09-08',author:'Owner',created_at:'2026-09-08T08:00:00'},
+    {id:'tb2',program:'Boost English',title:'New Report Template',body:'Starting this month, please use the new LDS template. The link is in Teaching Resources.',date:'2026-09-01',author:'Admin',created_at:'2026-09-01T09:00:00'},
   ],
   tboard_read:[
     {id:'tb2_t1',board_id:'tb2',reader_id:'t1',reader_name:'Mr. Yesaya',read_at:'2026-09-02T07:30:00'},
   ],
   announcements:[
-    {id:'an1',title:'Libur Nasional',body:'Kwelingo libur tanggal 17 Agustus. Kelas diliburkan.',date:'2026-08-10',class_group:'',author:'Owner',created_at:'2026-08-10T08:00:00'},
-    {id:'an2',title:'Ganti Jadwal Minggu Ini',body:'Kelas English A hari Senin digeser ke Selasa jam 19.00 karena guru ada acara.',date:'2026-09-09',class_group:'English A · Sen&Kam 19.00',author:'Admin',created_at:'2026-09-09T10:00:00'},
+    {id:'an1',title:'National Holiday',body:'Kwelingo is closed on 17 August. Classes are cancelled.',date:'2026-08-10',class_group:'',author:'Owner',created_at:'2026-08-10T08:00:00'},
+    {id:'an2',title:'Schedule Change This Week',body:'The English A class on Monday is moved to Tuesday at 19.00 because the teacher has an event.',date:'2026-09-09',class_group:'English A · Mon&Thu 19.00',author:'Admin',created_at:'2026-09-09T10:00:00'},
   ],
   _settings:{TEACHER_SOP_URL:'https://drive.google.com/file/d/1example/preview'},
   diary:[
-    {id:'dy1',student_id:'s1',tutor_id:'t1',author:'murid',message:'Pak, saya masih bingung bagian faktorisasi.',created_at:'2026-07-20T10:00:00'},
-    {id:'dy2',student_id:'s1',tutor_id:'t1',author:'guru',message:'Tenang Anton, besok kita ulang pelan-pelan ya. Coba kerjakan WS hal. 12 dulu.',created_at:'2026-07-20T12:30:00'},
+    {id:'dy1',student_id:'s1',tutor_id:'t1',author:'murid',message:"Sir, I'm still confused about the factorization part.",created_at:'2026-07-20T10:00:00'},
+    {id:'dy2',student_id:'s1',tutor_id:'t1',author:'guru',message:"No worries Anton, we'll go over it slowly tomorrow. Try doing WS page 12 first.",created_at:'2026-07-20T12:30:00'},
+    {id:'dy3',student_id:'s1',tutor_id:'t1',group_id:'cg1',author:'murid',class_date:'2026-10-22',learned:'Today we learned how to talk about daily routines using the present simple.',struggle:'I sometimes forget the -s for he/she.',resolve:'I will write 5 sentences about my family every day and check them.',teacher_comment:'Great reflection, Anton! Try saying your sentences out loud too. 👍',comment_at:'2026-10-22T21:30:00',created_at:'2026-10-22T20:45:00'},
+    {id:'dy4',student_id:'s2',tutor_id:'t1',group_id:'cg1',author:'murid',class_date:'2026-10-22',learned:'We practised describing our day and time expressions.',struggle:'Using "at", "in" and "on" with time.',resolve:'I will review the time-preposition table and make examples.',created_at:'2026-10-22T20:50:00'},
   ],
   tasks:[
-    {id:'tk1',student_id:'s1',tutor_id:'t1',title:'Worksheet Algebra hal. 33–36',detail:'Kerjakan nomor ganjil, foto & upload hasilnya.',type:'assignment',due_date:'2026-07-30',status:'assigned',done_at:''},
-    {id:'tk2',student_id:'s1',tutor_id:'t1',title:'Write a short travel review',detail:'Tulis review tempat wisata impianmu (min. 100 kata).',type:'writing',due_date:'2026-07-22',status:'graded',submit_text:'My dream destination is Japan...',submit_url:'https://drive.google.com/file/d/xxx',submit_at:'2026-07-21',points:'90',feedback:'Bagus! Perhatikan past tense ya.',graded_at:'2026-07-22'},
-    {id:'tk3',student_id:'s1',tutor_id:'t1',title:'Final Project: Presentasi',detail:'Upload file presentasi akhir.',type:'final_project',due_date:'2026-08-05',status:'submitted',submit_url:'https://drive.google.com/file/d/yyy',submit_text:'',submit_at:'2026-08-01'},
+    {id:'tk1',student_id:'s1',tutor_id:'t1',group_id:'cg1',batch_id:'b1',unit:'Unit 1 – Everyday Life',title:'Introduce Yourself (Voice Recording)',detail:'Record a 1–2 minute audio about yourself: name, family, hobbies.',type:'voice_video',due_date:'2026-10-30',status:'assigned',done_at:''},
+    {id:'tk4',student_id:'s2',tutor_id:'t1',group_id:'cg1',batch_id:'b1',unit:'Unit 1 – Everyday Life',title:'Introduce Yourself (Voice Recording)',detail:'Record a 1–2 minute audio about yourself: name, family, hobbies.',type:'voice_video',due_date:'2026-10-30',status:'submitted',submit_url:'https://drive.google.com/file/d/zzz',submit_at:'2026-10-26'},
+    {id:'tk5',student_id:'s2',tutor_id:'t1',group_id:'cg1',batch_id:'b2',unit:'Unit 1 – Everyday Life',title:'Write a short travel review',detail:'Write a review of your dream travel destination (min. 100 words).',type:'writing',due_date:'2026-10-22',status:'assigned'},
+    {id:'tk2',student_id:'s1',tutor_id:'t1',group_id:'cg1',batch_id:'b2',unit:'Unit 1 – Everyday Life',title:'Write a short travel review',detail:'Write a review of your dream travel destination (min. 100 words).',type:'writing',due_date:'2026-07-22',status:'graded',submit_text:'My dream destination is Japan...',submit_url:'https://drive.google.com/file/d/xxx',submit_at:'2026-07-21',points:'90',feedback:'Great! Watch your past tense.',graded_at:'2026-07-22'},
+    {id:'tk3',student_id:'s1',tutor_id:'t1',group_id:'cg1',batch_id:'b3',title:'Final Project: Presentation',detail:'Upload your final presentation file.',type:'final_project',due_date:'2026-08-05',status:'submitted',submit_url:'https://drive.google.com/file/d/yyy',submit_text:'',submit_at:'2026-08-01'},
   ],
   chat:[
-    {id:'ch1',room:'kelas:English A · Sen&Kam 19.00',sender_id:'s2',sender_name:'Budi Santoso',role:'murid',message:'Teman-teman, PR yang nomor 5 jawabannya berapa?',created_at:'2026-09-10T09:00:00'},
-    {id:'ch2',room:'kelas:English A · Sen&Kam 19.00',sender_id:'s1',sender_name:'Anton Wijaya',role:'murid',message:'Aku dapat 12, kamu?',created_at:'2026-09-10T09:05:00'},
-    {id:'ch3',room:'guru',sender_id:'t1',sender_name:'Mr. Yesaya',role:'guru',message:'Selamat pagi, jangan lupa isi laporan kelas hari ini ya.',created_at:'2026-09-11T07:30:00'},
-    {id:'ch4',room:'guru',sender_id:'admin',sender_name:'Admin',role:'admin',message:'Noted pak. Jadwal minggu depan sudah saya update.',created_at:'2026-09-11T07:45:00'},
+    {id:'ch1',room:'kelas:English A · Mon&Thu 19.00',sender_id:'s2',sender_name:'Budi Santoso',role:'murid',message:"Hey everyone, what's the answer to homework number 5?",created_at:'2026-09-10T09:00:00'},
+    {id:'ch2',room:'kelas:English A · Mon&Thu 19.00',sender_id:'s1',sender_name:'Anton Wijaya',role:'murid',message:'I got 12, what about you?',created_at:'2026-09-10T09:05:00'},
+    {id:'ch3',room:'guru',sender_id:'t1',sender_name:'Mr. Yesaya',role:'guru',message:"Good morning, don't forget to fill in today's class report.",created_at:'2026-09-11T07:30:00'},
+    {id:'ch4',room:'guru',sender_id:'admin',sender_name:'Admin',role:'admin',message:"Noted sir. I've updated next week's schedule.",created_at:'2026-09-11T07:45:00'},
+    {id:'ch5',room:'prog:Boost English',sender_id:'t3',sender_name:'Mr. Kevin',role:'guru',message:"I've uploaded the new Unit 5 handouts to Teaching Resources.",created_at:'2026-10-26T09:15:00'},
+    {id:'ch6',room:'prog:Speak Active',sender_id:'t2',sender_name:'Ms. Dian',role:'guru',message:'Great idea for the speaking club warm-up!',created_at:'2026-10-25T16:00:00'},
+    {id:'ch7',room:'admin-team',sender_id:'admin',sender_name:'Admin',role:'admin',message:'Reminder: please update attendance within 24 hours.',created_at:'2026-10-24T09:00:00'},
+    {id:'ch8',room:'dm:s1|t1',sender_id:'s1',sender_name:'Anton Wijaya',role:'murid',message:"Hi Mr. Yesaya, I won't be able to attend Thursday's class because of a school event. Can we reschedule?",created_at:'2026-10-26T16:12:00'},
+    {id:'ch9',room:'dm:admin|t1',sender_id:'admin',sender_name:'Kwelingo Admin',role:'admin',message:'Your October prepayment slip is ready for review.',created_at:'2026-10-27T10:20:00'},
   ],
   handle(p){
     return new Promise((res,rej)=>{
@@ -1118,6 +1258,21 @@ const DEMO = {
   _route(p){
     const clone=x=>JSON.parse(JSON.stringify(x));
     switch(p.action){
+      // ---- generic CRUD (rev4+) ----
+      case 'list':{
+        const f=p.filters||{}; let r=clone(this[p.table]||[]);
+        r=r.filter(x=>Object.entries(f).every(([k,v])=>v===undefined||v===null||v===''||String(x[k]??'')===String(v)));
+        const [col,dir]=String(p.order||'created_at.desc').split('.');
+        if(col) r.sort((x,y)=>String(x[col]??'').localeCompare(String(y[col]??''))*(dir==='desc'?-1:1));
+        return r;
+      }
+      case 'upsert':{
+        const t=p.table, d=p.d||{}; this[t]=this[t]||[];
+        if(d.id){ const e=this[t].find(x=>x.id===d.id); if(e){ Object.keys(d).forEach(k=>{ if(d[k]!==undefined&&d[k]!==null) e[k]=d[k]; }); return {id:d.id}; } }
+        const id=d.id||(t.slice(0,3)+Date.now().toString(36)+Math.floor(Math.random()*1e4));
+        this[t].push({created_at:new Date().toISOString(),...d,id}); return {id};
+      }
+      case 'remove':{ this[p.table]=(this[p.table]||[]).filter(x=>x.id!==p.id); return {deleted:p.id}; }
       case 'getTutors': return clone(this.tutors);
       case 'getStudents':
         if(p.id) return clone(this.students.find(s=>s.id===p.id)||null);
@@ -1132,7 +1287,7 @@ const DEMO = {
       }
       case 'addClass':{
         const id='c'+Date.now();
-        this.classes.push({id,doc_url:'',material_url:'',topic:'',note:'',...p});
+        this.classes.push({doc_url:'',material_url:'',topic:'',note:'',...p,id});
         return {id};
       }
       case 'updateClass':{
@@ -1143,26 +1298,32 @@ const DEMO = {
       }
       case 'getDeposit': return clone(this.deposits[p.student_id]||null);
       case 'getPayments':{ let r=clone(this.payments); if(p.student_id) r=r.filter(x=>x.student_id===p.student_id); if(p.month) r=r.filter(x=>x.month===p.month); return r.sort((a,b)=>String(b.month).localeCompare(String(a.month))); }
-      case 'savePayment':{ if(p.id){const e=this.payments.find(x=>x.id===p.id); if(e){Object.assign(e,p); return {updated:p.id};}} const id='pay'+Date.now(); this.payments.push({id,...p}); return {id}; }
+      case 'savePayment':{ if(p.id){const e=this.payments.find(x=>x.id===p.id); if(e){Object.assign(e,p); return {updated:p.id};}} const id='pay'+Date.now(); this.payments.push({...p,id}); return {id}; }
       case 'deletePayment':{ this.payments=this.payments.filter(x=>x.id!==p.id); return {deleted:p.id}; }
       case 'getPayroll':{ this.payroll=this.payroll||[]; let r=clone(this.payroll); if(p.tutor_id) r=r.filter(x=>x.tutor_id===p.tutor_id); if(p.month) r=r.filter(x=>x.month===p.month); return r.sort((a,b)=>String(b.created_at||b.month).localeCompare(String(a.created_at||a.month))); }
-      case 'savePayroll':{ this.payroll=this.payroll||[]; if(p.id){const e=this.payroll.find(x=>x.id===p.id); if(e){Object.assign(e,p); return {updated:p.id};}} const id=p.id||('pr'+Date.now()); this.payroll.push({id,created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'savePayroll':{ this.payroll=this.payroll||[]; if(p.id){const e=this.payroll.find(x=>x.id===p.id); if(e){Object.assign(e,p); return {updated:p.id};}} const id=p.id||('pr'+Date.now()); this.payroll.push({created_at:new Date().toISOString(),...p,id}); return {id}; }
       case 'deletePayroll':{ this.payroll=(this.payroll||[]).filter(x=>x.id!==p.id); return {deleted:p.id}; }
+      case 'getParents':{ this.parents=this.parents||[]; return clone(this.parents).sort((a,b)=>String(a.nama||'').localeCompare(String(b.nama||''))); }
+      case 'saveParent':{ this.parents=this.parents||[]; if(p.id){const e=this.parents.find(x=>x.id===p.id); if(e){Object.assign(e,p); return {updated:p.id};}} const id=p.id||('pa'+Date.now()); this.parents.push({...p,id}); return {id}; }
+      case 'deleteParent':{ this.parents=(this.parents||[]).filter(x=>x.id!==p.id); return {deleted:p.id}; }
+      case 'getClassGroups':{ this.class_groups=this.class_groups||[]; return clone(this.class_groups).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))); }
+      case 'saveClassGroup':{ this.class_groups=this.class_groups||[]; if(p.id){const e=this.class_groups.find(x=>x.id===p.id); if(e){Object.assign(e,p); return {updated:p.id};}} const id=p.id||('cg'+Date.now()); this.class_groups.push({created_at:new Date().toISOString(),...p,id}); return {id}; }
+      case 'deleteClassGroup':{ this.class_groups=(this.class_groups||[]).filter(x=>x.id!==p.id); return {deleted:p.id}; }
       case 'uploadFile':{ return {url:p.base64,view:p.base64}; }
-      case 'addStudent': { const id='s'+Date.now(); const pin=p.pin||genPin(); this.students.push({id,active:'aktif',pin,...p}); return {id,pin}; }
-      case 'studentLogin':{ const key=String(p.login||'').toLowerCase().trim(); const s=this.students.find(x=>x.id===p.login||(x.username||'').toLowerCase().trim()===key||genUsername(x.nama)===key||x.nama.toLowerCase().trim()===key); if(!s)throw new Error('Murid tidak ditemukan'); if(String(s.pin)!==String(p.pin))throw new Error('PIN salah'); return clone(s); }
-      case 'addTutor':   { const id='t'+Date.now(); const pin=p.pin||genPin(); this.tutors.push({id,pin,...p}); return {id,pin}; }
+      case 'addStudent': { const id='s'+Date.now(); const pin=p.pin||genPin(); this.students.push({active:'aktif',pin,...p,id}); return {id,pin}; }
+      case 'studentLogin':{ const key=String(p.login||'').toLowerCase().trim(); const s=this.students.find(x=>x.id===p.login||(x.username||'').toLowerCase().trim()===key||genUsername(x.nama)===key||x.nama.toLowerCase().trim()===key); if(!s)throw new Error('Student not found'); if(String(s.pin)!==String(p.pin))throw new Error('Incorrect PIN'); return clone(s); }
+      case 'addTutor':   { const id='t'+Date.now(); const pin=p.pin||genPin(); this.tutors.push({pin,...p,id}); return {id,pin}; }
       case 'updateTutor':{ const t=this.tutors.find(x=>x.id===p.id); if(t) Object.assign(t,p); return {updated:p.id}; }
       case 'updateStudent':{ const s=this.students.find(x=>x.id===p.id); if(s) Object.assign(s,p); return {updated:p.id}; }
       case 'deleteTutor':{ this.tutors=this.tutors.filter(x=>x.id!==p.id); return {deleted:p.id}; }
       case 'deleteStudent':{ this.students=this.students.filter(x=>x.id!==p.id); return {deleted:p.id}; }
       case 'verifyPin':{ this._pins=this._pins||{master:'5758',admin:'17081945'}; return {ok:String(p.pin)===this._pins[p.role==='master'?'master':'admin']}; }
-      case 'changePin':{ this._pins=this._pins||{master:'5758',admin:'17081945'}; const role=p.role==='master'?'master':'admin'; if(String(p.oldPin)!==this._pins[role]) return {ok:false,message:'Password lama salah'}; if(!/^\d{4,10}$/.test(String(p.newPin||''))) return {ok:false,message:'Password baru 4–10 digit angka'}; this._pins[role]=String(p.newPin); return {ok:true}; }
+      case 'changePin':{ this._pins=this._pins||{master:'5758',admin:'17081945'}; const role=p.role==='master'?'master':'admin'; if(String(p.oldPin)!==this._pins[role]) return {ok:false,message:'Old password is incorrect'}; if(!/^\d{4,10}$/.test(String(p.newPin||''))) return {ok:false,message:'New password must be 4–10 digits'}; this._pins[role]=String(p.newPin); return {ok:true}; }
       case 'tutorLogin':{
         const key=String(p.login||'').toLowerCase().trim();
         const t=this.tutors.find(x=>x.id===p.login||(x.username||'').toLowerCase().trim()===key||genUsername(x.nama)===key||x.nama.toLowerCase().trim()===key);
-        if(!t) throw new Error('Guru tidak ditemukan');
-        if(String(t.pin)!==String(p.pin)) throw new Error('PIN salah');
+        if(!t) throw new Error('Teacher not found');
+        if(String(t.pin)!==String(p.pin)) throw new Error('Incorrect PIN');
         return clone(t);
       }
       case 'getAttendance': return clone(this.classes.filter(c=>!p.date||c.date===p.date));
@@ -1186,13 +1347,188 @@ const DEMO = {
       case 'deleteAnnouncement':{ this.announcements=this.announcements.filter(x=>x.id!==p.id); return {deleted:p.id}; }
       case 'getSetting':{ return this._settings[p.key]!=null?this._settings[p.key]:''; }
       case 'setSetting':{ this._settings[p.key]=String(p.value==null?'':p.value); return {ok:true}; }
+      case 'getResources': return clone(this.resources||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
+      case 'addResource':{ const id=p.id||('rs'+Date.now()); (this.resources=this.resources||[]).push({created_at:new Date().toISOString(),...p,id}); return {id}; }
+      case 'deleteResource':{ this.resources=(this.resources||[]).filter(x=>x.id!==p.id); return {deleted:p.id}; }
+      case 'getTutorBonus':{ let r=clone(this.tutor_bonus||[]); if(p.tutor_id) r=r.filter(x=>x.tutor_id===p.tutor_id); if(p.month) r=r.filter(x=>x.month===p.month); return r; }
+      case 'saveTutorBonus':{ this.tutor_bonus=this.tutor_bonus||[]; const e=this.tutor_bonus.find(x=>x.tutor_id===p.tutor_id&&x.month===p.month); if(e){ Object.assign(e,p); return {updated:1}; } this.tutor_bonus.push({id:'tb'+Date.now(),...p}); return {id:1}; }
+      case 'getQuizzes': return clone(this.quizzes||[]);
+      case 'addQuiz':{ const id='qz'+Date.now(); (this.quizzes=this.quizzes||[]).push({id,created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'deleteQuiz':{ this.quizzes=(this.quizzes||[]).filter(x=>x.id!==p.id); return {deleted:p.id}; }
+      case 'getQuizResults':{ let r=clone(this.quiz_results||[]); if(p.student_id) r=r.filter(x=>String(x.student_id)===String(p.student_id)); if(p.quiz_id) r=r.filter(x=>String(x.quiz_id)===String(p.quiz_id)); return r; }
+      case 'saveQuizResult':{ const id='qr'+Date.now(); (this.quiz_results=this.quiz_results||[]).push({id,created_at:new Date().toISOString(),...p}); return {id}; }
+      case 'getLeaderboard':{ const agg={}; (this.quiz_results||[]).forEach(r=>{ const k=r.student_id; agg[k]=agg[k]||{student_id:k,name:r.student_name||'',points:0,quizzes:0}; agg[k].points+=Number(r.score)||0; agg[k].quizzes++; }); return Object.values(agg).sort((a,b)=>b.points-a.points); }
       default: return null;
     }
   },
   tutorName(id){return (this.tutors.find(t=>t.id===id)||{}).nama||'-';},
   studentName(id){return (this.students.find(s=>s.id===id)||{}).nama||'-';},
 };
+/* Demo: recurring sessions for class group cg1 (Mon & Thu 19:00, Oct–Nov 2026) */
+(function seedDemoSessions(){
+  if(typeof DEMO==='undefined') return;
+  const today=todayStr(), topics=['Introducing Yourself','Daily Routines','Hobbies and Interests','Making Plans','Food and Restaurants','Giving Directions','Past Experiences','Travel and Holidays','School Life','Health and Lifestyle','Shopping','Weather & Seasons','Describing People','Future Plans','Review & Quiz','Speaking Project'];
+  const d=new Date('2026-10-01T00:00:00'), end=new Date('2026-11-30T00:00:00'); let k=0;
+  while(d<=end){
+    const dow=d.getDay();
+    if(dow===1||dow===4){
+      const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const past=ds<today, topic=topics[k%topics.length]; k++;
+      ['s1','s2'].forEach((sid,ix)=>{
+        if(ds===today && sid==='s1') return;           // today's c101 already exists for s1
+        let att=''; if(past){ att='hadir'; if(sid==='s2'&&k===3) att='sakit'; if(sid==='s1'&&k===5) att='telat'; if(sid==='s2'&&k===6) att='alpa'; }
+        DEMO.classes.push({id:'g'+ds.replace(/-/g,'')+sid,date:ds,student_id:sid,tutor_id:'t1',group_id:'cg1',start_time:'19:00',end_time:past?'20:30':'',duration:90,type:'onsite',room:'Room 2',
+          topic:past?topic:'',note:'',material_url:'',doc_url:'',status:past?'done':'scheduled',attend:att,session_type:'regular'});
+      });
+    }
+    d.setDate(d.getDate()+1);
+  }
+})();
+
+/* Rev5/Rev6 demo data: requests (reschedule/recovery), certificates, targeted announcements */
+(function seedRev5(){
+  if(typeof DEMO==='undefined') return;
+  const t=todayStr(), add=(n)=>{const d=new Date(t+'T00:00:00'); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+  // pending reschedule on an upcoming cg1 session for s2
+  const up=DEMO.classes.filter(c=>c.group_id==='cg1'&&c.student_id==='s2'&&c.date>t).sort((a,b)=>a.date.localeCompare(b.date));
+  if(up[0]) Object.assign(up[0],{status:'reschedule',req_kind:'reschedule',req_status:'pending',req_by:'ortu',req_at:t+'T08:10:00',resched_date:add(9),resched_time:'19:00',resched_note:'Budi has a school exam that evening. Could we move it to the following week?',req_reason:'School exam'});
+  // approved reschedule history
+  const past=DEMO.classes.filter(c=>c.group_id==='cg1'&&c.student_id==='s1'&&c.date<t).sort((a,b)=>b.date.localeCompare(a.date));
+  if(past[2]) Object.assign(past[2],{req_kind:'reschedule',req_status:'approved',req_by:'murid',req_at:past[2].date+'T07:00:00',orig_date:past[2].date,orig_time:'19:00',resched_note:'Family event',req_reason:'Family event',admin_note:'Approved – same time.'});
+  // recovery request (pending) for s2
+  DEMO.classes.push({id:'rec1',date:add(4),student_id:'s2',tutor_id:'t1',group_id:'cg1',start_time:'17:00',end_time:'18:30',duration:90,type:'onsite',room:'Room 2',status:'requested',session_type:'recovery',req_kind:'recovery',req_status:'pending',req_by:'murid',req_at:t+'T09:15:00',fee:50000,req_reason:'Missed class (sick)',req_note:'I was sick on Thursday. Can I join a recovery class?',topic:'',note:''});
+  // completed cohort (for certificate demo)
+  DEMO.class_groups.push({id:'cg5',class_id:'CLS-0005',name:'Boost English (Teens) – A1',program:'Boost English',level:'A1',tutor_id:'t1',student_ids:'s1,s2',schedule:'Tue & Fri · 16.00–17.30',days:'Tue,Fri',start_time:'16:00',end_time:'17:30',room:'Room 1',mode:'Onsite',start_date:'2026-03-03',end_date:'2026-06-30',total_sessions:32,min_cert:26,status:'Completed',created_at:'2026-02-20T09:00:00'});
+  { const d=new Date('2026-03-03T00:00:00'); let n=0;
+    while(n<32){ const w=d.getDay(); if(w===2||w===5){ n++; const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      [['s1',[3,11,19,27]],['s2',[2,6,9,14,18,22,25,30]]].forEach(([sid,miss])=>DEMO.classes.push({id:'h'+ds.replace(/-/g,'')+sid,date:ds,student_id:sid,tutor_id:'t1',group_id:'cg5',start_time:'16:00',end_time:'17:30',duration:90,type:'onsite',room:'Room 1',status:'done',attend:miss.includes(n)?(n%2?'sakit':'alpa'):'hadir',session_type:'regular',topic:'A1 Unit '+Math.ceil(n/4),note:''})); }
+      d.setDate(d.getDate()+1); } }
+  DEMO.certificates=[
+    {id:'ce1',student_id:'s3',group_id:'',program:'Boost Mandarin',level:'HSK 1',attendance:'28/32',cert_no:'KWE/2026/0412',mode:'auto',status:'Generated',issued_at:'2026-09-30',completion_date:'2026-09-30',issued_by:'Admin',created_at:'2026-09-30T10:00:00'},
+  ];
+  DEMO.announcements.forEach(a=>{ a.audience=a.audience||'All'; a.status=a.status||'Published'; });
+  DEMO.announcements.push(
+    {id:'an3',title:'Kwelingo Lounge – November',body:'Join us for our monthly English gathering on Saturday at 10.00. Snacks provided!',date:add(-2),audience:'Students',program:'',status:'Published',author:'Admin',created_at:add(-2)+'T09:00:00'},
+    {id:'an4',title:'Parent Meeting',body:'We would like to invite all parents to a short progress meeting next Saturday at 13.00.',date:add(-5),audience:'Parents',program:'',status:'Published',author:'Admin',created_at:add(-5)+'T16:00:00'},
+    {id:'an5',title:'Level Completion Reminder',body:'Boost English A2 students: please complete all Extended Practice before the end of the month.',date:add(-6),audience:'Students,Parents',program:'Boost English',level:'A2',status:'Published',author:'Admin',created_at:add(-6)+'T14:30:00'});
+  DEMO.chat.push(
+    {id:'ch20',room:'dm:admin|s1',sender_id:'s1',sender_name:'Anton Wijaya',role:'murid',message:'Hi Miss, can I get the recovery class schedule?',created_at:t+'T09:15:00'},
+    {id:'ch21',room:'dm:admin|p:s2',sender_id:'p:s2',sender_name:'Parent of Budi Santoso',role:'ortu',message:'Good morning. May I ask about the reschedule request for Budi?',created_at:t+'T08:42:00'});
+})();
+
+/* Rev6 demo data: quizzes, student materials, a project */
+(function seedRev6(){
+  if(typeof DEMO==='undefined') return;
+  const t=todayStr(), add=(n)=>{const d=new Date(t+'T00:00:00'); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+  const Q=(q,o,a,ty)=>({q,options:o,answer:a,type:ty||'mc'});
+  DEMO.quizzes=[
+    {id:'qz1',title:'Daily Routines Quiz',subject:'English',level:'A2',program:'Boost English',group_id:'cg1',unit:'Unit 1 – Everyday Life',time_limit:10,due_date:add(2),created_at:add(-3)+'T09:00:00',
+     questions:JSON.stringify([Q('She usually ___ breakfast at 7 a.m.',['eat','eats','eating','to eat'],1),Q('I ___ to school by bus.',['go','goes','going','gone'],0),Q('"Every morning" is a time expression.',['True','False'],0,'tf'),
+       Q('He ___ (watch) TV in the evening.',[],'watches','fill'),Q('What time ___ you get up?',['do','does','is','are'],0),Q('My sister never ___ coffee.',['drink','drinks','drinking','drank'],1)])},
+    {id:'qz2',title:'Vocabulary Check: Hobbies',subject:'English',level:'A2',program:'Boost English',group_id:'cg1',unit:'Unit 2 – Hobbies',time_limit:8,due_date:add(6),created_at:add(-1)+'T09:00:00',
+     questions:JSON.stringify([Q('Which one is a hobby?',['Painting','Kitchen','Monday','Teacher'],0),Q('I enjoy ___ books.',['read','reading','reads','to reading'],1),Q('"Collecting stamps" is a hobby.',['True','False'],0,'tf'),Q('She is good ___ swimming.',['in','at','on','for'],1)])},
+    {id:'qz3',title:'Introduction Quiz',subject:'English',level:'A2',program:'Boost English',group_id:'cg1',unit:'Unit 1 – Everyday Life',time_limit:5,due_date:add(-10),created_at:add(-20)+'T09:00:00',
+     questions:JSON.stringify([Q('"Nice to meet you" is a ___.',['greeting','question','farewell','number'],0),Q('My name ___ Anton.',['am','is','are','be'],1),Q('Where ___ you from?',['is','are','am','be'],1)])},
+  ];
+  DEMO.quiz_results=[{id:'qr1',quiz_id:'qz3',student_id:'s1',student_name:'Anton Wijaya',score:3,total:3,taken_at:add(-12),created_at:add(-12)+'T19:00:00'},{id:'qr2',quiz_id:'qz3',student_id:'s2',student_name:'Budi Santoso',score:2,total:3,taken_at:add(-12),created_at:add(-12)+'T19:05:00'}];
+  DEMO.resources.push(
+    {id:'sm1',title:'Unit 1 – Lesson Notes.pdf',note:'Key phrases for introductions & daily routines.',program:'Boost English',unit:'Unit 1 – Everyday Life',kind:'student',size:'1.8 MB',file_url:'#',created_at:'2026-10-10T09:00:00'},
+    {id:'sm2',title:'Unit 1 – Vocabulary List.pdf',note:'Daily activities vocabulary.',program:'Boost English',unit:'Unit 1 – Everyday Life',kind:'student',size:'1.3 MB',file_url:'#',created_at:'2026-10-10T09:01:00'},
+    {id:'sm3',title:'Unit 1 – Grammar Summary.pdf',note:'Present simple – he/she/it + -s.',program:'Boost English',unit:'Unit 1 – Everyday Life',kind:'student',size:'1.1 MB',file_url:'#',created_at:'2026-10-10T09:02:00'},
+    {id:'sm4',title:'Unit 2 – Worksheet.pdf',note:'Hobbies & free time.',program:'Boost English',unit:'Unit 2 – Hobbies',kind:'student',size:'2.1 MB',file_url:'#',created_at:'2026-10-24T09:00:00'});
+  DEMO.tasks.push(
+    {id:'tk6',student_id:'s1',tutor_id:'t1',group_id:'cg1',batch_id:'b6',unit:'Unit 2 – Hobbies',title:'My Dream Holiday',detail:'Create a short presentation about your dream holiday destination. You can write, record, or present it in a format you like. Share what you want to do, why you chose this place, and what you can do there.\n\nRequirements:\n• 5–8 slides or a 2–3 minute recording\n• Use at least 5 new words from Unit 2\n• Include one picture or map',type:'final_project',due_date:add(14),due_time:'23:59',status:'assigned',visible:'1',created_at:add(-2)+'T10:00:00'},
+    {id:'tk7',student_id:'s1',tutor_id:'t1',group_id:'cg1',batch_id:'b7',unit:'Unit 2 – Hobbies',title:'Describe Your Favourite Hobby (Voice)',detail:'Record a 1-minute audio describing your favourite hobby. Say what it is, when you do it, and why you like it.',type:'speaking',due_date:add(3),due_time:'23:59',status:'assigned',visible:'1',created_at:add(-1)+'T10:00:00'},
+    {id:'tk8',student_id:'s1',tutor_id:'t1',group_id:'cg1',batch_id:'b8',unit:'Unit 2 – Hobbies',title:'Read and Answer: Weekend Plans',detail:'Read the short text in the worksheet (page 4) and answer the 5 questions in full sentences.',type:'reading',due_date:add(5),due_time:'23:59',status:'assigned',visible:'1',created_at:add(-1)+'T11:00:00'});
+  DEMO.chat.push({id:'ch22',room:'grp:cg1',sender_id:'s2',sender_name:'Budi Santoso',role:'murid',message:'Hi everyone 👋 Has anyone finished the Daily Routines quiz?',created_at:t+'T10:24:00'},
+    {id:'ch23',room:'dm:s1|t1',sender_id:'t1',sender_name:'Mr. Yesaya',role:'guru',message:'Sure Anton, please send a reschedule request from your Student Hub and the admin team will confirm.',created_at:'2026-10-26T18:02:00'});
+})();
+
+/* Rev7 demo data: student invoices, SOP status */
+(function seedRev7(){
+  if(typeof DEMO==='undefined') return;
+  const t=todayStr(), add=(n)=>{const d=new Date(t+'T00:00:00'); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+  const m=t.slice(0,7), pm=add(-31).slice(0,7);
+  const inv=(id,sid,mon,no,amt,st,iss,due,extra)=>Object.assign({id,student_id:sid,month:mon,invoice_no:no,meetings:8,price_per_meet:amt/8,duration:90,deposit_total:amt,grand_total:amt,status:st,issue_date:iss,due_date:due,program:'Boost English',level:'A2',created_at:iss+'T09:00:00'},extra||{});
+  DEMO.payments.forEach((p,i)=>{ p.invoice_no=p.invoice_no||('INV-2026-'+String(1001+i)); p.issue_date=p.issue_date||(p.month+'-01'); p.due_date=p.due_date||(p.month+'-10'); p.program=p.program||'Boost English'; });
+  DEMO.payments.push(
+    inv('pay3','s1',pm,'INV-2026-1021',1200000,'LUNAS',pm+'-01',pm+'-10',{pay_date:pm+'-06',paid_at:pm+'-06',method:'Bank Transfer (BCA)'}),
+    inv('pay4','s2',pm,'INV-2026-1022',1200000,'BELUM BAYAR',pm+'-01',pm+'-10'),
+    inv('pay5','s1',m,'INV-2026-1031',1200000,'MENUNGGU VERIFIKASI',m+'-01',add(5),{proof_url:'https://example.com/transfer-proof.jpg',pay_date:t}),
+    inv('pay6','s2',m,'INV-2026-1032',1200000,'BELUM BAYAR',m+'-01',add(2)),
+    inv('pay7','s3',m,'INV-2026-1033',1120000,'BELUM BAYAR',m+'-01',add(9),{program:'Boost Mandarin',level:'HSK 1',price_per_meet:140000,deposit_total:1120000}));
+  (DEMO.resources||[]).forEach(r=>{ if(r.kind==='sop') r.status=r.status||'Published'; });
+  DEMO.resources.push({id:'sop7',title:'Code of Conduct for Teachers.pdf',category:'General',kind:'sop',size:'640 KB',file_url:'#',status:'Draft',note:'Draft — to be reviewed by owner.',created_at:'2026-10-20T09:00:00'});
+})();
+
+/* Rev8 demo data: teacher requests, programs */
+(function seedRev8(){
+  if(typeof DEMO==='undefined') return;
+  const t=todayStr(), add=(n)=>{const d=new Date(t+'T00:00:00'); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+  DEMO.teacher_requests=[
+    {id:'trq1',tutor_id:'t1',kind:'leave',leave_type:'Sick Leave',start_date:add(3),end_date:add(4),reason:'Fever — the doctor advised two days of rest.',status:'Pending',created_at:add(-1)+'T09:15:00'},
+    {id:'trq2',tutor_id:'t2',kind:'leave',leave_type:'Personal',start_date:add(-12),end_date:add(-11),reason:'Family event.',status:'Approved',admin_note:'Covered by Mr. Kevin.',created_at:add(-20)+'T10:00:00',decided_at:add(-19)+'T08:00:00'},
+    {id:'trq3',tutor_id:'t1',kind:'reschedule',group_id:'cg1',class_date:add(7),start_time:'19:00',new_date:add(8),new_time:'19:00',reason:'Attending a teacher training workshop.',status:'Pending',created_at:t+'T07:30:00'},
+    {id:'trq4',tutor_id:'t1',kind:'reschedule',group_id:'cg1',class_date:add(-16),start_time:'19:00',new_date:add(-15),new_time:'18:30',reason:'Center event in Room 2.',status:'Approved',admin_note:'Moved to the next day, 18:30. Students informed.',created_at:add(-22)+'T11:00:00',decided_at:add(-21)+'T09:00:00',decided_by:'Operations Admin'},
+    {id:'trq5',tutor_id:'t1',kind:'leave',leave_type:'Personal',start_date:add(-30),end_date:add(-29),reason:'Personal matter.',status:'Declined',admin_note:'No substitute teacher available on those dates — please pick other dates.',created_at:add(-36)+'T08:20:00',decided_at:add(-35)+'T10:00:00',decided_by:'Super Admin'},
+  ];
+  { const nx=(DEMO.classes||[]).filter(c=>String(c.tutor_id)==='t1'&&(c.group_id==='cg1'||['s1','s2'].includes(String(c.student_id)))&&c.date>t&&(!c.session_type||c.session_type==='regular')).sort((a,b)=>a.date.localeCompare(b.date))[1];
+    if(nx){ const r=DEMO.teacher_requests.find(x=>x.id==='trq3'); r.class_date=nx.date; r.start_time=nx.start_time||'19:00'; r.new_date=add(Math.max(1,Math.round((new Date(nx.date)-new Date(t))/864e5)+1)); } }
+  DEMO.programs=[
+    {id:'pg1',name:'Boost English',code:'BE',category:'General English',audience:'Kids,Teens,Adults',levels:'A1,A2,B1,B2,C1,C2',duration:'4 months per level',sessions:32,min_cert:26,price:150000,status:'Active',color:'#1F6FEB',description:'A structured English program for kids, teens and adults following the CEFR framework, focused on real-life communication in a supportive environment.',objectives:'Build practical English communication skills from A1 to C2 — speaking, listening, reading and writing.',curriculum:'Unit 1 – Everyday Life\nUnit 2 – Hobbies\nUnit 3 – Travel\nUnit 4 – Food and Restaurants\nUnit 5 – School and Education\nUnit 6 – Health and Lifestyle'},
+    {id:'pg2',name:'Speak Active',code:'SA',category:'Speaking Club',audience:'Teens,Adults',levels:'A2,B1,B2',duration:'3 months',sessions:24,min_cert:20,price:140000,status:'Active',color:'#22A06B',description:'Conversation-focused speaking club with games, debates and role-plays.',objectives:'Speak confidently and fluently in everyday situations.',curriculum:'Getting to Know You\nDaily Life Talk\nOpinions & Debates\nStorytelling'},
+    {id:'pg3',name:'IELTS Preparation',code:'IELTS',category:'Test Preparation',audience:'Teens,Adults',levels:'Band 5.5,Band 6.5,Band 7+',duration:'12 weeks',sessions:24,min_cert:20,price:200000,status:'Active',color:'#7C5CE6',description:'Strategy-based preparation for all four IELTS skills with mock tests.',objectives:'Reach the target band score.',curriculum:'Listening strategies\nReading strategies\nWriting Task 1 & 2\nSpeaking Parts 1–3\nMock tests'},
+    {id:'pg4',name:'Boost Mandarin',code:'MAND',category:'Foreign Language',audience:'Kids,Teens,Adults',levels:'HSK 1,HSK 2,HSK 3,HSK 4,HSK 5,HSK 6',duration:'4 months per level',sessions:32,min_cert:26,price:140000,status:'Active',color:'#F5A524',description:'Mandarin for beginners to advanced learners aligned with HSK.',objectives:'Communicate in Mandarin and pass HSK exams.',curriculum:'Greetings\nNumbers & Time\nFamily\nShopping\nTravel'},
+    {id:'pg5',name:'HSK Preparation',code:'HSK',category:'Test Preparation',audience:'Teens,Adults',levels:'HSK 1–6',duration:'10 weeks',sessions:20,min_cert:16,price:180000,status:'Active',color:'#E5484D',description:'Focused preparation for HSK exams.',objectives:'Pass the target HSK level.',curriculum:'Vocabulary drills\nGrammar points\nReading & listening practice\nMock tests'},
+    {id:'pg6',name:'Japanese',code:'JP',category:'Foreign Language',audience:'Teens,Adults',levels:'N5,N4,N3,N2,N1',duration:'4 months per level',sessions:32,min_cert:26,price:150000,status:'Draft',color:'#C2364A',description:'Japanese language program aligned with JLPT.',objectives:'Read hiragana, katakana and basic kanji; hold simple conversations.',curriculum:'Hiragana & Katakana\nGreetings\nDaily life'},
+  ];
+})();
 
 /* Convenience lookups that work in demo & live (names embedded server-side in live) */
 async function tutorMap(){const t=await API.getTutors();const m={};t.forEach(x=>m[x.id]=x);return m;}
 async function studentMap(){const s=await API.getStudents();const m={};s.forEach(x=>m[x.id]=x);return m;}
+
+/* Announcement targeting (rev5): which announcements a student/parent should see */
+function annFor(list,role,stu,groups){
+  const now=new Date(), want=role==='parent'?'Parents':'Students';
+  const myGroups=(groups||[]).filter(g=>String(g.student_ids||'').split(',').map(x=>x.trim()).includes(String((stu||{}).id)));
+  return (list||[]).filter(a=>{
+    const aud=String(a.audience||'All').split(',').map(x=>x.trim());
+    if(!(aud.includes('All')||aud.includes(want))) return false;
+    if(a.publish_at && new Date(a.publish_at)>now) return false;
+    if(a.program && stu && a.program!==stu.program && !myGroups.some(g=>g.program===a.program)) return false;
+    if(a.level && stu){ const lv=String(a.level).split(/[,\s]+/).filter(Boolean); const mine=[stu.level,...myGroups.map(g=>g.level)].filter(Boolean); if(lv.length&&!lv.some(l=>mine.includes(l))) return false; }
+    if(a.group_id && !myGroups.some(g=>String(g.id)===String(a.group_id))) return false;
+    return true;
+  });
+}
+
+/* Printable student invoice (rev7) */
+function openInvoice(o){
+  o=o||{}; const logo=location.href.replace(/[^/]*$/,'')+'assets/logo-h.png';
+  const paid=isPaid(o.status);
+  const rows=(o.items||[]).map(it=>`<tr><td>${esc(it.d)}</td><td style="text-align:center">${esc(it.q||'')}</td><td style="text-align:right">${it.p!=null?rupiah(it.p):''}</td><td style="text-align:right"><b>${rupiah(it.t)}</b></td></tr>`).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(o.no||'Invoice')} — ${esc(o.student||'')}</title><style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0} body{font-family:'Plus Jakarta Sans',sans-serif;color:#1E2A4A;background:#EEF3FA;padding:60px 20px 20px}
+  .pg{max-width:800px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 44px;box-shadow:0 10px 40px rgba(19,35,91,.12)}
+  .hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #E6ECF5;padding-bottom:20px;margin-bottom:22px}
+  .hd img{height:54px} h1{font-size:30px;color:#13235B;text-align:right} .no{color:#6B7A99;text-align:right;font-size:13px}
+  .st{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:800;background:${paid?'#E7F6EC':'#FFF4DE'};color:${paid?'#1E7E34':'#B26A00'}}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px;font-size:13px} .grid b{display:block;color:#13235B;font-size:14px;margin-bottom:4px} .lbl{color:#6B7A99;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;font-size:13px} th{background:#F1F6FF;color:#13235B;text-align:left;padding:10px 12px;font-size:12px} td{padding:11px 12px;border-bottom:1px solid #E6ECF5}
+  .tot{display:flex;justify-content:flex-end;margin-top:16px}.tot div{background:#1F6FEB;color:#fff;border-radius:12px;padding:14px 22px;font-size:14px}.tot b{font-size:22px;display:block}
+  .pay{margin-top:24px;background:#F5F8FD;border-radius:12px;padding:16px 18px;font-size:13px;line-height:1.7}
+  .pbar{position:fixed;top:0;left:0;right:0;background:#1F6FEB;color:#fff;padding:10px;text-align:center;font-size:13px}
+  .pbar button{background:#fff;color:#1F6FEB;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px}
+  @media print{.pbar{display:none}body{background:#fff;padding:0}.pg{box-shadow:none}}
+  </style></head><body><div class="pbar">💾 Save as PDF: <button onclick="window.print()">⬇️ Download / Print</button></div>
+  <div class="pg"><div class="hd"><img src="${logo}" alt="Kwelingo Academy"><div><h1>INVOICE</h1><div class="no">${esc(o.no||'')}</div><div style="text-align:right"><span class="st">${paid?'PAID':'UNPAID'}</span></div></div></div>
+  <div class="grid"><div><div class="lbl">BILL TO</div><b>${esc(o.parent||'Parent / Guardian')}</b>Student: ${esc(o.student||'')}<br>Program: ${esc(o.program||'-')}${o.level?' – '+esc(o.level):''}</div>
+    <div style="text-align:right"><div class="lbl">DETAILS</div>Invoice date: <b style="display:inline">${esc(o.issue||'-')}</b><br>Due date: <b style="display:inline">${esc(o.due||'-')}</b><br>Period: ${esc(o.period||'-')}${paid&&o.paidOn?`<br>Paid on: ${esc(o.paidOn)}`:''}</div></div>
+  <table><thead><tr><th>Description</th><th style="text-align:center">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Amount</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="tot"><div>Total Amount<b>${rupiah(o.total)}</b></div></div>
+  <div class="pay"><b>Payment</b><br>${o.bank?esc(o.bank):'Please transfer to the Kwelingo Academy account shown in your Parent Hub'}<br>Please upload the transfer proof in the Parent Hub after paying. Thank you! 🙏</div>
+  ${o.note?`<div style="margin-top:14px;font-size:12.5px;color:#6B7A99">Note: ${esc(o.note)}</div>`:''}</div></body></html>`;
+  const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the invoice','err'); return; } w.document.write(html); w.document.close();
+}
