@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1F6FEB">
 <link rel="apple-touch-icon" href="assets/icon-192.png">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v=20261102">
 <style>
   .welcome h1{font-size:28px}
   .quote{display:flex;align-items:center;gap:10px;background:#EAF7EE;border-radius:999px;padding:8px 18px 8px 10px;font-size:13px;color:#1E5E36;font-weight:600;font-style:italic}
@@ -256,7 +256,7 @@
       <section class="view hide" id="view-certs">
         <div class="page-head"><div class="ph-left"><div class="ph-ic">🏅</div><div><h1>Certificates</h1><div class="sub">View and download your certificates.</div></div></div></div>
         <div class="card card-pad" style="margin-bottom:16px;max-width:420px"><div class="field" style="margin:0"><label>Program</label><select id="ceProg" onchange="renderCerts()"></select></div></div>
-        <div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Certificate</th><th>Program / Level</th><th>Issue Date</th><th></th></tr></thead><tbody id="ceBody"></tbody></table></div></div>
+        <div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Certificate</th><th>Program / Level</th><th>Issue Date</th><th>Action</th></tr></thead><tbody id="ceBody"></tbody></table></div></div>
         <div class="card card-pad mt-16" id="ceProgress"></div>
       </section>
 
@@ -361,7 +361,7 @@
   </div>
 </div>
 
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=20261102"></script>
 <script>
 /* =====================================================================
    Student Hub (rev6)
@@ -416,7 +416,7 @@ async function loadAll(){
   let studs;
   [TUTORS,studs,GROUPS,CLS,TASKS,QUIZZES,RESULTS,LB,DIARY,RES,DEVS,CERTS,ANN,RATINGS]=await Promise.all([safe(API.getTutors()),safe(API.getStudents()),safe(API.getClassGroups()),safe(API.getClasses({student_id:ME.id})),
     safe(API.getTasks({student_id:ME.id})),safe(API.getQuizzes()),safe(API.getQuizResults({student_id:ME.id})),safe(API.getLeaderboard()),safe(API.getDiary({student_id:ME.id})),safe(API.getResources()),
-    safe(API.list('dev_notes',{student_id:ME.id})),safe(API.list('certificates',{student_id:ME.id})),safe(API.getAnnouncements()),safe(API.getRatings({student_id:ME.id}))]);
+    safe(API.list('dev_notes',{student_id:ME.id})),safe(API.list('certificates',{student_id:ME.id})),safe(API.getAnnouncements()),safe(API.getRatings({student_id:ME.id}))]); loadCertTemplate();
   [TUTORS,GROUPS,CLS,TASKS,QUIZZES,RESULTS,LB,DIARY,RES,DEVS,CERTS,ANN,RATINGS]=[TUTORS,GROUPS,CLS,TASKS,QUIZZES,RESULTS,LB,DIARY,RES,DEVS,CERTS,ANN,RATINGS].map(x=>x||[]);
   STU_NAMES={}; (studs||[]).forEach(s=>STU_NAMES[s.id]=s.nama);   // names only — nothing else kept
   TASKS=TASKS.filter(visibleTask);
@@ -670,18 +670,25 @@ async function submitPractice(id){
 
 /* ============================== QUIZZES ============================== */
 let QZ_TAB='available', QZ_SEL=null, QZ_TIMER=null;
-function myQuizzes(){ return QUIZZES.filter(q=>{ if(q.group_id) return MYGROUPS.some(g=>String(g.id)===String(q.group_id)); if(q.program) return MYGROUPS.some(g=>g.program===q.program)||ME.program===q.program; return true; }); }
+function myQuizzes(){ return QUIZZES.filter(q=>{ if(q.status==='Draft') return false; if(q.open_date&&q.open_date>TODAY) return false; if(q.group_id) return MYGROUPS.some(g=>String(g.id)===String(q.group_id)); if(q.program) return MYGROUPS.some(g=>g.program===q.program)||ME.program===q.program; return true; }); }
 const parseQ=q=>{ try{ return JSON.parse(q.questions||'[]'); }catch(e){ return []; } };
 const qState=id=>{ try{ return JSON.parse(localStorage.getItem('kwq_'+ME.id+'_'+id)||'null'); }catch(e){ return null; } };
 const qSave=(id,s)=>{ try{ s?localStorage.setItem('kwq_'+ME.id+'_'+id,JSON.stringify(s)):localStorage.removeItem('kwq_'+ME.id+'_'+id); }catch(e){} };
 const qLimit=q=>(Number(q.time_limit)||Math.max(5,parseQ(q).length*1.5))*60;
+const qUntimed=q=>!!q.tutor_id&&!Number(q.time_limit);
+const qRules=q=>{ try{ return {show:1,multi:1,shuffleQ:0,shuffleO:0,...JSON.parse(q.rules||'{}')}; }catch(e){ return {show:1,multi:1,shuffleQ:0,shuffleO:0}; } };
+const qPts=x=>Number(x.points)||1;
+const qTotal=qs=>qs.reduce((a,x)=>a+qPts(x),0);
+const qClosed=q=>q.status==='Closed'||(q.due_date&&q.due_date<TODAY);
+function qShuf(n){ const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function qCorrect(x,a){ if(x.type==='short') return null; if(x.options&&x.options.length) return String(a)===String(x.answer); return String(x.answer).split('|').map(v=>v.trim().toLowerCase()).filter(Boolean).includes(String(a||'').trim().toLowerCase()); }
 function qBest(id){ return RESULTS.filter(r=>r.quiz_id===id).sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0))[0]; }
 function renderQuizzes(){
   const all=myQuizzes(), inprog=all.filter(q=>qState(q.id)&&!qBest(q.id)), done=all.filter(q=>qBest(q.id)), avail=all.filter(q=>!qBest(q.id)&&!qState(q.id));
   document.getElementById('qzTabs').innerHTML=[['available','Available Quizzes',avail.length],['progress','In Progress',inprog.length],['done','Completed',done.length]].map(([k,l,n])=>`<button class="${k===QZ_TAB?'on':''}" onclick="QZ_TAB='${k}';QZ_SEL=null;renderQuizzes()">${l}${n?' ('+n+')':''}</button>`).join('');
   const list=QZ_TAB==='available'?avail:QZ_TAB==='progress'?inprog:done;
   if(!QZ_SEL||!list.some(q=>q.id===QZ_SEL)) QZ_SEL=(list[0]||{}).id||null;
-  document.getElementById('qzList').innerHTML=list.map(q=>{ const b=qBest(q.id), over=q.due_date&&q.due_date<TODAY&&!b;
+  document.getElementById('qzList').innerHTML=list.map(q=>{ const b=qBest(q.id), over=qClosed(q)&&!b;
     return `<div class="tcard ${q.id===QZ_SEL?'sel':''}" onclick="QZ_SEL='${esc(q.id)}';renderQuizzes()"><div class="ic" style="background:${b?'#EAF7EE':'#FFF4DE'}">📝</div><div style="flex:1;min-width:0"><b>${esc(q.title)}</b><small>${esc(q.unit||q.subject||'')}</small><small>${q.due_date?'Due: '+esc(dShort(q.due_date)):''}</small></div>${b?`<span class="badge badge-paid">${b.score}/${b.total}</span>`:(qState(q.id)?'<span class="badge badge-active">In Progress</span>':(over?'<span class="badge badge-unpaid">Closed</span>':'<span class="badge badge-pending">To Do</span>'))}</div>`; }).join('')||'<div class="empty card card-pad">No quizzes here.</div>';
   drawQuiz();
 }
@@ -691,39 +698,42 @@ function drawQuiz(){
   const rk=LB.findIndex(x=>String(x.student_id)===String(ME.id));
   const lbHtml=`<div class="card card-pad"><div class="card-title">🏅 Leaderboard</div>${LB.slice(0,5).map((r,i)=>`<div class="lb-mini" style="${String(r.student_id)===String(ME.id)?'font-weight:800;color:var(--blue)':''}"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(r.name||STU_NAMES[r.student_id]||'Student')}</span><b>${r.points}</b></div>`).join('')||'<div class="empty">No scores yet.</div>'}${rk>=5?`<div class="lb-mini" style="font-weight:800;color:var(--blue)"><span>${rk+1}. You</span><b>${LB[rk].points}</b></div>`:''}</div>`;
   if(!q){ main.innerHTML='<div class="empty">Select a quiz.</div>'; side.innerHTML=lbHtml; return; }
-  const qs=parseQ(q), st=qState(q.id), best=qBest(q.id), over=q.due_date&&q.due_date<TODAY;
-  const types=[...new Set(qs.map(x=>({mc:'Multiple choice',tf:'True or False',fill:'Fill in the blank'}[x.type||(x.options&&x.options.length?'mc':'fill')])))].join(', ');
-  side.innerHTML=`<div class="card card-pad" style="margin-bottom:16px"><div class="card-title">Quiz Information</div><div class="kv"><span class="k">📄 Questions</span><span class="v">${qs.length}</span><span class="k">⏱️ Time</span><span class="v">${Math.round(qLimit(q)/60)} minutes</span><span class="k">⭐ Points</span><span class="v">${qs.length}</span><span class="k">🧩 Types</span><span class="v">${esc(types||'-')}</span></div></div>
-    ${st&&!best?`<div class="card card-pad" style="margin-bottom:16px"><div class="card-title">Question Navigator</div><div class="qnav">${qs.map((_,i)=>`<button class="${st.cur===i?'cur':''} ${st.ans[i]!=null&&st.ans[i]!==''?'ans':''}" onclick="qGo(${i})">${i+1}</button>`).join('')}</div><div style="display:flex;gap:10px;font-size:11px;color:var(--muted);margin-top:10px"><span>🟢 Answered</span><span>🔵 Current</span><span>⚪ Not answered</span></div></div>`:''}${lbHtml}`;
+  const qs=parseQ(q), st=qState(q.id), best=qBest(q.id), over=qClosed(q), R=qRules(q);
+  const types=[...new Set(qs.map(x=>({mc:'Multiple choice',tf:'True or False',fill:'Fill in the blank',short:'Short answer'}[x.type||(x.options&&x.options.length?'mc':'fill')])))].join(', ');
+  side.innerHTML=`<div class="card card-pad" style="margin-bottom:16px"><div class="card-title">Quiz Information</div><div class="kv"><span class="k">📄 Questions</span><span class="v">${qs.length}</span><span class="k">⏱️ Time</span><span class="v">${qUntimed(q)?'No limit':Math.round(qLimit(q)/60)+' minutes'}</span><span class="k">⭐ Points</span><span class="v">${qTotal(qs)}</span>${q.passing_score?`<span class="k">🎯 Pass</span><span class="v">${esc(q.passing_score)}%</span>`:''}<span class="k">🧩 Types</span><span class="v">${esc(types||'-')}</span></div></div>
+    ${st&&!best?`<div class="card card-pad" style="margin-bottom:16px"><div class="card-title">Question Navigator</div><div class="qnav">${qs.map((_,i)=>{ const oi=(st.order||[])[i]??i; return `<button class="${st.cur===i?'cur':''} ${st.ans[oi]!=null&&st.ans[oi]!==''?'ans':''}" onclick="qGo(${i})">${i+1}</button>`; }).join('')}</div><div style="display:flex;gap:10px;font-size:11px;color:var(--muted);margin-top:10px"><span>🟢 Answered</span><span>🔵 Current</span><span>⚪ Not answered</span></div></div>`:''}${lbHtml}`;
   if(best&&!st){ // review
     let ans={}; try{ ans=JSON.parse(best.answers||'{}'); }catch(e){}
+    const tot=Number(best.total)||qTotal(qs), pc=tot?Math.round(best.score/tot*100):0, pass=Number(q.passing_score)||0, pend=qs.some((x,i)=>x.type==='short'&&!(ans._manual&&ans._manual[i]!=null)&&ans[i]);
     main.innerHTML=`<h3 style="color:var(--navy);font-size:20px">${esc(q.title)}</h3><div class="text-muted" style="font-size:12.5px">Completed ${esc(dShort(best.taken_at||best.created_at))}</div>
-      <div class="note-band" style="margin:14px 0;background:#EAF7EE;border-color:#BFE6CB;color:#1E7E34;font-size:15px;font-weight:700;text-align:center">🎉 Your score: ${best.score} / ${best.total} (${Math.round(best.score/best.total*100)}%)</div>
-      ${Object.keys(ans).length?qs.map((x,i)=>`<div style="margin-bottom:14px"><b style="color:var(--navy)">${i+1}. ${esc(x.q)}</b>${x.options&&x.options.length?x.options.map((o,oi)=>`<div class="qopt2 ${oi===Number(x.answer)?'ok':(String(ans[i])===String(oi)?'bad':'')}" style="cursor:default;padding:8px 12px;margin:6px 0 0"><span class="l">${'ABCD'[oi]}</span>${esc(o)}</div>`).join(''):`<div class="qopt2 ${String(ans[i]||'').trim().toLowerCase()===String(x.answer).trim().toLowerCase()?'ok':'bad'}" style="cursor:default;margin-top:6px">Your answer: <b>${esc(ans[i]||'–')}</b> · Correct: <b>${esc(x.answer)}</b></div>`}</div>`).join(''):''}
-      <button class="btn btn-outline" onclick="startQuiz('${esc(q.id)}')">↻ Retake quiz</button>`;
+      <div class="note-band" style="margin:14px 0;background:#EAF7EE;border-color:#BFE6CB;color:#1E7E34;font-size:15px;font-weight:700;text-align:center">🎉 Your score: ${best.score} / ${tot} (${pc}%)${pass?(pc>=pass?' · ✅ Passed':' · Passing score '+pass+'%'):''}${pend?'<br><small style="font-weight:500">Some short answers are still being graded by your teacher.</small>':''}</div>
+      ${R.show&&Object.keys(ans).length?qs.map((x,i)=>`<div style="margin-bottom:14px"><b style="color:var(--navy)">${i+1}. ${esc(x.q)}</b>${x.type==='short'?`<div class="qopt2" style="cursor:default;margin-top:6px">Your answer: <b>${esc(ans[i]||'–')}</b>${ans._manual&&ans._manual[i]!=null?` · ${ans._manual[i]} / ${qPts(x)} pts`:' · waiting for teacher'}</div>`:x.options&&x.options.length?x.options.map((o,oi)=>`<div class="qopt2 ${oi===Number(x.answer)?'ok':(String(ans[i])===String(oi)?'bad':'')}" style="cursor:default;padding:8px 12px;margin:6px 0 0"><span class="l">${'ABCDEF'[oi]}</span>${esc(o)}</div>`).join(''):`<div class="qopt2 ${qCorrect(x,ans[i])?'ok':'bad'}" style="cursor:default;margin-top:6px">Your answer: <b>${esc(ans[i]||'–')}</b> · Correct: <b>${esc(String(x.answer).split('|')[0])}</b></div>`}</div>`).join(''):(R.show?'':'<div class="note-band">Correct answers are hidden for this quiz.</div>')}
+      ${R.multi&&!over?`<button class="btn btn-outline" onclick="startQuiz('${esc(q.id)}')">↻ Retake quiz</button>`:''}`;
     return;
   }
   if(!st){
     main.innerHTML=`<h3 style="color:var(--navy);font-size:20px">${esc(q.title)}</h3><div class="text-muted" style="font-size:12.5px">${esc(q.unit||'')}${q.due_date?' · Due '+esc(dShort(q.due_date)):''}</div>
-      <div class="kv-box" style="margin:16px 0"><div style="font-size:13px;line-height:1.7">📄 ${qs.length} questions · ⏱️ ${Math.round(qLimit(q)/60)} minutes<br>• Answer all questions before the time runs out.<br>• You can change your answers before submitting.<br>• Once you click <b>Submit Quiz</b>, your answers are final.<br>• The timer keeps running even if you leave this page.</div></div>
+      <div class="kv-box" style="margin:16px 0"><div style="font-size:13px;line-height:1.7">📄 ${qs.length} questions · ⭐ ${qTotal(qs)} points · ⏱️ ${qUntimed(q)?'no time limit':Math.round(qLimit(q)/60)+' minutes'}${q.description?'<br>'+esc(q.description):''}<br>• Answer all questions${qUntimed(q)?'.':' before the time runs out.'}<br>• You can change your answers before submitting.<br>• Once you click <b>Submit Quiz</b>, your answers are final.<br>${qUntimed(q)?'':'• The timer keeps running even if you leave this page.'}${R.multi?'':'<br>• You have <b>one attempt</b> only.'}</div></div>
       ${over?'<div class="note-band">This quiz is closed (the due date has passed).</div>':`<button class="btn btn-primary" onclick="startQuiz('${esc(q.id)}')">▶ Start Quiz</button>`}`;
     return;
   }
   // in progress
-  const i=st.cur||0, x=qs[i]||{}; const isMC=x.options&&x.options.length;
-  main.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap"><div><h3 style="color:var(--navy);font-size:20px">${esc(q.title)}</h3><div class="text-muted" style="font-size:12.5px">${esc(q.unit||'')}${q.due_date?' · Due '+esc(dShort(q.due_date)):''}</div></div><div class="timer" id="qzTimer"><span style="font-size:22px">⏱️</span><div><small class="text-muted" style="font-size:11px">Time Left</small><br><b id="qzLeft">--:--</b></div></div></div>
+  const i=st.cur||0, oq=(st.order||[])[i]??i, x=qs[oq]||{}; const isMC=x.options&&x.options.length; const oo=(st.optOrd&&st.optOrd[oq])||(isMC?x.options.map((_,k)=>k):[]);
+  main.innerHTML=`<div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap"><div><h3 style="color:var(--navy);font-size:20px">${esc(q.title)}</h3><div class="text-muted" style="font-size:12.5px">${esc(q.unit||'')}${q.due_date?' · Due '+esc(dShort(q.due_date)):''}</div></div>${qUntimed(q)?'':'<div class="timer" id="qzTimer"><span style="font-size:22px">⏱️</span><div><small class="text-muted" style="font-size:11px">Time Left</small><br><b id="qzLeft">--:--</b></div></div>'}</div>
     <div style="display:flex;align-items:center;gap:12px;margin:14px 0"><div class="progress blue" style="flex:1;margin:0"><span style="width:${(i+1)/qs.length*100}%"></span></div><small class="text-muted">Question ${i+1} of ${qs.length}</small></div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span class="badge badge-grey">${isMC?(x.type==='tf'?'True or False':'Multiple Choice'):'Fill in the blank'}</span><small class="text-muted">1 point</small></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span class="badge badge-grey">${isMC?(x.type==='tf'?'True or False':'Multiple Choice'):(x.type==='short'?'Short answer':'Fill in the blank')}</span><small class="text-muted">${qPts(x)} point${qPts(x)>1?'s':''}</small></div>
     <div style="font-size:17px;font-weight:700;color:var(--navy);margin:8px 0 14px">${i+1}. ${esc(x.q)}</div>
-    ${isMC?x.options.map((o,oi)=>`<div class="qopt2 ${String(st.ans[i])===String(oi)?'on':''}" onclick="qAnswer(${oi})"><span class="l">${'ABCDEF'[oi]}</span>${esc(o)}</div>`).join('')
-      :`<input id="qzFill" value="${esc(st.ans[i]||'')}" oninput="qAnswer(this.value,true)" placeholder="Type your answer…" style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px">`}
+    ${isMC?oo.map((oi,pos)=>`<div class="qopt2 ${String(st.ans[oq])===String(oi)?'on':''}" onclick="qAnswer(${oi})"><span class="l">${'ABCDEF'[pos]}</span>${esc(x.options[oi])}</div>`).join('')
+      :x.type==='short'?`<textarea id="qzFill" oninput="qAnswer(this.value,true)" placeholder="Write your answer…" style="width:100%;min-height:110px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px">${esc(st.ans[oq]||'')}</textarea>`
+      :`<input id="qzFill" value="${esc(st.ans[oq]||'')}" oninput="qAnswer(this.value,true)" placeholder="Type your answer…" style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px">`}
     <div style="display:flex;justify-content:space-between;margin-top:16px;gap:10px"><button class="btn btn-outline" ${i===0?'disabled':''} onclick="qGo(${i-1})">← Previous</button>${i<qs.length-1?`<button class="btn btn-primary" onclick="qGo(${i+1})">Next →</button>`:`<button class="btn btn-green" onclick="submitQuiz()">✔ Submit Quiz</button>`}</div>`;
-  startQuizTimer(q);
+  if(!qUntimed(q)) startQuizTimer(q);
 }
-function startQuiz(id){ const q=QUIZZES.find(x=>x.id===id); if(!q) return; qSave(id,{start:Date.now(),ans:{},cur:0}); RESULTS=RESULTS.filter(r=>!(r.quiz_id===id&&r._local)); QZ_TAB='progress'; QZ_SEL=id;
+function startQuiz(id){ const q=QUIZZES.find(x=>x.id===id); if(!q) return; const R=qRules(q), qs=parseQ(q);
+  qSave(id,{start:Date.now(),ans:{},cur:0,order:R.shuffleQ?qShuf(qs.length):null,optOrd:R.shuffleO?Object.fromEntries(qs.map((x,k)=>[k,x.type==='mc'&&x.options?qShuf(x.options.length):null]).filter(e=>e[1])):null}); RESULTS=RESULTS.filter(r=>!(r.quiz_id===id&&r._local)); QZ_TAB='progress'; QZ_SEL=id;
   const b=qBest(id); if(b){ RESULTS=RESULTS.filter(r=>r.quiz_id!==id); } renderQuizzes(); }
 function qGo(i){ const s=qState(QZ_SEL); if(!s) return; s.cur=Math.max(0,Math.min(i,parseQ(QUIZZES.find(x=>x.id===QZ_SEL)).length-1)); qSave(QZ_SEL,s); drawQuiz(); }
-function qAnswer(v,typing){ const s=qState(QZ_SEL); if(!s) return; s.ans[s.cur]=v; qSave(QZ_SEL,s); if(!typing) drawQuiz(); else { const b=document.querySelectorAll('.qnav button')[s.cur]; if(b) b.classList.toggle('ans',String(v).trim()!==''); } }
+function qAnswer(v,typing){ const s=qState(QZ_SEL); if(!s) return; s.ans[(s.order||[])[s.cur]??s.cur]=v; qSave(QZ_SEL,s); if(!typing) drawQuiz(); else { const b=document.querySelectorAll('.qnav button')[s.cur]; if(b) b.classList.toggle('ans',String(v).trim()!==''); } }
 function startQuizTimer(q){ const tick=()=>{ const s=qState(q.id); if(!s){ stopQuizTimer(); return; } const left=Math.round(qLimit(q)-(Date.now()-s.start)/1000); const el=document.getElementById('qzLeft'); if(!el){ stopQuizTimer(); return; }
   if(left<=0){ el.textContent='00:00'; stopQuizTimer(); toast('⏰ Time is up — submitting your answers','err'); submitQuiz(true); return; }
   el.textContent=`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`; document.getElementById('qzTimer').classList.toggle('low',left<60); }; tick(); QZ_TIMER=setInterval(tick,1000); }
@@ -732,12 +742,12 @@ async function submitQuiz(auto){
   const q=QUIZZES.find(x=>x.id===QZ_SEL), s=qState(QZ_SEL); if(!q||!s) return; const qs=parseQ(q);
   const unanswered=qs.filter((_,i)=>s.ans[i]==null||s.ans[i]==='').length;
   if(!auto&&unanswered&&!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
-  let score=0; qs.forEach((x,i)=>{ const a=s.ans[i]; if(x.options&&x.options.length){ if(String(a)===String(x.answer)) score++; } else if(String(a||'').trim().toLowerCase()===String(x.answer).trim().toLowerCase()) score++; });
+  let score=0; qs.forEach((x,i)=>{ if(qCorrect(x,s.ans[i])) score+=qPts(x); }); const total=qTotal(qs);
   stopQuizTimer();
-  try{ await API.saveQuizResult({quiz_id:q.id,student_id:ME.id,student_name:ME.nama||'',score,total:qs.length,taken_at:TODAY,answers:JSON.stringify(s.ans)}); }catch(e){ toast('Saved on this device — sync failed: '+(e.message||e),'err'); }
-  RESULTS.push({quiz_id:q.id,student_id:ME.id,score,total:qs.length,taken_at:TODAY,answers:JSON.stringify(s.ans)}); qSave(q.id,null);
+  try{ await API.saveQuizResult({quiz_id:q.id,student_id:ME.id,student_name:ME.nama||'',score,total,taken_at:TODAY,answers:JSON.stringify(s.ans)}); }catch(e){ toast('Saved on this device — sync failed: '+(e.message||e),'err'); }
+  RESULTS.push({quiz_id:q.id,student_id:ME.id,score,total,taken_at:TODAY,answers:JSON.stringify(s.ans)}); qSave(q.id,null);
   try{ LB=await API.getLeaderboard()||LB; }catch(e){}
-  toast(`🎉 Quiz submitted — score ${score}/${qs.length}`,'ok'); QZ_TAB='done'; renderQuizzes(); refreshDots();
+  toast(`🎉 Quiz submitted — score ${score}/${total}`,'ok'); QZ_TAB='done'; renderQuizzes(); refreshDots();
 }
 
 /* ============================== PROJECTS ============================== */
@@ -761,14 +771,16 @@ function renderProjects(){
       <div class="card card-pad" style="margin-bottom:14px"><div class="card-title">Project Checklist</div><small class="text-muted">${doneN} / 5 completed</small><div class="progress" style="margin:6px 0 10px"><span style="width:${doneN*20}%"></span></div>${items.map(([k,l])=>`<label class="chk"><input type="checkbox" ${ck[k]||auto[k]?'checked':''} ${auto[k]?'disabled':''} onchange="pjCheck('${esc(t.id)}','${k}',this.checked)"> ${l}</label>`).join('')}</div>
       <div class="card card-pad"><div class="card-title">Need Help?</div><div class="text-muted" style="font-size:12.5px;margin-bottom:10px">If you have any questions about this project, you can send a message to your teacher.</div><button class="btn btn-outline btn-block" onclick="openTeacherChat('${esc(t.tutor_id)}')">💬 Message Teacher</button></div></div></div>`;
   const tab=document.getElementById('pjTab');
-  if(PJ_TAB==='brief') tab.innerHTML=`<div class="kv-box" style="white-space:pre-line;font-size:13.5px;line-height:1.6;color:#3C4A6B">${esc(t.detail||'-')}</div>${t.attach_url?`<a class="attach" href="${esc(t.attach_url)}" target="_blank">📎 Project brief / attachment</a>`:''}<div class="note-band mt-16" style="font-size:12.5px">📌 Submission: upload a file (PDF, DOCX, PPT), an audio recording, or a video link (YouTube, Google Drive, Canva).</div>`;
+  let rub=[], scs={}; try{ rub=JSON.parse(t.rubric||'[]'); }catch(e){} try{ scs=JSON.parse(t.scores||'{}'); }catch(e){}
+  const rubHtml=rub.length?`<div style="font-weight:700;color:var(--navy);font-size:13px;margin:14px 0 6px">📋 Grading Rubric</div><table class="tbl" style="font-size:12.5px"><thead><tr><th>Criteria</th><th>Max Score</th>${st==='graded'?'<th>Your Score</th>':''}</tr></thead><tbody>${rub.map((r,k)=>`<tr><td>${esc(r.c)}</td><td>${r.max}</td>${st==='graded'?`<td><b>${esc(scs[k]??'-')}</b></td>`:''}</tr>`).join('')}</tbody></table>`:'';
+  if(PJ_TAB==='brief') tab.innerHTML=`<div class="kv-box" style="white-space:pre-line;font-size:13.5px;line-height:1.6;color:#3C4A6B">${esc(t.detail||'')}${t.instructions?(t.detail?'\n\n':'')+esc(t.instructions):(t.detail?'':'-')}</div>${rubHtml}${t.attach_url?`<a class="attach" href="${esc(t.attach_url)}" target="_blank">📎 Project brief / attachment</a>`:''}<div class="note-band mt-16" style="font-size:12.5px">📌 Submission: upload a file (PDF, DOCX, PPT), an audio recording, or a video link (YouTube, Google Drive, Canva).</div>`;
   else if(PJ_TAB==='submit'){ tab.innerHTML=`${t.submit_url||t.submit_text?`<div class="note-band" style="margin-bottom:12px;font-size:12.5px">📤 Last submitted ${esc(dShort(t.submit_at))}${t.submit_url?` · <a href="${esc(t.submit_url)}" target="_blank">open</a>`:''}${t.submit_text?`<div style="white-space:pre-line;margin-top:4px">${esc(t.submit_text)}</div>`:''}</div>`:''}
       ${st==='graded'?'<div class="note-band">Your project has been graded. See Teacher Feedback.</div>':`<b style="color:var(--navy)">Submit Your Project</b><div class="text-muted" style="font-size:12.5px;margin-bottom:10px">Choose the method that matches your project.</div>
       <div class="methods" style="grid-template-columns:repeat(3,1fr)">${[['file','📄 Upload a file'],['record','🎙️ Audio recording'],['link','🔗 Video link']].map(([k,l])=>`<button class="${PJ_METHOD===k?'on':''}" onclick="PJ_METHOD='${k}';renderProjects()">${l}</button>`).join('')}</div>
       ${submitArea(PJ_METHOD,'pj')}
       <div class="field mt-16"><label>Message to Teacher (optional)</label><textarea id="pjMsg" rows="2" maxlength="500" placeholder="Write a short message about your project…"></textarea></div>
       <button class="btn btn-primary btn-block" onclick="submitProject('${esc(t.id)}')">📨 Submit Project</button>`}`; }
-  else tab.innerHTML=st==='graded'?`<div class="note-band" style="background:#EAF7EE;border-color:#BFE6CB;color:#1E7E34;font-size:14px">⭐ <b>Score: ${esc(t.points||'-')}</b>${t.feedback?`<div style="margin-top:8px;white-space:pre-line">💬 ${esc(t.feedback)}</div>`:''}</div>`:'<div class="empty">No feedback yet. Your teacher will review your project after you submit it.</div>';
+  else tab.innerHTML=st==='graded'?`<div class="note-band" style="background:#EAF7EE;border-color:#BFE6CB;color:#1E7E34;font-size:14px">⭐ <b>Score: ${esc(t.points||'-')}</b>${t.feedback?`<div style="margin-top:8px;white-space:pre-line">💬 ${esc(t.feedback)}</div>`:''}</div>${rubHtml}`:'<div class="empty">No feedback yet. Your teacher will review your project after you submit it.</div>';
   const due=new Date((t.due_date||TODAY)+'T'+(t.due_time||'23:59')+':00');
   const cd=()=>{ const el=document.getElementById('pjCd'); if(!el){ clearInterval(PJ_CD); return; } let s=Math.max(0,Math.floor((due-new Date())/1000)); const D=Math.floor(s/86400); s%=86400; const H=Math.floor(s/3600); s%=3600; const M=Math.floor(s/60), S=s%60;
     el.innerHTML=[[D,'Days'],[H,'Hours'],[M,'Minutes'],[S,'Seconds']].map(([v,l])=>`<div><b>${String(v).padStart(2,'0')}</b><small>${l}</small></div>`).join(''); };
@@ -823,14 +835,15 @@ function renderCerts(){
   if(sel.options.length!==progs.length+1) sel.innerHTML='<option value="">All Programs</option>'+progs.map(p=>`<option>${esc(p)}</option>`).join('');
   const list=CERTS.filter(c=>!sel.value||c.program===sel.value).sort((a,b)=>String(b.issued_at).localeCompare(String(a.issued_at)));
   document.getElementById('ceBody').innerHTML=list.map(c=>`<tr><td><div style="display:flex;gap:12px;align-items:center"><div class="cert-prev" style="width:92px;padding:6px;flex-shrink:0"><small style="font-size:8px;font-weight:800;color:var(--navy)">CERTIFICATE</small><small style="font-size:7px">of ${c.mode==='upload'?'Achievement':'Completion'}</small></div><div><b style="color:var(--navy)">Certificate of ${c.mode==='upload'&&c.note?esc(c.note):'Completion'}</b><br><small class="text-muted">No. ${esc(c.cert_no||'-')}</small></div></div></td>
-    <td>${esc(c.program||'-')}${c.level?' – '+esc(c.level):''}</td><td>${esc(dShort(c.issued_at))}</td><td><button class="btn btn-primary btn-sm" onclick="downloadCert('${esc(c.id)}')">⬇️ Download</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No certificates yet — keep going! 💪</td></tr>';
+    <td>${esc(c.program||'-')}${c.level?' – '+esc(c.level):''}</td><td>${esc(dShort(c.issued_at))}</td><td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="downloadCert('${esc(c.id)}')">👁️ View</button> <button class="btn btn-primary btn-sm" onclick="downloadCert('${esc(c.id)}',true)">⬇️ Download</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No certificates yet — keep going! 💪</td></tr>';
   // progress towards next certificate
   const act=MYGROUPS.filter(g=>!g.pseudo&&g.status!=='Completed');
   document.getElementById('ceProgress').innerHTML=act.length?`<div class="card-title">🎯 Progress towards your next certificate</div>${act.map(g=>{ const st=attendanceStats(myClassRows(g.id)), min=Number(g.min_cert)||26, tot=Number(g.total_sessions)||32;
     return `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px"><b style="color:var(--navy)">${esc(progLabel(g))}</b><span>${st.hadir} / ${min} sessions attended</span></div><div class="progress ${st.hadir>=min?'':'blue'}"><span style="width:${Math.min(100,st.hadir/min*100)}%"></span></div><small class="text-muted">You need to attend at least ${min} of ${tot} sessions to receive the certificate. Missed a class? <a style="cursor:pointer;color:var(--blue)" onclick="openNewReq('recovery')">Request a recovery class</a>.</small></div>`; }).join('')}`:'';
 }
-function downloadCert(id){ const c=CERTS.find(x=>x.id===id); if(!c) return; if(c.mode==='upload'&&c.file_url){ window.open(c.file_url,'_blank'); return; }
-  const [a,t]=String(c.attendance||'').split('/').map(Number); openCertificate({name:ME.nama,program:c.program,level:c.level,pct:t?Math.round(a/t*100):'',sessions:a||'',no:c.cert_no,date:dShort(c.completion_date||c.issued_at)}); }
+function downloadCert(id,dl){ const c=CERTS.find(x=>x.id===id); if(!c) return;
+  if(c.mode==='upload'&&c.file_url){ if(dl){ const a=document.createElement('a'); a.href=c.file_url; a.download='Certificate-'+String(c.cert_no||id).replace(/\W+/g,'-'); a.target='_blank'; document.body.appendChild(a); a.click(); a.remove(); } else window.open(c.file_url,'_blank'); return; }
+  const [a,t]=String(c.attendance||'').split('/').map(Number); openCertificate({name:ME.nama,program:c.program,level:c.level,pct:t?Math.round(a/t*100):'',sessions:a||'',no:c.cert_no,date:dShort(c.completion_date||c.issued_at),print:!!dl}); }
 
 /* ============================== REQUESTS ============================== */
 let RQ_SEL=null, NR_TYPE='reschedule', NR_PRE=null;
@@ -844,22 +857,22 @@ function renderRequests(){
   const KB={reschedule:'<span class="badge badge-active">Reschedule</span>',recovery:'<span class="badge badge-purple">Recovery</span>',extra:'<span class="badge badge-grey">Extra class</span>'};
   document.getElementById('rqBody').innerHTML=list.map(c=>{ const k=rqKind(c), s=rqStat(c), g=grpById(gidOf(c));
     const orig=k==='reschedule'?`${esc(dShort(c.orig_date||c.date))}<br><small class="text-muted">${esc(c.orig_time||c.start_time||'')}</small>`:(c.orig_date?`Missed ${esc(dShort(c.orig_date))}`:'-');
-    const nw=k==='reschedule'?(s==='approved'?`<b>${esc(dShort(c.date))}</b><br><small class="text-muted">${esc(c.start_time||'')}</small>`:(c.resched_date?`${esc(dShort(c.resched_date))}<br><small class="text-muted">${esc(c.resched_time||'')}</small>`:'<small class="text-muted">Any time</small>')):(s==='approved'?`<b>${esc(dShort(c.date))}</b><br><small class="text-muted">${esc(c.start_time||'')}</small>`:`Recovery 1 session${c.fee?'<br><small class="text-muted">'+fmtRp(c.fee)+'</small>':''}`);
+    const nw=k==='reschedule'?(s==='approved'?`<b>${esc(dShort(c.date))}</b><br><small class="text-muted">${esc(c.start_time||'')}</small>`:(c.resched_date?`${esc(dShort(c.resched_date))}<br><small class="text-muted">${esc(c.resched_time||'')}</small>`:'<small class="text-muted">Any time</small>')):(s==='approved'?`<b>${esc(dShort(c.date))}</b><br><small class="text-muted">${esc(c.start_time||'')}</small>`:`Recovery 1 session<br><small class="text-muted">Fee: ${c.fee?fmtRp(c.fee):'contact admin'}</small>`);
     return `<tr><td style="white-space:nowrap">${esc(dtShort(c.req_at||c.created_at||c.date))}</td><td>${KB[k]}</td><td>${esc(progLabel(g))}</td><td>${orig}</td><td>${nw}</td><td>${SB[s]}</td><td><button class="btn btn-outline btn-sm" onclick="RQ_SEL='${esc(c.id)}';renderRequests()">View</button></td></tr>`; }).join('')||'<tr><td colspan="7" class="empty">No requests yet.</td></tr>';
   const c=CLS.find(x=>String(x.id)===String(RQ_SEL)), side=document.getElementById('rqSide');
-  if(!c){ side.innerHTML=`<div class="card-title">How requests work</div><div style="font-size:13px;color:#46557A;line-height:1.6">🔄 <b>Reschedule</b> — can't attend a class? Ask to move it (at least 24 hours before it starts).<br><br>♻️ <b>Recovery class</b> — missed a class? Book a recovery session so you still reach the <b>26 of 32</b> sessions needed for your certificate. Fee: <b>Rp 50,000 / session</b>.<br><br>The Kwelingo team reviews every request and you'll see the result here.</div><button class="btn btn-primary btn-block mt-16" onclick="openNewReq('reschedule')">＋ New Request</button>`; return; }
+  if(!c){ side.innerHTML=`<div class="card-title">How requests work</div><div style="font-size:13px;color:#46557A;line-height:1.6">🔄 <b>Reschedule</b> — can't attend a class? Ask to move it (at least 24 hours before it starts).<br><br>♻️ <b>Recovery class</b> — missed a class? Book a recovery session so you still reach the <b>26 of 32</b> sessions needed for your certificate. Fee: <b>please contact the admin</b>.<br><br>The Kwelingo team reviews every request and you'll see the result here.</div><button class="btn btn-primary btn-block mt-16" onclick="openNewReq('reschedule')">＋ New Request</button>`; return; }
   const k=rqKind(c), s=rqStat(c), g=grpById(gidOf(c));
   const steps=[['Request Submitted',dtShort(c.req_at||c.created_at),true],['Reviewed by Operations',s==='pending'?'Waiting for review':'Done',s!=='pending'],[s==='rejected'?'Rejected':'Approved',s==='pending'?'Pending':(c.admin_note||''),s!=='pending'],['New session scheduled',s==='approved'?`${dShort(c.date)}, ${c.start_time||''} — see My Learning`:'You will see the updated schedule in My Learning',s==='approved']];
   side.innerHTML=`<div class="card-title">Request Details <button class="btn btn-ghost btn-sm" onclick="RQ_SEL=null;renderRequests()">✕</button></div>
     <div style="margin-bottom:10px">${k==='recovery'?'<span class="badge badge-purple">Recovery Class Request</span>':'<span class="badge badge-active">Reschedule Request</span>'} ${s==='approved'?'<span class="badge badge-paid">✔ Approved</span>':s==='rejected'?'<span class="badge badge-unpaid">Rejected</span>':'<span class="badge badge-pending">Pending</span>'}</div>
     <div class="kv-box"><div class="kv"><span class="k">Submitted on</span><span class="v">${esc(dtShort(c.req_at||c.created_at||c.date))}</span><span class="k">Class</span><span class="v">${esc(progLabel(g))}</span>
       ${k==='reschedule'?`<span class="k">Original Session</span><span class="v">${esc(dShort(c.orig_date||c.date))}, ${esc(c.orig_time||c.start_time||'')}</span><span class="k">New Session</span><span class="v">${s==='approved'?esc(dShort(c.date)+', '+(c.start_time||'')):esc(c.resched_date?dShort(c.resched_date)+', '+(c.resched_time||''):'To be confirmed')}</span>`
-        :`<span class="k">Missed Session</span><span class="v">${esc(c.orig_date?dShort(c.orig_date):'-')}</span><span class="k">Recovery Session</span><span class="v">${s==='approved'?esc(dShort(c.date)+', '+(c.start_time||'')):'To be confirmed'}</span><span class="k">Fee</span><span class="v">${c.fee?fmtRp(c.fee):'-'}</span>`}
+        :`<span class="k">Missed Session</span><span class="v">${esc(c.orig_date?dShort(c.orig_date):'-')}</span><span class="k">Recovery Session</span><span class="v">${s==='approved'?esc(dShort(c.date)+', '+(c.start_time||'')):'To be confirmed'}</span><span class="k">Fee</span><span class="v">${c.fee?fmtRp(c.fee):'Contact admin'}</span>`}
       <span class="k">Reason</span><span class="v">${esc(c.req_reason||'-')}</span><span class="k">Additional Info</span><span class="v">${esc(c.resched_note||c.req_note||'-')}</span>${c.admin_note?`<span class="k">Admin Note</span><span class="v">${esc(c.admin_note)}</span>`:''}</div></div>
     <div class="reqtl mt-16">${steps.map(([t,sub,ok],i)=>`<div class="s ${ok?'done':''}"><div class="n">${ok?'✓':i+1}</div><div><b>${esc(t)}</b><small>${esc(sub)}</small></div></div>`).join('')}</div>`;
 }
 function setReqType(t){ NR_TYPE=t; document.getElementById('nrT1').classList.toggle('on',t==='reschedule'); document.getElementById('nrT2').classList.toggle('on',t==='recovery');
-  document.getElementById('nrInfo').innerHTML=t==='reschedule'?'📅 Use this form to request a new date for a class you cannot attend. Please submit at least <b>24 hours</b> before the class starts.':'♻️ Use this form to request a recovery class if you were unable to attend a class and your attendance is at risk (below <b>26 of 32</b> sessions). The recovery class fee is <b>Rp 50,000 per session</b>.';
+  document.getElementById('nrInfo').innerHTML=t==='reschedule'?'📅 Use this form to request a new date for a class you cannot attend. Please submit at least <b>24 hours</b> before the class starts.':'♻️ Use this form to request a recovery class if you were unable to attend a class and your attendance is at risk (below <b>26 of 32</b> sessions). Recovery class fee: <b>please contact the admin</b>.';
   document.getElementById('nrSesLbl').innerHTML=t==='reschedule'?'Session to Reschedule <span class="req">*</span>':'Session(s) to Recover <span class="req">*</span>';
   fillReqSessions(); }
 function openNewReq(type,pre){ NR_PRE=pre||null; const cs=document.getElementById('nrClass'); cs.innerHTML=MYGROUPS.filter(g=>g.status!=='Completed').map(g=>`<option value="${esc(g.id)}">${esc(progLabel(g))}${g.room?' – '+esc(g.room):''}${g.tutor_id?' ('+esc(tut(g.tutor_id).nama)+')':''}</option>`).join('');
@@ -882,8 +895,8 @@ async function submitReq(){
       const start=new Date(c.date+'T'+(c.start_time||'00:00')+':00'); if(start-new Date()<24*3600*1000&&!confirm('This class starts in less than 24 hours. Requests this late may not be approved. Send anyway?')) return;
       await API.updateClass({id,status:'reschedule',req_kind:'reschedule',req_status:'pending',req_by:'murid',req_at:now,req_reason:reason,resched_note:note,resched_date:pd,resched_time:pt||(pd?c.start_time:''),admin_note:''}); }
     else { const ids=[...document.querySelectorAll('#nrSesMulti input:checked')].map(i=>i.value); if(!ids.length){ toast('Select at least one missed session','err'); return; }
-      if(!confirm(`Request ${ids.length} recovery session${ids.length>1?'s':''}? Fee: ${fmtRp(50000*ids.length)} (Rp 50,000 / session).`)) return;
-      for(const id of ids){ const c=CLS.find(x=>x.id===id); await API.addClass({student_id:ME.id,tutor_id:c.tutor_id,group_id:c.group_id||'',date:pd||'',start_time:pt||c.start_time||'',end_time:'',duration:c.duration||90,type:c.type||'onsite',room:'',status:'requested',session_type:'recovery',req_kind:'recovery',req_status:'pending',req_by:'murid',req_at:now,fee:50000,orig_date:c.date,req_reason:reason,req_note:note}); } }
+      if(!confirm(`Request ${ids.length} recovery session${ids.length>1?'s':''}? The fee will be confirmed by the admin.`)) return;
+      for(const id of ids){ const c=CLS.find(x=>x.id===id); await API.addClass({student_id:ME.id,tutor_id:c.tutor_id,group_id:c.group_id||'',date:pd||'',start_time:pt||c.start_time||'',end_time:'',duration:c.duration||90,type:c.type||'onsite',room:'',status:'requested',session_type:'recovery',req_kind:'recovery',req_status:'pending',req_by:'murid',req_at:now,orig_date:c.date,req_reason:reason,req_note:note}); } }
     CLS=await API.getClasses({student_id:ME.id})||CLS; closeModal('mReq'); toast('Request sent ✅ — the Kwelingo team will review it','ok'); RQ_SEL=null; renderRequests();
   }catch(e){ toast('Failed: '+(e.message||e),'err'); }
   finally{ submitReq._b=false; }

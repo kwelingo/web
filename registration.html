@@ -3,378 +3,362 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registration — Kwelingo</title>
-<meta name="description" content="Kwelingo Academy registration — choose an English/Mandarin program, view packages & pricing, then register.">
+<title>Student Registration — Kwelingo Academy</title>
+<meta name="description" content="Register at Kwelingo Academy — choose an English or Mandarin program, learning mode and teacher type, then complete your registration.">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FFF9F0;--cream:#FDF3E6;--ink:#4B4540;--ink-soft:#6B635A;--muted:#938A7E;
-  --brand:#8EC9D9;--brand-deep:#5FA9BD;--brand-dark:#3E8A9E;
-  --cta:#E9A77C;--cta-deep:#DB8C5B;--sage:#A8C9A0;--yellow:#F4D98B;--coral:#D98F86;
-  --card:#fff;--line:#EFE4D4;--shadow:0 10px 30px rgba(120,95,60,.10);--shadow-lg:0 22px 55px rgba(120,95,60,.16);
-  --disp:'Fredoka',system-ui,sans-serif;
+  --navy:#13235B;--ink:#2B3656;--muted:#6B7A99;--line:#E3EAF4;--bg:#F6F9FD;
+  --blue:#1E9BD7;--blue-d:#1386C2;--blue-soft:#E6F4FB;--orange:#FF8A1F;--orange-d:#F07400;--orange-soft:#FFF2E5;
+  --green:#22A06B;--shadow:0 10px 30px rgba(19,35,91,.08);--shadow-lg:0 20px 50px rgba(19,35,91,.14);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Poppins',system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);background:#fff;line-height:1.55}
 a{text-decoration:none;color:inherit}
-img{max-width:100%;display:block}
-.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;border:none;transition:.2s;font-family:var(--disp);white-space:nowrap}
-.btn:active{transform:translateY(1px)}
-.btn-cta{background:var(--cta);color:#fff;box-shadow:0 10px 22px rgba(219,140,91,.32)}
-.btn-cta:hover{background:var(--cta-deep);transform:translateY(-2px)}
-.btn-brand{background:var(--brand-deep);color:#fff}.btn-brand:hover{background:var(--brand-dark)}
-.btn-ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
-.btn-ghost:hover{border-color:var(--brand)}
-.eyebrow{color:var(--cta-deep);font-weight:600;letter-spacing:2px;text-transform:uppercase;font-size:12px;font-family:var(--disp)}
-h2.title{font-family:var(--disp);font-size:clamp(24px,3.6vw,34px);font-weight:700;color:var(--ink);margin:4px 0 8px}
-.sub{color:var(--muted);font-size:15px;margin-bottom:26px}
-
+button,input,select,textarea{font-family:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 24px;border-radius:999px;font-weight:700;font-size:14.5px;cursor:pointer;border:2px solid transparent;transition:.15s;white-space:nowrap}
+.btn-or{background:var(--orange);color:#fff;box-shadow:0 8px 20px rgba(255,138,31,.32)}.btn-or:hover{background:var(--orange-d)}
+.btn-line{border-color:var(--blue);color:var(--blue);background:#fff}.btn-line:hover{background:var(--blue-soft)}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
 /* header */
-header{position:sticky;top:0;z-index:50;background:rgba(255,249,240,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.nav{display:flex;align-items:center;justify-content:space-between;padding:11px 0}
-.brand{display:flex;align-items:center;gap:10px}
-.brand img{height:42px}
-.brand b{font-family:var(--disp);font-size:19px;color:var(--ink)}
-.brand small{display:block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--brand-dark);font-weight:600;margin-top:2px}
-
-.hero-r{background:linear-gradient(180deg,#EAF6FA,var(--bg));padding:40px 0 30px;text-align:center}
-.hero-r h1{font-family:var(--disp);font-size:clamp(30px,5vw,44px);color:var(--brand-dark)}
-.hero-r p{color:var(--ink-soft);max-width:600px;margin:10px auto 0}
-
-.sec{padding:46px 0}
-.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
-
-/* package toggle */
-.toggle{display:inline-flex;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:4px;margin:0 auto 24px;box-shadow:var(--shadow)}
-.toggle button{border:none;background:none;font-family:var(--disp);font-weight:600;font-size:13.5px;padding:9px 20px;border-radius:999px;cursor:pointer;color:var(--muted)}
-.toggle button.on{background:var(--brand-deep);color:#fff}
-.center{text-align:center}
-
-.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
-@media(max-width:820px){.pkg-grid{grid-template-columns:1fr}}
-.pkg{border-radius:22px;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow);overflow:hidden;transition:.2s;position:relative;display:flex;flex-direction:column}
-.pkg:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
-.pkg.fav{border:2px solid var(--cta)}
-.pkg .pk-tag{position:absolute;top:14px;right:14px;background:var(--cta);color:#fff;font-family:var(--disp);font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:999px}
-.pkg .pk-head{padding:22px 24px 16px;color:#fff}
-.pkg.p1 .pk-head{background:linear-gradient(130deg,var(--brand),var(--brand-deep))}
-.pkg.p2 .pk-head{background:linear-gradient(130deg,var(--yellow),#E6B84E);color:#5B4A20}
-.pkg.p3 .pk-head{background:linear-gradient(130deg,#B9A7D9,#9B86C9)}
-.pkg .pk-head h3{font-family:var(--disp);font-size:22px}
-.pkg .pk-head .freq{font-size:12.5px;opacity:.9}
-.pkg .pk-body{padding:20px 24px 24px;flex:1;display:flex;flex-direction:column}
-.pkg ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:16px;flex:1}
-.pkg li{font-size:13.5px;color:var(--ink-soft);display:flex;gap:9px;align-items:flex-start}
-.pkg li::before{content:"✓";color:var(--sage);font-weight:800}
-.pkg .price{font-family:var(--disp);font-size:28px;color:var(--ink);font-weight:700}
-.pkg .price small{font-size:13px;color:var(--muted);font-weight:400}
-.pkg .price del{font-size:14px;color:var(--muted);font-weight:400;margin-right:6px}
-
-.note-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}
-.note-chip{background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:12.5px;color:var(--ink-soft)}
-
-/* price table */
-.table-wrap{overflow-x:auto;border-radius:16px;border:1px solid var(--line)}
-table.pt{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;min-width:560px}
-table.pt th,table.pt td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line)}
-table.pt thead th{background:var(--brand);color:#fff;font-family:var(--disp);font-weight:600}
-table.pt .grp td{background:var(--cream);font-weight:700;color:var(--ink);font-family:var(--disp)}
-table.pt tbody tr:hover{background:#FDF8F0}
-table.pt .rp{font-weight:700;color:var(--brand-dark);white-space:nowrap}
-.remark{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:14px 18px;font-size:13px;color:var(--ink-soft);margin-top:16px;line-height:1.7}
-
-/* form */
-.form-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:var(--shadow-lg)}
-.field{margin-bottom:16px}
-.field label{display:block;font-weight:600;font-size:13px;color:var(--ink);margin-bottom:6px}
-.field .req{color:var(--cta-deep)}
-.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:14px;color:var(--ink);background:#FFFDF9;transition:.15s}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(142,201,217,.22)}
-.field .hint{font-size:11.5px;color:var(--muted);margin-top:5px}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:560px){.field-row{grid-template-columns:1fr}}
-.price-live{background:#EAF6FA;border:1.5px dashed var(--brand);border-radius:14px;padding:14px 16px;text-align:center;margin:4px 0 16px}
-.price-live .pv{font-family:var(--disp);font-size:24px;color:var(--brand-dark);font-weight:700}
-.price-live small{color:var(--muted);font-size:12px}
-.consent-box{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:16px;font-size:12.5px;color:var(--ink-soft);line-height:1.65;max-height:150px;overflow:auto;margin-bottom:8px}
-.consent-box b{color:var(--ink)}
-.chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink);margin-top:4px}
-.chk input{width:auto;margin-top:3px;accent-color:var(--brand-deep)}
-.file-drop{border:1.8px dashed var(--brand);border-radius:14px;padding:18px;text-align:center;background:#EAF6FA;cursor:pointer}
-.file-drop:hover{background:#DFF0F5}
-.file-drop p{font-size:12.5px;color:var(--brand-dark);font-weight:600;margin-top:4px}
-.file-name{font-size:12px;color:var(--ink-soft);margin-top:8px;font-weight:600}
-.sop-btn{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:10px}
-.sop-btn b{font-family:var(--disp);font-size:14px;color:var(--ink);display:block}
-.sop-btn small{font-size:11.5px;color:var(--muted)}
-.sop-btn .dl{margin-left:auto;color:var(--cta-deep);font-weight:700;font-size:12px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:14px 22px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;z-index:400;max-width:90vw}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:20px;padding:12px 0}
+.brand{display:flex;align-items:center;gap:14px}
+.brand img{height:44px}
+.brand .tag{border-left:1.5px solid var(--line);padding-left:14px;font-size:13.5px;color:var(--ink);line-height:1.3;font-weight:500}
+.links{display:flex;gap:30px;margin-left:auto;font-weight:600;font-size:14.5px;color:var(--navy)}
+.links a:hover{color:var(--blue)}
+.nav .cta{display:flex;gap:10px;margin-left:24px}
+.menu-btn{display:none;margin-left:auto;background:none;border:0;font-size:24px;cursor:pointer;color:var(--navy)}
+/* hero */
+.hero{position:relative;overflow:hidden;background:linear-gradient(100deg,#F4F8FD 0%,#F4F8FD 45%,#EAF2FA 100%);min-height:250px}
+.hero .wrap{position:relative;z-index:2;padding-top:48px;padding-bottom:56px}
+.hero h1{font-size:clamp(32px,5vw,54px);font-weight:800;color:var(--navy);letter-spacing:-1px;line-height:1.05}
+.hero p{font-size:clamp(15px,1.8vw,21px);color:#3A4767;margin-top:12px;max-width:470px}
+.hero .blob{position:absolute;border-radius:50%;z-index:1}
+.hero .art{position:absolute;right:0;top:0;bottom:0;width:52%;z-index:1;background:linear-gradient(180deg,#F7EDE0,#EFE3D3);clip-path:polygon(8% 0,100% 0,100% 100%,0 100%)}
+.art .shelf{position:absolute;left:24%;top:12%;width:30%;height:76%;background:#E6C9A0;border-radius:6px;box-shadow:inset 0 0 0 6px #D9B887}
+.art .shelf i{position:absolute;left:8%;right:8%;height:3px;background:#C9A26E}
+.art .book{position:absolute;bottom:0;width:9%;border-radius:2px 2px 0 0}
+.art .door{position:absolute;right:6%;top:4%;width:22%;height:96%;background:#1E7BC2;border-radius:6px 6px 0 0;box-shadow:inset 0 0 0 7px #1A6AA8}
+.art .door:after{content:"";position:absolute;left:14%;right:14%;top:8%;height:38%;background:repeating-linear-gradient(90deg,#BFE3F7 0 46%,#1A6AA8 46% 54%,#BFE3F7 54% 100%);border-radius:3px;opacity:.9}
+.art .house{position:absolute;right:31%;top:12%;width:58px;height:58px}
+.art .table{position:absolute;left:30%;right:28%;bottom:0;height:22%;background:#E9C79A;border-radius:50% 50% 0 0/40% 40% 0 0}
+.art .plant{position:absolute;left:30%;top:0;font-size:52px}
+/* stepper */
+.stepper{display:flex;align-items:center;justify-content:center;gap:16px;padding:22px 0;background:#F8FAFD;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.stepper .s{display:flex;align-items:center;gap:10px;font-weight:600;color:#5B6680;font-size:15px}
+.stepper .n{width:34px;height:34px;border-radius:50%;background:#E7ECF4;color:#5B6680;display:flex;align-items:center;justify-content:center;font-weight:800}
+.stepper .s.on{color:var(--navy);font-weight:800}.stepper .s.on .n{background:var(--orange);color:#fff}
+.stepper .s.done .n{background:#E7F6EE;color:var(--green)}
+.stepper .ln{width:60px;height:2px;background:#D6DEEA}
+/* layout */
+.main{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:30px;padding:30px 22px 50px;align-items:start}
+.sec-h{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+.sec-h .num{width:44px;height:44px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 14px rgba(255,138,31,.3)}
+.sec-h h2{font-size:23px;color:var(--navy);font-weight:800}.sec-h p{color:#4A5675;font-size:14.5px}
+.langtabs{display:grid;grid-template-columns:1fr 1fr;background:#EEF3F9;border-radius:12px;padding:5px;margin-bottom:18px}
+.langtabs button{border:0;background:none;padding:12px;border-radius:9px;font-weight:700;font-size:16px;color:var(--navy);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+.langtabs button.on{background:var(--blue);color:#fff;box-shadow:0 6px 16px rgba(30,155,215,.3)}
+.flag{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:17px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.cards-wrap{position:relative}
+.cards{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 28px)/3);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 10px;scrollbar-width:none}
+.cards::-webkit-scrollbar{display:none}
+.pc{scroll-snap-align:start;border:1.5px solid var(--line);border-radius:16px;padding:18px;background:#fff;cursor:pointer;position:relative;transition:.15s;display:flex;flex-direction:column}
+.pc:hover{box-shadow:var(--shadow)}
+.pc.on{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,155,215,.15);background:#FBFEFF}
+.pc .rd{position:absolute;right:14px;top:14px;width:22px;height:22px;border-radius:50%;border:1.8px solid #B8C4D6;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+.pc.on .rd{background:var(--blue);border-color:var(--blue)}
+.pc .ic{font-size:26px}
+.pc h3{font-size:20px;color:var(--navy);margin-top:6px;font-weight:800}
+.pc .pill{display:inline-block;background:var(--blue-soft);color:var(--blue-d);font-weight:700;font-size:12px;padding:3px 10px;border-radius:99px;margin:6px 0 10px}
+.pc .d{font-size:13px;color:#4A5675;flex:1}
+.pc .meta{border-top:1px solid var(--line);margin-top:12px;padding-top:10px;font-size:12.5px;color:#3A4767;display:grid;gap:8px}
+.pc .meta div{display:flex;gap:10px;align-items:flex-start}.pc .meta span{color:var(--blue);font-size:16px;line-height:1}
+.arrow{position:absolute;right:-14px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;font-size:18px;color:var(--navy);z-index:3}
+.arrow.l{left:-14px;right:auto}
+.sec2{margin-top:26px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.tt{display:inline-flex;border:1.5px solid var(--line);border-radius:99px;padding:3px;background:#fff}
+.tt button{border:0;background:none;padding:8px 18px;border-radius:99px;font-weight:700;font-size:13.5px;color:var(--navy);cursor:pointer}
+.tt button.on{background:var(--blue);color:#fff}
+table.fee{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:13.5px;margin-top:14px}
+.fee th,.fee td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--line)}
+.fee tr:last-child td{border-bottom:0}
+.fee .p{text-align:left;background:#F3F8FD;font-weight:600;color:var(--navy)}.fee .p small{display:block;font-weight:500;color:#4A5675}
+.fee thead th{font-size:12.5px;color:var(--navy);font-weight:700}
+.fee .on1{background:#EEF6FC}.fee .on2{background:#FFF4E8}
+.fee .hd1{background:#E6F2FB;color:var(--blue-d);font-size:15px}.fee .hd2{background:#FFEBD6;color:var(--orange-d);font-size:15px}
+.fee td b{color:var(--navy);font-size:14.5px;display:block;white-space:nowrap}.fee td small{color:var(--muted);font-size:11.5px}
+.fee tr.sel td{background:#FFFBEA}
+.fee-note{display:flex;gap:10px;align-items:center;background:#FFF7EC;border:1px solid #FBE3C4;border-radius:12px;padding:10px 14px;font-size:12.5px;color:#4A5675;margin-top:12px}
+.benefits{margin-top:26px}
+.benefits h3{font-size:19px;color:var(--navy);display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.bgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.bgrid div{display:flex;gap:12px;align-items:center;font-size:13.5px;color:var(--navy);font-weight:600;line-height:1.3}
+.bgrid span{width:52px;height:52px;border-radius:50%;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.bgrid div:last-child span{background:var(--orange-soft)}
+/* form card */
+.fcard{border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow-lg);background:#fff;position:sticky;top:86px}
+.fcard h2{font-size:22px;color:var(--navy);display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}
+.fcard h2 span{color:var(--blue);font-size:26px}
+.fcard h4{font-size:15px;color:var(--navy);margin:16px 0 8px}
+.lbl{font-size:13.5px;font-weight:700;color:var(--navy);margin:12px 0 6px;display:block}
+.lbl .r{color:#E5484D}
+.inp{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;color:var(--ink);background:#fff}
+.inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,155,215,.15)}
+.inp[readonly]{background:#EEF4FA;font-weight:600;color:var(--navy)}
+.radios{display:flex;gap:22px;flex-wrap:wrap;font-size:14px}
+.radios label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.radios input{accent-color:var(--blue);width:18px;height:18px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row.dob{grid-template-columns:1.6fr 1fr}
+.phone{display:grid;grid-template-columns:86px 1fr}
+.phone select{border-radius:10px 0 0 10px;border-right:0}.phone input{border-radius:0 10px 10px 0}
+.hr{border:0;border-top:1px solid var(--line);margin:16px 0 4px}
+.sum{background:#F5F9FD;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px}
+.sum div{display:flex;justify-content:space-between;gap:10px;padding:4px 0}.sum div span{color:var(--muted)}.sum div b{color:var(--navy);text-align:right}
+.est{background:var(--blue-soft);border:1.5px dashed var(--blue);border-radius:12px;padding:12px;text-align:center;margin-top:12px}
+.est b{font-size:20px;color:var(--blue-d);display:block}.est small{color:var(--muted);font-size:12px}
+.consent{background:#F8FAFD;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px;color:#4A5675;max-height:120px;overflow:auto;margin-bottom:6px;line-height:1.6}
+.chk{display:flex;gap:9px;align-items:flex-start;font-size:13px;margin:6px 0 10px}.chk input{margin-top:3px;accent-color:var(--blue)}
+.bank{background:#F5F9FD;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px;margin:8px 0}
+.drop{display:block;border:1.8px dashed var(--blue);border-radius:12px;padding:14px;text-align:center;background:var(--blue-soft);cursor:pointer;font-size:12.5px;color:var(--blue-d);font-weight:700}
+.navbtns{display:flex;gap:10px;margin-top:18px}.navbtns .btn{flex:1;padding:14px}
+.big-or{width:100%;padding:15px;font-size:16px;margin-top:20px}
+.done{text-align:center;padding:14px 0}.done .ok{width:70px;height:70px;border-radius:50%;background:#E7F6EE;color:var(--green);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 12px}
+.done h3{color:var(--navy);font-size:20px}.done p{color:#4A5675;font-size:13.5px;margin:8px 0 16px}
+.err{color:#E5484D;font-size:12.5px;font-weight:600;margin-top:8px;min-height:16px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:13px 22px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;z-index:400;max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-footer{background:#3C3833;color:rgba(255,255,255,.6);text-align:center;padding:24px;font-size:12.5px;margin-top:30px}
+footer{background:var(--navy);color:rgba(255,255,255,.7);text-align:center;padding:22px;font-size:12.5px}
+@media(max-width:1060px){.main{grid-template-columns:minmax(0,1fr)}.fcard{position:static}.links{gap:18px}}
+@media(max-width:900px){.links,.nav .cta{display:none}.menu-btn{display:block}.nav.open .links,.nav.open .cta{display:flex}.nav.open{flex-wrap:wrap}.nav.open .links{flex-direction:column;width:100%;gap:10px;order:3}.nav.open .cta{width:100%;margin:0;order:4}
+  .hero .art{width:100%;opacity:.22;clip-path:none}.cards{grid-auto-columns:78%}.bgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stepper .ln{display:none}.stepper{gap:10px 16px}.brand .tag{display:none}}
+@media(max-width:560px){table.fee{min-width:540px}.stepper .s span.t{display:none}.stepper .s.on span.t{display:inline}.fee{font-size:12px}.fee th,.fee td{padding:8px 6px}.arrow{display:none}.row{grid-template-columns:1fr}.row.dob{grid-template-columns:1.6fr 1fr}}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="wrap nav">
-    <a class="brand" href="index.html"><img src="assets/logo.png" alt="Kwelingo"><div><b>kwelingo</b><small>Home for Language Learners</small></div></a>
-    <a href="portal.html" class="btn btn-ghost">← Kwelingo Hub</a>
+  <div class="wrap nav" id="nav">
+    <a class="brand" href="index.html"><img src="assets/logo-h.png" onerror="this.src='assets/logo.png'" alt="Kwelingo Academy"><span class="tag">Better Language<br>Brighter Future</span></a>
+    <nav class="links"><a href="index.html#programs">Programs ▾</a><a href="#fees">Fees</a><a href="index.html#schedule">Schedule</a><a href="index.html#about">About Us</a></nav>
+    <div class="cta"><a class="btn btn-line" href="portal.html">Login</a><a class="btn btn-or" href="#form" onclick="goStep(1)">Register</a></div>
+    <button class="menu-btn" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
   </div>
 </header>
 
-<section class="hero-r">
+<section class="hero">
+  <div class="art" aria-hidden="true">
+    <div class="shelf"><i style="top:30%"></i><i style="top:62%"></i>
+      <span class="book" style="left:12%;height:20%;bottom:70%;background:#E5484D"></span><span class="book" style="left:23%;height:24%;bottom:70%;background:#1E9BD7"></span><span class="book" style="left:34%;height:18%;bottom:70%;background:#22A06B"></span><span class="book" style="left:45%;height:22%;bottom:70%;background:#FF8A1F"></span>
+      <span class="book" style="left:60%;height:22%;bottom:38%;background:#7C5CE6"></span><span class="book" style="left:71%;height:18%;bottom:38%;background:#F5B83D"></span><span class="book" style="left:20%;height:20%;bottom:38%;background:#1E7BC2"></span></div>
+    <div class="plant">🪴</div>
+    <svg class="house" viewBox="0 0 60 60"><path d="M30 6 L56 26 V56 H4 V26 Z" fill="#FFA62B"/><rect x="22" y="34" width="16" height="22" rx="3" fill="#1E9BD7"/></svg>
+    <div class="door"></div>
+    <div class="table"></div>
+  </div>
+  <div class="blob" style="left:-80px;bottom:-120px;width:260px;height:260px;background:#DCEEF8"></div>
   <div class="wrap">
-    <h1>Registration</h1>
-    <p>Choose your program &amp; package, then fill out the registration form. Your first trial class is <b>free</b>, and there's a 10% sibling discount!</p>
+    <h1>Student Registration</h1>
+    <p>Join Kwelingo Academy and start your language learning journey with us!</p>
   </div>
 </section>
 
-<!-- PACKAGES -->
-<section class="sec">
-  <div class="wrap">
-    <div class="center"><div class="eyebrow">Subscription Packages</div><h2 class="title">Choose Your Package</h2></div>
-    <div class="center">
-      <div class="toggle">
-        <button id="tgOnline" class="on" onclick="setFormat('online')">🌐 Online</button>
-        <button id="tgOnsite" onclick="setFormat('onsite')">🏫 Onsite</button>
-      </div>
+<div class="stepper" id="stepper"></div>
+
+<div class="wrap main" id="form">
+  <!-- ===== LEFT: choose program ===== -->
+  <div>
+    <div class="sec-h"><div class="num">1</div><div><h2>Choose Your Program</h2><p>Select a language and program that fits your goal.</p></div></div>
+    <div class="langtabs"><button id="lgEn" class="on" onclick="setLang('English')"><span class="flag">🇬🇧</span> English Programs</button><button id="lgZh" onclick="setLang('Mandarin')"><span class="flag">🇨🇳</span> Mandarin Programs</button></div>
+    <div class="cards-wrap"><button class="arrow l" onclick="scrollCards(-1)" aria-label="Previous">‹</button><div class="cards" id="cards"></div><button class="arrow" onclick="scrollCards(1)" aria-label="Next">›</button></div>
+
+    <div class="sec2" id="fees">
+      <div class="sec-h" style="margin:0"><div class="num">2</div><div><h2>Select Learning Mode &amp; Teacher Type</h2><p>Choose your preferred learning mode and teacher.</p></div></div>
+      <div class="tt"><button id="ttLocal" class="on" onclick="setTeacher('local')">Local Teacher</button><button id="ttIntl" onclick="setTeacher('intl')">International Teacher</button></div>
     </div>
-    <div class="pkg-grid">
-      <div class="pkg p1">
-        <div class="pk-head"><h3>The Beginner</h3><div class="freq">1×/week · 4 sessions/month</div></div>
-        <div class="pk-body">
-          <ul><li>4 sessions per month</li><li>1 program of your choice</li><li>Report after every class</li><li>Activity book</li></ul>
-          <div class="price" data-base="350000"><span class="amt">Rp 350.000</span><small> /month</small></div>
-          <div class="hint" style="font-size:11.5px;color:var(--muted);margin-top:4px">Cancel anytime</div>
-          <a href="#form" class="btn btn-ghost" style="margin-top:14px;justify-content:center" onclick="pickPkg('The Beginner')">Choose The Beginner →</a>
-        </div>
-      </div>
-      <div class="pkg p2 fav">
-        <span class="pk-tag">★ MOST POPULAR</span>
-        <div class="pk-head"><h3>The Diligent</h3><div class="freq">2×/week · 8 sessions/month</div></div>
-        <div class="pk-body">
-          <ul><li>8 sessions per month</li><li>1 program of your choice</li><li>Report after every class</li><li>Activity book</li><li>Free schedule changes 2×/month</li></ul>
-          <div class="price" data-base="600000"><span class="amt">Rp 600.000</span><small> /month</small></div>
-          <div class="hint" style="font-size:11.5px;color:var(--muted);margin-top:4px">Cancel anytime</div>
-          <a href="#form" class="btn btn-cta" style="margin-top:14px;justify-content:center" onclick="pickPkg('The Diligent')">Choose The Diligent →</a>
-        </div>
-      </div>
-      <div class="pkg p3">
-        <div class="pk-head"><h3>The Champion</h3><div class="freq">3×/week · 12 sessions/month</div></div>
-        <div class="pk-body">
-          <ul><li>12 sessions per month</li><li>Combine 2 programs</li><li>Report + monthly consultation</li><li>Activity book</li><li>Free schedule changes 4×/month</li></ul>
-          <div class="price" data-base="850000"><span class="amt">Rp 850.000</span><small> /month</small></div>
-          <div class="hint" style="font-size:11.5px;color:var(--muted);margin-top:4px">Cancel anytime</div>
-          <a href="#form" class="btn btn-ghost" style="margin-top:14px;justify-content:center" onclick="pickPkg('The Champion')">Choose The Champion →</a>
-        </div>
-      </div>
-    </div>
-    <div class="note-row">
-      <span class="note-chip">💳 Registration fee Rp150.000 (one-time only)</span>
-      <span class="note-chip">👨‍👩‍👧 10% sibling discount</span>
-      <span class="note-chip">🎁 First trial class free</span>
+    <div style="overflow-x:auto"><table class="fee" id="feeTable"></table></div>
+    <div class="fee-note"><span style="color:var(--orange);font-size:18px">ⓘ</span><span id="feeNote"></span></div>
+
+    <div class="benefits"><h3><span style="color:var(--blue)">🗂️</span> Program Benefits</h3>
+      <div class="bgrid"><div><span>📚</span>CEFR-based Curriculum</div><div><span>👥</span>Small Class<br>(Max. 4 Students)</div><div><span>🗓️</span>Structured &amp; Flexible Schedule</div><div><span>⭐</span>Certificate of Completion*</div></div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:10px">*Students receive the certificate when they attend at least 80% of the sessions in a level (26 of 32 sessions).</div>
     </div>
   </div>
-</section>
 
-<!-- PRICE TABLE (per program, 8 sesi) -->
-<section class="sec" style="padding-top:10px">
-  <div class="wrap">
-    <div class="center"><div class="eyebrow">Price Details per Program</div><h2 class="title">Price per Program (8 Sessions)</h2>
-      <p class="sub">Semi-Private (max 4 students). Choice of Local or International teacher.</p></div>
-    <div class="table-wrap">
-      <table class="pt">
-        <thead><tr><th>Format</th><th>Program</th><th>Local Teacher</th><th>International Teacher</th></tr></thead>
-        <tbody>
-          <tr class="grp"><td colspan="4">🌐 Online — Semi-Private</td></tr>
-          <tr><td>Online</td><td>Boost English</td><td class="rp">Rp 550.000</td><td class="rp">Rp 1.250.000</td></tr>
-          <tr><td>Online</td><td>Speak Active</td><td class="rp">Rp 500.000</td><td class="rp">Rp 1.100.000</td></tr>
-          <tr><td>Online</td><td>IELTS Preparation</td><td class="rp">Rp 800.000</td><td class="rp">—</td></tr>
-          <tr><td>Online</td><td>Boost Mandarin</td><td class="rp">Rp 550.000</td><td class="rp">Rp 1.250.000</td></tr>
-          <tr><td>Online</td><td>HSK Preparation</td><td class="rp">Rp 650.000</td><td class="rp">Rp 1.350.000</td></tr>
-          <tr class="grp"><td colspan="4">🏫 Onsite (Kwelingo Center) — Semi-Private</td></tr>
-          <tr><td>Onsite</td><td>Boost English</td><td class="rp">Rp 650.000</td><td class="rp">—</td></tr>
-          <tr><td>Onsite</td><td>IELTS Preparation</td><td class="rp">Rp 1.000.000</td><td class="rp">—</td></tr>
-          <tr><td>Onsite</td><td>Boost Mandarin</td><td class="rp">Rp 650.000</td><td class="rp">—</td></tr>
-          <tr><td>Onsite</td><td>HSK Preparation</td><td class="rp">Rp 750.000</td><td class="rp">—</td></tr>
-          <tr class="grp"><td colspan="4">👤 1-on-1 Private (Online)</td></tr>
-          <tr><td>Online · 1-on-1</td><td>Speak Active</td><td class="rp">Rp 1.200.000</td><td class="rp">Rp 1.600.000</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="remark">
-      <b>Notes:</b><br>
-      1. Classes with an <b>International Teacher</b> start with a minimum of 4 students.<br>
-      2. Classes with a <b>Local Teacher</b> start with a minimum of 2 students.<br>
-      3. If only 1 student attends, the class duration becomes 60 minutes (from 90 minutes).<br>
-      4. Onsite prices do not include the student book. Every program includes a monthly report &amp; e-certificate.
-    </div>
-  </div>
-</section>
+  <!-- ===== RIGHT: registration form ===== -->
+  <aside class="fcard" id="fcard"></aside>
+</div>
 
-<!-- FORM -->
-<section class="sec" id="form" style="padding-top:10px">
-  <div class="wrap">
-    <div class="center"><div class="eyebrow">Registration Form</div><h2 class="title">Register Now</h2>
-      <p class="sub">Complete the details below. After you submit, a summary is sent to the admin via WhatsApp — attach your payment proof in that chat.</p></div>
-    <form class="form-card" id="regForm" onsubmit="submitReg(event)">
-      <div class="field-row">
-        <div class="field"><label>Parent / Guardian Name <span class="req">*</span></label><input id="fParentName" required></div>
-        <div class="field"><label>Parent / Guardian Contact (WA) <span class="req">*</span></label><input id="fParentContact" required inputmode="tel" placeholder="08xxxxxxxxxx"></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Student Name <span class="req">*</span></label><input id="fStudentName" required></div>
-        <div class="field"><label>Student Contact</label><input id="fStudentContact" inputmode="tel" placeholder="optional"></div>
-      </div>
-      <div class="field"><label>Student Date of Birth <span class="req">*</span></label><input id="fDob" type="date" required></div>
-
-      <div style="border:1.5px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;background:#FFFDF9">
-        <div style="font-family:var(--disp);font-weight:600;color:var(--brand-dark);margin-bottom:10px">🎯 Program of Interest</div>
-        <div class="field-row">
-          <div class="field" style="margin-bottom:12px"><label>Language <span class="req">*</span></label>
-            <select id="fLang" required onchange="buildPrograms();calcPrice()"><option value="">— select —</option><option>English</option><option>Mandarin</option></select></div>
-          <div class="field" style="margin-bottom:12px"><label>Program <span class="req">*</span></label>
-            <select id="fProgram" required onchange="calcPrice()"><option value="">— select a language first —</option></select></div>
-        </div>
-        <div class="field-row">
-          <div class="field" style="margin-bottom:12px"><label>Format <span class="req">*</span></label>
-            <select id="fFormat" required onchange="calcPrice()"><option value="">— select —</option><option value="online">Online</option><option value="onsite">Onsite (Kwelingo Center)</option></select></div>
-          <div class="field" style="margin-bottom:12px"><label>Class Type <span class="req">*</span></label>
-            <select id="fType" required onchange="calcPrice()"><option value="semi">Semi-Private (max 4)</option><option value="private">1-on-1 Private</option></select></div>
-        </div>
-        <div class="field-row">
-          <div class="field" style="margin-bottom:12px"><label>Teacher <span class="req">*</span></label>
-            <select id="fTeacher" required onchange="calcPrice()"><option value="local">Local Teacher</option><option value="intl">International Teacher</option></select></div>
-          <div class="field" style="margin-bottom:12px"><label>Package</label>
-            <select id="fPkg"><option value="">— subscription package (optional) —</option><option>The Beginner</option><option>The Diligent</option><option>The Champion</option></select></div>
-        </div>
-      </div>
-
-      <div class="price-live"><div class="pv" id="priceLive">Select a program to see the price</div><small id="priceNote">Price per 8 sessions</small></div>
-
-      <!-- Statement of Declaration -->
-      <div class="field">
-        <label>Statement of Declaration <span class="req">*</span></label>
-        <div class="consent-box">I hereby commit to taking my studies at Kwelingo Academy seriously. I will actively participate in class, complete all extended practice tasks, and attend at least <b>80% of the class meetings</b> at each level.<br><br>I understand that failure to meet these requirements may result in <b>not receiving a certificate of completion</b>.<br><br><i>Saya berkomitmen untuk mengikuti kegiatan belajar di Kwelingo Academy dengan sungguh-sungguh. Saya akan berpartisipasi aktif di kelas, menyelesaikan seluruh tugas latihan tambahan yang diberikan, serta menghadiri minimal <b>80% dari total pertemuan kelas</b> pada setiap level.<br><br>Saya memahami bahwa apabila saya tidak memenuhi persyaratan tersebut, saya dapat <b>tidak memperoleh Sertifikat Kelulusan (Certificate of Completion)</b>.</i></div>
-        <label class="chk"><input type="checkbox" id="fSod" required> I have read &amp; agree to the Statement of Declaration.</label>
-      </div>
-
-      <!-- Media Consent -->
-      <div class="field">
-        <label>Media Consent (Photo/Video Use) <span class="req">*</span></label>
-        <div class="consent-box">I hereby give consent for Kwelingo to capture and use photographs and/or videos of the student during classes and activities for promotional and marketing purposes (including social media, website and marketing materials). All materials will be used appropriately and in accordance with privacy considerations.<br><br><i>By this, I give Kwelingo permission to take and use photographs and/or videos of the participant during classes and activities for promotional purposes, including on social media, the website, and marketing materials. All materials will be used responsibly while respecting the participant's privacy.</i></div>
-        <label class="chk"><input type="checkbox" id="fMc" required> I agree to the Media Consent above.</label>
-      </div>
-
-      <!-- Payment -->
-      <div class="field">
-        <label>Payment Confirmation (Proof of Payment)</label>
-        <div style="background:#EAF6FA;border:1.5px solid var(--brand);border-radius:14px;padding:16px 18px;margin-bottom:12px;font-size:13px;color:var(--ink-soft);line-height:1.7">
-          Please transfer the payment to the account below and upload your payment receipt for verification.
-          <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;font-family:var(--disp)">
-            <div><span style="color:var(--muted);font-size:12px">Bank Name</span><br><b>Bank Central Asia (BCA)</b></div>
-            <div style="margin-top:8px"><span style="color:var(--muted);font-size:12px">Account Holder</span><br><b>Kwe Sutrisno</b></div>
-            <div style="margin-top:8px"><span style="color:var(--muted);font-size:12px">Account Number</span><br><b style="letter-spacing:1px">0520-2434-11</b></div>
-          </div>
-          Please ensure the payment amount is correct and that the proof of payment is clearly visible when submitted.
-        </div>
-        <label class="file-drop" for="fProof"><div style="font-size:26px">📎</div><p>Click to choose a transfer proof file</p><div class="file-name" id="proofName">No file selected yet</div></label>
-        <input id="fProof" type="file" accept="image/*,.pdf" hidden onchange="showProof()">
-        <div class="hint">After submitting, attach this file in the WhatsApp chat to the admin.</div>
-      </div>
-
-      <!-- SOP download -->
-      <div class="field">
-        <label>Download SOP (for Students)</label>
-        <a class="sop-btn" href="assets/sop-student.pdf" download><span style="font-size:22px">📘</span><span><b>Kwelingo Student SOP</b><small>Student guidelines &amp; terms</small></span><span class="dl">Download ↓</span></a>
-        <div class="hint">Place the original PDF file at <code>assets/sop-student.pdf</code>.</div>
-      </div>
-
-      <button type="submit" class="btn btn-cta" style="width:100%;justify-content:center;padding:16px;margin-top:8px">📤 Submit Registration via WhatsApp</button>
-    </form>
-  </div>
-</section>
-
-<footer>© 2026 Kwelingo Academy · 0819-45-144-145 · kwelingo.indonesia@gmail.com</footer>
+<footer>© 2026 Kwelingo Academy · Cemara Asri, Medan · 0819-45-144-145 · kwelingo.indonesia@gmail.com</footer>
 <div class="toast" id="toast"></div>
 
 <script>
+/* =====================================================================
+   Registration (rev9). EDIT PRICES HERE — per session, in Rupiah.
+   null = "Ask admin" (shown when the combination is not offered yet).
+   ===================================================================== */
 const WA_NUMBER="6281945144145";
-const PROGRAMS={English:["Boost English","Speak Active","IELTS Preparation"],Mandarin:["Boost Mandarin","HSK Preparation"]};
-/* harga per 8 sesi (dari slide) — null = belum ada, tanya admin */
-const PRICE={
-  online:{
-    semi:{"Boost English":{local:550000,intl:1250000},"Speak Active":{local:500000,intl:1100000},"IELTS Preparation":{local:800000,intl:null},"Boost Mandarin":{local:550000,intl:1250000},"HSK Preparation":{local:650000,intl:1350000}},
-    private:{"Speak Active":{local:1200000,intl:1600000}}
-  },
-  onsite:{
-    semi:{"Boost English":{local:650000,intl:null},"IELTS Preparation":{local:1000000,intl:null},"Boost Mandarin":{local:650000,intl:null},"HSK Preparation":{local:750000,intl:null}},
-    private:{}
-  }
+const BANK={name:'Bank Central Asia (BCA)',holder:'Kwe Sutrisno',number:'0520-2434-11'};
+const PROGRAMS={
+  English:[
+    {id:'be',name:'Boost English',ic:'🏆',pill:'A1 – C2 (6 Levels)',levels:'A1 – C2',desc:'A structured, CEFR-based program to build your overall English skills.',who:'Teens (13–18)<br>Adults (18+)',dur:'4 months / level<br>(32 sessions)'},
+    {id:'sa',name:'Speak Active',ic:'💬',pill:'Speaking Program',levels:'',desc:'Build your speaking confidence through real and current topics.',who:'Teens &amp; Adults',dur:'Private (60 min)<br>Semi-private (90 min)'},
+    {id:'ie',name:'IELTS / TOEFL Prep',ic:'🎯',pill:'Test Preparation',levels:'',desc:'Focused preparation with strategies, practice, and feedback.',who:'Adults (18+)',dur:'90 minutes / session<br>(Semi-private)'},
+  ],
+  Mandarin:[
+    {id:'bm',name:'Boost Mandarin',ic:'🏮',pill:'HSK 1 – 6',levels:'HSK 1 – 6',desc:'Learn Mandarin step by step — speaking, listening, characters and culture.',who:'Kids, Teens &amp; Adults',dur:'4 months / level<br>(32 sessions)'},
+    {id:'hsk',name:'HSK Preparation',ic:'📝',pill:'Test Preparation',levels:'',desc:'Targeted practice and mock tests for the HSK exam.',who:'Teens &amp; Adults',dur:'90 minutes / session<br>(Semi-private)'},
+  ],
 };
-const rp=n=>"Rp "+(Number(n)||0).toLocaleString("id-ID");
+// [online private, online semi-private, onsite private, onsite semi-private]  — {p:price per session, m:minutes}
+const FEES={
+  local:{
+    be:[{p:90000,m:60},{p:100000,m:90},{p:100000,m:60},{p:110000,m:90}],
+    sa:[{p:90000,m:60},{p:100000,m:90},{p:100000,m:60},{p:110000,m:90}],
+    ie:[null,{p:125000,m:90},null,{p:125000,m:90}],
+    bm:[{p:90000,m:60},{p:100000,m:90},{p:100000,m:60},{p:110000,m:90}],
+    hsk:[null,{p:125000,m:90},null,{p:125000,m:90}],
+  },
+  intl:{ be:[null,null,null,null], sa:[null,null,null,null], ie:[null,null,null,null], bm:[null,null,null,null], hsk:[null,null,null,null] },
+};
+const rp=n=>'Rp '+(Number(n)||0).toLocaleString('en-US');
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S={lang:'English',prog:'be',mode:'online',teacher:'local',classType:'semi',step:1,data:{}};
+const progOf=id=>Object.values(PROGRAMS).flat().find(p=>p.id===id)||PROGRAMS.English[0];
+function feeOf(){ const i=(S.mode==='onsite'?2:0)+(S.classType==='semi'?1:0); return ((FEES[S.teacher]||{})[S.prog]||[])[i]||null; }
 
-function buildPrograms(){
-  const lang=document.getElementById('fLang').value;
-  const sel=document.getElementById('fProgram');
-  sel.innerHTML='<option value="">— select —</option>'+((PROGRAMS[lang]||[]).map(p=>`<option>${p}</option>`).join(''));
+/* ---------- left side ---------- */
+function setLang(l){ keep(); S.lang=l; document.getElementById('lgEn').classList.toggle('on',l==='English'); document.getElementById('lgZh').classList.toggle('on',l==='Mandarin');
+  if(!PROGRAMS[l].some(p=>p.id===S.prog)) S.prog=PROGRAMS[l][0].id; drawCards(); drawFees(); drawForm(); }
+function pickProg(id){ keep(); S.prog=id; drawCards(); drawFees(); drawForm(); }
+function drawCards(){
+  document.getElementById('cards').innerHTML=PROGRAMS[S.lang].map(p=>`<div class="pc ${p.id===S.prog?'on':''}" onclick="pickProg('${p.id}')"><span class="rd">${p.id===S.prog?'✓':''}</span><div class="ic">${p.ic}</div><h3>${p.name}</h3><div><span class="pill">${p.pill}</span></div><div class="d">${p.desc}</div>
+    <div class="meta"><div><span>👤</span><div>${p.who}</div></div><div><span>📅</span><div>${p.dur}</div></div></div></div>`).join('');
 }
-function calcPrice(){
-  const prog=document.getElementById('fProgram').value;
-  const fmt=document.getElementById('fFormat').value;
-  const typ=document.getElementById('fType').value;
-  const tch=document.getElementById('fTeacher').value;
-  const el=document.getElementById('priceLive'), note=document.getElementById('priceNote');
-  if(!prog||!fmt){ el.textContent="Select a program to see the price"; note.textContent="Price per 8 sessions"; return; }
-  const v=((PRICE[fmt]||{})[typ]||{})[prog];
-  if(!v){ el.textContent="Ask admin"; note.textContent=`${prog} · ${fmt} · ${typ==='semi'?'Semi-Private':'1-on-1'} — this combination isn't in the list yet`; return; }
-  const price=v[tch];
-  if(price==null){ el.textContent="Ask admin"; note.textContent=`${prog} · ${tch==='intl'?'International':'Local'} Teacher — not yet available for this combination`; return; }
-  el.textContent=rp(price); note.textContent=`${prog} · ${fmt==='online'?'Online':'Onsite'} · ${typ==='semi'?'Semi-Private':'1-on-1'} · ${tch==='intl'?'International':'Local'} Teacher · 8 sessions`;
+function scrollCards(d){ const c=document.getElementById('cards'); c.scrollBy({left:d*c.clientWidth/1.5,behavior:'smooth'}); }
+function setTeacher(t){ keep(); S.teacher=t; document.getElementById('ttLocal').classList.toggle('on',t==='local'); document.getElementById('ttIntl').classList.toggle('on',t==='intl'); drawFees(); drawForm(); }
+function drawFees(){
+  const cell=f=>f?`<b>${rp(f.p)}</b><small>/ ${f.m} min</small>`:'<b style="color:var(--muted)">–</b>';
+  const anyIntl=Object.values(FEES.intl).flat().some(Boolean);
+  document.getElementById('feeTable').innerHTML=`<thead><tr><th class="p" rowspan="2" style="vertical-align:middle;font-size:15px">Program</th><th class="hd1" colspan="2">🖥️ Online <small style="font-weight:500">(Virtual Class)</small></th><th class="hd2" colspan="2">📍 Onsite <small style="font-weight:500">(Cemara Asri, Medan)</small></th></tr>
+    <tr><th class="on1">Private<br><small>(1 student)</small></th><th class="on1">Semi-Private<br><small>(2–4 students)</small></th><th class="on2">Private<br><small>(1 student)</small></th><th class="on2">Semi-Private<br><small>(2–4 students)</small></th></tr></thead>
+    <tbody>${PROGRAMS[S.lang].map(p=>{ const f=(FEES[S.teacher]||{})[p.id]||[];
+      return `<tr class="${p.id===S.prog?'sel':''}" style="cursor:pointer" onclick="pickProg('${p.id}')"><td class="p">${p.name}<small>(${p.levels||p.pill})</small></td>${f.length||true?[0,1,2,3].map(i=>`<td>${cell(f[i])}</td>`).join(''):''}</tr>`; }).join('')}</tbody>`;
+  document.getElementById('feeNote').innerHTML=S.teacher==='local'?'Fees above are for <b>Local Teachers</b>. International Teacher fees are available after switching the option above.'
+    :(anyIntl?'Fees above are for <b>International Teachers</b>.':'International Teacher fees depend on the program and schedule — <b>please contact our admin</b> for the latest fees.');
 }
-/* format toggle Online/Onsite — ikut ke-set di form saat pilih paket */
-let PKG_FORMAT='online';
-function setFormat(mode){
-  PKG_FORMAT=mode;
-  document.getElementById('tgOnline').classList.toggle('on',mode==='online');
-  document.getElementById('tgOnsite').classList.toggle('on',mode==='onsite');
-}
-function pickPkg(name){
-  document.getElementById('fPkg').value=name;
-  const f=document.getElementById('fFormat'); if(f){ f.value=PKG_FORMAT; calcPrice(); }
-}
-function showProof(){const f=document.getElementById('fProof').files[0];document.getElementById('proofName').textContent=f?("✓ "+f.name):"No file selected yet";}
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 
-function submitReg(e){
-  e.preventDefault();
-  const g=id=>document.getElementById(id);
-  if(!g('fSod').checked||!g('fMc').checked){toast("Please tick the SOD & Media Consent agreements first.");return;}
-  const prog=g('fProgram').value, fmt=g('fFormat').value, typ=g('fType').value, tch=g('fTeacher').value;
-  const v=(((PRICE[fmt]||{})[typ]||{})[prog]||{})[tch];
-  const priceTxt=v!=null?rp(v)+" (8 sessions)":"(ask admin)";
-  const msg=
-`Hello Kwelingo! 👋 I'd like to register.
+/* ---------- stepper & form ---------- */
+function drawStepper(){
+  const L=['Choose Program','Fill in Your Details','Review & Submit','Registration Complete'];
+  document.getElementById('stepper').innerHTML=L.map((l,i)=>{ const n=i+1, st=S.step>n||S.step===4?'done':(S.step===n?'on':'');
+    return `${i?'<span class="ln"></span>':''}<div class="s ${st}"><span class="n">${n===4||S.step>n?'✓':n}</span><span class="t">${l}</span></div>`; }).join('');
+}
+function goStep(n){ S.step=n; drawStepper(); drawForm(); }
+function val(id){ const e=document.getElementById(id); return e?e.value.trim():''; }
+function keep(){ document.querySelectorAll('#fcard [data-k]').forEach(e=>{ S.data[e.dataset.k]=e.type==='checkbox'?e.checked:e.value.trim(); }); }
+function ageOf(d){ if(!d) return ''; const b=new Date(d+'T00:00:00'), n=new Date(); let a=n.getFullYear()-b.getFullYear(); if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate())) a--; return a>=0&&a<120?a:''; }
+function drawForm(){
+  const p=progOf(S.prog), D=S.data, f=feeOf(), el=document.getElementById('fcard');
+  const R=(name,opts,cur,on)=>`<div class="radios">${opts.map(([v,l])=>`<label><input type="radio" name="${name}" value="${v}" ${cur===v?'checked':''} onchange="${on}('${v}')"> ${l}</label>`).join('')}</div>`;
+  const I=(k,ph,type,extra)=>`<input class="inp" data-k="${k}" type="${type||'text'}" value="${esc(D[k]||'')}" placeholder="${ph||''}" ${extra||''}>`;
+  const est=`<div class="est">${f?`<b>${rp(f.p)} <small style="font-size:12px;color:var(--muted)">/ session (${f.m} min)</small></b><small>${p.name} · ${S.mode==='online'?'Online':'Onsite'} · ${S.classType==='semi'?'Semi-Private':'Private'} · ${S.teacher==='local'?'Local':'International'} Teacher</small>`:'<b>Ask admin</b><small>This combination is confirmed by our admin team.</small>'}</div>`;
+  let h=`<h2><span>📋</span>Registration Form</h2>`;
+  if(S.step===1){
+    h+=`<span class="lbl">Selected Program</span><input class="inp" readonly value="${esc(p.name)}${p.levels?' ('+esc(p.levels)+')':''}">
+      <span class="lbl">Learning Mode</span>${R('mode',[['online','Online'],['onsite','Onsite']],S.mode,'setMode')}
+      <span class="lbl">Teacher Type</span>${R('teacher',[['local','Local Teacher'],['intl','International Teacher']],S.teacher,'setTeacher')}
+      <hr class="hr"><h4>👤 Student Information</h4>
+      <span class="lbl">Full Name <span class="r">*</span></span>${I('name','Enter your full name')}
+      <div class="row dob"><div><span class="lbl">Date of Birth <span class="r">*</span></span>${I('dob','','date','oninput="document.getElementById(\'ageBox\').value=ageOf(this.value)"')}</div><div><span class="lbl">Age <span class="r">*</span></span><input class="inp" id="ageBox" readonly value="${ageOf(D.dob)}" placeholder="–"></div></div>
+      <span class="lbl">Email <span class="r">*</span></span>${I('email','Enter your email','email')}
+      <span class="lbl">Phone / WhatsApp <span class="r">*</span></span><div class="phone"><select class="inp" data-k="cc">${['+62','+60','+65','+61','+1','+44','+86'].map(c=>`<option ${D.cc===c?'selected':''}>${c}</option>`).join('')}</select>${I('phone','812-3456-7890','tel')}</div>
+      <div class="err" id="fErr"></div>
+      <button class="btn btn-or big-or" onclick="next1()">Continue to Next Step →</button>`;
+  } else if(S.step===2){
+    const age=ageOf(D.dob), minor=age!==''&&age<18;
+    h+=`<div class="sum"><div><span>Program</span><b>${esc(p.name)}</b></div><div><span>Student</span><b>${esc(D.name)}</b></div></div>
+      <span class="lbl">Class Type</span>${R('ctype',[['semi','Semi-Private (2–4)'],['private','Private (1-on-1)']],S.classType,'setClassType')}
+      ${p.levels?`<span class="lbl">Current Level <small style="font-weight:500;color:var(--muted)">(if known)</small></span><select class="inp" data-k="level"><option value="">Not sure — please assess me</option>${(S.lang==='English'?['A1','A2','B1','B2','C1','C2']:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6']).map(l=>`<option ${D.level===l?'selected':''}>${l}</option>`).join('')}</select>`:''}
+      <span class="lbl">Preferred Days &amp; Time</span>${I('schedule','e.g. Mon & Thu, after 4 pm')}
+      <div class="row"><div><span class="lbl">School / Workplace</span>${I('school','e.g. SMP Petra 1')}</div><div><span class="lbl">Grade / Occupation</span>${I('grade','e.g. Grade 8')}</div></div>
+      <hr class="hr"><h4>👪 Parent / Guardian ${minor?'<span class="r" style="color:#E5484D">*</span>':'<small style="font-weight:500;color:var(--muted)">(for students under 18)</small>'}</h4>
+      <div class="row"><div><span class="lbl">Name</span>${I('parent','Full name')}</div><div><span class="lbl">Relationship</span><select class="inp" data-k="rel">${['','Mother','Father','Guardian','Other'].map(r=>`<option value="${r}" ${D.rel===r?'selected':''}>${r||'Select…'}</option>`).join('')}</select></div></div>
+      <span class="lbl">Parent WhatsApp</span>${I('pphone','08xx-xxxx-xxxx','tel')}
+      <span class="lbl">Address</span>${I('address','Home address')}
+      <span class="lbl">How did you hear about us?</span><select class="inp" data-k="source">${['','Instagram','TikTok','Google','Friend / Family','School','Other'].map(r=>`<option value="${r}" ${D.source===r?'selected':''}>${r||'Select…'}</option>`).join('')}</select>
+      ${est}<div class="err" id="fErr"></div>
+      <div class="navbtns"><button class="btn btn-ghost" onclick="keep();goStep(1)">← Back</button><button class="btn btn-or" onclick="next2()">Review →</button></div>`;
+  } else if(S.step===3){
+    const row=(k,v)=>v?`<div><span>${k}</span><b>${esc(v)}</b></div>`:'';
+    h+=`<div class="sum">${row('Program',p.name+(D.level?' · '+D.level:''))}${row('Learning Mode',S.mode==='online'?'Online':'Onsite (Cemara Asri, Medan)')}${row('Class Type',S.classType==='semi'?'Semi-Private (2–4)':'Private (1-on-1)')}${row('Teacher Type',S.teacher==='local'?'Local Teacher':'International Teacher')}
+        ${row('Student',D.name)}${row('Date of Birth',D.dob+(ageOf(D.dob)!==''?' ('+ageOf(D.dob)+' y.o.)':''))}${row('Email',D.email)}${row('WhatsApp',(D.cc||'+62')+' '+D.phone)}${row('Preferred Schedule',D.schedule)}${row('Parent / Guardian',D.parent?(D.parent+(D.rel?' ('+D.rel+')':'')+(D.pphone?' · '+D.pphone:'')):'')}</div>
+      ${est}
+      <span class="lbl">Statement of Declaration <span class="r">*</span></span>
+      <div class="consent">I hereby commit to taking my studies at Kwelingo Academy seriously. I will actively participate in class, complete all extended practice tasks, and attend at least <b>80% of the class meetings</b> at each level. I understand that failure to meet these requirements may result in <b>not receiving a certificate of completion</b>.<br><br><i>Saya berkomitmen untuk mengikuti kegiatan belajar di Kwelingo Academy dengan sungguh-sungguh, berpartisipasi aktif, menyelesaikan seluruh tugas latihan tambahan, serta menghadiri minimal 80% dari total pertemuan kelas pada setiap level.</i></div>
+      <label class="chk"><input type="checkbox" data-k="sod" ${D.sod?'checked':''}> I have read &amp; agree to the Statement of Declaration.</label>
+      <span class="lbl">Media Consent <span class="r">*</span></span>
+      <div class="consent">I give consent for Kwelingo to capture and use photographs and/or videos of the student during classes and activities for promotional purposes (social media, website and marketing materials). All materials will be used responsibly while respecting the student's privacy.</div>
+      <label class="chk"><input type="checkbox" data-k="mc" ${D.mc?'checked':''}> I agree to the Media Consent above.</label>
+      <span class="lbl">Payment <small style="font-weight:500;color:var(--muted)">(registration fee &amp; first payment — the admin confirms the amount)</small></span>
+      <div class="bank"><div><small style="color:var(--muted)">Bank</small><br><b>${BANK.name}</b></div><div style="margin-top:6px"><small style="color:var(--muted)">Account Holder</small><br><b>${BANK.holder}</b></div><div style="margin-top:6px"><small style="color:var(--muted)">Account Number</small><br><b style="letter-spacing:1px">${BANK.number}</b></div></div>
+      <label class="drop" for="fProof">📎 <span id="proofName">${D.proofName?'✓ '+esc(D.proofName):'Attach transfer proof (optional)'}</span></label><input id="fProof" type="file" accept="image/*,.pdf" hidden onchange="S.data.proofName=this.files[0]?this.files[0].name:'';document.getElementById('proofName').textContent=S.data.proofName?'✓ '+S.data.proofName:'Attach transfer proof (optional)'">
+      <div style="font-size:11.5px;color:var(--muted);margin-top:6px">After submitting, send the proof in the WhatsApp chat with our admin.</div>
+      <div class="err" id="fErr"></div>
+      <div class="navbtns"><button class="btn btn-ghost" onclick="keep();goStep(2)">← Back</button><button class="btn btn-or" onclick="submitReg()">Submit ✓</button></div>`;
+  } else {
+    h+=`<div class="done"><div class="ok">✓</div><h3>Registration sent!</h3><p>Thank you, <b>${esc(D.name)}</b>. Our admin will contact you on WhatsApp to confirm your class schedule and payment.</p>
+      <button class="btn btn-or" style="width:100%" onclick="openWA()">💬 Open WhatsApp again</button>
+      <a class="btn btn-ghost" style="width:100%;margin-top:10px" href="index.html">Back to Home</a>
+      <a class="btn btn-ghost" style="width:100%;margin-top:10px" href="assets/sop-student.pdf" download>📘 Download Student SOP</a></div>`;
+  }
+  el.innerHTML=h;
+}
+function setMode(m){ keep(); S.mode=m; drawForm(); }
+function setClassType(t){ keep(); S.classType=t; drawForm(); }
+function err(m){ const e=document.getElementById('fErr'); if(e) e.textContent=m; }
+function next1(){ keep(); const D=S.data;
+  if(!D.name) return err('Please enter the student\'s full name.'); if(!D.dob) return err('Please enter the date of birth.');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email||'')) return err('Please enter a valid email address.');
+  if(String(D.phone||'').replace(/\D/g,'').length<8) return err('Please enter a valid phone / WhatsApp number.');
+  goStep(2); window.scrollTo({top:document.getElementById('form').offsetTop-70,behavior:'smooth'}); }
+function next2(){ keep(); const D=S.data, a=ageOf(D.dob);
+  if(a!==''&&a<18&&(!D.parent||!D.pphone)) return err('For students under 18, please fill in the parent / guardian name and WhatsApp.');
+  goStep(3); }
+function waMsg(){ const p=progOf(S.prog), D=S.data, f=feeOf();
+  return `Hello Kwelingo! 👋 I'd like to register.
 
-👨‍👩‍👧 Parent/Guardian: ${g('fParentName').value} (${g('fParentContact').value})
-🧑‍🎓 Student: ${g('fStudentName').value}${g('fStudentContact').value?(' ('+g('fStudentContact').value+')'):''}
-🎂 Date of Birth: ${g('fDob').value}
-
-🎯 Program: ${g('fLang').value} — ${prog}
-   Format: ${fmt==='online'?'Online':'Onsite'} · ${typ==='semi'?'Semi-Private':'1-on-1 Private'} · ${tch==='intl'?'International':'Local'} Teacher
-   Package: ${g('fPkg').value||'-'}
-   Estimate: ${priceTxt}
+🧑‍🎓 Student: ${D.name}
+🎂 Date of Birth: ${D.dob}${ageOf(D.dob)!==''?' ('+ageOf(D.dob)+' y.o.)':''}
+📧 Email: ${D.email}
+📱 WhatsApp: ${(D.cc||'+62')+' '+D.phone}
+🏫 School/Work: ${D.school||'-'} ${D.grade?'('+D.grade+')':''}
+${D.parent?`👪 Parent/Guardian: ${D.parent}${D.rel?' ('+D.rel+')':''} ${D.pphone||''}\n`:''}
+🎯 Program: ${p.name}${D.level?' — level '+D.level:''}
+   ${S.mode==='online'?'Online':'Onsite (Cemara Asri)'} · ${S.classType==='semi'?'Semi-Private':'Private'} · ${S.teacher==='local'?'Local':'International'} Teacher
+   Preferred schedule: ${D.schedule||'-'}
+   Fee: ${f?rp(f.p)+' / session ('+f.m+' min)':'ask admin'}
+📍 Address: ${D.address||'-'}
+📣 Heard about us from: ${D.source||'-'}
 
 ✅ I agree to the Statement of Declaration & Media Consent.
-I will attach the payment proof in this chat. 🙏`;
-  window.open("https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(msg),"_blank");
-  toast("Opening WhatsApp… remember to attach your payment proof 📎");
-}
-setFormat('online');
+${D.proofName?'📎 I will send my payment proof in this chat.':''} 🙏`; }
+function openWA(){ window.open('https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(waMsg()),'_blank'); }
+function submitReg(){ keep(); const D=S.data;
+  if(!D.sod||!D.mc) return err('Please tick both the Statement of Declaration and the Media Consent.');
+  openWA(); goStep(4); toast('Opening WhatsApp… our admin will confirm your registration 🎉'); window.scrollTo({top:0,behavior:'smooth'}); }
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3400); }
+
+// deep link: registration.html?program=sa&mode=onsite
+(function(){ const q=new URLSearchParams(location.search), pr=q.get('program'); if(pr){ const p=Object.entries(PROGRAMS).find(([l,ps])=>ps.some(x=>x.id===pr||x.name.toLowerCase()===pr.toLowerCase())); if(p){ S.lang=p[0]; S.prog=p[1].find(x=>x.id===pr||x.name.toLowerCase()===pr.toLowerCase()).id; } }
+  if(q.get('mode')==='onsite') S.mode='onsite'; })();
+setLang(S.lang); drawStepper();
 </script>
 </body>
 </html>

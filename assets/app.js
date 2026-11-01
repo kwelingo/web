@@ -231,6 +231,7 @@ const SCRIPT_API = {
   changePin   : (role,oldPin,newPin)=> SCRIPT_API._post({action:'changePin',role,oldPin,newPin}),
   getStudents : (o={}) => SCRIPT_API._post({action:'getStudents',...o}),
   studentLogin: (login,pin) => SCRIPT_API._post({action:'studentLogin',login,pin}),
+  parentLogin: (login,pin) => SCRIPT_API._post({action:'parentLogin',login,pin}),
   getStudent  : (id)   => SCRIPT_API._post({action:'getStudents',id}),
   addStudent  : (d)    => SCRIPT_API._post({action:'addStudent',...d}),
   updateStudent:(d)    => SCRIPT_API._post({action:'updateStudent',...d}),
@@ -315,7 +316,7 @@ const SCRIPT_API = {
 const SB_COLS = {
   students:['id','nama','username','school','address','dob','grade','gender','student_wa','parent_name','wa_ortu','tutor_id','schedule','class_group','program','level','class_type','class_id','start_date','learning_mode','course_due','status','fee_per_meeting','fee_tentor','meeting_minutes','deposit_meetings','add_fee','add_fee_note','pin','active','link_id','notes','email','parent_relation'],
   tutors:['id','nama','username','subject','level','address','dob','wa','pin','category','age_group','employment_type','joining_date','teaching_location','program','bank_name','bank_holder','bank_account','status','photo_url','gender','email','bio','notes'],
-  parents:['id','parent_id','nama','wa','linked_students','status','relation'],
+  parents:['id','parent_id','nama','wa','linked_students','status','relation','username','pin','email'],
   class_groups:['id','class_id','name','program','tutor_id','student_ids','schedule','start_date','total_sessions','min_cert','status','level','room','mode','days','start_time','end_time','end_date','admin_notes','max_students'],
   lesson_plans:['id','tutor_id','group_id','date','unit','topic','objectives','reading','listening','speaking','writing','practice','production','extended','status','admin_note','submitted_at'],
   dev_notes:['id','student_id','tutor_id','group_id','date','topic','strengths','improve','strategy','encourage'],
@@ -329,12 +330,12 @@ const SB_COLS = {
   teacher_requests:['id','tutor_id','kind','group_id','class_date','start_time','new_date','new_time','start_date','end_date','leave_type','reason','note','attach_url','status','admin_note','decided_at','decided_by'],
   programs:['id','name','code','category','audience','levels','duration','sessions','min_cert','price','status','description','objectives','curriculum','color'],
   certificates:['id','student_id','group_id','program','level','attendance','cert_no','mode','file_url','status','issued_at','completion_date','note','issued_by'],
-  quizzes:['id','title','subject','level','questions','time_limit','due_date','program','group_id','unit'],
+  quizzes:['id','title','subject','level','questions','time_limit','due_date','program','group_id','unit','tutor_id','status','quiz_type','description','open_date','open_time','due_time','rules','passing_score','total_points','last_used'],
   quiz_results:['id','quiz_id','student_id','student_name','score','total','taken_at','answers'],
   discussion:['id','student_id','name','message'],
   ratings:['id','class_id','student_id','tutor_id','stars','comment','scores','liked','improve'],
   diary:['id','student_id','tutor_id','author','message','group_id','class_date','learned','struggle','resolve','teacher_comment','comment_at','draft'],
-  tasks:['id','student_id','tutor_id','title','detail','type','due_date','status','done_at','submit_url','submit_text','submit_at','points','feedback','graded_at','group_id','batch_id','unit','attach_url','due_time','visible'],
+  tasks:['id','student_id','tutor_id','title','detail','type','due_date','status','done_at','submit_url','submit_text','submit_at','points','feedback','graded_at','group_id','batch_id','unit','attach_url','due_time','visible','project_type','instructions','rubric','scores','allow_late'],
   chat:['id','room','sender_id','sender_name','role','message'],
   tboard:['id','title','body','date','author','program','attach_url','attach_name'],
   tboard_read:['id','board_id','reader_id','reader_name','read_at'],
@@ -362,6 +363,11 @@ const SB = {
         }
         if(!res.ok){
           if(!isWrite && res.status>=500 && i<tries-1){ await new Promise(r=>setTimeout(r,500*(i+1))); continue; }
+          // tabel lama tanpa kolom created_at → ulangi tanpa urutan supaya data tetap tampil
+          if(method==='GET' && /created_at/.test(text||'') && /[?&]order=created_at/.test(path)){
+            console.warn('[Kwelingo] column created_at missing — re-run supabase-schema.sql. Retrying without order:',path);
+            return SB.req(path.replace(/&?order=created_at\.(asc|desc)/,'').replace('?&','?'),{method});
+          }
           let msg=text; try{ msg=JSON.parse(text).message||JSON.parse(text).hint||text; }catch(_){}
           throw new Error('Database: '+(msg||('HTTP '+res.status)));
         }
@@ -414,6 +420,9 @@ const SB_API = {
   getStudents:(o={})=> SB.req('students?select=*'+(o.id?'&id=eq.'+SB.enc(o.id):'')+'&order=created_at.asc'),
   getStudent :(id)=> SB.req('students?select=*&id=eq.'+SB.enc(id)),
   studentLogin:(login,pin)=> sbLogin('students',login,pin),
+  async parentLogin(login,pin){ const v=SB.enc(String(login||'').trim()); const rows=await SB.req(`parents?or=(username.ilike.${v},parent_id.ilike.${v})&select=*`);
+    if(!rows.length) throw new Error('Parent account not found'); const hit=rows.find(x=>String(x.pin)===String(pin)); if(!hit) throw new Error('Incorrect PIN');
+    if(String(hit.status||'Active')!=='Active') throw new Error('This account is not active — please contact the admin'); return hit; },
   async addStudent(d){
     const id=uid(), pin=d.pin||genPin();
     const link=(String(d.nama||'siswa')).toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')+'-'+id.slice(0,5);
@@ -755,8 +764,35 @@ function certEligible(stats,tstats){
 }
 
 /* Certificate of Completion — buka tab baru berisi e-cert siap di-print/Save as PDF */
+/* ---- Certificate template (uploaded design + text positions, saved in app_settings 'cert_template') ---- */
+let CERT_TPL=null;
+const CERT_TPL_DEFAULT={enabled:'1',url:'',font:'script',color:'#13235B',nameY:47,nameSize:58,line1:'has successfully completed {program}{level_text}',line1Y:60,line1Size:18,dateText:'{date}',dateX:24,dateY:84,noText:'No. {no}',noX:76,noY:84,metaSize:13};
+async function loadCertTemplate(){ try{ const v=await API.getSetting('cert_template'); CERT_TPL=v?{...CERT_TPL_DEFAULT,...JSON.parse(v)}:null; }catch(e){ CERT_TPL=null; } return CERT_TPL; }
+function certFill(t,o){ return String(t||'').replace(/\{(\w+)\}/g,(m,k)=>{ const v={program:o.program||'',level:o.level||'',level_text:o.level?' – Level '+o.level:'',date:o.date||'',no:o.no||'',pct:o.pct!=null&&o.pct!==''?o.pct+'%':'',sessions:o.sessions||'',name:o.name||''}[k]; return v==null?m:esc(v); }); }
+function certTplInner(T,o){
+  const ff=T.font==='script'?"'Great Vibes',cursive":(T.font==='serif'?"'Playfair Display',Georgia,serif":"'Plus Jakarta Sans',sans-serif");
+  const at=(x,y,sz,extra)=>`position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);font-size:${sz}cqw;color:${esc(T.color)};${extra||''}`;
+  return `<img src="${esc(T.url)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
+    <div style="${at(50,T.nameY,T.nameSize/10,'font-family:'+ff+';white-space:nowrap;font-weight:'+(T.font==='script'?400:800))}">${esc(o.name||'Student Name')}</div>
+    ${T.line1?`<div style="${at(50,T.line1Y,T.line1Size/10,'width:80%;text-align:center;font-weight:600')}">${certFill(T.line1,o)}</div>`:''}
+    ${T.dateText?`<div style="${at(T.dateX,T.dateY,T.metaSize/10,'white-space:nowrap;font-weight:700')}">${certFill(T.dateText,o)}</div>`:''}
+    ${T.noText?`<div style="${at(T.noX,T.noY,T.metaSize/10,'white-space:nowrap;font-weight:600')}">${certFill(T.noText,o)}</div>`:''}`;
+}
 function openCertificate(o){
   o=o||{};
+  const T=o.tpl||(o.tpl!==false&&CERT_TPL&&CERT_TPL.url&&CERT_TPL.enabled!=='0'?CERT_TPL:null);
+  if(T){
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Certificate — ${esc(o.name||'')}</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Great+Vibes&family=Playfair+Display:wght@700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:#EEF3FA;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:60px 24px 24px}
+.cert{width:1000px;max-width:100%;aspect-ratio:1.414/1;background:#fff;position:relative;overflow:hidden;container-type:inline-size;box-shadow:0 14px 50px rgba(19,35,91,.16)}
+.pbar{position:fixed;top:0;left:0;right:0;background:#1F6FEB;color:#fff;padding:10px;text-align:center;font-size:13px;z-index:99}.pbar button{background:#fff;color:#1F6FEB;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px}
+@media print{.pbar{display:none}body{background:#fff;padding:0;display:block}.cert{width:100%;box-shadow:none}@page{size:A4 landscape;margin:0}}</style></head><body>
+<div class="pbar">💾 Save as PDF: click the button → choose <b>Save as PDF</b> <button onclick="window.print()">⬇️ Download / Print</button></div>
+<div class="cert">${certTplInner(T,o)}</div></body></html>`;
+    const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the certificate','err'); return; }
+    w.document.write(html); w.document.close(); if(o.print) setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },900); return;
+  }
   const nm=esc(o.name||'Student');
   const prog=esc(o.program||'Language Program'), lvl=esc(o.level||'');
   const pct=o.pct!=null?o.pct:'';
@@ -818,7 +854,7 @@ function openCertificate(o){
 </body></html>`;
   const w=window.open('','_blank');
   if(!w){ toast('Please allow pop-ups to open the certificate','err'); return; }
-  w.document.write(html); w.document.close();
+  w.document.write(html); w.document.close(); if(o.print) setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} },900);
 }
 
 /* ============================================================
@@ -892,6 +928,49 @@ async function parentPayNotifs(studentId){
 }
 
 /* Slip Pembayaran Fee Guru (bisa dipakai sebagai prepayment slip) — buka tab print/PDF */
+/* ---- Prepayment Slip — Teaching Session Summary (teacher payment detail, printable) ---- */
+function openTeachingSummary(o){
+  o=o||{}; const rows=o.rows||[]; const base=location.href.replace(/[^/]*$/,'');
+  const fee=rows.reduce((a,r)=>a+(Number(r.amount)||0),0), bonus=Number(o.bonus)||0, total=o.total!=null?Number(o.total):fee+bonus;
+  const TB={Regular:['#EEF4FF','#1F6FEB'],Recovery:['#FFF4E5','#E07A00'],Reschedule:['#F3EEFF','#7C5CE6'],Rescheduled:['#F3EEFF','#7C5CE6']};
+  const SB={Completed:['#E7F6EE','#1E7E34','✔'],Canceled:['#FDECEC','#D8352A','✕'],Cancelled:['#FDECEC','#D8352A','✕'],Scheduled:['#EEF4FF','#1F6FEB','•'],Rescheduled:['#F3EEFF','#7C5CE6','↻']};
+  const pill=(m,t,ic)=>`<span style="display:inline-block;padding:3px 9px;border-radius:99px;background:${m[0]};color:${m[1]};font-weight:700;font-size:10.5px;white-space:nowrap">${ic?ic+' ':''}${esc(t)}</span>`;
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Prepayment Slip — ${esc(o.name||'')} — ${esc(o.period||'')}</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:#EEF3FA;color:#13235B;padding:60px 18px 30px}
+.pg{width:820px;max-width:100%;margin:0 auto;background:#fff;position:relative;overflow:hidden;padding:44px 46px 30px;box-shadow:0 14px 50px rgba(19,35,91,.14)}
+.c1{position:absolute;right:0;top:0;width:0;height:0;border-top:120px solid #22B2DC;border-left:200px solid transparent;opacity:.95}.c2{position:absolute;right:0;top:0;width:0;height:0;border-top:70px solid #F99400;border-left:70px solid transparent}
+.c3{position:absolute;left:0;bottom:0;width:0;height:0;border-bottom:90px solid #F99400;border-right:170px solid transparent}.c4{position:absolute;right:0;bottom:0;width:0;height:0;border-bottom:130px solid #22B2DC;border-left:150px solid transparent}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;z-index:2}.logo{height:56px}
+.ttl{text-align:right;margin-top:64px}.ttl h1{font-size:28px;letter-spacing:1px;font-weight:800;color:#13235B}.ttl small{display:block;font-size:11px;letter-spacing:3px;color:#22B2DC;font-weight:800;margin-top:2px}
+.no{display:inline-block;margin-top:8px;background:#F99400;color:#fff;font-weight:800;font-size:11.5px;padding:5px 14px;border-radius:99px}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:26px 0 20px;position:relative;z-index:2}.info .r{border-left:1.5px solid #E2E8F2;padding-left:22px}
+.nm{font-size:22px;font-weight:800}.mut{color:#6B7A99;font-size:12px}.kv{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}.kv i{font-style:normal;width:22px;color:#1F6FEB}.kv b{display:block;font-size:13.5px}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;position:relative;z-index:2;border:1px solid #E2E8F2;border-radius:12px;overflow:hidden}
+th{background:#E8F4FB;text-align:left;padding:10px 9px;font-size:11px;color:#13235B}td{padding:9px;border-top:1px solid #EEF2F8}td.a,th.a{text-align:right;font-weight:700}
+.tot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:14px;position:relative;z-index:2}.tbox{background:linear-gradient(90deg,#1F9BD7,#22B2DC);color:#fff;border-radius:12px;padding:12px 20px;display:flex;gap:40px;align-items:center;min-width:330px;justify-content:space-between}.tbox b{font-size:22px}
+.sub{font-size:12.5px;display:flex;justify-content:space-between;min-width:330px;padding:3px 4px}
+.foot2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:22px;position:relative;z-index:2}.foot2 .r{border-left:1.5px solid #E2E8F2;padding-left:22px}.foot2 h4{font-size:13.5px;margin-bottom:10px}.foot2 ul{padding-left:16px;font-size:11.5px;color:#4A5675;line-height:1.7}
+.thx{background:#EEF7FC;border-radius:12px;padding:12px 16px;margin-top:20px;font-size:12px;color:#33507A;position:relative;z-index:2}.thx b{color:#13235B}
+.ft{display:flex;gap:26px;justify-content:flex-start;font-size:11px;color:#4A5675;margin-top:18px;border-top:1px solid #E2E8F2;padding-top:12px;position:relative;z-index:2}
+.pbar{position:fixed;top:0;left:0;right:0;background:#1F6FEB;color:#fff;padding:10px;text-align:center;font-size:13px;z-index:99}.pbar button{background:#fff;color:#1F6FEB;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px}
+@media print{.pbar{display:none}body{background:#fff;padding:0}.pg{box-shadow:none;width:100%}@page{size:A4;margin:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>
+<div class="pbar">💾 Save as PDF: click the button → choose <b>Save as PDF</b> <button onclick="window.print()">⬇️ Download / Print</button></div>
+<div class="pg"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div>
+<div class="top"><img class="logo" src="${base}assets/logo-h.png" onerror="this.src='${base}assets/logo.png'" alt="Kwelingo Academy"><div class="ttl"><h1>PREPAYMENT SLIP</h1><small>TEACHING SESSION SUMMARY</small><span class="no">${esc(o.slipNo||'')}</span></div></div>
+<div class="info"><div><div class="nm">${esc(o.name||'Teacher')}</div><div class="mut" style="margin-top:6px">👤 Teacher${o.programs?' · '+esc(o.programs):''}</div>${o.status?`<div class="mut" style="margin-top:6px">Status: <b style="color:#13235B">${esc(o.status)}</b></div>`:''}</div>
+  <div class="r"><div class="kv"><i>📅</i><div><span class="mut">Payment Period</span><b>${esc(o.range||'')}</b></div></div><div class="kv"><i>📄</i><div><span class="mut">Period</span><b>${esc(o.period||'')}</b></div></div>${o.paidOn?`<div class="kv"><i>✅</i><div><span class="mut">Paid On</span><b>${esc(o.paidOn)}</b></div></div>`:''}</div></div>
+<table><thead><tr><th>No.</th><th>Date</th><th>Class</th><th>Class Type</th><th>Status</th><th class="a">Amount</th></tr></thead><tbody>
+${rows.map((r,i)=>`<tr><td>${i+1}</td><td style="white-space:nowrap">${esc(r.date)}</td><td>${esc(r.cls)}</td><td>${pill(TB[r.type]||TB.Regular,r.type==='Rescheduled'?'Reschedule':r.type||'Regular')}</td><td>${pill(SB[r.status]||SB.Scheduled,r.status,(SB[r.status]||SB.Scheduled)[2])}</td><td class="a">${fmtRp(r.amount)}</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:#7A88A6;padding:18px">No sessions in this period.</td></tr>'}
+</tbody></table>
+<div class="tot"><div style="font-size:13px">Total Sessions: <b>${rows.length}</b>${rows.some(r=>/cancel/i.test(r.status))?` <span class="mut">(${rows.filter(r=>!/cancel/i.test(r.status)).length} paid)</span>`:''}</div>
+  <div>${bonus?`<div class="sub"><span>Teaching Fee</span><b>${fmtRp(fee)}</b></div><div class="sub"><span>Commission / Bonus${o.bonusNote?' ('+esc(o.bonusNote)+')':''}</span><b>${fmtRp(bonus)}</b></div>`:''}<div class="tbox"><span>Total Amount</span><b>${fmtRp(total)}</b></div></div></div>
+<div class="foot2"><div><h4>🏦 Teacher Bank Account</h4><div class="kv"><i>🏛️</i><div><span class="mut">Bank</span><b>${esc((o.bank||{}).bank||'-')}</b></div></div><div class="kv"><i>💳</i><div><span class="mut">Account Number</span><b>${esc((o.bank||{}).account||'-')}</b></div></div><div class="kv"><i>👤</i><div><span class="mut">Beneficiary</span><b>${esc((o.bank||{}).holder||o.name||'-')}</b></div></div></div>
+  <div class="r"><h4>📝 Payment Notes</h4><ul><li>This payment covers the teaching sessions shown in the table above.</li><li>Only completed sessions are included in the total amount.</li><li>Payment is transferred to the bank account listed on the left.</li><li>Kindly confirm once the transfer is received.</li></ul></div></div>
+<div class="thx">ℹ️ <b>Thank you for being part of the Kwelingo Academy family!</b><br>Your dedication helps our students grow and achieve their language goals.</div>
+<div class="ft"><span>🌐 www.kwelingo.com</span><span>📷 @kwelingo</span><span>📍 Cemara Asri, Medan</span></div></div></body></html>`;
+  const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the slip','err'); return; } w.document.write(html); w.document.close();
+}
 function openPayrollSlip(o){
   o=o||{};
   const nm=esc(o.name||'Teacher');
@@ -1175,8 +1254,8 @@ const DEMO = {
     {id:'pr3',tutor_id:'t1',month:'2026-10',amount:0,transfer_date:'',proof_url:'',note:'',status:'GENERATED',generated_at:'2026-10-27T10:15:00',created_at:'2026-10-27T10:15:00'},
   ],
   parents:[
-    {id:'pa1',parent_id:'PAR-0001',nama:'Mrs. Rina Wijaya',wa:'081234567890',linked_students:'Anton Wijaya (s1)',status:'Active'},
-    {id:'pa2',parent_id:'PAR-0002',nama:'Mr. Hadi',wa:'081234500011',linked_students:'Budi Santoso (s2)',status:'Active'},
+    {id:'pa1',parent_id:'PAR-0001',username:'rinawijaya',pin:'1234',nama:'Mrs. Rina Wijaya',wa:'081234567890',linked_students:'Anton Wijaya (s1), Budi Santoso (s2)',status:'Active',relation:'Mother'},
+    {id:'pa2',parent_id:'PAR-0002',username:'hadi',pin:'2222',nama:'Mr. Hadi',wa:'081234500011',linked_students:'Budi Santoso (s2)',status:'Active',relation:'Father'},
   ],
   class_groups:[
     {id:'cg1',class_id:'CLS-0001',name:'Boost English (Teens) – A2',program:'Boost English',level:'A2',tutor_id:'t1',student_ids:'s1,s2',schedule:'Mon & Thu · 19.00',days:'Mon,Thu',start_time:'19:00',end_time:'20:30',room:'Room 2',mode:'Onsite',start_date:'2026-09-01',end_date:'2026-12-20',total_sessions:32,min_cert:26,status:'In progress',created_at:'2026-09-01T09:00:00'},
@@ -1311,6 +1390,7 @@ const DEMO = {
       case 'deleteClassGroup':{ this.class_groups=(this.class_groups||[]).filter(x=>x.id!==p.id); return {deleted:p.id}; }
       case 'uploadFile':{ return {url:p.base64,view:p.base64}; }
       case 'addStudent': { const id='s'+Date.now(); const pin=p.pin||genPin(); this.students.push({active:'aktif',pin,...p,id}); return {id,pin}; }
+      case 'parentLogin':{ const key=String(p.login||'').toLowerCase().trim(); const x=(this.parents||[]).find(a=>String(a.username||'').toLowerCase()===key||String(a.parent_id||'').toLowerCase()===key); if(!x) throw new Error('Parent account not found'); if(String(x.pin)!==String(p.pin)) throw new Error('Incorrect PIN'); return clone(x); }
       case 'studentLogin':{ const key=String(p.login||'').toLowerCase().trim(); const s=this.students.find(x=>x.id===p.login||(x.username||'').toLowerCase().trim()===key||genUsername(x.nama)===key||x.nama.toLowerCase().trim()===key); if(!s)throw new Error('Student not found'); if(String(s.pin)!==String(p.pin))throw new Error('Incorrect PIN'); return clone(s); }
       case 'addTutor':   { const id='t'+Date.now(); const pin=p.pin||genPin(); this.tutors.push({pin,...p,id}); return {id,pin}; }
       case 'updateTutor':{ const t=this.tutors.find(x=>x.id===p.id); if(t) Object.assign(t,p); return {updated:p.id}; }

@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="assets/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kwelingo">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v=20261102">
 <style>
   /* Teacher's Room page-level styles */
   .welcome h1{font-size:28px}
@@ -118,6 +118,8 @@
       <a data-view="lessons"><span class="ic">📖</span> Lesson Plans</a>
       <a data-view="development"><span class="ic">📊</span> Learner Development</a>
       <a data-view="practice"><span class="ic">📝</span> Extended Practice <span class="nav-dot" id="prDot" style="display:none"></span></a>
+      <a data-view="quizzes"><span class="ic">✅</span> Quizzes</a>
+      <a data-view="projects"><span class="ic">📂</span> Projects <span class="nav-dot" id="pjDot" style="display:none"></span></a>
       <a data-view="resources"><span class="ic">📁</span> Teaching Resources</a>
       <a data-view="diary"><span class="ic">📔</span> My Students' Diary <span class="nav-dot" id="dyDot" style="display:none"></span></a>
       <a data-view="lounge"><span class="ic">💬</span> Teacher's Lounge</a>
@@ -252,7 +254,7 @@
           <button class="btn btn-primary" onclick="mrNew()">＋ New Request</button></div>
         <div class="utabs" id="mrTabs"></div>
         <div class="grid grid-4" style="margin-bottom:16px" id="mrStats"></div>
-        <div class="split2" id="mrWrap">
+        <div id="mrWrap">
           <div class="card">
             <div class="card-pad" style="padding-bottom:0"><div class="card-title">My Requests</div>
               <div class="toolbar"><input class="grow" id="mrQ" placeholder="🔎 Search by date, class, reason, or status…" oninput="MR_PAGE=1;renderMyReq()">
@@ -260,24 +262,6 @@
                 <select id="mrStat" onchange="MR_PAGE=1;renderMyReq()"><option value="">All Statuses</option><option>Pending</option><option>Approved</option><option>Declined</option><option>Cancelled</option></select></div></div>
             <div class="table-wrap"><table class="tbl tight"><thead><tr><th>Request ID / Date</th><th>Type</th><th>Date(s)</th><th>Class / Program</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead><tbody id="mrBody"></tbody></table></div>
             <div class="pager" id="mrPager"></div>
-          </div>
-          <div class="card card-pad side" id="mrForm">
-            <div class="card-title">New Request</div>
-            <div class="utabs" id="mrKind" style="margin-bottom:14px"></div>
-            <div id="mrResFields">
-              <div class="field"><label>Class to Reschedule <span class="req">*</span></label><select id="mrCls" onchange="mrFillSessions()"></select></div>
-              <div class="field"><label>Original Date &amp; Time <span class="req">*</span></label><select id="mrSes"></select></div>
-              <label style="font-size:12.5px;font-weight:700;color:var(--navy)">Preferred New Date &amp; Time <span class="help" style="display:inline">(if known)</span></label>
-              <div class="field-row"><div class="field"><input type="date" id="mrNd"></div><div class="field"><input type="time" id="mrNt"></div></div>
-            </div>
-            <div id="mrLvFields" class="hide">
-              <div class="field"><label>Leave Type <span class="req">*</span></label><select id="mrLt"><option>Sick Leave</option><option>Personal</option><option>Family Event</option><option>Annual Leave</option><option>Other</option></select></div>
-              <div class="field-row"><div class="field"><label>Start Date <span class="req">*</span></label><input type="date" id="mrLs" onchange="mrAffected()"></div><div class="field"><label>End Date</label><input type="date" id="mrLe" onchange="mrAffected()"></div></div>
-              <div class="note-band" id="mrAff" style="font-size:12.5px;margin-bottom:12px;display:none"></div>
-              <div class="field"><label>Attachment <span class="help" style="display:inline">(optional · e.g. doctor's note)</span></label><input type="file" id="mrFile" accept="application/pdf,image/*"></div>
-            </div>
-            <div class="field"><label>Reason <span class="req">*</span></label><textarea id="mrReason" maxlength="300" placeholder="Tell us the reason…" oninput="document.getElementById('mrCnt').textContent=this.value.length+'/300'"></textarea><div class="help" style="text-align:right" id="mrCnt">0/300</div></div>
-            <div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="mrReset()">Cancel</button><button class="btn btn-primary" style="flex:2" id="mrSubmit" onclick="mrSubmit()">Submit Request</button></div>
           </div>
         </div>
         <div class="grid home-row mt-16" style="grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)">
@@ -292,7 +276,7 @@
       <section class="view hide" id="view-lessons">
         <div class="page-head"><div class="ph-left"><div class="ph-ic">📖</div><div><h1>Lesson Plans</h1><div class="sub">Upload and manage your lesson plans for each class.</div></div></div>
           <button class="btn btn-primary" onclick="newLessonPlan()">＋ Add Lesson Plan</button></div>
-        <div class="split">
+        <div>
           <div>
             <div class="selbar">
               <div class="field" style="flex:1"><label>Select Class</label><select id="lpClass" onchange="renderLessons()"></select></div>
@@ -300,7 +284,6 @@
             </div>
             <div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Topic</th><th>Unit</th><th>Status</th><th></th></tr></thead><tbody id="lpBody"></tbody></table></div></div>
           </div>
-          <div class="card card-pad" id="lpForm"></div>
         </div>
       </section>
 
@@ -322,8 +305,8 @@
       <!-- ===== EXTENDED PRACTICE ===== -->
       <section class="view hide" id="view-practice">
         <div class="page-head"><div class="ph-left"><div class="ph-ic">📝</div><div><h1>Extended Practice</h1><div class="sub">Create and manage practice tasks for your students.</div></div></div>
-          <button class="btn btn-primary" onclick="document.getElementById('epTitle').focus()">＋ Create New Practice</button></div>
-        <div class="split">
+          <button class="btn btn-primary" onclick="openPracticeForm()">＋ Create New Practice</button></div>
+        <div>
           <div>
             <div class="selbar">
               <div class="field" style="flex:1"><label>Select Class</label><select id="epClass" onchange="renderPractice()"></select></div>
@@ -333,27 +316,39 @@
             <div class="card"><div class="card-pad" style="padding-bottom:4px"><div class="card-title" id="epCount">Assigned Practices</div></div>
               <div class="table-wrap"><table class="tbl"><thead><tr><th>#</th><th>Title</th><th>Type</th><th>Due Date</th><th>Submitted</th><th>Status</th><th></th></tr></thead><tbody id="epBody"></tbody></table></div></div>
           </div>
-          <div class="card card-pad">
-            <div class="card-title">Create New Practice</div>
-            <div class="field"><label>Class <span class="req">*</span></label><select id="epCls"></select></div>
-            <div class="field"><label>Unit (Optional)</label><input id="epUnit" placeholder="e.g. Unit 2 – Hobbies" list="unitList"><datalist id="unitList"></datalist></div>
-            <div class="field"><label>Title <span class="req">*</span></label><input id="epTitle" placeholder="e.g. My Daily Routine (Voice Recording)"></div>
-            <div class="field"><label>Description / Instructions <span class="req">*</span></label><textarea id="epDesc" maxlength="500" placeholder="Record a 1–2 minute audio about your daily routine…"></textarea></div>
-            <div class="field"><label>Type of Practice <span class="req">*</span></label>
-              <div class="type-tiles" id="epTypes">
-                <button type="button" data-t="writing" class="on" onclick="pickType(this)"><span>📝</span>Writing</button>
-                <button type="button" data-t="speaking" onclick="pickType(this)"><span>🎙️</span>Speaking</button>
-                <button type="button" data-t="reading" onclick="pickType(this)"><span>📖</span>Reading</button>
-                <button type="button" data-t="listening" onclick="pickType(this)"><span>🎧</span>Listening</button>
-                <button type="button" data-t="other" onclick="pickType(this)"><span>☰</span>Other</button>
-              </div></div>
-            <div class="field-row"><div class="field"><label>Due Date <span class="req">*</span></label><input type="date" id="epDue"></div><div class="field"><label>Time</label><input type="time" id="epTime" value="23:59"></div></div>
-            <div class="field"><label>Attachments (Optional)</label>
-              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('epFile').click()">⬆️ Upload File</button><span class="help" id="epFileName" style="margin:0">Max 10 MB (PDF, DOC, PPT, JPG, MP4…)</span></div>
-              <input type="file" id="epFile" class="hide" onchange="document.getElementById('epFileName').textContent=this.files[0]?('📎 '+this.files[0].name):''"></div>
-            <label class="switch"><input type="checkbox" id="epVisible" checked> Make visible to students immediately</label>
-            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px"><button class="btn btn-ghost" onclick="resetPracticeForm()">Cancel</button><button class="btn btn-primary" onclick="createPractice()">Create Practice</button></div>
-          </div>
+        </div>
+      </section>
+
+      <!-- ===== QUIZZES ===== -->
+      <section class="view hide" id="view-quizzes">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">✅</div><div><h1>Quizzes</h1><div class="sub">Create, manage, grade, and reuse quizzes for your classes.</div></div></div>
+          <button class="btn btn-amber" onclick="qzOpenWizard()">＋ Create Quiz</button></div>
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:0">
+            <div class="utabs" id="tqTabs" style="margin-bottom:14px"></div>
+            <div class="toolbar"><input class="grow" id="tqQ" placeholder="🔎 Search quizzes…" oninput="renderTQuizzes()">
+              <select id="tqClass" onchange="renderTQuizzes()"></select>
+              <select id="tqStat" onchange="renderTQuizzes()"><option value="">All Statuses</option><option>Active</option><option>Draft</option><option>Scheduled</option><option>Closed</option></select>
+              <select id="tqSort" onchange="renderTQuizzes()"><option value="new">Latest Created</option><option value="due">Due Date</option><option value="title">Title A–Z</option></select></div></div>
+          <div class="table-wrap"><table class="tbl tight"><thead id="tqHead"></thead><tbody id="tqBody"></tbody></table></div>
+        </div>
+        <div class="card mt-16" id="tqPastCard">
+          <div class="card-pad" style="padding-bottom:4px"><div class="card-title"><span>🕘 Past Quizzes <small class="text-muted" style="font-weight:500">— previously used quizzes that you can reuse for future classes</small></span><span class="badge badge-active" id="tqPastN">0 quizzes</span></div></div>
+          <div class="table-wrap"><table class="tbl tight"><tbody id="tqPast"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ===== PROJECTS ===== -->
+      <section class="view hide" id="view-projects">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📂</div><div><h1>Projects</h1><div class="sub">Create, post, and grade class projects.</div></div></div>
+          <button class="btn btn-amber" onclick="pjOpenWizard()">＋ Create Project</button></div>
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:0">
+            <div class="toolbar"><input class="grow" id="tpQ" placeholder="🔎 Search projects…" oninput="renderTProjects()">
+              <select id="tpClass" onchange="renderTProjects()"></select>
+              <select id="tpStat" onchange="renderTProjects()"><option value="">All Statuses</option><option>Open</option><option>Draft</option><option>Closed</option></select>
+              <select id="tpSort" onchange="renderTProjects()"><option value="new">Latest Created</option><option value="due">Due Date</option><option value="title">Title A–Z</option></select></div></div>
+          <div class="table-wrap"><table class="tbl tight"><thead><tr><th></th><th>Project Title</th><th>Class</th><th>Due Date</th><th>Submissions</th><th>Status</th><th>Actions</th></tr></thead><tbody id="tpBody"></tbody></table></div>
         </div>
       </section>
 
@@ -507,6 +502,102 @@
   </div>
 </div>
 
+<!-- ===== MODAL: Lesson plan ===== -->
+<div class="modal-overlay" id="mLp">
+  <div class="modal xl">
+    <div class="modal-head"><h3 id="lpTitle">Add Lesson Plan</h3><button class="x" onclick="LP_EDIT=null;closeModal('mLp')">×</button></div>
+    <div class="modal-body"><div id="lpForm"></div></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Create practice ===== -->
+<div class="modal-overlay" id="mPractice">
+  <div class="modal">
+    <div class="modal-head"><h3>Create New Practice</h3><button class="x" onclick="closeModal('mPractice')">×</button></div>
+    <div class="modal-body">
+            <div class="field"><label>Class <span class="req">*</span></label><select id="epCls"></select></div>
+            <div class="field"><label>Unit (Optional)</label><input id="epUnit" placeholder="e.g. Unit 2 – Hobbies" list="unitList"><datalist id="unitList"></datalist></div>
+            <div class="field"><label>Title <span class="req">*</span></label><input id="epTitle" placeholder="e.g. My Daily Routine (Voice Recording)"></div>
+            <div class="field"><label>Description / Instructions <span class="req">*</span></label><textarea id="epDesc" maxlength="500" placeholder="Record a 1–2 minute audio about your daily routine…"></textarea></div>
+            <div class="field"><label>Type of Practice <span class="req">*</span></label>
+              <div class="type-tiles" id="epTypes">
+                <button type="button" data-t="writing" class="on" onclick="pickType(this)"><span>📝</span>Writing</button>
+                <button type="button" data-t="speaking" onclick="pickType(this)"><span>🎙️</span>Speaking</button>
+                <button type="button" data-t="reading" onclick="pickType(this)"><span>📖</span>Reading</button>
+                <button type="button" data-t="listening" onclick="pickType(this)"><span>🎧</span>Listening</button>
+                <button type="button" data-t="other" onclick="pickType(this)"><span>☰</span>Other</button>
+              </div></div>
+            <div class="field-row"><div class="field"><label>Due Date <span class="req">*</span></label><input type="date" id="epDue"></div><div class="field"><label>Time</label><input type="time" id="epTime" value="23:59"></div></div>
+            <div class="field"><label>Attachments (Optional)</label>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('epFile').click()">⬆️ Upload File</button><span class="help" id="epFileName" style="margin:0">Max 10 MB (PDF, DOC, PPT, JPG, MP4…)</span></div>
+              <input type="file" id="epFile" class="hide" onchange="document.getElementById('epFileName').textContent=this.files[0]?('📎 '+this.files[0].name):''"></div>
+            <label class="switch"><input type="checkbox" id="epVisible" checked> Make visible to students immediately</label>
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px"><button class="btn btn-ghost" onclick="resetPracticeForm();closeModal('mPractice')">Cancel</button><button class="btn btn-primary" onclick="createPractice()">Create Practice</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: New request (reschedule / leave) ===== -->
+<div class="modal-overlay" id="mMyReq">
+  <div class="modal">
+    <div class="modal-head"><h3>New Request</h3><button class="x" onclick="closeModal('mMyReq')">×</button></div>
+    <div class="modal-body">
+          <div id="mrForm">
+            <div class="utabs" id="mrKind" style="margin-bottom:14px"></div>
+            <div id="mrResFields">
+              <div class="field"><label>Class to Reschedule <span class="req">*</span></label><select id="mrCls" onchange="mrFillSessions()"></select></div>
+              <div class="field"><label>Original Date &amp; Time <span class="req">*</span></label><select id="mrSes"></select></div>
+              <label style="font-size:12.5px;font-weight:700;color:var(--navy)">Preferred New Date &amp; Time <span class="help" style="display:inline">(if known)</span></label>
+              <div class="field-row"><div class="field"><input type="date" id="mrNd"></div><div class="field"><input type="time" id="mrNt"></div></div>
+            </div>
+            <div id="mrLvFields" class="hide">
+              <div class="field"><label>Leave Type <span class="req">*</span></label><select id="mrLt"><option>Sick Leave</option><option>Personal</option><option>Family Event</option><option>Annual Leave</option><option>Other</option></select></div>
+              <div class="field-row"><div class="field"><label>Start Date <span class="req">*</span></label><input type="date" id="mrLs" onchange="mrAffected()"></div><div class="field"><label>End Date</label><input type="date" id="mrLe" onchange="mrAffected()"></div></div>
+              <div class="note-band" id="mrAff" style="font-size:12.5px;margin-bottom:12px;display:none"></div>
+              <div class="field"><label>Attachment <span class="help" style="display:inline">(optional · e.g. doctor's note)</span></label><input type="file" id="mrFile" accept="application/pdf,image/*"></div>
+            </div>
+            <div class="field"><label>Reason <span class="req">*</span></label><textarea id="mrReason" maxlength="300" placeholder="Tell us the reason…" oninput="document.getElementById('mrCnt').textContent=this.value.length+'/300'"></textarea><div class="help" style="text-align:right" id="mrCnt">0/300</div></div>
+            <div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="mrReset();closeModal('mMyReq')">Cancel</button><button class="btn btn-primary" style="flex:2" id="mrSubmit" onclick="mrSubmit()">Submit Request</button></div>
+          </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Create quiz (wizard) ===== -->
+<div class="modal-overlay" id="mQuiz">
+  <div class="modal xl">
+    <div class="modal-head"><div><h3 id="qwTitle">Create Quiz</h3><small class="text-muted">Build a new quiz for your class.</small></div><div class="wsteps" id="qwSteps"></div><button class="x" onclick="closeModal('mQuiz')">×</button></div>
+    <div class="modal-body" id="qwBody"></div>
+    <div class="modal-foot" id="qwFoot"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Quiz report / grading ===== -->
+<div class="modal-overlay" id="mQReport">
+  <div class="modal xl">
+    <div class="modal-head"><h3 id="qrTitle">Quiz Report</h3><button class="x" onclick="closeModal('mQReport')">×</button></div>
+    <div class="modal-body" id="qrBody"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Create project (wizard) ===== -->
+<div class="modal-overlay" id="mProject">
+  <div class="modal xl">
+    <div class="modal-head"><div><h3 id="pwTitle">Create Project</h3><small class="text-muted">Set up a new project for your class.</small></div><div class="wsteps" id="pwSteps"></div><button class="x" onclick="closeModal('mProject')">×</button></div>
+    <div class="modal-body" id="pwBody"></div>
+    <div class="modal-foot" id="pwFoot"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Grade project ===== -->
+<div class="modal-overlay" id="mPGrade">
+  <div class="modal xl">
+    <div class="modal-head"><div><h3 id="pgTitle">Grade Project</h3><small class="text-muted" id="pgSub"></small></div><div id="pgNav" style="display:flex;gap:8px;align-items:center;margin-left:auto;margin-right:12px"></div><button class="x" onclick="closeModal('mPGrade')">×</button></div>
+    <div class="modal-body" id="pgBody"></div>
+    <div class="modal-foot" id="pgFoot"></div>
+  </div>
+</div>
+
 <!-- ===== MODAL: Generic info ===== -->
 <div class="modal-overlay" id="mInfo">
   <div class="modal wide">
@@ -517,7 +608,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=20261102"></script>
 <script>
 /* =====================================================================
    Teacher's Room (rev4)
@@ -574,7 +665,7 @@ async function doLogin(){
     ME=await API.tutorLogin(user,pin); if(!ME.username) ME.username=user;
     document.getElementById('loginGate').style.display='none';
     document.getElementById('meName').textContent=ME.nama||'Teacher';
-    document.getElementById('meSub').textContent=(ME.program||ME.subject||'')+' Teacher';
+    document.getElementById('meSub').textContent=(String(ME.program||ME.subject||'').split(',')[0].trim())+' Teacher';
     document.getElementById('meAv').textContent=initials(ME.nama||'T');
     document.getElementById('hi').textContent=`Welcome back, ${ME.nama||'Teacher'}!`;
     await loadCore();
@@ -601,10 +692,10 @@ function refreshDots(){
   const set=(id,n)=>{const d=document.getElementById(id); if(d){ d.textContent=n; d.style.display=n?'inline-flex':'none'; }};
   const req=openRequests().filter(g=>g.status==='Open'&&!myApp(g.id)).length;
   const unread=BOARD.filter(b=>!BOARD_READS.find(r=>String(r.board_id)===String(b.id))).length;
-  const rev=TASKS.filter(t=>t.status==='submitted').length;
+  const rev=TASKS.filter(t=>t.status==='submitted'&&!isProj(t)).length, pjRev=TASKS.filter(t=>t.status==='submitted'&&isProj(t)).length;
   const dy=DIARY.filter(d=>d.author==='murid'&&(d.learned||d.message)&&!d.teacher_comment).length;
   set('mrDot',(TREQ||[]).filter(r=>r.status==='Pending').length);
-  set('reqDot',req); set('boardDot',unread); set('prDot',rev); set('dyDot',dy);
+  set('reqDot',req); set('boardDot',unread); set('prDot',rev); set('pjDot',pjRev); set('dyDot',dy);
   const slipPending=(PAYROLL||[]).some(p=>String(p.status).toUpperCase()==='GENERATED'); set('slipDot',slipPending?'!':'');
   const bell=req+unread+rev; const b=document.getElementById('bellDot'); b.textContent=bell; b.style.display=bell?'inline-block':'none';
 }
@@ -612,7 +703,7 @@ function refreshDots(){
 /* ---------------- navigation ---------------- */
 let CUR_VIEW='dashboard';
 const RENDER={dashboard:renderHome,requests:renderRequests,schedule:renderSchedule,classes:renderClasses,attendance:renderAttendance,myreq:()=>loadTReq().then(renderMyReq),lessons:renderLessons,
-  development:renderDevelopment,practice:renderPractice,resources:renderResources,diary:renderDiary,lounge:renderLounge,board:renderBoard,slip:renderSlip,
+  development:renderDevelopment,practice:renderPractice,quizzes:()=>loadTQ().then(renderTQuizzes),projects:renderTProjects,resources:renderResources,diary:renderDiary,lounge:renderLounge,board:renderBoard,slip:renderSlip,
   sop:renderSop,messages:renderMessages,account:renderAccount};
 function go(v){
   CUR_VIEW=v;
@@ -855,7 +946,7 @@ function mrAffected(){
   const ses=sessionsOf(realSessions().filter(c=>c.date>=a&&c.date<=b&&c.status!=='cancelled'));
   box.style.display='block'; box.innerHTML=ses.length?`📌 <b>${ses.length} class session${ses.length>1?'s':''}</b> fall in this period: `+ses.slice(0,4).map(se=>esc(grpLabel(grpById(se.gid)))+' ('+esc(shortDate(se.date))+')').join(', ')+(ses.length>4?'…':'')+'. The admin will arrange a substitute or reschedule.':'✅ No classes scheduled in this period.';
 }
-function mrNew(){ mrReset(); const f=document.getElementById('mrForm'); f.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>document.getElementById(MR_KIND==='leave'?'mrLs':'mrCls').focus(),300); }
+function mrNew(k){ if(k) mrFormKind(k); mrReset(); openModal('mMyReq'); setTimeout(()=>document.getElementById(MR_KIND==='leave'?'mrLs':'mrCls').focus(),250); }
 function mrReset(){ ['mrNd','mrNt','mrLs','mrLe','mrReason','mrFile'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
   document.getElementById('mrCls').value=''; mrFillSessions(); document.getElementById('mrCnt').textContent='0/300'; document.getElementById('mrAff').style.display='none'; }
 async function mrSubmit(){
@@ -880,7 +971,7 @@ async function mrSubmit(){
     await API.addChat({room:dmRoom('admin',ME.id),sender_id:ME.id,sender_name:ME.nama||'Teacher',role:'guru',
       message:MR_KIND==='leave'?`🌴 On leave request: ${row.leave_type}, ${shortDate(row.start_date)}${row.end_date!==row.start_date?' – '+shortDate(row.end_date):''}. Reason: ${reason}`
         :`🔁 Reschedule request: ${grpLabel(grpById(row.group_id))} on ${shortDate(row.class_date)} ${row.start_time}${row.new_date?' → '+shortDate(row.new_date)+' '+(row.new_time||''):''}. Reason: ${reason}`}).catch(()=>{});
-    await loadTReq(); mrReset(); MR_TAB='all'; renderMyReq(); toast('Request submitted ✅ — the admin team will review it','ok');
+    await loadTReq(); mrReset(); closeModal('mMyReq'); MR_TAB='all'; renderMyReq(); toast('Request submitted ✅ — the admin team will review it','ok');
   }catch(e){ toast('Failed: '+(e.message||e),'err'); }
   finally{ btn.disabled=false; btn.textContent='Submit Request'; }
 }
@@ -897,6 +988,318 @@ function mrView(id){
     ${r.admin_note?`<div style="font-weight:700;color:var(--navy);font-size:13px;margin:14px 0 6px">Note from Admin</div><div class="note-band">${esc(r.admin_note)}</div>`:''}
     ${r.kind==='leave'&&s!=='Declined'?(()=>{ const ses=sessionsOf(realSessions().filter(c=>c.date>=r.start_date&&c.date<=(r.end_date||r.start_date))); return ses.length?`<div style="font-weight:700;color:var(--navy);font-size:13px;margin:14px 0 6px">Affected classes</div>`+ses.map(se=>`<div class="row-item"><div class="ri-main"><b>${esc(grpLabel(grpById(se.gid)))}</b><small>${esc(dayLong(se.date))} · ${se.start}</small></div></div>`).join(''):''; })():''}`;
   openModal('mInfo');
+}
+
+/* ============================== QUIZZES (teacher) ============================== */
+let TQ=[], TQR=[], TQ_TAB='mine', QW=null;
+const QTYPE={mc:{l:'Multiple Choice',ic:'☰',c:'#EEF2FF'},tf:{l:'True / False',ic:'✔✘',c:'#E7F6EE'},fill:{l:'Fill in the Blank',ic:'▁',c:'#FFF5E2'},short:{l:'Short Answer',ic:'✎',c:'#FDECF3'}};
+const QZTYPE={practice:['Practice Quiz','For learning and reinforcement'],assessment:['Assessment Quiz','For grading and progress tracking'],placement:['Placement Quiz','To determine language level']};
+async function loadTQ(){ try{ const all=await API.getQuizzes()||[]; const gids=new Set(MYGROUPS.map(g=>String(g.id)));
+    TQ=all.filter(q=>String(q.tutor_id)===String(ME.id)||(!q.tutor_id&&q.group_id&&gids.has(String(q.group_id)))); }catch(e){ TQ=TQ||[]; }
+  try{ const ids=new Set(TQ.map(q=>q.id)); TQR=(await API.getQuizResults({})||[]).filter(r=>ids.has(r.quiz_id)); }catch(e){ TQR=TQR||[]; } }
+const tqQs=q=>{ try{ return JSON.parse(q.questions||'[]'); }catch(e){ return []; } };
+const tqRules=q=>{ try{ return {show:1,multi:0,shuffleQ:0,shuffleO:0,...JSON.parse(q.rules||'{}')}; }catch(e){ return {show:1,multi:0,shuffleQ:0,shuffleO:0}; } };
+const tqPts=qs=>qs.reduce((a,x)=>a+(Number(x.points)||1),0);
+function tqStatus(q){ const s=q.status||'Active'; if(s==='Draft'||s==='Closed') return s;
+  if(q.due_date&&q.due_date<TODAY) return 'Closed'; if(q.open_date&&q.open_date>TODAY) return 'Scheduled'; return 'Active'; }
+const tqBadge=s=>({Active:'<span class="badge badge-paid">Active</span>',Draft:'<span class="badge badge-active">Draft</span>',Scheduled:'<span class="badge badge-pending">Scheduled</span>',Closed:'<span class="badge badge-grey">Closed</span>'}[s]||esc(s));
+function tqSubs(q){ const g=grpById(q.group_id), n=g?grpStudents(g).length:0, done=new Set(TQR.filter(r=>r.quiz_id===q.id).map(r=>String(r.student_id))).size; return {done,n}; }
+function tqIcon(q){ const qs=tqQs(q), t=(qs[0]||{}).type||'mc', m={mc:['☰','#EEF2FF','#4F6BED'],tf:['✔','#E7F6EE','#22A06B'],fill:['🎧','#FFF5E2','#E8A100'],short:['✎','#FDECF3','#C2255C']}[t];
+  return `<span class="ricon" style="background:${m[1]};color:${m[2]}">${m[0]}</span>`; }
+function renderTQuizzes(){
+  classOptions('tqClass',document.getElementById('tqClass').value,true);
+  const past=TQ.filter(q=>tqStatus(q)==='Closed');
+  utabsT('tqTabs',[['mine','📋 My Quizzes',TQ.length-past.length],['past','🕘 Past Quizzes',past.length]],TQ_TAB,'setTqTab');
+  const cls=document.getElementById('tqClass').value, st=document.getElementById('tqStat').value, q=(document.getElementById('tqQ').value||'').toLowerCase(), so=document.getElementById('tqSort').value;
+  let list=TQ.filter(x=>(TQ_TAB==='mine'||tqStatus(x)==='Closed')&&(!cls||String(x.group_id)===cls)&&(!st||tqStatus(x)===st)&&(!q||[x.title,x.unit,grpLabel(grpById(x.group_id))].join(' ').toLowerCase().includes(q)));
+  list.sort((a,b)=>so==='title'?String(a.title).localeCompare(b.title):so==='due'?String(a.due_date||'9').localeCompare(String(b.due_date||'9')):String(b.created_at||'').localeCompare(String(a.created_at||'')));
+  document.getElementById('tqHead').innerHTML='<tr><th></th><th>Quiz Title</th><th>Class</th><th>Questions</th><th>Points</th><th>Status</th><th>Submissions</th><th>Actions</th></tr>';
+  document.getElementById('tqBody').innerHTML=list.map(x=>{ const qs=tqQs(x), s=tqStatus(x), sb=tqSubs(x);
+    const main=s==='Draft'?`<button class="btn btn-outline btn-sm" onclick="tqPublish('${esc(x.id)}')">▷ Publish</button>`:(s==='Closed'?`<button class="btn btn-outline btn-sm" onclick="tqReport('${esc(x.id)}')">📊 View Report</button>`:`<button class="btn btn-outline btn-sm" onclick="tqReport('${esc(x.id)}')">📊 Grade</button>`);
+    return `<tr><td style="width:44px">${tqIcon(x)}</td><td><b style="color:var(--navy)">${esc(x.title)}</b>${x.unit?`<br><small class="text-muted">${esc(x.unit)}</small>`:''}</td><td>${esc(grpLabel(grpById(x.group_id)))}</td><td>${qs.length}</td><td>${tqPts(qs)}</td><td>${tqBadge(s)}</td>
+      <td>${s==='Draft'?'—':`${sb.done} / ${sb.n}`}</td><td style="white-space:nowrap">${main} <button class="btn btn-ghost btn-sm" title="Edit" onclick="qzOpenWizard('${esc(x.id)}')">✏️</button>
+      <span class="menu-wrap" style="display:inline-block;position:relative"><button class="dots-btn" onclick="tqMenu(this)">⋯</button><div class="menu-pop"><button onclick="tqReuse('${esc(x.id)}')">⧉ Duplicate / Reuse</button>${s==='Active'||s==='Scheduled'?`<button onclick="tqSetStatus('${esc(x.id)}','Closed')">⏹ Close quiz</button>`:''}${s==='Closed'?`<button onclick="tqSetStatus('${esc(x.id)}','Active')">↺ Reopen</button>`:''}<button class="danger" onclick="tqDelete('${esc(x.id)}')">🗑️ Delete</button></div></span></td></tr>`; }).join('')
+    ||`<tr><td colspan="8" class="empty">${TQ.length?'No quizzes for this filter.':'No quizzes yet — click <b>＋ Create Quiz</b> to build your first one.'}</td></tr>`;
+  document.getElementById('tqPastCard').style.display=TQ_TAB==='mine'?'':'none';
+  document.getElementById('tqPastN').textContent=past.length+' quiz'+(past.length===1?'':'zes');
+  document.getElementById('tqPast').innerHTML=past.slice(0,8).map(x=>{ const qs=tqQs(x); return `<tr><td style="width:44px">${tqIcon(x)}</td><td><b style="color:var(--navy)">${esc(x.title)}</b></td><td>${esc(grpLabel(grpById(x.group_id)))}</td><td>${qs.length} Q</td><td>${tqPts(qs)} pts</td><td class="text-muted">Last used: ${esc(shortDate(x.last_used||x.due_date||String(x.created_at||'').slice(0,10)))}</td><td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="tqReuse('${esc(x.id)}')">⧉ Reuse Quiz</button> <button class="btn btn-ghost btn-sm" onclick="tqReport('${esc(x.id)}')">📊</button></td></tr>`; }).join('')||'<tr><td class="empty">Closed quizzes appear here so you can reuse them.</td></tr>';
+}
+function setTqTab(t){ TQ_TAB=t; renderTQuizzes(); }
+function tqMenu(btn){ const pop=btn.nextElementSibling; const was=pop.classList.contains('open'); document.querySelectorAll('.menu-pop.open').forEach(m=>m.classList.remove('open')); if(!was) pop.classList.add('open'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('.menu-wrap')) document.querySelectorAll('.menu-pop.open').forEach(m=>m.classList.remove('open')); });
+async function tqSetStatus(id,status){ try{ await API.upsert('quizzes',{id,status,...(status==='Active'?{due_date:''}:{last_used:TODAY})}); await loadTQ(); renderTQuizzes(); toast('Quiz '+(status==='Closed'?'closed':'reopened'),'ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+async function tqPublish(id){ const q=TQ.find(x=>x.id===id); if(!q) return; if(!tqQs(q).length){ toast('Add at least one question first','err'); qzOpenWizard(id); return; }
+  if(!q.group_id){ toast('Choose a class first','err'); qzOpenWizard(id); return; }
+  if(!confirm('Publish "'+q.title+'" to '+grpLabel(grpById(q.group_id))+'?')) return; tqSetStatusRaw(id,'Active'); }
+async function tqSetStatusRaw(id,status){ try{ await API.upsert('quizzes',{id,status}); await loadTQ(); renderTQuizzes(); toast('Quiz published 🚀 — students can see it now','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+async function tqDelete(id){ const n=TQR.filter(r=>r.quiz_id===id).length; if(!confirm('Delete this quiz?'+(n?` ${n} student result(s) will no longer be linked.`:''))) return;
+  try{ await API.deleteQuiz(id); await loadTQ(); renderTQuizzes(); toast('Quiz deleted','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+function tqReuse(id){ const q=TQ.find(x=>x.id===id); if(!q) return; API.upsert('quizzes',{id,last_used:TODAY}).catch(()=>{});
+  qzOpenWizard(null,{...q,id:undefined,title:q.title+(tqStatus(q)==='Closed'?'':' (copy)'),status:'Draft',open_date:'',open_time:'',due_date:'',due_time:'',group_id:''}); }
+
+/* ---- wizard ---- */
+function qzBlankQ(t){ t=t||'mc'; return t==='tf'?{type:'tf',q:'',points:10,options:['True','False'],answer:0}:t==='mc'?{type:'mc',q:'',points:10,options:['','','',''],answer:0}:{type:t,q:'',points:10,answer:''}; }
+function qzOpenWizard(id,copy){
+  const q=copy||(id?TQ.find(x=>x.id===id):null)||{};
+  const r=q.id||copy?tqRules(q):{show:1,multi:0,shuffleQ:1,shuffleO:1};
+  QW={id:copy?undefined:q.id,title:q.title||'',description:q.description||'',group_id:q.group_id||document.getElementById('tqClass').value||'',unit:q.unit||'',quiz_type:q.quiz_type||'practice',
+    timed:q.id||copy?!!Number(q.time_limit):true,time_limit:Number(q.time_limit)||20,questions:q.id||copy?tqQs(q):[],open_date:q.open_date||TODAY,open_time:q.open_time||'',due_date:q.due_date||addDays(TODAY,7),due_time:q.due_time||'23:59',
+    rules:r,passOn:q.passing_score!==undefined&&q.passing_score!=='',passing:Number(q.passing_score)||70,status:q.status||'Draft',step:1,sel:-1,draft:qzBlankQ('mc')};
+  document.getElementById('qwTitle').textContent=QW.id?'Edit Quiz':'Create Quiz';
+  qwDraw(); openModal('mQuiz');
+}
+function qwSteps(cur){ return [['1','Details'],['2','Add Questions'],['3','Settings'],['4','Review & Publish']].map(([n,l],i)=>`${i?'<span class="ln"></span>':''}<span class="st ${+n===cur?'on':(+n<cur?'done':'')}" style="cursor:pointer" onclick="qwGo(${n})"><i>${+n<cur?'✓':n}</i>${l}</span>`).join(''); }
+function qwSave(){ // read inputs of current step into QW
+  const v=id=>{ const e=document.getElementById(id); return e?e.value:undefined; };
+  if(QW.step===1){ QW.title=v('qwT').trim(); QW.description=v('qwD'); QW.group_id=v('qwC'); QW.unit=v('qwU').trim(); QW.timed=document.getElementById('qwTimed').checked; QW.time_limit=Number(v('qwTL'))||20; }
+  if(QW.step===3){ QW.open_date=v('qwOD'); QW.open_time=v('qwOT'); QW.due_date=v('qwDD'); QW.due_time=v('qwDT'); ['show','multi','shuffleQ','shuffleO'].forEach(k=>QW.rules[k]=document.getElementById('qwR_'+k).checked?1:0); QW.passOn=document.getElementById('qwPassOn').checked; QW.passing=Number(v('qwPass'))||70; }
+}
+function qwValid(step){
+  if(step>=2&&(!QW.title||!QW.group_id)){ toast('Quiz title and class are required','err'); return 1; }
+  if(step>=3&&!QW.questions.length){ toast('Add at least one question','err'); return 2; }
+  if(step>=4&&QW.due_date&&QW.open_date&&QW.due_date<QW.open_date){ toast('The due date is before the open date','err'); return 3; }
+  return 0;
+}
+function qwGo(n){ qwSave(); const bad=qwValid(n); QW.step=bad&&bad<n?bad:n; qwDraw(); }
+function qwDraw(){
+  const S=QW.step; document.getElementById('qwSteps').innerHTML=qwSteps(S);
+  const body=document.getElementById('qwBody'), foot=document.getElementById('qwFoot');
+  const tip=(t,items)=>`<div class="wz-tip"><b>💡 ${t}</b><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+  if(S===1){
+    body.innerHTML=`<div class="wz-grid"><div><div style="font-weight:800;color:var(--navy);margin-bottom:10px">Quiz Details</div>
+      <div class="field"><label>Quiz Title <span class="req">*</span></label><input id="qwT" value="${esc(QW.title)}" placeholder="e.g. Unit 3 – Grammar Check" maxlength="80"></div>
+      <div class="field"><label>Description <span class="help" style="display:inline">(optional)</span></label><textarea id="qwD" maxlength="200" placeholder="A short quiz to check understanding of…">${esc(QW.description)}</textarea></div>
+      <div class="field-row"><div class="field"><label>Class <span class="req">*</span></label><select id="qwC"><option value="">Select class…</option>${MYGROUPS.map(g=>`<option value="${esc(g.id)}" ${String(g.id)===String(QW.group_id)?'selected':''}>${esc(grpLabel(g))}</option>`).join('')}</select></div>
+        <div class="field"><label>Topic / Unit</label><input id="qwU" value="${esc(QW.unit)}" placeholder="e.g. Unit 3: Past Experiences"></div></div>
+      <div class="field"><label>Quiz Type</label><div class="opt-tiles">${Object.entries(QZTYPE).map(([k,[l,d]])=>`<button type="button" class="${QW.quiz_type===k?'on':''}" onclick="qwSave();QW.quiz_type='${k}';qwDraw()"><b>${QW.quiz_type===k?'◉':'○'} ${l}</b>${d}</button>`).join('')}</div></div>
+      <div class="field-row"><div class="field"><label style="display:flex;justify-content:space-between;align-items:center">Time Limit <label class="tgl"><input type="checkbox" id="qwTimed" ${QW.timed?'checked':''}><span></span></label></label><div style="display:flex;gap:8px;align-items:center"><input type="number" id="qwTL" min="1" value="${QW.time_limit}" style="max-width:110px"> <span class="text-muted">minutes</span></div></div>
+        <div class="field"><label>Total Points</label><input value="${tqPts(QW.questions)||'— (from questions)'}" disabled></div></div></div>
+      <div>${tip('Quick Tips',['Keep the title clear and specific.','Choose the right quiz type for your goal.','Set a reasonable time limit.','You can add different question types in the next step (Multiple Choice, True/False, Fill in the Blank, Short Answer).'])}</div></div>`;
+    foot.innerHTML=`<button class="btn btn-ghost" onclick="closeModal('mQuiz')">Cancel</button><button class="btn btn-primary" onclick="qwGo(2)">Next: Add Questions →</button>`;
+  } else if(S===2){
+    const d=QW.draft, editing=QW.sel>=0;
+    const opts=d.type==='mc'||d.type==='tf'?`<label style="font-size:12.5px;font-weight:700;color:var(--navy)">Answer Options <span class="req">*</span> <span class="help" style="display:inline">(select the correct answer)</span></label>
+      ${d.options.map((o,i)=>`<div class="ansopt"><input type="radio" name="qwAns" ${Number(d.answer)===i?'checked':''} onchange="QW.draft.answer=${i}" style="width:auto"><span class="l">${'ABCDEF'[i]}</span><input type="text" value="${esc(o)}" ${d.type==='tf'?'readonly':''} oninput="QW.draft.options[${i}]=this.value" placeholder="Option ${'ABCDEF'[i]}">${d.type==='mc'&&d.options.length>2?`<button class="btn btn-ghost btn-sm" onclick="QW.draft.options.splice(${i},1);if(QW.draft.answer>=${i}&&QW.draft.answer>0)QW.draft.answer--;qwDraw()">🗑</button>`:''}</div>`).join('')}
+      ${d.type==='mc'&&d.options.length<6?`<button class="btn btn-ghost btn-sm" onclick="QW.draft.options.push('');qwDraw()">＋ Add option</button>`:''}`
+      :d.type==='fill'?`<div class="field"><label>Correct Answer <span class="req">*</span> <span class="help" style="display:inline">(separate alternatives with | e.g. went|had gone)</span></label><input id="qwFA" value="${esc(d.answer)}" oninput="QW.draft.answer=this.value"></div><div class="help">Tip: write ___ in the question where the blank is.</div>`
+      :`<div class="field"><label>Sample Answer <span class="help" style="display:inline">(optional — short answers are graded by you)</span></label><textarea oninput="QW.draft.answer=this.value">${esc(d.answer)}</textarea></div>`;
+    body.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px"><div><div style="font-weight:800;color:var(--navy)">Add Questions</div><small class="text-muted">Create and organize your quiz questions.</small></div><small class="text-muted"><b>Total: ${QW.questions.length} questions</b> · ${tqPts(QW.questions)} points</small></div>
+      <div class="q3"><div class="qtype-list"><div style="font-weight:700;font-size:12.5px;color:var(--navy);margin-bottom:8px">＋ Add Question</div>${Object.entries(QTYPE).map(([k,m])=>`<button class="${d.type===k?'on':''}" onclick="qwType('${k}')"><span>${m.ic}</span>${m.l}</button>`).join('')}</div>
+      <div class="card card-pad" style="box-shadow:none"><div class="field-row"><div class="field"><label>Type</label><select onchange="qwType(this.value)">${Object.entries(QTYPE).map(([k,m])=>`<option value="${k}" ${d.type===k?'selected':''}>${m.l}</option>`).join('')}</select></div><div class="field"><label>Points</label><input type="number" min="1" value="${d.points}" oninput="QW.draft.points=Number(this.value)||1"></div></div>
+        <div class="field"><label>Question <span class="req">*</span></label><textarea id="qwQ" maxlength="300" oninput="QW.draft.q=this.value" placeholder="${d.type==='tf'?'e.g. The past tense of “go” is “went”.':'e.g. Which sentence is in the Present Perfect tense?'}">${esc(d.q)}</textarea></div>
+        ${opts}
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">${editing?`<button class="btn btn-ghost" onclick="QW.sel=-1;QW.draft=qzBlankQ(QW.draft.type);qwDraw()">Cancel</button>`:''}<button class="btn btn-primary" onclick="qwAddQ()">${editing?'💾 Update Question':'＋ Add Question'}</button></div></div>
+      <div class="card card-pad" style="box-shadow:none"><div style="font-weight:700;color:var(--navy);font-size:13px;margin-bottom:8px">Question List (${QW.questions.length})</div>
+        ${QW.questions.map((x,i)=>`<div class="qlist-item ${QW.sel===i?'sel':''}" onclick="qwEdit(${i})"><span class="n">${i+1}</span><span class="t" title="${esc(x.q)}">${esc({mc:'MCQ',tf:'T/F',fill:'Fill',short:'Short'}[x.type]||'Q')} · ${esc(x.q)}</span><small>${x.points||1} pts</small>
+          <button class="btn btn-ghost btn-sm" style="padding:2px 6px" onclick="event.stopPropagation();qwMove(${i},-1)">↑</button><button class="btn btn-ghost btn-sm" style="padding:2px 6px" onclick="event.stopPropagation();qwMove(${i},1)">↓</button><button class="btn btn-ghost btn-sm" style="padding:2px 6px" onclick="event.stopPropagation();QW.questions.splice(${i},1);QW.sel=-1;qwDraw()">🗑</button></div>`).join('')||'<div class="empty" style="padding:14px 6px">No questions yet.</div>'}</div></div>`;
+    foot.innerHTML=`<button class="btn btn-ghost" onclick="qwGo(1)">← Back: Details</button><button class="btn btn-primary" onclick="qwGo(3)">Next: Settings →</button>`;
+  } else if(S===3){
+    const R=QW.rules, tg=(k,l)=>`<div class="tgl-row"><span>${l}</span><label class="tgl"><input type="checkbox" id="qwR_${k}" ${R[k]?'checked':''}><span></span></label></div>`;
+    body.innerHTML=`<div class="wz-grid"><div><div style="font-weight:800;color:var(--navy)">Quiz Settings</div><small class="text-muted">Set how the quiz will be delivered and graded.</small>
+      <div class="card card-pad mt-16" style="box-shadow:none"><b style="color:var(--navy)">📅 Availability</b>
+        <div class="field-row mt-16"><div class="field"><label>Open On <span class="req">*</span></label><div style="display:flex;gap:6px"><input type="date" id="qwOD" value="${esc(QW.open_date)}"><input type="time" id="qwOT" value="${esc(QW.open_time)}"></div></div>
+          <div class="field"><label>Due On <span class="req">*</span></label><div style="display:flex;gap:6px"><input type="date" id="qwDD" value="${esc(QW.due_date)}"><input type="time" id="qwDT" value="${esc(QW.due_time)}"></div></div></div></div>
+      <div class="card card-pad mt-16" style="box-shadow:none"><b style="color:var(--navy)">⚙️ Quiz Rules</b>
+        ${tg('show','Show correct answers after submission')}${tg('multi','Allow multiple attempts')}${tg('shuffleQ','Shuffle question order')}${tg('shuffleO','Shuffle answer options')}
+        <div class="tgl-row" style="border:0"><span>🎯 Passing Score <span class="help" style="display:inline">(optional)</span></span><label class="tgl"><input type="checkbox" id="qwPassOn" ${QW.passOn?'checked':''}><span></span></label></div>
+        <div style="display:flex;gap:8px;align-items:center"><input type="number" id="qwPass" min="1" max="100" value="${QW.passing}" style="max-width:110px"> <span class="text-muted">%</span></div></div></div>
+      <div>${tip('Settings Overview',['Set the date and time for the quiz.','Choose how students take the quiz (e.g. attempts, question order).','Add a passing score if needed.'])}</div></div>`;
+    foot.innerHTML=`<button class="btn btn-ghost" onclick="qwGo(2)">← Back: Add Questions</button><button class="btn btn-primary" onclick="qwGo(4)">Next: Review &amp; Publish →</button>`;
+  } else {
+    const g=grpById(QW.group_id), R=QW.rules, row=(ic,k,v)=>`<span class="k">${ic} ${k}</span><span class="v">${v}</span>`;
+    const checks=[[!!(QW.title&&QW.group_id),'Quiz details are complete'],[QW.questions.length>0,QW.questions.length+' questions added'],[!!QW.due_date,'Settings configured'],[QW.passOn,QW.passOn?'Passing score set ('+QW.passing+'%)':'No passing score (optional)']];
+    body.innerHTML=`<div class="wz-grid"><div><div style="font-weight:800;color:var(--navy)">Review &amp; Publish</div><small class="text-muted">Check your quiz details before making it live.</small>
+      <div class="kv-box mt-16"><div class="kv">${row('📝','Quiz Title',esc(QW.title))}${QW.description?row('📄','Description',esc(QW.description)):''}${row('👥','Class',esc(grpLabel(g)))}${row('📚','Topic / Unit',esc(QW.unit||'-'))}
+        ${row('🏷️','Quiz Type',`<span class="badge badge-active">${esc(QZTYPE[QW.quiz_type][0])}</span>`)}${row('❓','Questions',QW.questions.length+' questions · '+tqPts(QW.questions)+' points')}${row('⏱️','Time Limit',QW.timed?QW.time_limit+' minutes':'No limit')}
+        ${row('📅','Availability',`Open: ${esc(shortDate(QW.open_date))} ${esc(QW.open_time||'')}<br>Due: ${esc(shortDate(QW.due_date))} ${esc(QW.due_time||'')}`)}${row('⚙️','Rules',[R.show?'Show answers':'Hide answers',R.multi?'Multiple attempts':'1 attempt',R.shuffleQ?'Shuffle questions':'',R.shuffleO?'Shuffle options':''].filter(Boolean).join(' · '))}${row('🎯','Passing Score',QW.passOn?QW.passing+'%':'—')}</div></div></div>
+      <div><div class="ready"><h4>✅ Ready to Publish?</h4>Your quiz is set and ready to go live.<ul style="list-style:none;padding:0;margin:10px 0 0">${checks.map(([ok,l])=>`<li style="margin:6px 0">${ok?'✔️':'⚪'} ${esc(l)}</li>`).join('')}</ul></div>
+        <div class="note-band mt-16" style="font-size:12.5px">Students in <b>${esc(grpLabel(g))}</b> will see the quiz in their Student Hub from the open date.</div></div></div>`;
+    foot.innerHTML=`<button class="btn btn-ghost" onclick="qwGo(3)">← Back: Settings</button><div style="display:flex;gap:8px"><button class="btn btn-outline" onclick="qwSubmit('Draft')">💾 Save as Draft</button><button class="btn btn-primary" onclick="qwSubmit('Active')">🚀 Publish Quiz</button></div>`;
+  }
+}
+function qwType(t){ const d=QW.draft; QW.draft={...qzBlankQ(t),q:d.q,points:d.points}; qwDraw(); }
+function qwEdit(i){ QW.sel=i; QW.draft=JSON.parse(JSON.stringify(QW.questions[i])); if(!QW.draft.points) QW.draft.points=1; qwDraw(); }
+function qwMove(i,dir){ const j=i+dir; if(j<0||j>=QW.questions.length) return; const a=QW.questions; [a[i],a[j]]=[a[j],a[i]]; QW.sel=-1; qwDraw(); }
+function qwAddQ(){
+  const d=QW.draft; d.q=String(d.q||'').trim(); if(!d.q){ toast('Write the question first','err'); return; }
+  if(d.type==='mc'){ d.options=d.options.map(o=>String(o).trim()); if(d.options.filter(Boolean).length<2){ toast('Add at least two answer options','err'); return; } if(!d.options[d.answer]){ toast('The correct answer option is empty','err'); return; }
+    const keep=d.options.map((o,i)=>[o,i]).filter(([o])=>o); d.answer=keep.findIndex(([,i])=>i===Number(d.answer)); d.options=keep.map(([o])=>o); }
+  if(d.type==='fill'&&!String(d.answer).trim()){ toast('Write the correct answer','err'); return; }
+  const item={...d,points:Number(d.points)||1};
+  if(QW.sel>=0) QW.questions[QW.sel]=item; else QW.questions.push(item);
+  QW.sel=-1; QW.draft=qzBlankQ(d.type); qwDraw(); setTimeout(()=>{ const e=document.getElementById('qwQ'); if(e) e.focus(); },50);
+}
+async function qwSubmit(status){
+  qwSave(); const bad=qwValid(4); if(bad){ QW.step=bad; qwDraw(); return; }
+  const g=grpById(QW.group_id)||{};
+  const row={id:QW.id,tutor_id:ME.id,title:QW.title,description:QW.description,group_id:QW.group_id,program:g.program||'',level:g.level||'',unit:QW.unit,subject:QW.unit,quiz_type:QW.quiz_type,
+    time_limit:QW.timed?String(QW.time_limit):'',questions:JSON.stringify(QW.questions),open_date:QW.open_date,open_time:QW.open_time,due_date:QW.due_date,due_time:QW.due_time,
+    rules:JSON.stringify(QW.rules),passing_score:QW.passOn?String(QW.passing):'',total_points:String(tqPts(QW.questions)),status};
+  try{ await API.upsert('quizzes',row); await loadTQ(); closeModal('mQuiz'); TQ_TAB='mine'; renderTQuizzes(); toast(status==='Active'?'Quiz published 🚀':'Quiz saved as draft','ok'); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+
+/* ---- report & grading ---- */
+let QR_SEL=null;
+function tqScore(q,res){ // recompute auto + manual
+  const qs=tqQs(q); let ans={}; try{ ans=JSON.parse(res.answers||'{}'); }catch(e){}
+  const man=ans._manual||{}; let auto=0, pend=0;
+  qs.forEach((x,i)=>{ const p=Number(x.points)||1, a=ans[i];
+    if(x.type==='short'){ if(man[i]!=null&&man[i]!=='') auto+=Number(man[i])||0; else if(a!=null&&a!=='') pend++; }
+    else if(x.options&&x.options.length){ if(String(a)===String(x.answer)) auto+=p; }
+    else if(String(x.answer).split('|').map(s=>s.trim().toLowerCase()).filter(Boolean).includes(String(a||'').trim().toLowerCase())) auto+=p; });
+  return {score:auto,total:tqPts(qs),pend,ans,man};
+}
+function tqReport(id){ QR_SEL=null; document.getElementById('mQReport').dataset.qid=id; drawTqReport(); openModal('mQReport'); }
+function drawTqReport(){
+  const id=document.getElementById('mQReport').dataset.qid, q=TQ.find(x=>x.id===id); if(!q) return;
+  const g=grpById(q.group_id), stus=g?grpStudents(g):[], qs=tqQs(q), pass=Number(q.passing_score)||0;
+  const best=sid=>TQR.filter(r=>r.quiz_id===id&&String(r.student_id)===String(sid)).sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0))[0];
+  const rows=stus.map(s=>({s,r:best(s.id)})), done=rows.filter(x=>x.r);
+  const pct=x=>{ const sc=tqScore(q,x.r); return sc.total?Math.round(sc.score/sc.total*100):0; };
+  const avg=done.length?Math.round(done.reduce((a,x)=>a+pct(x),0)/done.length):0, passN=pass?done.filter(x=>pct(x)>=pass).length:null, hi=done.length?Math.max(...done.map(pct)):0;
+  document.getElementById('qrTitle').textContent='Quiz Report — '+q.title;
+  const sb=(t,v,l)=>`<div class="stat ${t}"><div class="val">${v}</div><div class="lbl">${l}</div></div>`;
+  let html=`<div class="grid grid-4" style="margin-bottom:14px">${sb('tint-blue',done.length+' / '+stus.length,'Submitted')}${sb('tint-green',avg+'%','Average Score')}${sb('tint-purple',hi+'%','Highest Score')}${sb('tint-amber',passN==null?'—':passN+' / '+done.length,'Passed'+(pass?' (≥'+pass+'%)':''))}</div>
+    <div class="table-wrap"><table class="tbl tight"><thead><tr><th>Student</th><th>Status</th><th>Score</th><th>%</th><th>Result</th><th>Submitted</th><th></th></tr></thead><tbody>${rows.map(({s,r})=>{ if(!r) return `<tr><td><b>${esc(s.nama)}</b></td><td><span class="badge badge-grey">Not submitted</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td></td></tr>`;
+      const sc=tqScore(q,r), p=sc.total?Math.round(sc.score/sc.total*100):0;
+      return `<tr class="${QR_SEL===r.id?'sel':''}"><td><b>${esc(s.nama)}</b></td><td>${sc.pend?`<span class="badge badge-pending">${sc.pend} to grade</span>`:'<span class="badge badge-paid">Graded</span>'}</td><td><b>${sc.score}</b> / ${sc.total}</td><td>${p}%</td><td>${pass?(p>=pass?'<span class="badge badge-paid">Pass</span>':'<span class="badge badge-unpaid">Below</span>'):'—'}</td><td>${esc(shortDate(r.taken_at||String(r.created_at||'').slice(0,10)))}</td><td><button class="btn btn-outline btn-sm" onclick="QR_SEL='${esc(r.id)}';drawTqReport()">${sc.pend?'✎ Grade':'Review'}</button></td></tr>`; }).join('')||'<tr><td colspan="7" class="empty">No students in this class.</td></tr>'}</tbody></table></div>`;
+  const r=TQR.find(x=>x.id===QR_SEL);
+  if(r){ const sc=tqScore(q,r), s=stus.find(x=>String(x.id)===String(r.student_id))||{nama:r.student_name};
+    html+=`<div class="card card-pad mt-16" style="box-shadow:none"><div class="card-title">📝 ${esc(s.nama)} — answers <span class="badge badge-active">${sc.score} / ${sc.total}</span></div>
+      ${qs.map((x,i)=>{ const a=sc.ans[i], p=Number(x.points)||1; let res;
+        if(x.type==='short') res=`<div class="note-band" style="margin:6px 0">${esc(a||'— no answer —')}</div>${x.answer?`<small class="text-muted">Sample answer: ${esc(x.answer)}</small><br>`:''}<label style="font-size:12.5px;font-weight:700">Points (max ${p}): <input type="number" min="0" max="${p}" class="qrMan" data-i="${i}" value="${esc(sc.man[i]??'')}" style="width:80px;padding:5px 8px;border:1.5px solid var(--line);border-radius:8px"></label>`;
+        else if(x.options&&x.options.length){ const ok=String(a)===String(x.answer); res=`<div style="margin:4px 0">${ok?'✅':'❌'} Answer: <b>${esc(x.options[a]??'—')}</b>${ok?'':` · Correct: <b>${esc(x.options[x.answer])}</b>`}</div>`; }
+        else { const ok=String(x.answer).split('|').map(s=>s.trim().toLowerCase()).includes(String(a||'').trim().toLowerCase()); res=`<div style="margin:4px 0">${ok?'✅':'❌'} Answer: <b>${esc(a||'—')}</b>${ok?'':` · Correct: <b>${esc(String(x.answer).split('|')[0])}</b>`}</div>`; }
+        return `<div style="padding:10px 0;border-bottom:1px dashed var(--line)"><b style="color:var(--navy)">${i+1}. ${esc(x.q)}</b> <small class="text-muted">(${p} pts)</small>${res}</div>`; }).join('')}
+      ${qs.some(x=>x.type==='short')?`<div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-primary" onclick="tqSaveGrade('${esc(r.id)}')">💾 Save Grade</button></div>`:''}</div>`; }
+  document.getElementById('qrBody').innerHTML=html;
+}
+async function tqSaveGrade(rid){
+  const r=TQR.find(x=>x.id===rid), q=TQ.find(x=>x.id===r.quiz_id); let ans={}; try{ ans=JSON.parse(r.answers||'{}'); }catch(e){}
+  ans._manual=ans._manual||{}; const qs=tqQs(q);
+  document.querySelectorAll('.qrMan').forEach(inp=>{ const i=inp.dataset.i; if(!qs[i]) return; const mx=Number(qs[i].points)||1; if(inp.value!=='') ans._manual[i]=Math.max(0,Math.min(mx,Number(inp.value)||0)); });
+  const sc=tqScore(q,{...r,answers:JSON.stringify(ans)});
+  try{ await API.upsert('quiz_results',{id:rid,answers:JSON.stringify(ans),score:sc.score,total:sc.total}); await loadTQ(); drawTqReport(); renderTQuizzes(); toast('Grade saved ✅','ok'); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+
+/* ============================== PROJECTS (teacher) ============================== */
+const isProj=t=>t.type==='final_project'||t.type==='peer_case'||!!t.project_type;
+const PTYPE={portfolio:['🖼️','Portfolio (File Upload)','Students upload a file (PDF, doc, etc.)'],video:['🎬','Video Project','Students upload a video (MP4, etc.)'],presentation:['🖥️','Presentation','Students upload slides (PPT/PDF)'],group:['👥','Group Project','A project done in a group'],other:['⋯','Other','Any project format (set in instructions)']};
+const RUBRIC_DEFAULT=[{c:'Content & Ideas',max:40},{c:'Language Use (Grammar & Vocabulary)',max:30},{c:'Organization',max:20},{c:'Creativity & Presentation',max:10}];
+let PW=null, PG=null;
+function pjBatches(){ const m=new Map(); TASKS.filter(isProj).forEach(t=>{ const k=t.batch_id||t.id; if(!m.has(k)) m.set(k,{key:k,t,items:[]}); m.get(k).items.push(t); });
+  return [...m.values()].map(b=>{ const t=b.t, sub=b.items.filter(x=>['submitted','graded','done'].includes(x.status)).length, toGrade=b.items.filter(x=>x.status==='submitted').length;
+    const status=String(t.visible)==='0'?'Draft':((t.due_date&&t.due_date<TODAY)?'Closed':'Open'); return {...b,sub,toGrade,status}; }); }
+const pjRubric=t=>{ try{ const r=JSON.parse(t.rubric||'[]'); return r.length?r:RUBRIC_DEFAULT; }catch(e){ return RUBRIC_DEFAULT; } };
+function renderTProjects(){
+  classOptions('tpClass',document.getElementById('tpClass').value,true);
+  const cls=document.getElementById('tpClass').value, st=document.getElementById('tpStat').value, q=(document.getElementById('tpQ').value||'').toLowerCase(), so=document.getElementById('tpSort').value;
+  let list=pjBatches().filter(b=>(!cls||String(b.t.group_id)===cls)&&(!st||b.status===st)&&(!q||[b.t.title,b.t.unit,grpLabel(grpById(b.t.group_id))].join(' ').toLowerCase().includes(q)));
+  list.sort((a,b)=>so==='title'?String(a.t.title).localeCompare(b.t.title):so==='due'?String(a.t.due_date).localeCompare(String(b.t.due_date)):String(b.t.created_at||b.key).localeCompare(String(a.t.created_at||a.key)));
+  const SB={Open:'<span class="badge badge-paid">Open</span>',Draft:'<span class="badge badge-active">Draft</span>',Closed:'<span class="badge badge-grey">Closed</span>'};
+  document.getElementById('tpBody').innerHTML=list.map(b=>{ const t=b.t, pt=PTYPE[t.project_type]||PTYPE.portfolio;
+    const main=b.status==='Draft'?`<button class="btn btn-outline btn-sm" onclick="pjPublish('${esc(b.key)}')">▷ Publish</button>`:`<button class="btn btn-outline btn-sm" onclick="pjGrade('${esc(b.key)}')">📊 ${b.status==='Closed'?'View Results':'Grade'}</button>`;
+    return `<tr><td style="width:44px"><span class="ricon" style="background:#F1ECFF">${pt[0]}</span></td><td><b style="color:var(--navy)">${esc(t.title)}</b><br><small class="text-muted">${esc(pt[1])}${t.unit?' · '+esc(t.unit):''}</small></td><td>${esc(grpLabel(grpById(t.group_id)))}</td><td style="white-space:nowrap">📅 ${esc(shortDate(t.due_date))}</td>
+      <td><b>${b.sub} / ${b.items.length}</b>${b.toGrade?`<br><small style="color:var(--orange);font-weight:700">${b.toGrade} to grade</small>`:''}</td><td>${SB[b.status]}</td>
+      <td style="white-space:nowrap">${main} <button class="btn btn-ghost btn-sm" title="Edit" onclick="pjOpenWizard('${esc(b.key)}')">✏️</button> <button class="btn btn-ghost btn-sm" title="Delete" onclick="pjDelete('${esc(b.key)}')">🗑</button></td></tr>`; }).join('')
+    ||`<tr><td colspan="7" class="empty">No projects yet — click <b>＋ Create Project</b>.</td></tr>`;
+}
+function pjOpenWizard(key){
+  const b=key?pjBatches().find(x=>x.key===key):null, t=b?b.t:{};
+  PW={key,title:t.title||'',group_id:t.group_id||document.getElementById('tpClass').value||'',project_type:t.project_type||'portfolio',unit:t.unit||'',detail:t.detail||'',instructions:t.instructions||'',attach_url:t.attach_url||'',
+    due_date:t.due_date||addDays(TODAY,14),due_time:t.due_time||'23:59',rubric:b?pjRubric(t):JSON.parse(JSON.stringify(RUBRIC_DEFAULT)),allow_late:t.allow_late==='1',status:b?b.status:'Draft',step:1};
+  document.getElementById('pwTitle').textContent=key?'Edit Project':'Create Project'; pwDraw(); openModal('mProject');
+}
+function pwSave(){ const v=id=>{ const e=document.getElementById(id); return e?e.value:undefined; };
+  if(PW.step===1){ PW.title=v('pwT').trim(); PW.group_id=v('pwC'); PW.unit=v('pwU').trim(); PW.detail=v('pwD'); }
+  if(PW.step===2){ PW.instructions=v('pwI'); PW.attach_url=(v('pwL')||'').trim()||PW.attach_url; }
+  if(PW.step===3){ PW.due_date=v('pwDD'); PW.due_time=v('pwDT'); PW.allow_late=document.getElementById('pwLate').checked; document.querySelectorAll('.pwRub').forEach(r=>{ const i=+r.dataset.i; PW.rubric[i]={c:r.querySelector('.c').value.trim(),max:Number(r.querySelector('.m').value)||0}; }); }
+}
+function pwGo(n){ pwSave(); if(n>1&&(!PW.title||!PW.group_id)){ toast('Project title and class are required','err'); PW.step=1; } else PW.step=n; pwDraw(); }
+function pwDraw(){
+  const S=PW.step; document.getElementById('pwSteps').innerHTML=[['1','Details'],['2','Instructions'],['3','Settings']].map(([n,l],i)=>`${i?'<span class="ln"></span>':''}<span class="st ${+n===S?'on':(+n<S?'done':'')}" style="cursor:pointer" onclick="pwGo(${n})"><i>${+n<S?'✓':n}</i>${l}</span>`).join('');
+  const body=document.getElementById('pwBody'), foot=document.getElementById('pwFoot');
+  if(S===1){
+    body.innerHTML=`<div class="wz-grid"><div>
+      <div class="field"><label>Project Title <span class="req">*</span></label><input id="pwT" value="${esc(PW.title)}" placeholder="e.g. My Travel Journal" maxlength="80"></div>
+      <div class="field-row"><div class="field"><label>Class <span class="req">*</span></label><select id="pwC" ${PW.key?'disabled':''}><option value="">Select class…</option>${MYGROUPS.map(g=>`<option value="${esc(g.id)}" ${String(g.id)===String(PW.group_id)?'selected':''}>${esc(grpLabel(g))}</option>`).join('')}</select></div>
+        <div class="field"><label>Project Type <span class="req">*</span></label><select onchange="pwSave();PW.project_type=this.value;pwDraw()">${Object.entries(PTYPE).map(([k,v])=>`<option value="${k}" ${PW.project_type===k?'selected':''}>${v[0]} ${v[1]}</option>`).join('')}</select></div></div>
+      <div class="field"><label>Topic / Unit</label><input id="pwU" value="${esc(PW.unit)}" placeholder="e.g. Unit 4: Travel"></div>
+      <div class="field"><label>Description <span class="help" style="display:inline">(optional)</span></label><textarea id="pwD" maxlength="200" placeholder="A personal travel journal in English, including places, activities, food…">${esc(PW.detail)}</textarea></div></div>
+      <div class="wz-tip"><b>Project Type Options</b>${Object.entries(PTYPE).map(([k,v])=>`<div style="display:flex;gap:10px;margin-top:10px;cursor:pointer;${PW.project_type===k?'color:var(--blue)':''}" onclick="pwSave();PW.project_type='${k}';pwDraw()"><span style="font-size:18px">${v[0]}</span><div><b style="${PW.project_type===k?'color:var(--blue)':''}">${v[1]}</b><br><small>${v[2]}</small></div></div>`).join('')}</div></div>`;
+    foot.innerHTML=`<button class="btn btn-ghost" onclick="closeModal('mProject')">Cancel</button><button class="btn btn-primary" onclick="pwGo(2)">Next: Instructions →</button>`;
+  } else if(S===2){
+    body.innerHTML=`<div class="wz-grid"><div>
+      <div class="field"><label>Instructions for Students <span class="req">*</span></label><textarea id="pwI" style="min-height:170px" placeholder="1. Choose a place you have visited or want to visit.&#10;2. Describe where it is, what you did/would do, and the food.&#10;3. Add at least 3 photos.&#10;4. Write 250–300 words.">${esc(PW.instructions)}</textarea></div>
+      <div class="field"><label>Attachment / Resource <span class="help" style="display:inline">(optional)</span></label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="document.getElementById('pwF').click()">⬆️ Upload File</button><input id="pwL" placeholder="…or paste a link" value="${esc(PW.attach_url&&!String(PW.attach_url).startsWith('data:')?PW.attach_url:'')}" style="flex:1;min-width:180px"></div>
+        <input type="file" id="pwF" class="hide" onchange="pwUpload(this)"><div class="help" id="pwFN">${PW.attach_url?'📎 Attachment added':''}</div></div></div>
+      <div class="wz-tip"><b>💡 Writing good instructions</b><ul><li>Explain the goal of the project.</li><li>List the steps and what to submit.</li><li>Mention the word count, length or format.</li><li>Students will see the grading rubric (next step).</li></ul></div></div>`;
+    foot.innerHTML=`<button class="btn btn-ghost" onclick="pwGo(1)">← Back: Details</button><button class="btn btn-primary" onclick="pwGo(3)">Next: Settings →</button>`;
+  } else {
+    const tot=PW.rubric.reduce((a,r)=>a+(Number(r.max)||0),0);
+    body.innerHTML=`<div class="wz-grid"><div>
+      <div class="field-row"><div class="field"><label>Due Date <span class="req">*</span></label><input type="date" id="pwDD" value="${esc(PW.due_date)}"></div><div class="field"><label>Time</label><input type="time" id="pwDT" value="${esc(PW.due_time)}"></div></div>
+      <div class="tgl-row" style="margin-bottom:12px"><span>Allow late submissions</span><label class="tgl"><input type="checkbox" id="pwLate" ${PW.allow_late?'checked':''}><span></span></label></div>
+      <label style="font-size:12.5px;font-weight:700;color:var(--navy)">Grading Rubric <span class="text-muted" style="font-weight:500">— total ${tot} points</span></label>
+      <table class="tbl tight rub"><thead><tr><th>Criteria</th><th>Max Score</th><th></th></tr></thead><tbody>${PW.rubric.map((r,i)=>`<tr class="pwRub" data-i="${i}"><td><input class="c" value="${esc(r.c)}" style="width:100%;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px"></td><td><input class="m" type="number" min="0" value="${r.max}"></td><td><button class="btn btn-ghost btn-sm" onclick="pwSave();PW.rubric.splice(${i},1);pwDraw()">🗑</button></td></tr>`).join('')}</tbody></table>
+      <button class="btn btn-ghost btn-sm mt-16" onclick="pwSave();PW.rubric.push({c:'',max:10});pwDraw()">＋ Add criteria</button></div>
+      <div class="wz-tip"><b>📋 Summary</b><ul><li>${esc(PW.title||'-')}</li><li>${esc(grpLabel(grpById(PW.group_id)))} · ${grpStudents(grpById(PW.group_id)||{}).length} students</li><li>${esc((PTYPE[PW.project_type]||[])[1]||'')}</li><li>Rubric: ${PW.rubric.length} criteria · ${tot} pts</li></ul></div></div>`;
+    foot.innerHTML=`<button class="btn btn-ghost" onclick="pwGo(2)">← Back: Instructions</button><div style="display:flex;gap:8px"><button class="btn btn-outline" onclick="pwSubmit(false)">💾 Save as Draft</button><button class="btn btn-primary" onclick="pwSubmit(true)">🚀 Publish Project</button></div>`;
+  }
+}
+async function pwUpload(inp){ const f=inp.files[0]; if(!f) return; if(f.size>10*1024*1024){ toast('Max 10 MB','err'); return; }
+  try{ toast('Uploading…'); const r=await API.uploadFile(await fileToBase64(f),f.name); PW.attach_url=(r&&(r.view||r.url))||''; document.getElementById('pwFN').textContent='📎 '+f.name; toast('File attached','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+async function pwSubmit(publish){
+  pwSave(); if(!PW.title||!PW.group_id){ PW.step=1; pwDraw(); toast('Project title and class are required','err'); return; }
+  if(!String(PW.instructions).trim()){ PW.step=2; pwDraw(); toast('Write the instructions for students','err'); return; }
+  if(!PW.due_date){ toast('Choose the due date','err'); return; }
+  PW.rubric=PW.rubric.filter(r=>r.c&&r.max>0); if(!PW.rubric.length){ toast('Add at least one rubric criteria','err'); pwDraw(); return; }
+  const g=grpById(PW.group_id), fields={title:PW.title,unit:PW.unit,detail:PW.detail,instructions:PW.instructions,type:'final_project',project_type:PW.project_type,due_date:PW.due_date,due_time:PW.due_time,attach_url:PW.attach_url,rubric:JSON.stringify(PW.rubric),allow_late:PW.allow_late?'1':'0',visible:publish?'1':'0'};
+  try{
+    if(PW.key){ const b=pjBatches().find(x=>x.key===PW.key); for(const t of b.items) await API.updateTask({id:t.id,...fields}); }
+    else { const stus=grpStudents(g); if(!stus.length){ toast('This class has no students yet','err'); return; } const batch='p'+Date.now().toString(36);
+      for(const s of stus) await API.addTask({student_id:s.id,tutor_id:ME.id,group_id:g.pseudo?'':g.id,batch_id:batch,status:'assigned',...fields}); }
+    TASKS=await API.getTasks({tutor_id:ME.id})||TASKS; closeModal('mProject'); renderTProjects(); refreshDots(); toast(publish?'Project published 🚀 — students can see it now':'Project saved as draft','ok');
+  }catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+async function pjPublish(key){ const b=pjBatches().find(x=>x.key===key); if(!b||!confirm('Publish "'+b.t.title+'" to students?')) return;
+  try{ for(const t of b.items) await API.updateTask({id:t.id,visible:'1'}); TASKS=await API.getTasks({tutor_id:ME.id})||TASKS; renderTProjects(); toast('Project published 🚀','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+async function pjDelete(key){ const b=pjBatches().find(x=>x.key===key); if(!b||!confirm('Delete "'+b.t.title+'" for all students? Submissions will be removed too.')) return;
+  try{ for(const t of b.items) await API.deleteTask(t.id); TASKS=await API.getTasks({tutor_id:ME.id})||TASKS; renderTProjects(); toast('Project deleted','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+function pjGrade(key,i){ const b=pjBatches().find(x=>x.key===key); if(!b) return; const items=[...b.items].sort((a,c)=>String(stuById(a.student_id).nama).localeCompare(String(stuById(c.student_id).nama)));
+  if(i==null){ i=items.findIndex(t=>t.status==='submitted'); if(i<0) i=0; } PG={key,items,i}; pgDraw(); openModal('mPGrade'); }
+function pgDraw(){
+  const {items,i}=PG, t=items[i], s=stuById(t.student_id), rub=pjRubric(t); let sc={}; try{ sc=JSON.parse(t.scores||'{}'); }catch(e){}
+  const max=rub.reduce((a,r)=>a+(Number(r.max)||0),0), tot=rub.reduce((a,r,k)=>a+(Number(sc[k])||0),0);
+  document.getElementById('pgTitle').textContent='Grade Project'; document.getElementById('pgSub').textContent=t.title+' • '+grpLabel(grpById(t.group_id));
+  document.getElementById('pgNav').innerHTML=`<button class="btn btn-outline btn-sm" ${i===0?'disabled':''} onclick="PG.i--;pgDraw()">←</button><small class="text-muted">Student ${i+1} of ${items.length}</small><button class="btn btn-outline btn-sm" ${i===items.length-1?'disabled':''} onclick="PG.i++;pgDraw()">→</button>`;
+  const stIc=x=>x.status==='graded'?'<span style="color:var(--green2)">✔</span>':(x.status==='submitted'?'<span style="color:var(--orange)">●</span>':'<span class="text-muted">—</span>');
+  const sub=['submitted','graded','done'].includes(t.status);
+  document.getElementById('pgBody').innerHTML=`<div class="pg3"><div class="card card-pad" style="box-shadow:none;padding:12px"><div style="display:flex;justify-content:space-between;font-weight:700;color:var(--navy);font-size:13px;margin-bottom:8px">Submissions <small class="text-muted">${items.length} students</small></div>
+      ${items.map((x,k)=>{ let xs={}; try{ xs=JSON.parse(x.scores||'{}'); }catch(e){} const xt=Object.values(xs).reduce((a,v)=>a+(Number(v)||0),0);
+        return `<div class="stu-pick ${k===i?'sel':''}" onclick="PG.i=${k};pgDraw()"><span class="av-sm">${esc(initials(stuById(x.student_id).nama))}</span><span style="flex:1">${esc(stuById(x.student_id).nama)}</span>${stIc(x)}<b style="min-width:26px;text-align:right">${x.status==='graded'?xt:'—'}</b></div>`; }).join('')}</div>
+    <div class="card card-pad" style="box-shadow:none"><div style="display:flex;gap:10px;align-items:center;margin-bottom:12px"><span class="av-sm">${esc(initials(s.nama))}</span><div style="flex:1"><b style="color:var(--navy)">${esc(s.nama)}</b><br><small class="text-muted">${sub?'Submitted: '+esc(shortDate(String(t.submit_at||'').slice(0,10))):'Not submitted yet'}</small></div>${t.submit_url?`<a class="btn btn-outline btn-sm" href="${esc(t.submit_url)}" target="_blank" download>⬇️ View / Download</a>`:''}</div>
+      ${t.submit_text?`<div class="note-band" style="white-space:pre-line;margin-bottom:12px;font-size:13px">${esc(t.submit_text)}</div>`:''}${t.submit_url&&/^data:audio|\.(webm|mp3|m4a|ogg)$/i.test(t.submit_url)?`<audio controls src="${esc(t.submit_url)}" style="width:100%;margin-bottom:10px"></audio>`:''}
+      <div style="font-weight:700;color:var(--navy);font-size:13px;margin-bottom:6px">Rubric</div>
+      <table class="tbl tight rub"><thead><tr><th>Criteria</th><th>Max Score</th><th>Score</th></tr></thead><tbody>${rub.map((r,k)=>`<tr><td>${esc(r.c)}</td><td>${r.max}</td><td><input type="number" min="0" max="${r.max}" class="pgS" data-k="${k}" value="${esc(sc[k]??'')}" oninput="pgTotal()" ${sub?'':'disabled'}></td></tr>`).join('')}</tbody></table></div>
+    <div><div class="score-big">Total Score<b id="pgTot">${tot} / ${max}</b></div>
+      <div class="field mt-16"><label>Feedback for Student</label><textarea id="pgFb" maxlength="300" style="min-height:140px" oninput="document.getElementById('pgFbN').textContent=this.value.length+'/300'" ${sub?'':'disabled'} placeholder="Great journal! Your ideas are clear…">${esc(t.feedback||'')}</textarea><div class="help" style="text-align:right" id="pgFbN">${String(t.feedback||'').length}/300</div></div></div></div>`;
+  document.getElementById('pgFoot').innerHTML=sub?`<button class="btn btn-outline" onclick="pgSave(false)">💾 Save as Draft</button><button class="btn btn-primary" onclick="pgSave(true)">✔ Submit Grade</button>`:`<span class="text-muted" style="font-size:12.5px">This student hasn't submitted yet.</span><button class="btn btn-ghost" onclick="closeModal('mPGrade')">Close</button>`;
+}
+function pgTotal(){ const t=PG.items[PG.i], rub=pjRubric(t), max=rub.reduce((a,r)=>a+(Number(r.max)||0),0); let tot=0; document.querySelectorAll('.pgS').forEach(e=>{ const r=rub[+e.dataset.k]; let v=Number(e.value)||0; if(v>r.max){ v=r.max; e.value=v; } tot+=v; }); document.getElementById('pgTot').textContent=tot+' / '+max; }
+async function pgSave(final){
+  const t=PG.items[PG.i], rub=pjRubric(t), sc={}; let tot=0, missing=0;
+  document.querySelectorAll('.pgS').forEach(e=>{ const k=+e.dataset.k; if(e.value===''){ missing++; return; } const v=Math.min(Number(rub[k].max)||0,Math.max(0,Number(e.value)||0)); sc[k]=v; tot+=v; });
+  if(final&&missing){ toast('Give a score for every criteria','err'); return; }
+  const max=rub.reduce((a,r)=>a+(Number(r.max)||0),0), fb=document.getElementById('pgFb').value.trim();
+  const patch={id:t.id,scores:JSON.stringify(sc),feedback:fb,...(final?{status:'graded',points:`${tot} / ${max}`,graded_at:new Date().toISOString()}:{})};
+  try{ await API.updateTask(patch); Object.assign(t,patch); TASKS=await API.getTasks({tutor_id:ME.id})||TASKS; toast(final?'Grade submitted ✅':'Draft saved','ok');
+    if(final){ const nx=PG.items.findIndex((x,k)=>k>PG.i&&x.status==='submitted'); if(nx>=0) PG.i=nx; }
+    pgDraw(); renderTProjects(); refreshDots(); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
 }
 
 /* ============================== SESSION REPORT ============================== */
@@ -1076,13 +1479,13 @@ async function renderLessons(){
     return `<tr><td><div style="background:#F5F8FD;border-radius:9px;padding:5px 9px;display:inline-block;text-align:center;font-size:12px;line-height:1.2"><b>${d.toLocaleDateString('en-US',{weekday:'short'})}</b><br>${d.getDate()} ${d.toLocaleDateString('en-US',{month:'short'})}</div></td>
       <td>${p._missing?'<span class="text-muted">— no plan yet —</span>':'<b style="color:var(--navy)">'+esc(p.topic)+'</b>'}</td><td>${p.unit?`<span class="badge badge-active">${esc(String(p.unit).split('–')[0].trim())}</span>`:'-'}</td><td>${lpBadge(p._missing?'':p.status)}</td>
       <td style="white-space:nowrap">${p._missing?`<button class="btn btn-outline btn-sm" onclick="newLessonPlan('${p.date}')">＋ Add</button>`:`<button class="btn btn-outline btn-sm" onclick="editLessonPlan('${esc(p.id)}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="delLessonPlan('${esc(p.id)}')">🗑</button>`}</td></tr>`;}).join('')||'<tr><td colspan="5" class="empty">No lesson plans yet — add your first plan.</td></tr>';
-  if(!LP_EDIT) newLessonPlan(); else drawLpForm();
 }
-function newLessonPlan(date){ LP_EDIT={group_id:document.getElementById('lpClass').value||(MYGROUPS[0]||{}).id,date:date||TODAY}; drawLpForm(); }
-function editLessonPlan(id){ LP_EDIT={...(LPS.find(p=>p.id===id)||{})}; drawLpForm(); }
+function newLessonPlan(date){ LP_EDIT={group_id:document.getElementById('lpClass').value||(MYGROUPS[0]||{}).id,date:date||TODAY}; drawLpForm(); openModal('mLp'); }
+function editLessonPlan(id){ LP_EDIT={...(LPS.find(p=>p.id===id)||{})}; drawLpForm(); openModal('mLp'); }
 function drawLpForm(){
   const p=LP_EDIT||{}; const box=document.getElementById('lpForm'); const ta=(id,v)=>`<textarea id="${id}" placeholder="• ">${esc(v||'')}</textarea>`;
-  box.innerHTML=`<div class="card-title">${p.id?'Edit Lesson Plan':'Add Lesson Plan'}</div>
+  document.getElementById('lpTitle').textContent=p.id?'Edit Lesson Plan':'Add Lesson Plan';
+  box.innerHTML=`
     <div class="field-row"><div class="field"><label>Class <span class="req">*</span></label><select id="lfClass">${MYGROUPS.map(g=>`<option value="${esc(g.id)}" ${g.id===p.group_id?'selected':''}>${esc(grpLabel(g))}</option>`).join('')}</select></div><div class="field"><label>Date <span class="req">*</span></label><input type="date" id="lfDate" value="${esc(p.date||TODAY)}"></div></div>
     <div class="field-row"><div class="field"><label>Unit (Optional)</label><input id="lfUnit" value="${esc(p.unit||'')}" placeholder="Unit 1 – Everyday Life"></div><div class="field"><label>Lesson Topic <span class="req">*</span></label><input id="lfTopic" value="${esc(p.topic||'')}" placeholder="Introducing Yourself and Others"></div></div>
     <div class="field"><label>Learning Objectives <span class="req">*</span></label><div class="help" style="margin:0 0 6px">What do you want students to be able to do by the end of this lesson?</div><textarea id="lfObj" style="min-height:80px">${esc(p.objectives||'')}</textarea></div>
@@ -1096,7 +1499,7 @@ function drawLpForm(){
     </div>
     <div class="skill sk-ext"><h5>📋 Extended Practice Plan</h5><small>What will students do after class?</small>${ta('lfExt',p.extended)}</div>
     ${p.admin_note?`<div class="note-band" style="margin-bottom:10px">💬 Admin note: ${esc(p.admin_note)}</div>`:''}
-    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button class="btn btn-ghost" onclick="LP_EDIT=null;newLessonPlan()">Cancel</button><button class="btn btn-outline" onclick="saveLessonPlan('Draft')">Save as Draft</button><button class="btn btn-primary" onclick="saveLessonPlan('Submitted')">Submit Lesson Plan</button></div>`;
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button class="btn btn-ghost" onclick="LP_EDIT=null;closeModal('mLp')">Cancel</button><button class="btn btn-outline" onclick="saveLessonPlan('Draft')">Save as Draft</button><button class="btn btn-primary" onclick="saveLessonPlan('Submitted')">Submit Lesson Plan</button></div>`;
 }
 async function saveLessonPlan(status){
   const v=id=>(document.getElementById(id)||{}).value||'';
@@ -1105,7 +1508,7 @@ async function saveLessonPlan(status){
   if(!d.group_id||!d.date||!d.topic){ toast('Class, date and topic are required','err'); return; }
   if(status==='Submitted'&&!d.objectives){ toast('Please add the learning objectives before submitting','err'); return; }
   if(status==='Submitted') d.submitted_at=new Date().toISOString();
-  try{ await API.upsert('lesson_plans',d); toast(status==='Submitted'?'Lesson plan submitted ✅':'Draft saved','ok'); LP_EDIT=null; document.getElementById('lpClass').value=d.group_id; renderLessons(); }
+  try{ await API.upsert('lesson_plans',d); toast(status==='Submitted'?'Lesson plan submitted ✅':'Draft saved','ok'); LP_EDIT=null; closeModal('mLp'); document.getElementById('lpClass').value=d.group_id; renderLessons(); }
   catch(e){ toast('Failed: '+(e.message||e),'err'); }
 }
 async function delLessonPlan(id){ if(!confirm('Delete this lesson plan?')) return; try{ await API.remove('lesson_plans',id); toast('Deleted','ok'); LP_EDIT=null; renderLessons(); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
@@ -1168,7 +1571,7 @@ function renderPractice(){
   classOptions('epClass',document.getElementById('epClass').value,true); classOptions('epCls',document.getElementById('epCls').value);
   if(!document.getElementById('epDue').value) document.getElementById('epDue').value=addDays(TODAY,3);
   const gid=document.getElementById('epClass').value, g=grpById(gid);
-  let list=TASKS; if(gid) list=list.filter(t=>t.group_id===gid||(g&&g.pseudo&&String(t.student_id)===String(g.student_ids)));
+  let list=TASKS.filter(t=>!isProj(t)); if(gid) list=list.filter(t=>t.group_id===gid||(g&&g.pseudo&&String(t.student_id)===String(g.student_ids)));
   let bs=batches(list);
   const units=[...new Set(bs.map(b=>b.unit).filter(Boolean))]; const uf=document.getElementById('epUnitF'), cu=uf.value;
   uf.innerHTML='<option value="">All Units</option>'+units.map(u=>`<option>${esc(u)}</option>`).join(''); if(units.includes(cu)) uf.value=cu;
@@ -1180,6 +1583,7 @@ function renderPractice(){
     <td><b>${b.sub} / ${b.items.length}</b>${b.toReview?`<br><small style="color:var(--orange);font-weight:700">${b.toReview} to review</small>`:''}</td><td>${b.status==='Active'?'<span class="badge badge-paid">Active</span>':'<span class="badge badge-grey">Closed</span>'}</td>
     <td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="openSubs('${esc(b.key)}')">Review</button> <button class="btn btn-danger btn-sm" onclick="delBatch('${esc(b.key)}')">🗑</button></td></tr>`).join('')||'<tr><td colspan="7" class="empty">No practice tasks yet.</td></tr>';
 }
+function openPracticeForm(){ classOptions('epCls',document.getElementById('epClass').value||document.getElementById('epCls').value); if(!document.getElementById('epDue').value) document.getElementById('epDue').value=addDays(TODAY,3); openModal('mPractice'); setTimeout(()=>document.getElementById('epTitle').focus(),200); }
 function resetPracticeForm(){ ['epUnit','epTitle','epDesc'].forEach(id=>document.getElementById(id).value=''); document.getElementById('epFile').value=''; document.getElementById('epFileName').textContent='Max 10 MB (PDF, DOC, PPT, JPG, MP4…)'; }
 async function createPractice(){
   const gid=document.getElementById('epCls').value, g=grpById(gid), title=document.getElementById('epTitle').value.trim(), desc=document.getElementById('epDesc').value.trim(), due=document.getElementById('epDue').value;
@@ -1190,7 +1594,7 @@ async function createPractice(){
     if(f){ if(f.size>10*1024*1024){ toast('File is larger than 10 MB','err'); return; } toast('Uploading attachment…'); const r=await API.uploadFile(await fileToBase64(f),f.name); attach=(r&&(r.view||r.url))||''; }
     const batch='b'+Date.now().toString(36);
     for(const s of stus){ await API.addTask({student_id:s.id,tutor_id:ME.id,group_id:g.pseudo?'':g.id,batch_id:batch,unit:document.getElementById('epUnit').value.trim(),title,detail:desc,type:EP_TYPE,due_date:due,due_time:document.getElementById('epTime').value,attach_url:attach,visible:document.getElementById('epVisible').checked?'yes':'no',status:'assigned'}); }
-    TASKS=await API.getTasks({tutor_id:ME.id})||[]; resetPracticeForm(); toast('Practice created for '+stus.length+' student'+(stus.length>1?'s':'')+' ✅','ok'); renderPractice();
+    TASKS=await API.getTasks({tutor_id:ME.id})||[]; resetPracticeForm(); closeModal('mPractice'); toast('Practice created for '+stus.length+' student'+(stus.length>1?'s':'')+' ✅','ok'); renderPractice();
   }catch(e){ toast('Failed: '+(e.message||e),'err'); }
 }
 function openSubs(key){
@@ -1269,9 +1673,11 @@ async function postDiaryComment(id){
 /* ============================== TEACHER'S LOUNGE ============================== */
 const lgPoll=makeChatPoller(list=>renderChatFeed(document.getElementById('lgFeed'),list,ME?ME.id:''),4000);
 let LG_ROOM='guru';
+function myPrograms(){ return [...new Set(String(ME.program||'').split(',').map(x=>x.trim()).concat(MYGROUPS.map(g=>g.program)).filter(Boolean))]; }
+const PROG_IC=p=>({'Boost English':'📘','Speak Active':'💬','Boost Mandarin':'🀄','IELTS':'🎓','IELTS Preparation':'🎓','HSK Preparation':'🏮'}[p]||'📚');
 function loungeRooms(){
-  const progs=[...new Set(['Boost English','Speak Active','Boost Mandarin','IELTS'].concat(MYGROUPS.map(g=>g.program).filter(Boolean)))];
-  return [{room:'guru',name:"Teacher's Lounge",ic:'👥',sub:'All teachers & admins'}].concat(progs.map(p=>({room:'prog:'+p,name:p+' Teachers',ic:{'Boost English':'📘','Speak Active':'💬','Boost Mandarin':'🀄','IELTS':'🎓'}[p]||'📚',sub:p+' teaching team'}))).concat([{room:'admin-team',name:'Admin Team',ic:'🛡️',sub:'Announcements & help from admin'}]);
+  // one general lounge for every teacher + one room per program this teacher is assigned to (new programs appear automatically)
+  return [{room:'guru',name:"Teacher's Lounge",ic:'👥',sub:'General — all teachers & admins'}].concat(myPrograms().map(p=>({room:'prog:'+p,name:p+' Teachers',ic:PROG_IC(p),sub:p+' teaching team'})));
 }
 async function renderLounge(){
   let all=[]; try{ all=await API.getChat({})||[]; }catch(e){}
@@ -1291,7 +1697,7 @@ let BD_TAB='All';
 function boardForMe(){ const mine=new Set(MYGROUPS.map(g=>g.program).filter(Boolean)); return [...BOARD].sort((a,b)=>String(b.created_at||b.date).localeCompare(String(a.created_at||a.date))).filter(b=>!b.program||b.program==='General'||!mine.size||[...mine].some(p=>String(b.program).includes(p)||p.includes(b.program))); }
 async function renderBoard(){
   try{ BOARD=await API.getTBoard()||[]; BOARD_READS=await API.getTBoardReads({reader_id:ME.id})||[]; }catch(e){}
-  const tabs=['All','Boost English','Boost Mandarin','Speak Active','IELTS','General'];
+  const tabs=['All',...myPrograms(),'General'];
   const ic={'Boost English':'🇬🇧','Boost Mandarin':'🔴','Speak Active':'💬','IELTS':'🎓','General':'📣'};
   document.getElementById('bdTabs').innerHTML=tabs.map(t=>`<button class="${t===BD_TAB?'active':''}" onclick="BD_TAB='${t}';renderBoard()">${ic[t]||''} ${t}</button>`).join('');
   const list=boardForMe().filter(b=>BD_TAB==='All'||(b.program||'General')===BD_TAB);
@@ -1356,8 +1762,12 @@ async function confirmSlip(){
 }
 function downloadSlip(){
   const m=document.getElementById('slMonth').value||TODAY.slice(0,7), items=slipSessions(m), rec=PAYROLL.find(p=>p.month===m)||{};
-  const total=items.reduce((a,x)=>a+x.amount,0);
-  openPayrollSlip({name:ME.nama,period:monthLabel(m),sessions:items.filter(x=>x.st!=='Canceled').length,fee:total,bonus:0,total,note:items.map(x=>`${x.date} ${x.start} · ${grpLabel(x.g)} · ${x.type} · ${x.st} · ${fmtRp(x.amount)}`).join('\n'),status:rec.status?payrollStatusInfo(rec.status).label:'PREPAYMENT',transfer_date:rec.transfer_date||''});
+  const fee=items.reduce((a,x)=>a+x.amount,0), last=new Date(Number(m.slice(0,4)),Number(m.slice(5)),0).getDate();
+  const bonus=Number(rec.amount)>fee?Number(rec.amount)-fee:0;
+  openTeachingSummary({name:ME.nama,programs:String(ME.program||'').replace(/,\s*/g,', '),period:monthLabel(m),range:`1 – ${last} ${monthLabel(m)}`,slipNo:'KWE-PAY/'+m.slice(0,4)+'/'+m.slice(5)+String(ME.id).replace(/\W/g,'').slice(-4).toUpperCase(),
+    rows:items.map(x=>({date:dayLong(x.date),cls:grpLabel(x.g)+(x.g&&x.g.class_id&&!x.g.pseudo?' ('+x.g.class_id+')':''),type:x.type,status:x.st,amount:x.amount})),
+    bonus,bonusNote:rec.note||'',total:fee+bonus,status:rec.status?payrollStatusInfo(rec.status).label:'Preview',paidOn:rec.transfer_date?shortDate(rec.transfer_date):'',
+    bank:{bank:ME.bank_name,account:ME.bank_account,holder:ME.bank_holder||ME.nama}});
 }
 
 /* ============================== GUIDELINES & SOP ============================== */

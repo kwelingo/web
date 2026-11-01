@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Admin Portal — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v=20261102">
 <style>
   .report-grid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
   @media(max-width:1100px){.report-grid{grid-template-columns:1fr}}
@@ -196,8 +196,11 @@
               <div class="field"><label>Phone / WhatsApp</label><input id="paWa" placeholder="08xxxx"></div></div>
             <div class="fsec c2"><div class="fh"><span class="n">2</span><div><b>Link Student(s)</b><small>Select the student(s) to link with this parent account.</small></div></div>
               <select id="paPick" onchange="paAddLink(this.value);this.value=''"></select><div class="chipsel" id="paChips"></div><input type="hidden" id="paLinked"></div>
-            <div class="fsec c3"><div class="fh"><span class="n">3</span><div><b>Account Status</b><small>Set the account access status.</small></div></div>
-              <select id="paStatus"><option>Active</option><option>Deactivated</option></select></div>
+            <div class="fsec c3"><div class="fh"><span class="n">3</span><div><b>Parent Hub Login</b><small>The parent's own username &amp; PIN (separate from the child's account).</small></div></div>
+              <div class="field-row"><div class="field"><label>Username</label><input id="paUser" placeholder="e.g. rinawijaya"></div>
+                <div class="field"><label>PIN (4 digits)</label><div style="display:flex;gap:8px"><input id="paPin" maxlength="4" inputmode="numeric" style="flex:1;font-weight:700;letter-spacing:3px"><button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('paPin').value=genPin()">🔄</button></div></div></div>
+              <div class="field"><label>Account Status</label><select id="paStatus"><option>Active</option><option>Deactivated</option></select></div>
+              <div class="help">If several children are linked, the parent can switch between them in the Parent Hub (menu <b>My Child</b>).</div></div>
             <div style="display:flex;gap:8px"><button class="btn btn-outline" style="flex:1" onclick="closeParentPanel()">Cancel</button><button class="btn btn-primary" style="flex:1" onclick="saveParent()">Save Parent</button></div>
           </div>
         </div>
@@ -244,8 +247,8 @@
         </div>
       </section>
       <section class="view hide" id="view-classgroups">
-        <div class="page-head"><div class="ph-left"><div class="ph-ic">📅</div><div><h1>Classes &amp; Enrollment</h1><div class="sub">View and monitor all classes, schedules, teacher applications and class status.</div></div></div>
-          <div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="exportClassesSA()">⬇️ Export</button><button class="btn btn-primary" onclick="openClassGroup()">＋ Add Class</button></div></div>
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📅</div><div><h1>Classes &amp; Enrollment</h1><div class="sub">Overview of all classes, schedules and class status. Classes are created and managed in Operations Admin.</div></div></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="exportClassesSA()">⬇️ Export</button><a class="btn btn-outline btn-sm" href="admin.html#classes" target="_blank">Manage in Operations Admin ↗</a></div></div>
         <div class="grid grid-4" style="margin-bottom:16px">
           <div class="stat tint-blue"><div class="lbl">Total Classes <span class="help" style="display:inline">(all time)</span></div><div class="val" id="cgTotal">0</div></div>
           <div class="stat tint-green"><div class="lbl">Active Classes</div><div class="val" id="cgActive">0</div></div>
@@ -255,7 +258,7 @@
         <div class="utabs" id="cgTabs"></div>
         <div class="toolbar"><select id="cgFProg" onchange="renderClassGroups(true)"></select><select id="cgFTutor" onchange="renderClassGroups(true)"></select><select id="cgFMode" onchange="renderClassGroups(true)"><option value="">All Modes</option><option>Onsite</option><option>Online</option><option>Hybrid</option></select><input class="grow" id="cgQ" placeholder="🔎 Search class ID, name, teacher or level…" oninput="renderClassGroups(true)"></div>
         <div class="card"><div class="table-wrap"><table class="tbl">
-          <thead><tr><th>Class ID</th><th>Name</th><th>Program</th><th>Teacher</th><th>Schedule</th><th>Mode</th><th>Students</th><th>Status</th><th>Start – End</th><th>Applicants</th><th></th></tr></thead>
+          <thead><tr><th>Class ID</th><th>Name</th><th>Program</th><th>Teacher</th><th>Schedule</th><th>Mode</th><th>Students</th><th>Status</th><th>Start – End</th><th>Applicants</th></tr></thead>
           <tbody id="cgBody"></tbody>
         </table></div></div>
       </section>
@@ -288,9 +291,9 @@
 
       <!-- EMBEDDED OPS MODULES -->
       <section class="view hide" id="view-reschedule">
-        <div class="page-head"><div class="ph-left"><div class="ph-ic">🔄</div><div><h1>Reschedule &amp; Recovery Class</h1><div class="sub">Review and approve reschedule requests, and manage recovery classes for students (fee: Rp 50,000 per session).</div></div></div>
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">🔄</div><div><h1>Reschedule &amp; Recovery Class</h1><div class="sub">Overview of reschedule &amp; recovery requests. Approvals are handled by the Operations Admin.</div></div></div>
           <a class="btn btn-outline btn-sm" href="admin.html#requests" target="_blank">Open in Operations Admin ↗</a></div>
-        <iframe class="ops-embed" data-src="admin.html?embed=1#requests"></iframe>
+        <iframe class="ops-embed" data-src="admin.html?embed=1&ro=1#requests"></iframe>
       </section>
       <section class="view hide" id="view-certificates">
         <div class="page-head"><div class="ph-left"><div class="ph-ic">🏅</div><div><h1>Certificate Management</h1><div class="sub">Monitor student eligibility, certificate records, and completion details.</div></div></div>
@@ -588,7 +591,7 @@
           <div class="f3"><div class="field"><label>Program</label><select id="sProgram"><option value="">Select program…</option><option>Boost English</option><option>Speak Active</option><option>IELTS Preparation</option><option>Boost Mandarin</option><option>HSK Preparation</option></select></div>
             <div class="field"><label>Level</label><input id="sLevel" placeholder="e.g. A2 / HSK 1"></div>
             <div class="field"><label>Class Type</label><select id="sClassType"><option value="">Select…</option><option>Group</option><option>Semi-Private</option><option>Private</option></select></div>
-            <div class="field"><label>Class</label><select id="sGroupPick" onchange="sGroupPicked()"></select><input type="hidden" id="sClassId"><input type="hidden" id="sClassGroup"><datalist id="classGroupList"></datalist></div>
+            <div class="field"><label>Class ID</label><select id="sGroupPick" onchange="sGroupPicked()"></select><input type="hidden" id="sClassId"><input type="hidden" id="sClassGroup"><datalist id="classGroupList"></datalist></div>
             <div class="field"><label>Assign Teacher</label><select id="sTutor"></select></div>
             <div class="field"><label>Learning Mode</label><select id="sMode"><option value="">Select…</option><option>Onsite</option><option>Online</option><option>Hybrid</option></select></div></div></div>
         <div class="fsec c4"><div class="fh"><span class="n">4</span><div><b>Schedule &amp; Learning Details</b><small>Class schedule, duration and start date.</small></div></div>
@@ -627,10 +630,9 @@
           <div class="field"><label>Phone / WhatsApp</label><input id="tWa" placeholder="08xxxx"></div>
           <div class="field"><label>Email (optional)</label><input id="tEmail" placeholder="name@email.com"></div></div></div>
       <div class="fsec c2"><div class="fh"><span class="n">2</span><div><b>Professional Information</b><small>Teaching qualifications and program assignments.</small></div></div>
-        <div class="f3"><div class="field"><label>Programs</label><select id="tProgram"><option value="">Select program…</option><option>Boost English</option><option>Speak Active</option><option>IELTS Preparation</option><option>Boost Mandarin</option><option>HSK Preparation</option></select></div>
-          <div class="field"><label>Subjects / Specialization</label><input id="tSubject" placeholder="e.g. General English, IELTS"></div>
-          <div class="field"><label>Student Age Group</label><select id="tAgeGroup"><option value="">Select…</option><option>Kids</option><option>Teens</option><option>Adults</option><option>Teens &amp; Adults</option><option>All ages</option></select></div>
-          <div class="field" style="grid-column:1/-1"><label>School Levels <span class="help" style="display:inline">(optional)</span></label><div class="radio-row" style="flex-wrap:wrap;gap:8px 20px"><label><input type="checkbox" class="tLvl" value="Primary (SD)"> Primary (SD)</label><label><input type="checkbox" class="tLvl" value="Lower Secondary (SMP)"> Lower Secondary (SMP)</label><label><input type="checkbox" class="tLvl" value="Upper Secondary (SMA)"> Upper Secondary (SMA)</label><label><input type="checkbox" class="tLvl" value="Adults"> Adults</label></div></div>
+        <div class="f3"><div class="field" style="grid-column:1/-1"><label>Programs <span class="help" style="display:inline">(choose one or more)</span></label><div class="radio-row" id="tProgBox" style="flex-wrap:wrap;gap:8px 20px"></div></div>
+          <div class="field" style="grid-column:1/-1"><label>Student Age Group <span class="help" style="display:inline">(choose one or more)</span></label><div class="radio-row" style="flex-wrap:wrap;gap:8px 20px"><label><input type="checkbox" class="tAge" value="Kids"> Kids</label><label><input type="checkbox" class="tAge" value="Teens"> Teens</label><label><input type="checkbox" class="tAge" value="Adults"> Adults</label></div></div>
+          <div class="field" style="grid-column:1/-1"><label>Subjects / Specialization</label><input id="tSubject" placeholder="e.g. General English, IELTS"></div>
           <div class="field" style="grid-column:1/-1"><label>Bio / Short Introduction</label><textarea id="tBio" rows="2" maxlength="300" placeholder="Enter a short bio about the teacher…"></textarea></div></div></div>
       <div class="fsec c3"><div class="fh"><span class="n">3</span><div><b>Employment Details</b><small>Employment type, category and work arrangement.</small></div></div>
         <div class="f4"><div class="field"><label>Category</label><select id="tCategory"><option value="Local">Local</option><option value="International">International</option></select></div>
@@ -754,7 +756,7 @@
   </div>
 </div>
 
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=20261102"></script>
 <script>
 document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Super Admin Portal');
 /* ---- PIN gate (verifikasi ke server) ---- */
@@ -851,6 +853,7 @@ function openParent(id){
   document.getElementById('mParentTitle').textContent=id&&!isAuto?'Edit Parent':'Add New Parent';
   const V=(k,v)=>{const el=document.getElementById(k);if(el)el.value=v||'';};
   V('paId',id&&!isAuto?id:''); V('paPid',p.parent_id||genParentId()); V('paNama',p.nama); V('paWa',p.wa); V('paRel',p.relation); V('paStatus',p.status||'Active');
+  V('paUser',p.username||genUsername(String(p.nama||'').replace(/^(mrs?|ms|miss|bapak|ibu|bpk|ny)\.?\s+/i,''))); V('paPin',p.pin||genPin());
   PA_LINKS=String(p.linked_students||'').split(',').map(x=>x.trim()).filter(Boolean); drawPaChips();
   document.getElementById('paWrap').classList.remove('noside');
 }
@@ -861,11 +864,13 @@ function paAddLink(id){ const s=STUDENTS.find(x=>String(x.id)===String(id)); if(
 async function saveParent(){
   const g=id=>{const el=document.getElementById(id);return el?el.value:'';};
   if(!g('paNama')){toast('Name is required','err');return;}
-  const p={id:g('paId')||undefined,parent_id:g('paPid'),nama:g('paNama'),wa:g('paWa'),relation:g('paRel'),linked_students:g('paLinked'),status:g('paStatus')};
+  const p={id:g('paId')||undefined,parent_id:g('paPid'),nama:g('paNama'),wa:g('paWa'),relation:g('paRel'),linked_students:g('paLinked'),status:g('paStatus'),username:(g('paUser')||genUsername(g('paNama'))).toLowerCase().trim(),pin:g('paPin')||genPin()};
+  if(!/^\d{4}$/.test(p.pin)){ toast('PIN must be 4 digits','err'); return; }
+  if(PARENTS.some(x=>x.id!==p.id&&String(x.username||'').toLowerCase()===p.username)){ toast('Username already used by another parent','err'); return; }
   try{ await API.saveParent(p);
     // keep student records in sync (parent name / WA / relation)
     for(const k of PA_LINKS){ const sid=(k.match(/\(([^)]+)\)/)||[])[1]; const s=STUDENTS.find(x=>String(x.id)===String(sid)); if(s&&(s.parent_name!==p.nama||s.wa_ortu!==p.wa||s.parent_relation!==p.relation)) await API.updateStudent({...s,parent_name:p.nama,wa_ortu:p.wa,parent_relation:p.relation}).catch(()=>{}); }
-    STUDENTS=await API.getStudents()||STUDENTS; closeParentPanel(); toast('Parent saved','ok'); renderParents(); }
+    STUDENTS=await API.getStudents()||STUDENTS; closeParentPanel(); toast('Parent saved · Parent Hub login '+p.username+' / PIN '+p.pin,'ok'); renderParents(); }
   catch(e){ toast('Failed: '+(e.message||e),'err'); }
 }
 async function delParent(id){ if(!confirm('Delete this parent?'))return; try{ await API.deleteParent(id); toast('Deleted','ok'); renderParents(); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
@@ -968,13 +973,12 @@ async function renderClassGroups(keep){
   document.getElementById('cgBody').innerHTML=list.map(c=>{
     const nStu=gIds(c).length;
     const apps=CG_APPS.filter(a=>String(a.group_id)===String(c.id)), acc=apps.filter(a=>a.status==='accepted').length, dec=apps.filter(a=>a.status==='declined').length;
-    const appCell=apps.length?`<button class="btn btn-outline btn-sm" onclick="openApplicants('${c.id}')">🙋 ${acc}${dec?` · ✕${dec}`:''}</button>`:(c.status==='Open'?'<span class="text-muted" style="font-size:12px">Waiting…</span>':'<span class="text-muted">-</span>');
+    const appCell=apps.length?`<span class="badge badge-grey">🙋 ${acc}${dec?` · ✕${dec}`:''}</span>`:(c.status==='Open'?'<span class="text-muted" style="font-size:12px">Waiting…</span>':'<span class="text-muted">-</span>');
     const sched=c.schedule||[c.days,c.start_time&&(c.start_time+(c.end_time?'–'+c.end_time:''))].filter(Boolean).join(' · ');
     return `<tr><td><b style="color:var(--navy)">${esc(c.class_id||'-')}</b></td><td><b>${esc(c.name||'-')}</b>${c.level?` <span class="badge badge-grey">${esc(c.level)}</span>`:''}</td><td>${esc(c.program||'-')}</td>
       <td>${c.tutor_id?`<div style="display:flex;gap:6px;align-items:center">${avS(tName(c.tutor_id))}${esc(tName(c.tutor_id))}</div>`:'<span class="text-muted">– not assigned –</span>'}</td><td style="font-size:12.5px">${esc(sched||'-')}</td><td>${c.mode?`<span class="badge ${c.mode==='Online'?'badge-active':'badge-paid'}">${esc(c.mode)}</span>`:'-'}</td><td>${nStu}${c.max_students?` / ${esc(c.max_students)}`:''}</td>
-      <td>${cgStatusBadge(c.status)}</td><td style="font-size:12px;white-space:nowrap">${esc(dS(c.start_date))}<br>${esc(c.end_date?dS(c.end_date):'')}</td><td>${appCell}</td>
-      <td><div class="menu-wrap"><button class="dots-btn" onclick="toggleMenuSA(this)">⋯</button><div class="menu-pop"><button onclick="openClassGroup('${c.id}')">✏️ Edit class</button><button onclick="generateSessions('${c.id}')">📅 Generate sessions</button><button onclick="openApplicants('${c.id}')">🙋 Applicants</button><button class="danger" onclick="delClassGroup('${c.id}')">🗑️ Delete</button></div></div></td></tr>`;
-  }).join('')||'<tr><td colspan="11" class="empty">No classes for this filter.</td></tr>';
+      <td>${cgStatusBadge(c.status)}</td><td style="font-size:12px;white-space:nowrap">${esc(dS(c.start_date))}<br>${esc(c.end_date?dS(c.end_date):'')}</td><td>${appCell}</td></tr>`;
+  }).join('')||'<tr><td colspan="10" class="empty">No classes for this filter.</td></tr>';
 }
 function exportClassesSA(){ dlCSV([['Class ID','Name','Program','Level','Teacher','Schedule','Mode','Students','Status','Start','End']].concat(CLASSGROUPS.map(c=>[c.class_id,c.name,c.program,c.level,tName(c.tutor_id),c.schedule,c.mode,gIds(c).length,c.status,c.start_date,c.end_date])),'classes-'+TODAY+'.csv'); }
 let CG_PICK=new Set();
@@ -1603,7 +1607,7 @@ async function renderTutorsM(){
   utabsS('toTabs',[['all','All',TUTORS.length],['Active','Active'],['Inactive','Inactive'],['On Hold','On Hold']],TO_TAB,'setToTab');
   const q=(document.getElementById('toQ').value||'').toLowerCase(), pr=document.getElementById('toProg').value, lc=document.getElementById('toLoc').value;
   const list=TUTORS.filter(t=>{ const st=t.status||'Active'; if(TO_TAB==='Active'&&st!=='Active') return false; if(TO_TAB==='Inactive'&&!(st==='Inactive'||st==='Suspend')) return false; if(TO_TAB==='On Hold'&&st!=='On Hold') return false;
-    return (!pr||t.program===pr)&&(!lc||t.teaching_location===lc)&&(!q||[t.nama,t.username,t.subject,t.program].join(' ').toLowerCase().includes(q)); });
+    return (!pr||String(t.program||'').split(',').map(x=>x.trim()).includes(pr))&&(!lc||t.teaching_location===lc)&&(!q||[t.nama,t.username,t.subject,t.program].join(' ').toLowerCase().includes(q)); });
   const catBadge=c=>c==='International'?'<span class="badge badge-purple">🌍 International</span>':'<span class="badge badge-active">🏠 Local</span>';
   document.getElementById('mtBody').innerHTML=list.map(t=>{ const cls=(GROUPS||[]).filter(g=>String(g.tutor_id)===String(t.id)&&g.status!=='Completed').length;
     const nx=sesOfS((ALLC||[]).filter(c=>String(c.tutor_id)===String(t.id)&&isSession(c)&&c.date>=TODAY))[0];
@@ -1655,7 +1659,7 @@ function openStudent(id){
   V('sPin', s.pin||genPin());
   SV('sEmail',s.email||''); SV('sRel',s.parent_relation||''); SV('sNotes',s.notes||'');
   const gsel=document.getElementById('sGroupPick'); const cur=s.id?stuGroup(s):null;
-  gsel.innerHTML='<option value="">— Not in a class group (1-on-1) —</option>'+(GROUPS||[]).filter(g=>g.status!=='Completed').map(g=>`<option value="${esc(g.id)}" ${cur&&cur.id===g.id?'selected':''}>${esc(g.name)}${g.class_id?' · '+esc(g.class_id):''}</option>`).join('');
+  gsel.innerHTML='<option value="">— No class yet (1-on-1) —</option>'+(GROUPS||[]).filter(g=>g.status!=='Completed').sort((a,b)=>String(a.class_id||'').localeCompare(String(b.class_id||''))).map(g=>`<option value="${esc(g.id)}" ${cur&&cur.id===g.id?'selected':''}>${esc(g.class_id||'(no ID)')} — ${esc(g.name)}</option>`).join('');
   document.getElementById('mStudentTitle').textContent=id?'Edit Student':'Add New Student';
   openModal('mStudent');
 }
@@ -1695,12 +1699,14 @@ function openTutor(id){
   document.getElementById('tId').value=id||'';
   document.getElementById('tNama').value=t.nama||''; document.getElementById('tSubject').value=t.subject||'';
   document.getElementById('tUser').value=t.username||genUsername(t.nama||'');
-  const levels=String(t.level||'').split(',').map(x=>x.trim());
-  document.querySelectorAll('.tLvl').forEach(cb=>cb.checked=levels.includes(cb.value));
+  const progs=String(t.program||'').split(',').map(x=>x.trim()).filter(Boolean), ages=String(t.age_group||'').split(/,|&/).map(x=>x.trim()).filter(Boolean);
+  const plist=[...new Set([...(PROGRAMS||[]).filter(p=>p.status!=='Archived').map(p=>p.name),'Boost English','Speak Active','IELTS Preparation','Boost Mandarin','HSK Preparation',...progs].filter(Boolean))];
+  document.getElementById('tProgBox').innerHTML=plist.map(p=>`<label><input type="checkbox" class="tProg" value="${esc(p)}" ${progs.includes(p)?'checked':''}> ${esc(p)}</label>`).join('');
+  document.querySelectorAll('.tAge').forEach(cb=>cb.checked=ages.includes(cb.value)||(ages.includes('All ages')));
   document.getElementById('tWa').value=t.wa||'';
   document.getElementById('tAddress').value=t.address||''; document.getElementById('tDob').value=t.dob||'';
   const SV=(k,v)=>{const el=document.getElementById(k);if(el)el.value=v;};
-  SV('tCategory',t.category||'Local'); SV('tAgeGroup',t.age_group||''); SV('tProgram',t.program||'');
+  SV('tCategory',t.category||'Local');
   SV('tEmployment',t.employment_type||''); SV('tJoining',t.joining_date||''); SV('tLocation',t.teaching_location||'');
   SV('tBankName',t.bank_name||''); SV('tBankHolder',t.bank_holder||''); SV('tBankAcct',t.bank_account||''); SV('tStatus',t.status||'Active');
   document.getElementById('tPin').value=t.pin||genPin();
@@ -1710,10 +1716,10 @@ function openTutor(id){
 }
 async function saveTutor(){
   const g=id=>{const el=document.getElementById(id);return el?el.value:'';};
-  const level=[...document.querySelectorAll('.tLvl:checked')].map(cb=>cb.value).join(', ');
-  const p={id:g('tId')||undefined,nama:g('tNama'),username:(g('tUser')||genUsername(g('tNama'))).toLowerCase().trim(),subject:g('tSubject'),level,
+  const program=[...document.querySelectorAll('.tProg:checked')].map(cb=>cb.value).join(', '), age_group=[...document.querySelectorAll('.tAge:checked')].map(cb=>cb.value).join(', ');
+  const p={id:g('tId')||undefined,nama:g('tNama'),username:(g('tUser')||genUsername(g('tNama'))).toLowerCase().trim(),subject:g('tSubject'),
     address:g('tAddress'),dob:g('tDob'),wa:g('tWa'),pin:g('tPin')||genPin(),
-    category:g('tCategory'),age_group:g('tAgeGroup'),program:g('tProgram'),employment_type:g('tEmployment'),
+    category:g('tCategory'),age_group,program,employment_type:g('tEmployment'),
     joining_date:g('tJoining'),teaching_location:g('tLocation'),
     bank_name:g('tBankName'),bank_holder:g('tBankHolder'),bank_account:g('tBankAcct'),status:g('tStatus'),gender:g('tGender'),email:g('tEmail'),bio:g('tBio')};
   if(!p.nama){toast('Name is required','err');return;}
@@ -1879,7 +1885,7 @@ function renderDashboardSA(){
   API.list('class_applications',{}).then(apps=>{ const n=(apps||[]).filter(a=>a.status==='accepted'&&!GROUPS.some(g=>String(g.id)===String(a.group_id)&&g.tutor_id)).length; const el=document.querySelector('#saPending [data-k="apps"]'); if(el) el.textContent=n; }).catch(()=>{});
   document.getElementById('saPending').innerHTML=items.map(([ic,l,n,go],i)=>`<div class="pi-line" onclick="${go}"><div class="ic" style="background:#F1F6FF">${ic}</div><div><b>${l}</b></div><span class="when"><span class="badge ${n?'badge-unpaid':'badge-grey'}" ${i===2?'data-k="apps"':''}>${n}</span></span></div>`).join('');
   // quick actions
-  const qa=[['＋','Add Student','#EEF4FF',"openStudent()"],['👪','Add Parent','#FDECEF',"showView('parents');renderM('parents');openParent()"],['🎓','Add Teacher','#F1ECFF',"openTutor()"],['📅','Create Class','#EAF7EE',"showView('classgroups');renderM('classgroups');openClassGroup()"],['📝','New Enrollment','#FFF4DE',"openStudent()"],['📣','Create Announcement','#E8F1FF',"window.open('admin.html#announce','_blank')"]];
+  const qa=[['＋','Add Student','#EEF4FF',"openStudent()"],['👪','Add Parent','#FDECEF',"showView('parents');renderM('parents');openParent()"],['🎓','Add Teacher','#F1ECFF',"openTutor()"],['📅','View Classes','#EAF7EE',"showView('classgroups');renderM('classgroups')"],['📝','New Enrollment','#FFF4DE',"openStudent()"],['📣','Create Announcement','#E8F1FF',"window.open('admin.html#announce','_blank')"]];
   document.getElementById('saQuick').innerHTML=qa.map(([ic,l,bg,fn])=>`<button style="background:${bg}" onclick="${fn}"><span>${ic}</span>${l}</button>`).join('');
   // upcoming classes (today & next)
   const up=sesOfS(ALLC.filter(c=>isSession(c)&&c.date>=TODAY)).filter(se=>se.date>TODAY||(se.start||'00:00')>=new Date().toTimeString().slice(0,5)).slice(0,4);
@@ -1986,11 +1992,11 @@ const invAmtS=p=>Number(p.grand_total)||Number(p.deposit_total)||0;
 function invStateS(p){ const s=String(p.status||'').toUpperCase(); if(isPaid(s)) return 'Paid'; if(s.includes('MENUNGGU')||s.includes('VERIF')) return 'Awaiting Verification'; if(p.due_date&&p.due_date<TODAY) return 'Overdue'; return 'Pending'; }
 function renderInvoicesSA(){
   const mEl=document.getElementById('fiMonth'); if(!mEl.value) mEl.value=TODAY.slice(0,7); const mon=mEl.value;
-  utabsS('fiTabs',[['overview','Overview'],['students','Student Invoices'],['teachers','Teacher Payments'],['deposit','Deposit Billing (legacy)']],FI_TAB,'setFiTab');
+  utabsS('fiTabs',[['overview','Overview'],['students','Student Invoices'],['teachers','Teacher Payments']],FI_TAB,'setFiTab');
   const ov=document.getElementById('fiOverview'), em=document.getElementById('fiEmbed'), lg=document.getElementById('fiLegacy');
   ov.classList.toggle('hide',FI_TAB!=='overview'); em.classList.toggle('hide',!['students','teachers'].includes(FI_TAB)); lg.classList.toggle('hide',FI_TAB!=='deposit');
   mEl.style.display=FI_TAB==='overview'?'':'none';
-  if(FI_TAB==='students'||FI_TAB==='teachers'){ const src='admin.html?embed=1#invoices:'+FI_TAB; if(em.dataset.cur!==src){ em.dataset.cur=src; em.src=src; } return; }
+  if(FI_TAB==='students'||FI_TAB==='teachers'){ const src='admin.html?embed=1&ro=1#invoices:'+FI_TAB; if(em.dataset.cur!==src){ em.dataset.cur=src; em.src=src; } return; }
   if(FI_TAB==='deposit'){ if(!lg.dataset.moved){ const v=document.getElementById('view-payment'); [...v.children].forEach(ch=>{ if(!ch.classList.contains('page-head')) lg.appendChild(ch); }); lg.dataset.moved='1'; } initPayment(); return; }
   const inM=PAYS.filter(p=>String(p.issue_date||p.month).slice(0,7)===mon), billed=inM.reduce((a,p)=>a+invAmtS(p),0), paid=inM.filter(p=>invStateS(p)==='Paid').reduce((a,p)=>a+invAmtS(p),0);
   const out=PAYS.filter(p=>invStateS(p)!=='Paid').reduce((a,p)=>a+invAmtS(p),0), od=PAYS.filter(p=>invStateS(p)==='Overdue');

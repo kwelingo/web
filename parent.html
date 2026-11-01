@@ -3,77 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parent — Kwelingo</title>
+<title>Parent Hub — Kwelingo Academy</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#3E8A9E">
+<meta name="theme-color" content="#1F6FEB">
 <link rel="apple-touch-icon" href="assets/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kwelingo">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v=20261102">
 <style>
-  .print-only{display:none}
-  .print-head{border-bottom:2.5px solid var(--navy);padding-bottom:10px;margin-bottom:16px}
-  .print-head .pt{font-size:19px;font-weight:800;color:var(--navy)}
-  .print-head .pl{font-size:13px;color:#333;margin-top:3px}
-  .print-head img{height:46px}
-  .rep-remark{white-space:pre-line}
-  .lp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
-  @media(max-width:640px){.lp-grid{grid-template-columns:1fr}}
-  .lp-box{background:var(--sky-soft);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-  .lp-box b{color:var(--navy);font-size:12px;display:block;margin-bottom:4px}
-  .lp-box span{font-size:12.5px;color:#374151;white-space:pre-line}
-  @media print{
-    @page{margin:12mm}
-    body{background:#fff}
-    .sidebar,.backdrop,.topbar,.foot-note,.no-print{display:none!important}
-    .main{display:block}.content{padding:0!important}
-    .page-head{display:none!important}
-    .print-only{display:block!important}
-    .card{box-shadow:none!important;border:1px solid #ddd}
-    table.tbl{font-size:11px}
-    table.tbl th,table.tbl td{padding:7px 8px;white-space:normal!important;vertical-align:top}
-    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  }
+  .welcome h1{font-size:27px}
+  .row2{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+  .kid-switch{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .kid-switch button{display:flex;gap:8px;align-items:center;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px 6px 6px;font-weight:700;font-size:13px;color:#4A5675;cursor:pointer}
+  .kid-switch button.on{border-color:var(--blue);background:#F1F6FF;color:var(--blue)}
+  .kid-switch .av-sm{width:28px;height:28px;font-size:11px}
+  .kid-card{display:flex;gap:14px;align-items:center;padding:16px;border:1.5px solid var(--line);border-radius:16px;background:#fff;cursor:pointer}
+  .kid-card.on{border-color:var(--blue);background:linear-gradient(120deg,#F1F6FF,#fff)}
+  .kid-card .big{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#22B2DC,#1F6FEB);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;flex-shrink:0}
+  .kid-card b{color:var(--navy);font-size:15px;display:block}.kid-card small{color:var(--muted);font-size:12px;display:block}
+  .up-line{display:flex;gap:14px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}
+  .up-line:last-child{border-bottom:0}
+  .up-line b{color:var(--navy);font-size:13.5px;display:block}.up-line small{color:var(--muted);font-size:12px}
+  .datebox{width:56px;border-radius:12px;background:#F1F5FC;text-align:center;padding:6px 0;flex-shrink:0;line-height:1.15}
+  .datebox small{display:block;font-size:10.5px;font-weight:800;color:var(--muted)}.datebox b{font-size:19px;color:var(--navy);display:block}
+  .ann-item{display:flex;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
+  .ann-item:last-child{border-bottom:0}.ann-item b{color:var(--navy);display:block}.ann-item p{font-size:13px;color:#46557A;margin-top:3px;white-space:pre-line}
+  .sess{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px;background:#fff}
+  .sess h4{color:var(--navy);font-size:14.5px;margin:0}
+  .dv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+  .dv div{background:#F5F8FD;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#3C4A6B;white-space:pre-line}
+  .dv div b{display:block;color:var(--navy);font-size:12px;margin-bottom:3px}
+  @media(max-width:1000px){.row2{grid-template-columns:minmax(0,1fr)}.dv{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN GATE (Orang Tua) -->
-<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(180deg,#EAF6FA,#FFF9F0);display:flex;align-items:center;justify-content:center;padding:20px">
-  <div class="card card-pad" style="max-width:380px;width:100%;text-align:center">
-    <img src="assets/logo.png" style="height:78px;margin:0 auto 12px;display:block">
-    <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Parent Log In</h2>
-    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Log in with your child's username &amp; the PIN from admin</p>
-    <div class="field" style="text-align:left"><label>Username / Child Name</label>
-      <input id="lgName" autocomplete="off" placeholder="child username" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="field" style="text-align:left"><label>PIN (4 digit)</label>
-      <input id="lgPin" maxlength="4" inputmode="numeric" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800"
-             onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="btn btn-primary btn-block" onclick="doLogin()">Log In →</button>
+<!-- ===== LOGIN ===== -->
+<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(160deg,#EEF4FF 0%,#F7FBFF 60%,#FFF6EA 100%);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card card-pad" style="max-width:390px;width:100%;text-align:center;padding:30px 28px">
+    <img src="assets/logo-h.png" onerror="this.src='assets/logo.png'" alt="Kwelingo Academy" style="height:52px;margin:0 auto 10px">
+    <span class="ls-sub" style="display:inline-block;margin-bottom:16px">Parent Hub</span>
+    <h2 style="color:var(--navy);font-size:21px;margin-bottom:4px">Welcome, Parents 👋</h2>
+    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Log in with your <b>parent username</b> &amp; 4-digit PIN from the Kwelingo admin.</p>
+    <div class="field" style="text-align:left"><label>Parent Username / Parent ID</label><input id="lgName" autocomplete="off" placeholder="e.g. rinawijaya" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field" style="text-align:left"><label>PIN (4 digits)</label><input id="lgPin" maxlength="4" inputmode="numeric" type="password" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Log in →</button>
     <div class="help" id="lgErr" style="color:var(--red);margin-top:10px;font-weight:600"></div>
-    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Back to portal selection</a></div>
+    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Back to Kwelingo Hub</a></div>
   </div>
 </div>
 
 <div class="app">
   <aside class="sidebar">
     <div class="sidebar-head" id="logo"></div>
-    <div class="sidebar-role">Menu</div>
     <nav class="nav">
-      <a data-view="dashboard" class="active"><span class="ic">🏠</span> Home</a>
-      <a data-view="report"><span class="ic">📄</span> Class Report</a>
-      <a data-view="attend"><span class="ic">✅</span> Attendance</a>
-      <a data-view="progress"><span class="ic">🌱</span> Progress</a>
-      <a data-view="payment"><span class="ic">💳</span> Payment</a>
+      <a data-view="dashboard" class="active"><span class="ic">🏠</span> Dashboard</a>
+      <a data-view="child"><span class="ic">👧</span> My Child</a>
+      <a data-view="attend"><span class="ic">📅</span> Schedule &amp; Attendance</a>
+      <a data-view="progress"><span class="ic">🌱</span> Child Progress</a>
+      <a data-view="report"><span class="ic">📄</span> Monthly Reports</a>
+      <a data-view="payment"><span class="ic">💳</span> Invoices &amp; Payments <span class="nav-dot" id="payDot" style="display:none"></span></a>
+      <a data-view="announce"><span class="ic">📣</span> Announcements <span class="nav-dot" id="anDot" style="display:none"></span></a>
+      <a data-view="messages"><span class="ic">✉️</span> Messages <span class="nav-dot" id="msDot" style="display:none"></span></a>
+      <a data-view="account"><span class="ic">⚙️</span> Account Settings</a>
       <div class="divider"></div>
-      <a href="portal.html"><span class="ic">↩️</span> Switch Portal</a>
-      <a href="index.html"><span class="ic">🚪</span> Log Out</a>
+      <a onclick="logout()"><span class="ic">🚪</span> Log out</a>
     </nav>
-    <div class="sidebar-foot">
-      <div class="avatar" id="pavatar">O</div>
-      <div class="who" id="pwho">Parent<small>Parent</small></div>
-    </div>
+    <div class="sidebar-help" onclick="go('messages')"><span style="font-size:22px">💬</span><div><b>Need help?</b><small>Chat with Kwelingo admin</small></div><span class="chev" style="margin-left:auto">›</span></div>
   </aside>
   <div class="backdrop" onclick="toggleSidebar()"></div>
 
@@ -81,464 +78,399 @@
     <div class="topbar">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
       <div class="spacer"></div>
-      <div class="me"><div class="who" id="pwho2">Parent<small>Parent</small></div><div class="avatar" id="pavatar2">O</div></div>
+      <div class="bell" onclick="go('announce')" title="Announcements">🔔<span class="dot" id="bellDot" style="display:none"></span></div>
+      <div class="me" onclick="go('account')" style="cursor:pointer"><div class="who"><span id="meName">Parent</span><small id="meSub">Parent</small></div><div class="avatar" id="meAv">P</div></div>
     </div>
 
     <div class="content">
-      <!-- DASHBOARD -->
+      <div class="kid-switch" id="kidSwitch"></div>
+
+      <!-- ===== DASHBOARD ===== -->
       <section class="view" id="view-dashboard">
-        <div class="page-head"><div><h1 id="hi">Hello 👋</h1><div class="sub" id="today">—</div></div></div>
-        <div id="notifBox" style="display:none"></div>
-        <div class="grid grid-4" style="margin-bottom:22px">
-          <div class="stat tint-blue"><div class="lbl"><span class="icon">📅</span> Classes This Month</div><div class="val" id="mClasses">0</div><div class="hint" id="mLabel">—</div></div>
-          <div class="stat tint-green"><div class="lbl"><span class="icon">✅</span> Attendance</div><div class="val" id="mAttend">0</div><div class="hint">sessions attended this month</div></div>
-          <div class="stat tint-amber"><div class="lbl"><span class="icon">📎</span> Materials Available</div><div class="val" id="mMaterials">0</div><div class="hint">files/links from teacher</div></div>
-          <div class="stat tint-purple"><div class="lbl"><span class="icon">💳</span> Payment Status</div><div class="val" id="mPayment" style="font-size:16px">—</div><div class="hint" id="mPayHint">—</div></div>
+        <div class="page-head welcome"><div><h1 id="hi">Hello!</h1><div class="sub" id="hiSub">Here's how your child is doing.</div></div><div class="text-muted" id="todayLong" style="font-weight:600"></div></div>
+        <div id="notifBox" style="display:none;margin-bottom:14px"></div>
+        <div class="grid grid-4" style="margin-bottom:18px">
+          <div class="stat tint-blue" style="cursor:pointer" onclick="go('attend')"><div class="stat-row"><div class="icon">📅</div><div><div class="lbl">Next Class</div><div class="val" style="font-size:17px" id="dNext">–</div><small class="text-muted" id="dNextT"></small></div></div></div>
+          <div class="stat tint-green" style="cursor:pointer" onclick="go('attend')"><div class="stat-row"><div class="icon">✅</div><div><div class="lbl">Attendance</div><div class="val" id="dAtt">–</div><small class="text-muted" id="dAttT"></small></div></div></div>
+          <div class="stat tint-purple" style="cursor:pointer" onclick="go('progress')"><div class="stat-row"><div class="icon">📝</div><div><div class="lbl">Assignments Done</div><div class="val" id="dTask">–</div><small class="text-muted" id="dTaskT"></small></div></div></div>
+          <div class="stat tint-amber" style="cursor:pointer" onclick="go('payment')"><div class="stat-row"><div class="icon">💳</div><div><div class="lbl">Outstanding Payment</div><div class="val" style="font-size:18px" id="dPay">–</div><small class="text-muted" id="dPayT"></small></div></div></div>
         </div>
-        <div class="card card-pad">
-          <div class="card-title">👦 Child Info</div>
-          <div class="grid grid-4" id="childInfo" style="gap:14px"></div>
-        </div>
-        <div class="card card-pad mt-16">
-          <div class="card-title">📅 Today's Schedule</div>
-          <div class="table-wrap"><table class="tbl">
-            <thead><tr><th>Teacher</th><th>Time</th><th>Duration</th><th>Type</th><th>Topic</th></tr></thead>
-            <tbody id="todayBody"></tbody>
-          </table></div>
+        <div class="row2">
+          <div>
+            <div class="card card-pad" style="margin-bottom:16px"><div class="card-title">📅 Upcoming Classes <span class="more" onclick="go('attend')">View All →</span></div><div id="dUpcoming"></div></div>
+            <div class="card card-pad"><div class="card-title">🌱 Latest Learning Notes <span class="more" onclick="go('report')">Monthly Reports →</span></div><div id="dNotes"></div></div>
+          </div>
+          <div>
+            <div class="card card-pad" style="margin-bottom:16px"><div class="card-title">👧 Child Info <span class="more" onclick="go('child')">Details →</span></div><div id="dChild"></div></div>
+            <div class="card card-pad"><div class="card-title">📣 Announcements <span class="more" onclick="go('announce')">View All →</span></div><div id="dAnn"></div></div>
+          </div>
         </div>
       </section>
 
-      <!-- REPORT -->
+      <!-- ===== MY CHILD ===== -->
+      <section class="view hide" id="view-child">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">👧</div><div><h1>My Child</h1><div class="sub">Children linked to your parent account. Select a child to see their classes, progress and invoices.</div></div></div></div>
+        <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:18px" id="kidCards"></div>
+        <div class="grid grid-2" style="gap:16px;align-items:start">
+          <div class="card card-pad"><div class="card-title">🧒 Profile</div><div class="kv" id="kidProfile"></div></div>
+          <div class="card card-pad"><div class="card-title">🏫 Class &amp; Teacher</div><div id="kidClasses"></div></div>
+        </div>
+        <div class="note-band mt-16" style="font-size:12.5px">ℹ️ Is a child missing or are details incorrect? Please send a message to the Kwelingo admin — children are linked to your account by the admin team.</div>
+      </section>
+
+      <!-- ===== SCHEDULE & ATTENDANCE ===== -->
+      <section class="view hide" id="view-attend">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📅</div><div><h1>Schedule &amp; Attendance</h1><div class="sub">Class schedule, attendance record and reschedule requests.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="month" id="attMonth" style="padding:9px 12px;border:1.5px solid var(--line);border-radius:10px" onchange="renderAttend()"><button class="btn btn-primary" onclick="openReq()">＋ Request Extra Class</button></div></div>
+        <div class="grid grid-4" style="margin-bottom:16px" id="attStats"></div>
+        <div class="card" id="certProg" style="margin-bottom:16px"></div>
+        <div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Class</th><th>Teacher</th><th>Time</th><th>Type</th><th>Status</th><th>Attendance</th><th>Action</th></tr></thead><tbody id="attBody"></tbody></table></div></div>
+      </section>
+
+      <!-- ===== CHILD PROGRESS ===== -->
+      <section class="view hide" id="view-progress">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">🌱</div><div><h1>Child Progress</h1><div class="sub">Assignments, projects, quiz results and certificates.</div></div></div></div>
+        <div class="grid grid-4" style="margin-bottom:16px" id="pgStats"></div>
+        <div class="card" style="margin-bottom:16px"><div class="card-pad" style="padding-bottom:4px"><div class="card-title">📋 Assignments &amp; Projects</div></div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>Assignment</th><th>Type</th><th>Due</th><th>Status</th><th>Score / Feedback</th></tr></thead><tbody id="pgTasks"></tbody></table></div></div>
+        <div class="grid grid-2" style="gap:16px;align-items:start">
+          <div class="card"><div class="card-pad" style="padding-bottom:4px"><div class="card-title">🏆 Quiz Results</div></div><div class="table-wrap"><table class="tbl"><thead><tr><th>Quiz</th><th>Date</th><th>Score</th></tr></thead><tbody id="pgQuiz"></tbody></table></div></div>
+          <div class="card"><div class="card-pad" style="padding-bottom:4px"><div class="card-title">🏅 Certificates</div></div><div class="table-wrap"><table class="tbl"><thead><tr><th>Certificate</th><th>Issued</th><th>Action</th></tr></thead><tbody id="pgCerts"></tbody></table></div></div>
+        </div>
+      </section>
+
+      <!-- ===== MONTHLY REPORTS ===== -->
       <section class="view hide" id="view-report">
-        <div class="page-head">
-          <div><h1>Class Report</h1><div class="sub" id="repLabel">—</div></div>
-          <div style="display:flex;gap:10px;align-items:center" class="no-print">
-            <input type="month" id="repMonth" class="btn btn-outline" style="font-weight:600" onchange="renderReport()">
-            <button class="btn btn-primary" onclick="window.print()">🧾 Save PDF</button>
-          </div>
-        </div>
-        <div class="print-only print-head">
-          <div style="display:flex;align-items:center;gap:12px">
-            <img src="assets/logo.png" alt="Kwelingo">
-            <div>
-              <div class="pt">Class Report — Kwelingo</div>
-              <div class="pl">Name: <b id="phName">—</b></div>
-              <div class="pl">Period: <b id="phPeriod">—</b></div>
-            </div>
-          </div>
-        </div>
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📄</div><div><h1>Monthly Reports</h1><div class="sub">Session topics and the teacher's development notes for each month.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="month" id="repMonth" style="padding:9px 12px;border:1.5px solid var(--line);border-radius:10px" onchange="renderReport()"><button class="btn btn-primary" onclick="downloadMonthReport()">⬇️ Download PDF</button></div></div>
         <div id="reportBody"></div>
       </section>
 
-      <!-- ATTENDANCE -->
-      <section class="view hide" id="view-attend">
-        <div class="page-head"><div><h1>Attendance &amp; Classes</h1><div class="sub" id="attLabel">Overall attendance &amp; class requests</div></div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <input type="month" id="attMonth" class="btn btn-outline" style="font-weight:600" onchange="renderAttend()">
-            <button class="btn btn-primary" onclick="openReq()">＋ Request Class</button>
-          </div></div>
-        <div class="grid grid-4" style="margin-bottom:20px" id="attStats"></div>
-        <div class="card card-pad" id="certBox" style="display:none;background:linear-gradient(120deg,#FFF6E6,#EAF6FA);border:1.5px solid #F4D98B;margin-bottom:20px">
-          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-            <div style="font-size:34px">🏅</div>
-            <div style="flex:1;min-width:200px"><div style="font-weight:800;color:var(--navy);font-size:16px">Certificate of Completion available</div>
-              <div class="muted" style="font-size:13px">Attendance &amp; assignments have met the requirements (<b id="certPct">—</b>, min. 80% each) — download your child's certificate.</div></div>
-            <button class="btn btn-primary" onclick="downloadCert()">🏅 Download Certificate</button>
-          </div>
-        </div>
-        <div class="card"><div class="table-wrap"><table class="tbl">
-          <thead><tr><th>No</th><th>Date</th><th>Teacher</th><th>Time</th><th>Type</th><th>Status</th><th>Attendance</th><th>Action</th></tr></thead>
-          <tbody id="attBody"></tbody>
-        </table></div></div>
-      </section>
-
-      <!-- PERKEMBANGAN (tugas + diary + rating) -->
-      <section class="view hide" id="view-progress">
-        <div class="page-head"><div><h1>Child Progress</h1><div class="sub">Assignments, notes with the teacher &amp; class ratings</div></div></div>
-        <div class="grid grid-4" style="margin-bottom:18px" id="pgStats"></div>
-        <div class="card" style="margin-bottom:18px"><div class="card-pad" style="padding-bottom:0"><div class="card-title">📋 Assignments</div></div>
-          <div class="table-wrap"><table class="tbl">
-            <thead><tr><th>Assignment</th><th>Deadline</th><th>Status</th></tr></thead>
-            <tbody id="pgTaskBody"></tbody>
-          </table></div>
-        </div>
-        <div class="grid grid-2" style="gap:18px;align-items:start">
-          <div class="card card-pad">
-            <div class="card-title">📔 Notes with Teacher</div>
-            <div id="pgDiaryFeed" style="max-height:40vh;overflow:auto;margin-bottom:12px"></div>
-            <div style="display:flex;gap:8px">
-              <input id="pgDiaryInput" placeholder="Write a message to the teacher…" style="flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px" onkeydown="if(event.key==='Enter')postPDiary()">
-              <button class="btn btn-primary btn-sm" onclick="postPDiary()">Send</button>
-            </div>
-          </div>
-          <div class="card card-pad">
-            <div class="card-title">⭐ Ratings Given</div>
-            <div id="pgRatings"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAYMENT -->
+      <!-- ===== INVOICES & PAYMENTS ===== -->
       <section class="view hide" id="view-payment">
-        <div class="page-head"><div><h1>Payment</h1><div class="sub">Deposit status &amp; payment history — verified by admin</div></div></div>
-        <div class="grid grid-4" style="margin-bottom:20px" id="payStats"></div>
-        <div class="card"><div class="card-pad" style="padding-bottom:0"><div class="card-title">🧾 Invoices &amp; Payment History</div></div>
-          <div class="table-wrap"><table class="tbl">
-            <thead><tr><th>Period</th><th>Pay Date</th><th>Number of Meetings</th><th>Total</th><th>Status</th><th>Proof / Action</th></tr></thead>
-            <tbody id="payBody"></tbody>
-          </table></div>
-        </div>
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">💳</div><div><h1>Invoices &amp; Payments</h1><div class="sub">View invoices and upload your transfer proof — the admin verifies every payment.</div></div></div></div>
+        <div class="grid grid-4" style="margin-bottom:16px" id="payStats"></div>
+        <div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Invoice No.</th><th>Period</th><th>Due Date</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody id="payBody"></tbody></table></div></div>
         <input type="file" id="buktiFile" accept="image/*,application/pdf" class="hide">
-        <div class="note-band mt-16">ℹ️ For invoices with status <b>📌 UNPAID</b>, upload your transfer proof in the Action column. Once admin checks it, the status changes to <b>✅ PAID</b>.</div>
+        <div class="note-band mt-16" style="font-size:12.5px">ℹ️ After transferring, click <b>Upload Proof</b>. The status changes to <b>Awaiting Verification</b>, then <b>Paid</b> once the admin has checked it.</div>
       </section>
 
-      <div class="foot-note">© 2026 Kwelingo. All rights reserved.</div>
+      <!-- ===== ANNOUNCEMENTS ===== -->
+      <section class="view hide" id="view-announce">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📣</div><div><h1>Announcements</h1><div class="sub">News and important information from Kwelingo Academy.</div></div></div></div>
+        <div class="card card-pad" id="annList"></div>
+      </section>
+
+      <!-- ===== MESSAGES ===== -->
+      <section class="view hide" id="view-messages">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">✉️</div><div><h1>Messages</h1><div class="sub">Chat with the Kwelingo Operations Admin.</div></div></div></div>
+        <div class="row2">
+          <div class="card chatbox"><div class="card-pad" style="padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px"><span class="av-sm">🛡️</span><div><b style="color:var(--navy)">Kwelingo Admin</b><div class="text-muted" style="font-size:12px" id="msSub">Operations Admin</div></div></div>
+            <div class="feed" id="msFeed"></div>
+            <div class="send"><input id="msMsg" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">➤</button></div></div>
+          <div><div class="card card-pad"><div class="card-title">About this chat</div><div class="text-muted" style="font-size:12.5px;line-height:1.6">Use this chat for <b>schedules, payments, reschedules, certificates</b> or any other question. Our admin team usually replies within working hours (Mon–Sat).<br><br>Messages are about: <b id="msKid">—</b></div></div></div>
+        </div>
+      </section>
+
+      <!-- ===== ACCOUNT ===== -->
+      <section class="view hide" id="view-account">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">⚙️</div><div><h1>Account Settings</h1><div class="sub">Your parent account details.</div></div></div></div>
+        <div class="grid grid-2" style="gap:16px;align-items:start">
+          <div class="card card-pad"><div class="card-title">👤 Parent Profile</div><div class="kv" id="acProfile"></div></div>
+          <div class="card card-pad" id="acPinCard"><div class="card-title">🔒 Change PIN</div>
+            <div class="field"><label>Current PIN</label><input id="acOld" type="password" maxlength="4" inputmode="numeric"></div>
+            <div class="field-row"><div class="field"><label>New PIN</label><input id="acNew" type="password" maxlength="4" inputmode="numeric"></div><div class="field"><label>Repeat New PIN</label><input id="acNew2" type="password" maxlength="4" inputmode="numeric"></div></div>
+            <button class="btn btn-primary" onclick="changePin()">Save New PIN</button></div>
+        </div>
+      </section>
+
+      <div class="foot-note">© 2026 Kwelingo Academy · Parent Hub</div>
     </div>
   </div>
 </div>
 
-<!-- MODAL: ajukan kelas baru -->
+<!-- ===== MODAL: request extra class ===== -->
 <div class="modal-overlay" id="mReq">
   <div class="modal">
-    <div class="modal-head"><h3>Request New Class</h3><button class="x" onclick="closeModal('mReq')">×</button></div>
+    <div class="modal-head"><h3>Request an Extra Class</h3><button class="x" onclick="closeModal('mReq')">×</button></div>
     <div class="modal-body">
-      <div class="field-row">
-        <div class="field"><label>Date <span class="req">*</span></label><input type="date" id="rqDate"></div>
-        <div class="field"><label>Start Time <span class="req">*</span></label><input type="time" id="rqTime"></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Duration (minutes)</label><input type="number" id="rqDur" value="60"></div>
-        <div class="field"><label>Type</label>
-          <div class="radio-row"><label><input type="radio" name="rqType" value="online" checked> Online</label>
-          <label><input type="radio" name="rqType" value="onsite"> Onsite</label></div></div>
-      </div>
-      <div class="field"><label>Note for Teacher/Admin</label><textarea id="rqNote" placeholder="e.g. Requesting an extra session before the exam."></textarea></div>
-      <div class="help">The request is sent to the teacher/admin for approval.</div>
+      <div class="field-row"><div class="field"><label>Preferred Date <span class="req">*</span></label><input type="date" id="rqDate"></div><div class="field"><label>Preferred Time <span class="req">*</span></label><input type="time" id="rqTime"></div></div>
+      <div class="field"><label>Mode</label><div class="radio-row"><label><input type="radio" name="rqType" value="onsite" checked> Onsite</label><label><input type="radio" name="rqType" value="online"> Online</label></div></div>
+      <div class="field"><label>Note for the admin</label><textarea id="rqNote" placeholder="e.g. An extra session before the school exam."></textarea></div>
+      <div class="help">The admin team confirms the schedule and the fee.</div>
     </div>
-    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mReq')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitReq()">Send Request</button></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mReq')">Cancel</button><button class="btn btn-primary" onclick="submitReq()">Send Request</button></div>
   </div>
 </div>
 
-<!-- MODAL: minta reschedule -->
+<!-- ===== MODAL: reschedule ===== -->
 <div class="modal-overlay" id="mResched">
   <div class="modal">
     <div class="modal-head"><h3>Request Reschedule</h3><button class="x" onclick="closeModal('mResched')">×</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="rsId">
-      <div class="help" id="rsCur" style="margin-bottom:10px"></div>
-      <div class="field-row">
-        <div class="field"><label>New Date <span class="req">*</span></label><input type="date" id="rsDate"></div>
-        <div class="field"><label>New Time <span class="req">*</span></label><input type="time" id="rsTime"></div>
-      </div>
-      <div class="field"><label>Reason</label><textarea id="rsNote" placeholder="e.g. Clashes with a school event."></textarea></div>
+    <div class="modal-body"><input type="hidden" id="rsId">
+      <div class="note-band" id="rsCur" style="margin-bottom:12px"></div>
+      <div class="field-row"><div class="field"><label>Preferred New Date <span class="req">*</span></label><input type="date" id="rsDate"></div><div class="field"><label>Preferred Time</label><input type="time" id="rsTime"></div></div>
+      <div class="field"><label>Reason <span class="req">*</span></label><textarea id="rsNote" placeholder="e.g. Clashes with a school event."></textarea></div>
+      <div class="help">Please request at least 24 hours before the class starts.</div>
     </div>
-    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mResched')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitResched()">Send Request</button></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mResched')">Cancel</button><button class="btn btn-primary" onclick="submitResched()">Send Request</button></div>
   </div>
 </div>
 
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=20261102"></script>
 <script>
-document.getElementById('logo').innerHTML = logoBlock('Kwelingo','Parent Portal');
-document.getElementById('today').textContent = '📅 ' + longToday();
-const _m = todayStr().slice(0,7);
-['repMonth','attMonth'].forEach(id=>{const e=document.getElementById(id); if(e) e.value=_m;});
-const monLabel = new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'});
-document.getElementById('mLabel').textContent = monLabel;
+/* =====================================================================
+   Parent Hub (rev9) — own parent login, linked children, messages with
+   Operations Admin only, announcements, invoices.
+   ===================================================================== */
+document.getElementById('logo').innerHTML=logoBlock('Kwelingo Academy','Parent Hub');
+document.getElementById('todayLong').textContent=longToday();
+const TODAY=todayStr();
+let PARENT=null, KIDS=[], KID=null, TUTORS=[], GROUPS=[], ANN=[];
+let CLS=[], TASKS=[], QUIZZES=[], RESULTS=[], DEVS=[], CERTS=[], PAYS=[];
+const tut=id=>TUTORS.find(t=>String(t.id)===String(id))||{nama:'-'};
+const kidGroups=()=>GROUPS.filter(g=>String(g.student_ids||'').split(',').map(x=>x.trim()).includes(String(KID.id)));
+const dShort=d=>d?shortDate(String(d).slice(0,10)):'-';
+const fmt=t=>t||'';
+function trng(c){ if(!c.start_time) return '-'; let e=c.end_time; if(!e){ const [h,m]=c.start_time.split(':').map(Number), t=h*60+m+(Number(c.duration)||90); e=String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); } return c.start_time+' – '+e; }
 
-let ME=null, TUTORS=[], ALL=[], PAYS=[], DEP=null;
-function tName(id){return (TUTORS.find(t=>t.id===id)||{}).nama||'-';}
-function ym(v){const m=String(v||'').match(/(\d{4})-(\d{2})/);return m?m[1]+'-'+m[2]:'';}
-const typeBadge = t => t==='online'
-  ? '<span class="badge badge-online">ONLINE</span>'
-  : '<span class="badge badge-onsite">ONSITE</span>';
-
-/* ---------- LOGIN ---------- */
+/* ---------------- login ---------------- */
 (function(){ const q=new URLSearchParams(location.search); if(q.get('user')) document.getElementById('lgName').value=q.get('user'); })();
 async function doLogin(){
-  const user=document.getElementById('lgName').value.trim();
-  const pin=document.getElementById('lgPin').value;
-  const err=document.getElementById('lgErr');
-  if(!user){err.textContent='Please enter your child username / name first';return;}
-  if(!/^\d{4}$/.test(pin)){err.textContent='PIN must be 4 digits';return;}
+  const user=document.getElementById('lgName').value.trim(), pin=document.getElementById('lgPin').value, err=document.getElementById('lgErr');
+  if(!user){ err.textContent='Enter your parent username first'; return; }
+  if(!/^\d{4}$/.test(pin)){ err.textContent='PIN must be 4 digits'; return; }
   err.textContent='Checking…';
   try{
-    ME = await API.studentLogin(user,pin);
-    try{ TUTORS = await API.getTutors(); }catch(e){ TUTORS=[]; }
+    let students=[]; try{ students=await API.getStudents()||[]; }catch(e){}
+    try{ PARENT=await API.parentLogin(user,pin);
+      const ids=String(PARENT.linked_students||'').split(',').map(k=>(k.match(/\(([^)]+)\)\s*$/)||[])[1]||k.trim()).filter(Boolean);
+      KIDS=students.filter(s=>ids.includes(String(s.id))||ids.includes(s.nama));
+    }catch(e1){
+      // legacy: parents may still log in with the child's username & PIN
+      try{ const s=await API.studentLogin(user,pin); PARENT={id:'stu:'+s.id,nama:s.parent_name||('Parent of '+s.nama),wa:s.wa_ortu,relation:s.parent_relation,legacy:true}; KIDS=[students.find(x=>String(x.id)===String(s.id))||s]; }
+      catch(e2){ throw e1; }
+    }
+    if(!KIDS.length) throw new Error('No child is linked to this account yet — please contact the admin.');
+    try{ sessionStorage.setItem('kw_par',JSON.stringify({u:user,p:pin})); }catch(e){}
     document.getElementById('loginGate').style.display='none';
-    err.textContent='';
-    setMe(); await loadAll();
+    document.getElementById('meName').textContent=PARENT.nama||'Parent'; document.getElementById('meSub').textContent=PARENT.relation||'Parent'; document.getElementById('meAv').textContent=initials(PARENT.nama||'P');
+    [TUTORS,GROUPS,ANN,QUIZZES]=(await Promise.all([API.getTutors(),API.getClassGroups(),API.getAnnouncements(),API.getQuizzes()].map(p=>p.catch(()=>[])))).map(x=>x||[]);
+    loadCertTemplate();
+    let last=null; try{ last=localStorage.getItem('kw_par_kid'); }catch(e){}
+    await selectKid((KIDS.find(k=>String(k.id)===String(last))||KIDS[0]).id,true);
+    go('dashboard');
   }catch(e){ err.textContent=e.message||'Login failed'; }
 }
-function setMe(){
-  const nm=ME.nama||'Child';
-  ['pavatar','pavatar2'].forEach(i=>document.getElementById(i).textContent=(nm[0]||'A').toUpperCase());
-  ['pwho','pwho2'].forEach(i=>document.getElementById(i).innerHTML=`${nm}<small>${ME.school||'Student'}</small>`);
-  document.getElementById('hi').textContent=`Hello, parent of ${nm} 👋`;
-  document.getElementById('phName').textContent=nm;
+function logout(){ try{ sessionStorage.removeItem('kw_par'); }catch(e){} location.href='index.html'; }
+(async function autoLogin(){ try{ const s=JSON.parse(sessionStorage.getItem('kw_par')||'null'); if(s){ document.getElementById('lgName').value=s.u; document.getElementById('lgPin').value=s.p; await doLogin(); } }catch(e){} })();
+
+async function selectKid(id,silent){
+  KID=KIDS.find(k=>String(k.id)===String(id))||KIDS[0]; try{ localStorage.setItem('kw_par_kid',KID.id); }catch(e){}
+  const safe=p=>p.catch(()=>[]);
+  [CLS,TASKS,RESULTS,DEVS,CERTS,PAYS]=(await Promise.all([safe(API.getClasses({student_id:KID.id})),safe(API.getTasks({student_id:KID.id})),safe(API.getQuizResults({student_id:KID.id})),
+    safe(API.list('dev_notes',{student_id:KID.id})),safe(API.list('certificates',{student_id:KID.id})),safe(API.getPayments({student_id:KID.id}))])).map(x=>x||[]);
+  TASKS=TASKS.filter(t=>String(t.visible??'1')!=='0');
+  drawKidSwitch(); refreshDots();
+  if(!silent){ const v=CUR_VIEW; go(v); toast('Showing '+KID.nama,'ok'); }
+}
+function drawKidSwitch(){
+  const el=document.getElementById('kidSwitch');
+  el.innerHTML=KIDS.length>1?KIDS.map(k=>`<button class="${String(k.id)===String(KID.id)?'on':''}" onclick="selectKid('${esc(k.id)}')"><span class="av-sm">${esc(initials(k.nama))}</span>${esc(k.nama)}</button>`).join(''):'';
+  el.style.display=KIDS.length>1?'flex':'none';
 }
 
-/* ---------- NAV ---------- */
-document.querySelectorAll('.nav a[data-view]').forEach(a=>a.onclick=()=>{
-  document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');
-  document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));
-  document.getElementById('view-'+a.dataset.view).classList.remove('hide');
-  if(window.innerWidth<768)toggleSidebar();
-  if(a.dataset.view==='report') renderReport();
-  if(a.dataset.view==='attend') renderAttend();
-  if(a.dataset.view==='progress') renderProgress();
-  if(a.dataset.view==='payment') renderPayment();
-});
-function pTutorId(){ return ME.tutor_id || (ALL.find(c=>c.tutor_id)||{}).tutor_id || ''; }
-async function renderProgress(){
-  let tasks=[],rat=[];
-  try{ tasks=await API.getTasks({student_id:ME.id})||[]; }catch(e){}
-  try{ rat=await API.getRatings({student_id:ME.id})||[]; }catch(e){}
-  const done=tasks.filter(t=>(t.status||'assigned')==='done').length, total=tasks.length;
-  document.getElementById('pgStats').innerHTML=[
-    ['tint-blue','Total Assignments',total],['tint-green','Completed',done],
-    ['tint-amber','Pending',total-done],['tint-purple','Progress',total?Math.round(done/total*100)+'%':'0%'],
-  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
-  const today=todayStr();
-  const ord={assigned:0,submitted:1,graded:2};
-  document.getElementById('pgTaskBody').innerHTML=[...tasks].sort((a,b)=>(ord[taskStatus(a)]-ord[taskStatus(b)])).map(t=>{
-    const st=taskStatus(t); const overdue=st==='assigned'&&t.due_date&&t.due_date<today;
-    return `<tr><td><span class="badge badge-active">${esc(taskTypeLabel(t.type))}</span> <b>${esc(t.title||'')}</b>${t.detail?`<br><span class="muted" style="font-size:12px;white-space:pre-line">${esc(t.detail)}</span>`:''}${st==='graded'?`<br><span class="text-green" style="font-size:12px">⭐ ${esc(t.points||'-')}${t.feedback?' — '+esc(t.feedback):''}</span>`:''}</td>
-      <td style="white-space:nowrap">${t.due_date?prettyDate(t.due_date):'-'}${overdue?' <span class="badge badge-off">OVERDUE</span>':''}</td>
-      <td>${taskBadge(st)}</td></tr>`;
-  }).join('') || '<tr><td colspan="3" class="muted" style="text-align:center;padding:18px">No assignments yet.</td></tr>';
-  document.getElementById('pgRatings').innerHTML=rat.map(r=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)">
-    ${starsHTML(r.stars)} <span class="muted" style="font-size:11px">${r.created_at?prettyDate(String(r.created_at).slice(0,10)):''}</span>
-    ${r.comment?`<div style="font-size:13px;color:#374151;margin-top:2px">${esc(r.comment)}</div>`:''}</div>`).join('')
-    || '<div class="muted" style="font-size:13px">No ratings yet. Give a rating via the Student Portal.</div>';
-  renderPDiary();
+/* ---------------- navigation ---------------- */
+let CUR_VIEW='dashboard';
+const RENDER={dashboard:renderDash,child:renderChild,attend:renderAttend,progress:renderProgress,report:renderReport,payment:renderPayment,announce:renderAnnounce,messages:renderMessages,account:renderAccount};
+function go(v){
+  CUR_VIEW=v; msPoll.stop();
+  document.querySelectorAll('.nav a[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===v));
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('hide',s.id!=='view-'+v));
+  try{ (RENDER[v]||(()=>{}))(); }catch(e){ console.error(e); }
+  if(typeof _syncShell==='function') _syncShell(v);
+  if(window.innerWidth<768) closeDrawer();
+  window.scrollTo(0,0);
 }
-async function renderPDiary(){
-  const feed=document.getElementById('pgDiaryFeed'); feed.innerHTML='<div class="muted">Loading…</div>';
-  let list=[]; try{ list=await API.getDiary({student_id:ME.id})||[]; }catch(e){ feed.innerHTML='<div style="color:var(--red);font-size:12px">Failed to load</div>'; return; }
-  feed.innerHTML=list.map(m=>{
-    const meSide=m.author!=='guru';
-    const who=meSide?(ME.nama||'Child'):('👩‍🏫 '+tName(m.tutor_id));
-    return `<div class="msg ${meSide?'me':''}"><div class="av">${meSide?'🙂':'👩‍🏫'}</div>
-      <div class="bub"><b>${esc(who)}</b>${esc(m.message||'')}<div class="t">${m.created_at?prettyDate(String(m.created_at).slice(0,10)):''}</div></div></div>`;
-  }).join('') || '<div class="muted" style="text-align:center;padding:16px;font-size:13px">No notes yet.</div>';
-  feed.scrollTop=feed.scrollHeight;
+document.querySelectorAll('.nav a[data-view]').forEach(a=>a.addEventListener('click',()=>go(a.dataset.view)));
+
+/* ---------------- helpers ---------------- */
+const realCls=()=>CLS.filter(c=>isSession(c));
+function invState(p){ const s=String(p.status||'').toUpperCase(); if(isPaid(s)) return 'Paid'; if(s.includes('MENUNGGU')||s.includes('VERIF')) return 'Awaiting Verification'; if(p.due_date&&p.due_date<TODAY) return 'Overdue'; return 'Pending'; }
+const invAmt=p=>Number(p.grand_total)||Number(p.deposit_total)||0;
+const IB={Paid:'badge-paid',Pending:'badge-pending',Overdue:'badge-unpaid','Awaiting Verification':'badge-active'};
+function myAnn(){ return annFor(ANN,'parent',KID,GROUPS).sort((a,b)=>String(b.publish_at||b.created_at||b.date||'').localeCompare(String(a.publish_at||a.created_at||a.date||''))); }
+const readSet=()=>{ try{ return JSON.parse(localStorage.getItem('kw_par_read_'+(PARENT&&PARENT.id))||'{}'); }catch(e){ return {}; } };
+const writeSet=o=>{ try{ localStorage.setItem('kw_par_read_'+(PARENT&&PARENT.id),JSON.stringify(o)); }catch(e){} };
+const msRoom=()=>dmRoom('admin','p:'+KID.id);
+async function refreshDots(){
+  const set=(id,n)=>{ const d=document.getElementById(id); if(d){ d.textContent=n; d.style.display=n?'inline-flex':'none'; } };
+  const rs=readSet(), an=myAnn().filter(a=>!rs['ann:'+a.id]).length, pay=PAYS.filter(p=>['Pending','Overdue'].includes(invState(p))).length;
+  set('anDot',an); set('payDot',pay);
+  let ms=0; try{ const list=await API.getChat({room:msRoom()})||[]; const seen=rs['room:'+msRoom()]||0; ms=Math.max(0,list.filter(m=>m.sender_id==='admin').length-seen); }catch(e){}
+  set('msDot',ms); const b=document.getElementById('bellDot'); b.textContent=an+ms; b.style.display=(an+ms)?'inline-block':'none';
 }
-async function postPDiary(){
-  const inp=document.getElementById('pgDiaryInput'); const msg=inp.value.trim(); if(!msg)return; inp.value='';
-  try{ await API.addDiary({student_id:ME.id,tutor_id:pTutorId(),author:'murid',message:msg}); renderPDiary(); }
-  catch(e){ toast('Failed to send: '+(e.message||e),'err'); inp.value=msg; }
+function clsLabel(c){ const g=GROUPS.find(x=>String(x.id)===String(c.group_id))||kidGroups().find(x=>String(x.tutor_id)===String(c.tutor_id)); return g?(g.name||g.class_id):(KID.program||'Class'); }
+
+/* ============================== DASHBOARD ============================== */
+function renderDash(){
+  const h=new Date().getHours(); document.getElementById('hi').textContent=(h<11?'Good morning':h<15?'Good afternoon':'Good evening')+', '+(PARENT.nama||'Parent')+'!';
+  document.getElementById('hiSub').textContent=`Here's how ${KID.nama} is doing.`;
+  const up=realCls().filter(c=>c.date>=TODAY).sort((a,b)=>(a.date+(a.start_time||'')).localeCompare(b.date+(b.start_time||'')));
+  const nx=up[0]; document.getElementById('dNext').textContent=nx?(nx.date===TODAY?'Today':dShort(nx.date)):'–'; document.getElementById('dNextT').textContent=nx?`${nx.start_time||''} · ${clsLabel(nx)}`:'No upcoming class';
+  const st=attendanceStats(CLS); document.getElementById('dAtt').textContent=st.counted?st.pct+'%':'–'; document.getElementById('dAttT').textContent=`${st.hadir} of ${st.counted} sessions attended`;
+  const done=TASKS.filter(t=>['submitted','graded','done'].includes(t.status)).length; document.getElementById('dTask').textContent=`${done} / ${TASKS.length}`; document.getElementById('dTaskT').textContent='Practice & projects';
+  const out=PAYS.filter(p=>['Pending','Overdue'].includes(invState(p))), sum=out.reduce((a,p)=>a+invAmt(p),0);
+  document.getElementById('dPay').textContent=out.length?fmtRp(sum):'All paid ✅'; document.getElementById('dPayT').textContent=out.length?out.length+' invoice'+(out.length>1?'s':'')+(out.some(p=>invState(p)==='Overdue')?' · overdue':''):'Thank you!';
+  try{ renderNotif(document.getElementById('notifBox'),out.map(p=>({level:invState(p)==='Overdue'?'warn':'info',icon:'🧾',title:`Invoice ${p.invoice_no||''} — ${fmtRp(invAmt(p))}`,sub:`Due ${dShort(p.due_date)} · please pay and upload the proof in Invoices & Payments.`}))); }catch(e){}
+  document.getElementById('dUpcoming').innerHTML=up.slice(0,5).map(c=>{ const d=new Date(c.date+'T00:00:00');
+    return `<div class="up-line"><div class="datebox"><small>${d.toLocaleDateString('en-US',{weekday:'short'}).toUpperCase()}</small><b>${d.getDate()}</b><small>${d.toLocaleDateString('en-US',{month:'short'})}</small></div><div style="flex:1;min-width:0"><b>${esc(clsLabel(c))}</b><small>${esc(trng(c))} · ${esc(tut(c.tutor_id).nama)} · ${esc(c.room||(c.type==='online'?'Online':'Onsite'))}</small></div>${c.session_type==='recovery'?'<span class="badge badge-purple">Recovery</span>':''}</div>`; }).join('')||'<div class="empty">No upcoming classes.</div>';
+  const notes=[...DEVS].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,3);
+  document.getElementById('dNotes').innerHTML=notes.map(n=>`<div class="sess" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;gap:8px"><h4>${esc(n.topic||'Class notes')}</h4><small class="text-muted">${esc(dShort(n.date))}</small></div>${n.strengths?`<div style="font-size:12.5px;color:#3C4A6B;margin-top:6px">👍 ${esc(n.strengths)}</div>`:''}${n.encourage?`<div style="font-size:12.5px;color:#3C4A6B;margin-top:4px">❤️ ${esc(n.encourage)}</div>`:''}</div>`).join('')||'<div class="empty">The teacher\'s development notes will appear here after class.</div>';
+  const g=kidGroups()[0]||{};
+  document.getElementById('dChild').innerHTML=`<div style="display:flex;gap:12px;align-items:center;margin-bottom:10px"><div class="kid-card" style="border:0;padding:0;background:none"><div class="big">${esc(initials(KID.nama))}</div><div><b>${esc(KID.nama)}</b><small>${esc(KID.program||g.program||'-')}${KID.level||g.level?' · '+esc(KID.level||g.level):''}</small><small>${g.class_id?'Class ID '+esc(g.class_id):''}</small></div></div></div>
+    <div class="kv"><span class="k">👩‍🏫 Teacher</span><span class="v">${esc(tut(g.tutor_id||KID.tutor_id).nama)}</span><span class="k">📅 Schedule</span><span class="v">${esc(g.schedule||KID.schedule||'-')}</span></div>`;
+  const an=myAnn().slice(0,3);
+  document.getElementById('dAnn').innerHTML=an.map(a=>`<div class="ann-item" style="cursor:pointer" onclick="go('announce')"><span style="font-size:20px">📣</span><div style="min-width:0"><b>${esc(a.title)}</b><small class="text-muted">${esc(dShort(a.publish_at||a.date||a.created_at))}</small></div></div>`).join('')||'<div class="empty">No announcements.</div>';
 }
 
-/* ---------- LOAD ---------- */
-async function loadAll(){
-  try{ ALL = await API.getClasses({student_id:ME.id}) || []; }catch(e){ ALL=[]; toast('Failed to load classes','err'); }
-  try{ PAYS = await API.getPayments({student_id:ME.id}) || []; }catch(e){ PAYS=[]; }
-  try{ DEP = await API.getDeposit(ME.id); }catch(e){ DEP=null; }
-  renderDashboard();
-}
-const byDateDesc=(a,b)=>String((b.date||'')+(b.start_time||'')).localeCompare(String((a.date||'')+(a.start_time||'')));
-const attended = c => !!(c.stu_in || (c.date && c.date <= todayStr()));
-
-function renderDashboard(){
-  const m=_m;
-  // Invoice notifications (from PAYS already loaded)
-  try{
-    const items=[...PAYS].filter(p=>!isPaid(p.status)).sort((a,b)=>String(a.month||'').localeCompare(String(b.month||''))).map(p=>{
-      const per=monthName(p.month); const amt=p.grand_total||p.next_deposit||p.deposit_total;
-      const st=String(p.status||'').toUpperCase().trim();
-      if(st==='MENUNGGU VERIFIKASI') return {level:'info',icon:'🕒',title:'Payment for '+per+' awaiting verification',sub:'Proof has been submitted — awaiting admin verification.'};
-      return {level:'warn',icon:'📌',title:'Invoice for '+per+' unpaid',sub:(amt?('Amount: '+rupiah(amt)+' · '):'')+'Please pay then upload the proof in the Payment menu.'};
-    });
-    renderNotif(document.getElementById('notifBox'), items);
-  }catch(e){}
-  const mon = ALL.filter(c=>ym(c.date)===m);
-  document.getElementById('mClasses').textContent = mon.length;
-  document.getElementById('mAttend').textContent = mon.filter(attended).length;
-  const mats = ALL.reduce((n,c)=>n+String(c.material_url||'').split('|').filter(Boolean).length,0);
-  document.getElementById('mMaterials').textContent = mats;
-  // payment status
-  const last = [...PAYS].sort((a,b)=>String(b.month||'').localeCompare(String(a.month||'')))[0];
-  const paidThis = PAYS.find(p=>ym(p.month)===m);
-  const payEl=document.getElementById('mPayment'), payHint=document.getElementById('mPayHint');
-  if(paidThis){ payEl.innerHTML='<span class="text-green">✅ Paid</span>'; payHint.textContent=monLabel; }
-  else if(last){ payEl.innerHTML='<span style="color:var(--orange)">Not paid this month</span>'; payHint.textContent='last: '+ (new Date(ym(last.month)+'-01').toLocaleDateString('en-US',{month:'short',year:'numeric'})); }
-  else { payEl.textContent='—'; payHint.textContent='no data yet'; }
-  // child info
-  document.getElementById('childInfo').innerHTML = [
-    ['Name', ME.nama||'-'],
-    ['School', ME.school||'-'],
-    ['Grade', ME.grade||'-'],
-    ['Fixed Schedule', ME.schedule||'-'],
-  ].map(([k,v])=>`<div class="stat" style="background:#fff"><div class="lbl">${k}</div><div style="font-weight:700;color:var(--navy);font-size:14px">${esc(String(v))}</div></div>`).join('');
-  // today
-  const tb=document.getElementById('todayBody');
-  const today=ALL.filter(c=>c.date===todayStr()).sort((a,b)=>String(a.start_time||'').localeCompare(String(b.start_time||'')));
-  tb.innerHTML = today.map(c=>`<tr>
-    <td>${tName(c.tutor_id)}</td><td>${timeRange(c.start_time,c.end_time)}</td>
-    <td>${c.duration||'-'} min</td><td>${typeBadge(c.type)}</td>
-    <td>${c.topic?multiline(c.topic):'<span class="muted">Not filled in yet</span>'}</td></tr>`).join('')
-    || '<tr><td colspan="5" class="muted" style="text-align:center;padding:22px">No classes today.</td></tr>';
+/* ============================== MY CHILD ============================== */
+function renderChild(){
+  document.getElementById('kidCards').innerHTML=KIDS.map(k=>{ const g=GROUPS.find(x=>String(x.student_ids||'').split(',').map(y=>y.trim()).includes(String(k.id)))||{};
+    return `<div class="kid-card ${String(k.id)===String(KID.id)?'on':''}" onclick="selectKid('${esc(k.id)}')"><div class="big">${esc(initials(k.nama))}</div><div style="flex:1;min-width:0"><b>${esc(k.nama)}</b><small>${esc(k.program||g.program||'-')}${k.level||g.level?' · Level '+esc(k.level||g.level):''}</small><small>${g.class_id?'Class ID: '+esc(g.class_id):'Private class'}</small></div>${String(k.id)===String(KID.id)?'<span class="badge badge-active">Viewing</span>':'<span class="chev">›</span>'}</div>`; }).join('');
+  const kv=(k,v)=>`<span class="k">${k}</span><span class="v">${esc(v||'-')}</span>`;
+  document.getElementById('kidProfile').innerHTML=kv('Name',KID.nama)+kv('Date of Birth',KID.dob?dShort(KID.dob):'')+kv('School',KID.school)+kv('Grade',KID.grade)+kv('Program',KID.program)+kv('Level',KID.level)+kv('Learning Mode',KID.learning_mode)+kv('Start Date',KID.start_date?dShort(KID.start_date):'')+kv('Student Username',KID.username);
+  const gs=kidGroups();
+  document.getElementById('kidClasses').innerHTML=(gs.length?gs:[{name:KID.program||'Private class',class_id:'',schedule:KID.schedule,tutor_id:KID.tutor_id,room:'',mode:KID.learning_mode}]).map(g=>{ const st=attendanceStats(CLS.filter(c=>!g.id||String(c.group_id)===String(g.id)));
+    return `<div class="sess"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h4>${esc(g.name||'-')}</h4>${g.class_id?`<span class="badge badge-grey">${esc(g.class_id)}</span>`:''}</div>
+      <div class="kv" style="margin-top:8px">${kv('👩‍🏫 Teacher',tut(g.tutor_id).nama)}${kv('📅 Schedule',g.schedule)}${kv('📍 Room / Mode',[g.room,g.mode].filter(Boolean).join(' · '))}${kv('✅ Attendance',st.counted?`${st.hadir}/${st.counted} (${st.pct}%)`:'-')}</div></div>`; }).join('');
 }
 
-/* ---------- REPORT ---------- */
-function matLinks(u){
-  const arr=String(u||'').split('|').filter(Boolean);
-  if(!arr.length) return '<span class="muted">-</span>';
-  return arr.map((x,i)=>{
-    const icon=/youtu\.?be/i.test(x)?'▶️':/drive\.google/i.test(x)?'📁':/\.(jpe?g|png)(\?|$)/i.test(x)?'🖼️':'📄';
-    const isData=x.startsWith('data:');
-    return isData ? `${icon} <span class="muted">file</span>` : `<a href="${x}" target="_blank" class="no-print" style="color:var(--blue)">${icon} File ${i+1}</a><span class="print-only" style="display:none">${icon} File ${i+1}</span>`;
-  }).join(' · ');
-}
-// Parent report = Student Development Summary ONLY (lesson plan objectives/skills are owner-only, not shown here).
-function developmentBlock(c){
-  let lp=null; try{ lp = c.lesson_plan ? JSON.parse(c.lesson_plan) : null; }catch(e){ lp=null; }
-  const dv = (lp && lp.summary) ? lp.summary : {};
-  if(dv.strength || dv.improve || dv.strategy){
-    return `<div class="lp-grid">
-      <div class="lp-box"><b>💪 Strength(s)</b><span>${esc(dv.strength||'-')}</span></div>
-      <div class="lp-box"><b>📈 Area of Improvement</b><span>${esc(dv.improve||'-')}</span></div>
-      <div class="lp-box"><b>🎯 Improvement Strategies</b><span>${esc(dv.strategy||'-')}</span></div>
-      ${c.note?`<div class="lp-box"><b>📝 Remarks</b><span>${esc(c.note)}</span></div>`:''}
-    </div>`;
-  }
-  return c.note ? `<div class="rep-remark" style="color:#374151;font-size:13px">${esc(c.note)}</div>` : '<span class="muted">No notes yet.</span>';
-}
-function renderReport(){
-  const m=document.getElementById('repMonth').value||_m;
-  const period=new Date(m+'-01').toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  document.getElementById('repLabel').textContent=period;
-  document.getElementById('phPeriod').textContent=period;
-  const rows=ALL.filter(c=>ym(c.date)===m).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
-  const box=document.getElementById('reportBody');
-  if(!rows.length){ box.innerHTML='<div class="card card-pad muted" style="text-align:center">No classes for this period yet.</div>'; return; }
-  box.innerHTML = rows.map((c,i)=>`
-    <div class="card card-pad" style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px">
-        <div class="card-title" style="margin:0">📘 Session ${i+1} — ${prettyDate(c.date)}</div>
-        <div style="display:flex;gap:8px;align-items:center">${typeBadge(c.type)}<span class="badge badge-active">${tName(c.tutor_id)}</span></div>
-      </div>
-      <div style="font-weight:700;color:var(--navy);white-space:pre-line;margin-bottom:4px">${c.topic?esc(c.topic):'<span class="muted" style="font-weight:400">Topic not filled in yet</span>'}</div>
-      ${developmentBlock(c)}
-      <div style="margin-top:10px;font-size:12.5px"><b>Materials:</b> ${matLinks(c.material_url)}</div>
-      ${hasRec(c)?`<div style="margin-top:8px;font-size:12.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b>🎧 Recording:</b> ${recCell(c)}</div>`:''}
-    </div>`).join('');
-}
-
-/* ---------- ATTENDANCE & KELAS ---------- */
+/* ============================== ATTENDANCE ============================== */
 function renderAttend(){
-  // Statistik & sertifikat = keseluruhan (semua sesi); tabel = per bulan terpilih
-  const st=attendanceStats(ALL);
-  document.getElementById('attStats').innerHTML=[
-    ['tint-blue','Total Sessions',st.total],['tint-green','Present',st.hadir],
-    ['tint-amber','Excused / Absent',st.izin+' / '+st.alpa],['tint-purple','Attendance',st.pct+'%'],
-  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
-  const cert=document.getElementById('certBox');
-  cert.style.display='none';
-  (async()=>{
-    let tasks=[]; try{ tasks=await API.getTasks({student_id:ME.id})||[]; }catch(e){}
-    const ts=taskCompletion(tasks);
-    if(certEligible(st,ts)){ cert.style.display='block'; document.getElementById('certPct').textContent=st.pct+'% & assignments '+ts.pct+'%'; }
-    else cert.style.display='none';
-  })();
-  const m=document.getElementById('attMonth').value||_m;
-  const today=todayStr();
-  const rows=ALL.filter(c=>ym(c.date)===m).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
-  document.getElementById('attBody').innerHTML=rows.map((c,i)=>{
-    const upcoming=isSession(c)&&c.date&&c.date>=today;
-    const canResched=upcoming&&classStatus(c)!=='reschedule';
-    const act=canResched?`<button class="btn btn-outline btn-sm" onclick="openResched('${c.id}')">🔄 Reschedule</button>`:'<span class="muted">-</span>';
-    return `<tr>
-      <td>${i+1}</td><td>${prettyDate(c.date)}</td><td>${tName(c.tutor_id)}</td>
-      <td>${timeRange(c.start_time,c.end_time)}</td><td>${typeBadge(c.type)}</td>
-      <td>${statusBadge(c)}</td><td>${isSession(c)?attendBadgeFor(c):'<span class="muted">-</span>'}</td>
-      <td style="white-space:nowrap">${act}</td></tr>`;
-  }).join('') || '<tr><td colspan="8" class="muted" style="text-align:center;padding:20px">No sessions this month yet.</td></tr>';
+  const mi=document.getElementById('attMonth'); if(!mi.value) mi.value=TODAY.slice(0,7); const m=mi.value;
+  const st=attendanceStats(CLS);
+  document.getElementById('attStats').innerHTML=[['tint-blue','Total Sessions',st.counted],['tint-green','Present',st.hadir],['tint-amber','Sick / Excused / Absent',`${st.sakit||0} / ${st.izin||0} / ${st.alpa||0}`],['tint-purple','Attendance Rate',st.pct+'%']]
+    .map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+  const gs=kidGroups().filter(g=>g.status!=='Completed');
+  document.getElementById('certProg').innerHTML=gs.length?'<div class="card-pad">'+gs.map(g=>{ const s=attendanceStats(CLS.filter(c=>String(c.group_id)===String(g.id))), min=Number(g.min_cert)||26, tot=Number(g.total_sessions)||32;
+    return `<div style="display:flex;justify-content:space-between;font-size:13px"><b style="color:var(--navy)">🎯 Certificate progress — ${esc(g.name)}</b><span>${s.hadir} / ${min} sessions</span></div><div class="progress ${s.hadir>=min?'':'blue'}" style="margin:6px 0"><span style="width:${Math.min(100,s.hadir/min*100)}%"></span></div><small class="text-muted">At least ${min} of ${tot} sessions are needed for the certificate. Missed a class? Ask the admin about a recovery class.</small>`; }).join('<hr style="border:0;border-top:1px dashed var(--line);margin:12px 0">')+'</div>':'';
+  document.getElementById('certProg').style.display=gs.length?'':'none';
+  const rows=CLS.filter(c=>String(c.date).slice(0,7)===m||(c.status==='requested'&&String(c.req_at||c.created_at||'').slice(0,7)===m)).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  document.getElementById('attBody').innerHTML=rows.map(c=>{ const can=isSession(c)&&c.date>=TODAY&&classStatus(c)!=='reschedule'&&!(c.req_kind==='reschedule'&&c.req_status==='pending');
+    const pend=(c.req_kind==='reschedule'&&c.req_status==='pending')||classStatus(c)==='reschedule';
+    return `<tr><td style="white-space:nowrap">${esc(dShort(c.date))}</td><td>${esc(clsLabel(c))}${c.session_type==='recovery'?' <span class="badge badge-purple">Recovery</span>':''}${c.orig_date?`<br><small class="text-muted">moved from ${esc(dShort(c.orig_date))}</small>`:''}</td><td>${esc(tut(c.tutor_id).nama)}</td><td style="white-space:nowrap">${esc(trng(c))}</td>
+      <td>${c.type==='online'?'<span class="badge badge-online">ONLINE</span>':'<span class="badge badge-onsite">ONSITE</span>'}</td><td>${statusBadge(c)}</td><td>${isSession(c)&&c.date<=TODAY?attendBadgeFor(c):'<span class="text-muted">-</span>'}</td>
+      <td style="white-space:nowrap">${can?`<button class="btn btn-outline btn-sm" onclick="openResched('${esc(c.id)}')">🔄 Reschedule</button>`:(pend?'<span class="badge badge-pending">Reschedule requested</span>':'<span class="text-muted">-</span>')}</td></tr>`; }).join('')||'<tr><td colspan="8" class="empty">No sessions this month.</td></tr>';
 }
-function downloadCert(){
-  const st=attendanceStats(ALL);
-  openCertificate({name:ME.nama||'Student', program:(ME.grade?('Grade '+ME.grade+' '):'')+'Language Program', pct:st.pct, sessions:st.counted});
-}
-function openReq(){
-  document.getElementById('rqDate').value=todayStr();
-  document.getElementById('rqTime').value='16:00'; document.getElementById('rqDur').value=60;
-  document.getElementById('rqNote').value=''; document.querySelector('input[name=rqType][value=online]').checked=true;
-  openModal('mReq');
-}
+function openReq(){ document.getElementById('rqDate').value=TODAY; document.getElementById('rqTime').value=(kidGroups()[0]||{}).start_time||'16:00'; document.getElementById('rqNote').value=''; openModal('mReq'); }
 async function submitReq(){
-  if(submitReq._busy)return;
-  const p={student_id:ME.id, tutor_id:ME.tutor_id||'', date:document.getElementById('rqDate').value,
-    start_time:document.getElementById('rqTime').value, duration:document.getElementById('rqDur').value,
-    type:document.querySelector('input[name=rqType]:checked').value, status:'requested', req_by:'ortu',
-    req_note:document.getElementById('rqNote').value };
-  if(!p.date||!p.start_time){ toast('Fill in the date & time first','err'); return; }
-  const btn=document.querySelector('#mReq .btn-primary'); submitReq._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Sending…';}
-  try{ await API.addClass(p); closeModal('mReq'); toast('Request sent — awaiting approval','ok'); ALL=await API.getClasses({student_id:ME.id})||ALL; renderAttend(); }
+  const d=document.getElementById('rqDate').value, t=document.getElementById('rqTime').value; if(!d||!t){ toast('Choose the date & time','err'); return; }
+  const g=kidGroups()[0]||{};
+  try{ await API.addClass({student_id:KID.id,tutor_id:g.tutor_id||KID.tutor_id||'',group_id:g.id||'',date:d,start_time:t,duration:90,type:document.querySelector('input[name=rqType]:checked').value,status:'requested',req_kind:'extra',req_status:'pending',req_by:'ortu',req_at:new Date().toISOString(),req_note:document.getElementById('rqNote').value.trim(),req_reason:document.getElementById('rqNote').value.trim()});
+    closeModal('mReq'); toast('Request sent — the admin will confirm ✅','ok'); CLS=await API.getClasses({student_id:KID.id})||CLS; renderAttend(); }
   catch(e){ toast('Failed: '+(e.message||e),'err'); }
-  finally{ submitReq._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Send Request';} }
 }
-function openResched(id){
-  const c=ALL.find(x=>x.id===id); if(!c)return;
-  document.getElementById('rsId').value=id;
-  document.getElementById('rsCur').innerHTML='Current schedule: <b>'+prettyDate(c.date)+' '+(c.start_time||'')+'</b>';
-  document.getElementById('rsDate').value=c.date||todayStr(); document.getElementById('rsTime').value=c.start_time||'16:00';
-  document.getElementById('rsNote').value='';
-  openModal('mResched');
-}
+function openResched(id){ const c=CLS.find(x=>x.id===id); if(!c) return; document.getElementById('rsId').value=id;
+  document.getElementById('rsCur').innerHTML=`Current class: <b>${esc(clsLabel(c))}</b> · ${esc(dShort(c.date))} ${esc(c.start_time||'')}`;
+  document.getElementById('rsDate').value=''; document.getElementById('rsTime').value=c.start_time||''; document.getElementById('rsNote').value=''; openModal('mResched'); }
 async function submitResched(){
-  if(submitResched._busy)return;
-  const id=document.getElementById('rsId').value;
-  const p={id,status:'reschedule',resched_date:document.getElementById('rsDate').value,
-    resched_time:document.getElementById('rsTime').value,resched_note:document.getElementById('rsNote').value,req_by:'ortu'};
-  if(!p.resched_date||!p.resched_time){ toast('Fill in the new date & time','err'); return; }
-  const btn=document.querySelector('#mResched .btn-primary'); submitResched._busy=true; if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.textContent='Sending…';}
-  try{ await API.updateClass(p); closeModal('mResched'); toast('Reschedule request sent','ok'); ALL=await API.getClasses({student_id:ME.id})||ALL; renderAttend(); }
+  const id=document.getElementById('rsId').value, c=CLS.find(x=>x.id===id), d=document.getElementById('rsDate').value, reason=document.getElementById('rsNote').value.trim();
+  if(!d){ toast('Choose the preferred new date','err'); return; } if(!reason){ toast('Write the reason','err'); return; }
+  try{ await API.updateClass({id,req_kind:'reschedule',req_status:'pending',req_by:'ortu',req_at:new Date().toISOString(),resched_date:d,resched_time:document.getElementById('rsTime').value||c.start_time,req_reason:reason,resched_note:reason,orig_date:c.date,orig_time:c.start_time});
+    closeModal('mResched'); toast('Reschedule request sent ✅','ok'); CLS=await API.getClasses({student_id:KID.id})||CLS; renderAttend(); }
   catch(e){ toast('Failed: '+(e.message||e),'err'); }
-  finally{ submitResched._busy=false; if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Send Request';} }
 }
 
-/* ---------- PAYMENT ---------- */
-function renderPayment(){
-  const paidMeet = DEP?Number(DEP.paid_meetings)||0:0;
-  const usedMin = DEP?Number(DEP.minutes_used)||0:0, totMin = DEP?Number(DEP.minutes_total)||0:0;
-  const sisaMin = Math.max(0,totMin-usedMin);
-  const totalBayar = PAYS.reduce((a,p)=>a+(Number(p.grand_total)||Number(p.deposit_total)||0),0);
-  document.getElementById('payStats').innerHTML=[
-    ['tint-green','Total Paid',fmtRp(totalBayar)],
-    ['tint-blue','Meeting Deposit',paidMeet+' meet'],
-    ['tint-amber','Minutes Remaining',fmtNum(sisaMin)+' min'],
-    ['tint-purple','Number of Transactions',PAYS.length],
-  ].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val" style="font-size:20px">${v}</div></div>`).join('');
-  const rows=[...PAYS].sort((a,b)=>String(b.month||'').localeCompare(String(a.month||'')));
-  document.getElementById('payBody').innerHTML=rows.map(p=>{
-    const per=ym(p.month)?new Date(ym(p.month)+'-01').toLocaleDateString('en-US',{month:'long',year:'numeric'}):(p.month||'-');
-    const st=(p.status||'LUNAS').toUpperCase();
-    const view=p.proof_url?`<a href="${p.proof_url}" target="_blank" style="color:var(--blue)">📎 View proof</a>`:'';
-    let act;
-    if(isPaid(st)) act=view||'<span class="muted">-</span>';
-    else if(st==='MENUNGGU VERIFIKASI') act=`<span class="muted">🕒 Awaiting review</span>${view?' · '+view:''}`;
-    else act=`<button class="btn btn-primary btn-sm" onclick="uploadBukti('${p.id}')">📤 Upload Proof</button>${view?' · '+view:''}`;
-    return `<tr><td>${per}</td><td>${p.pay_date?prettyDate(p.pay_date):'-'}</td>
-      <td>${p.meetings||'-'} meeting</td><td><b>${fmtRp(p.grand_total||p.deposit_total||0)}</b></td>
-      <td>${payStatusBadge(st)}</td><td style="white-space:nowrap">${act}</td></tr>`;
-  }).join('') || '<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">No invoices / payments yet.</td></tr>';
+/* ============================== PROGRESS ============================== */
+function renderProgress(){
+  const done=TASKS.filter(t=>['submitted','graded','done'].includes(t.status)).length, graded=TASKS.filter(t=>t.status==='graded').length;
+  const qs=[...RESULTS].sort((a,b)=>String(b.taken_at||b.created_at).localeCompare(String(a.taken_at||a.created_at)));
+  const avg=qs.length?Math.round(qs.reduce((a,r)=>a+(Number(r.total)?Number(r.score)/Number(r.total)*100:0),0)/qs.length):0;
+  document.getElementById('pgStats').innerHTML=[['tint-blue','Assignments Done',`${done} / ${TASKS.length}`],['tint-green','Graded',graded],['tint-purple','Average Quiz Score',qs.length?avg+'%':'–'],['tint-amber','Certificates',CERTS.length]]
+    .map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+  const SB={assigned:'<span class="badge badge-pending">To do</span>',submitted:'<span class="badge badge-active">Submitted</span>',graded:'<span class="badge badge-paid">Graded</span>',done:'<span class="badge badge-paid">Done</span>'};
+  document.getElementById('pgTasks').innerHTML=[...TASKS].sort((a,b)=>String(b.due_date).localeCompare(String(a.due_date))).map(t=>{ const late=(t.status||'assigned')==='assigned'&&t.due_date&&t.due_date<TODAY;
+    return `<tr><td><b style="color:var(--navy)">${esc(t.title)}</b>${t.unit?`<br><small class="text-muted">${esc(t.unit)}</small>`:''}</td><td>${esc(taskTypeLabel(t.type))}</td><td style="white-space:nowrap">${esc(dShort(t.due_date))}${late?' <span class="badge badge-unpaid">Overdue</span>':''}</td><td>${SB[t.status||'assigned']||esc(t.status)}</td><td style="max-width:280px">${t.status==='graded'?`<b>⭐ ${esc(t.points||'-')}</b>${t.feedback?`<br><small class="text-muted">${esc(t.feedback)}</small>`:''}`:'<span class="text-muted">-</span>'}</td></tr>`; }).join('')||'<tr><td colspan="5" class="empty">No assignments yet.</td></tr>';
+  document.getElementById('pgQuiz').innerHTML=qs.map(r=>{ const q=QUIZZES.find(x=>x.id===r.quiz_id)||{}; const p=Number(r.total)?Math.round(Number(r.score)/Number(r.total)*100):0;
+    return `<tr><td><b>${esc(q.title||'Quiz')}</b></td><td>${esc(dShort(r.taken_at||r.created_at))}</td><td><b>${esc(r.score)}</b> / ${esc(r.total)} <small class="text-muted">(${p}%)</small></td></tr>`; }).join('')||'<tr><td colspan="3" class="empty">No quiz results yet.</td></tr>';
+  document.getElementById('pgCerts').innerHTML=CERTS.map(c=>`<tr><td><b>Certificate of Completion</b><br><small class="text-muted">${esc(c.program||'')} ${esc(c.level||'')} · No. ${esc(c.cert_no||'-')}</small></td><td>${esc(dShort(c.issued_at))}</td><td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="viewCert('${esc(c.id)}')">👁️ View</button> <button class="btn btn-primary btn-sm" onclick="viewCert('${esc(c.id)}',true)">⬇️ Download</button></td></tr>`).join('')||'<tr><td colspan="3" class="empty">No certificates yet.</td></tr>';
 }
+function viewCert(id,dl){ const c=CERTS.find(x=>x.id===id); if(!c) return;
+  if(c.mode==='upload'&&c.file_url){ window.open(c.file_url,'_blank'); return; }
+  const [a,t]=String(c.attendance||'').split('/').map(Number); openCertificate({name:KID.nama,program:c.program,level:c.level,pct:t?Math.round(a/t*100):'',sessions:a||'',no:c.cert_no,date:dShort(c.completion_date||c.issued_at),print:!!dl}); }
+
+/* ============================== MONTHLY REPORT ============================== */
+function renderReport(){
+  const mi=document.getElementById('repMonth'); if(!mi.value) mi.value=TODAY.slice(0,7); const m=mi.value;
+  const ses=CLS.filter(c=>String(c.date).slice(0,7)===m&&isSession(c)&&c.date<=TODAY).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  const notes=DEVS.filter(d=>String(d.date).slice(0,7)===m);
+  const st=attendanceStats(ses);
+  let html=`<div class="grid grid-4" style="margin-bottom:16px">${[['tint-blue','Sessions',ses.length],['tint-green','Attended',st.hadir],['tint-purple','Attendance',st.counted?st.pct+'%':'–'],['tint-amber','Teacher Notes',notes.length]].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('')}</div>`;
+  html+=ses.map((c,i)=>{ const n=notes.find(d=>d.date===c.date)||{};
+    return `<div class="sess"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h4>📘 Session ${i+1} — ${esc(dShort(c.date))}</h4><div style="display:flex;gap:6px">${attendBadgeFor(c)}<span class="badge badge-grey">${esc(tut(c.tutor_id).nama)}</span></div></div>
+      <div style="font-weight:700;color:var(--navy);margin-top:6px">${esc(c.topic||n.topic||'')||'<span class="text-muted" style="font-weight:500">Topic not filled in yet</span>'}</div>
+      ${n.strengths||n.improve||n.strategy||n.encourage?`<div class="dv">${n.strengths?`<div><b>👍 Strengths</b>${esc(n.strengths)}</div>`:''}${n.improve?`<div><b>📈 Areas to Improve</b>${esc(n.improve)}</div>`:''}${n.strategy?`<div><b>💡 Strategy</b>${esc(n.strategy)}</div>`:''}${n.encourage?`<div><b>❤️ Encouragement</b>${esc(n.encourage)}</div>`:''}</div>`:(c.note?`<div style="font-size:12.5px;color:#3C4A6B;margin-top:6px;white-space:pre-line">${esc(c.note)}</div>`:'')}</div>`; }).join('')||'<div class="card card-pad empty">No classes in this month yet.</div>';
+  document.getElementById('reportBody').innerHTML=html;
+}
+function downloadMonthReport(){ const m=document.getElementById('repMonth').value||TODAY.slice(0,7); const g=kidGroups()[0]||{};
+  const list=DEVS.filter(d=>String(d.date).slice(0,7)===m).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  if(!list.length){ toast('No teacher notes for this month yet','err'); return; }
+  openMonthlyReport({student:KID.nama,program:g.program||KID.program,level:g.level||KID.level,teacher:tut((list[0]||{}).tutor_id||g.tutor_id).nama,month:m,rows:list}); }
+
+/* ============================== PAYMENTS ============================== */
+function renderPayment(){
+  const list=[...PAYS].sort((a,b)=>String(b.issue_date||b.month).localeCompare(String(a.issue_date||a.month)));
+  const paid=list.filter(p=>invState(p)==='Paid').reduce((a,p)=>a+invAmt(p),0), out=list.filter(p=>['Pending','Overdue'].includes(invState(p)));
+  document.getElementById('payStats').innerHTML=[['tint-amber','Outstanding',fmtRp(out.reduce((a,p)=>a+invAmt(p),0))],['tint-blue','Awaiting Verification',list.filter(p=>invState(p)==='Awaiting Verification').length],['tint-green','Total Paid',fmtRp(paid)],['tint-purple','Invoices',list.length]]
+    .map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val" style="font-size:20px">${v}</div></div>`).join('');
+  document.getElementById('payBody').innerHTML=list.map(p=>{ const s=invState(p);
+    return `<tr><td><b style="color:var(--blue)">${esc(p.invoice_no||'—')}</b></td><td>${esc(monthLabel(String(p.month||p.issue_date||'').slice(0,7)))}</td><td style="white-space:nowrap">${esc(dShort(p.due_date))}</td><td><b>${fmtRp(invAmt(p))}</b></td><td><span class="badge ${IB[s]}">${s}</span></td>
+      <td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="viewInvoice('${esc(p.id)}')">🧾 View</button>${['Pending','Overdue'].includes(s)?` <button class="btn btn-primary btn-sm" onclick="uploadBukti('${esc(p.id)}')">📤 Upload Proof</button>`:''}${p.proof_url?` <a class="btn btn-ghost btn-sm" href="${esc(p.proof_url)}" target="_blank">📎</a>`:''}</td></tr>`; }).join('')||'<tr><td colspan="6" class="empty">No invoices yet.</td></tr>';
+}
+function viewInvoice(id){ const p=PAYS.find(x=>x.id===id); if(!p) return;
+  const items=[{d:`${p.program||KID.program||'Course'} ${p.level||''} — ${monthLabel(String(p.month).slice(0,7))}`,q:(p.meetings||'')+' sessions',p:Number(p.price_per_meet)||null,t:(Number(p.meetings)||0)*(Number(p.price_per_meet)||0)||invAmt(p)}];
+  if(Number(p.add_fee2)) items.push({d:p.add_fee2_note||'Additional fee',q:'',p:null,t:Number(p.add_fee2)});
+  if(Number(p.add_fee1)) items.push({d:'Additional fee',q:'',p:null,t:Number(p.add_fee1)});
+  openInvoice({no:p.invoice_no,student:KID.nama,parent:PARENT.nama,program:p.program||KID.program,level:p.level||KID.level,issue:dShort(p.issue_date||p.month),due:dShort(p.due_date),period:monthLabel(String(p.month).slice(0,7)),status:p.status,paidOn:dShort(p.paid_at||p.pay_date),items,total:invAmt(p),note:p.note}); }
 let _buktiId=null;
-function uploadBukti(id){ _buktiId=id; document.getElementById('buktiFile').value=''; document.getElementById('buktiFile').click(); }
+function uploadBukti(id){ _buktiId=id; const f=document.getElementById('buktiFile'); f.value=''; f.click(); }
 document.getElementById('buktiFile').onchange=async e=>{
-  const f=e.target.files[0]; if(!f||!_buktiId) return;
-  const p=PAYS.find(x=>x.id===_buktiId); if(!p){ toast('Invoice data not found','err'); return; }
-  toast('Uploading proof…');
-  try{
-    const b64=await fileToBase64(f); const r=await API.uploadFile(b64,f.name);
-    const url=(r&&(r.view||r.url))||'';
-    await API.savePayment({...p, proof_url:url, status:'MENUNGGU VERIFIKASI'});
-    toast('Proof submitted — awaiting admin verification','ok');
-    PAYS=await API.getPayments({student_id:ME.id})||PAYS; renderPayment();
-  }catch(err){ toast('Upload failed: '+(err.message||err),'err'); }
+  const f=e.target.files[0]; if(!f||!_buktiId) return; const p=PAYS.find(x=>x.id===_buktiId); if(!p) return;
+  if(f.size>5*1024*1024){ toast('Max 5 MB','err'); return; }
+  try{ toast('Uploading proof…'); const r=await API.uploadFile(await fileToBase64(f),f.name); const url=(r&&(r.view||r.url))||'';
+    await API.savePayment({...p,proof_url:url,status:'MENUNGGU VERIFIKASI',pay_date:TODAY});
+    await API.addChat({room:msRoom(),sender_id:'p:'+KID.id,sender_name:PARENT.nama||'Parent',role:'ortu',message:`📤 Payment proof uploaded for ${p.invoice_no||'invoice'} (${fmtRp(invAmt(p))}). Please verify. Thank you!`}).catch(()=>{});
+    PAYS=await API.getPayments({student_id:KID.id})||PAYS; renderPayment(); refreshDots(); toast('Proof submitted — awaiting admin verification ✅','ok'); }
+  catch(err){ toast('Upload failed: '+(err.message||err),'err'); }
 };
+
+/* ============================== ANNOUNCEMENTS ============================== */
+function renderAnnounce(){
+  const list=myAnn(), rs=readSet();
+  document.getElementById('annList').innerHTML=list.map(a=>`<div class="ann-item"><span style="font-size:22px">📣</span><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(a.title)} ${!rs['ann:'+a.id]?'<span class="badge badge-pending">New</span>':''}</b><small class="text-muted">${esc(dShort(a.publish_at||a.date||a.created_at))}</small></div><p>${esc(a.body||a.message||'')}</p>${a.attach_url?`<a class="attach" href="${esc(a.attach_url)}" target="_blank">📎 ${esc(a.attach_name||'Attachment')}</a>`:''}</div></div>`).join('')||'<div class="empty">No announcements right now.</div>';
+  list.forEach(a=>rs['ann:'+a.id]=1); writeSet(rs); refreshDots();
+}
+
+/* ============================== MESSAGES (Operations Admin only) ============================== */
+const msPoll=makeChatPoller(list=>{ renderChatFeed(document.getElementById('msFeed'),list,'p:'+KID.id); const rs=readSet(); rs['room:'+msRoom()]=list.filter(m=>m.sender_id==='admin').length; writeSet(rs); refreshDots(); },4000);
+function renderMessages(){ document.getElementById('msKid').textContent=KID.nama; document.getElementById('msSub').textContent='Operations Admin · about '+KID.nama; msPoll.start(msRoom()); }
+async function sendMsg(){ const i=document.getElementById('msMsg'), m=i.value.trim(); if(!m) return; i.value='';
+  try{ await API.addChat({room:msRoom(),sender_id:'p:'+KID.id,sender_name:PARENT.nama||'Parent',role:'ortu',message:m}); msPoll.refresh(); }catch(e){ toast('Failed: '+(e.message||e),'err'); i.value=m; } }
+
+/* ============================== ACCOUNT ============================== */
+function renderAccount(){
+  const kv=(k,v)=>`<span class="k">${k}</span><span class="v">${esc(v||'-')}</span>`;
+  document.getElementById('acProfile').innerHTML=kv('Name',PARENT.nama)+kv('Parent ID',PARENT.parent_id)+kv('Username',PARENT.username)+kv('Relation',PARENT.relation)+kv('WhatsApp',PARENT.wa)+kv('Linked Children',KIDS.map(k=>k.nama).join(', '));
+  document.getElementById('acPinCard').style.display=PARENT.legacy?'none':'';
+}
+async function changePin(){
+  const o=document.getElementById('acOld').value, n=document.getElementById('acNew').value, n2=document.getElementById('acNew2').value;
+  if(String(o)!==String(PARENT.pin)){ toast('Current PIN is incorrect','err'); return; }
+  if(!/^\d{4}$/.test(n)){ toast('New PIN must be 4 digits','err'); return; } if(n!==n2){ toast('The new PINs do not match','err'); return; }
+  try{ await API.saveParent({id:PARENT.id,pin:n}); PARENT.pin=n; ['acOld','acNew','acNew2'].forEach(id=>document.getElementById(id).value=''); try{ const s=JSON.parse(sessionStorage.getItem('kw_par')||'{}'); s.p=n; sessionStorage.setItem('kw_par',JSON.stringify(s)); }catch(e){} toast('PIN updated ✅','ok'); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
 </script>
 <script>
   initAppShell();

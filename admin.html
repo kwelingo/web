@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1F6FEB">
 <link rel="apple-touch-icon" href="assets/icon-192.png">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v=20261102">
 <style>
   .welcome h1{font-size:28px}
   .stat5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:18px}
@@ -26,6 +26,11 @@
   html.embed .page-head .ph-left{display:none}
   html.embed .page-head{justify-content:flex-end;margin-bottom:6px}
   html.embed #ivTabs{display:none}
+  /* read-only (Super Admin overview) */
+  html.ro .content .btn-primary,html.ro .content .btn-danger,html.ro .content .btn-green,html.ro .content .menu-wrap,html.ro .content .ro-hide{display:none!important}
+  html.ro .content textarea,html.ro .content .side input{pointer-events:none;background:#F6F8FC}
+  .ro-band{display:none}
+  html.ro .ro-band{display:block;background:#F1F6FF;border:1px solid #DAE6FB;color:#33507A;border-radius:12px;padding:9px 14px;font-size:12.5px;margin-bottom:10px}
   .dropzone2{border:2px dashed #C7D5EC;border-radius:12px;padding:18px;text-align:center;color:var(--muted);font-size:12.5px;cursor:pointer;background:#FAFCFF}
   .dropzone2:hover{border-color:var(--blue)}
   @media(max-width:1280px){.stat5{grid-template-columns:repeat(3,minmax(0,1fr))}.msg-grid{grid-template-columns:300px minmax(0,1fr)}.msg-grid>.info{display:none}}
@@ -35,7 +40,7 @@
 </style>
 </head>
 <body>
-<script>if(/[?&]embed=1/.test(location.search)) document.documentElement.classList.add('embed');</script>
+<script>if(/[?&]embed=1/.test(location.search)) document.documentElement.classList.add('embed'); if(/[?&]ro=1/.test(location.search)) document.documentElement.classList.add('ro');</script>
 
 <!-- ===== PIN GATE ===== -->
 <div id="adGate" style="position:fixed;inset:0;z-index:600;background:linear-gradient(160deg,#EEF4FF 0%,#F7FBFF 60%,#FFF6EA 100%);display:flex;align-items:center;justify-content:center;padding:20px">
@@ -56,6 +61,7 @@
     <nav class="nav">
       <a data-view="dashboard" class="active"><span class="ic">🏠</span> Dashboard</a>
       <a data-view="classops"><span class="ic">📅</span> Class Operations</a>
+      <a data-view="classes"><span class="ic">🏫</span> Classes &amp; Enrollment</a>
       <a data-view="requests"><span class="ic">📨</span> Requests <span class="nav-dot" id="reqDot" style="display:none"></span></a>
       <a data-view="lessons"><span class="ic">📖</span> Lesson Plans <span class="nav-dot" id="lpDot" style="display:none"></span></a>
       <a data-view="certs"><span class="ic">🏅</span> Certificates <span class="nav-dot" id="certDot" style="display:none"></span></a>
@@ -81,6 +87,7 @@
     </div>
 
     <div class="content">
+      <div class="ro-band">👁️ View only — approvals and changes are made in the Operations Admin portal.</div>
 
       <!-- ===== DASHBOARD ===== -->
       <section class="view" id="view-dashboard">
@@ -103,10 +110,22 @@
         </div>
       </section>
 
+      <!-- ===== CLASSES & ENROLLMENT (class groups) ===== -->
+      <section class="view hide" id="view-classes">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">🏫</div><div><h1>Classes &amp; Enrollment</h1><div class="sub">Create classes (Class ID), assign teachers &amp; students, and generate the session schedule.</div></div></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="exportClassesO()">⬇️ Export</button><button class="btn btn-primary" onclick="openClassGroup()">＋ Add Class</button></div></div>
+        <div class="grid grid-4" style="margin-bottom:16px" id="cgStats"></div>
+        <div class="utabs" id="cgTabs"></div>
+        <div class="toolbar"><select id="cgFProg" onchange="renderClassGroups(true)"></select><select id="cgFTutor" onchange="renderClassGroups(true)"></select><select id="cgFMode" onchange="renderClassGroups(true)"><option value="">All Modes</option><option>Onsite</option><option>Online</option><option>Hybrid</option></select><input class="grow" id="cgQ" placeholder="🔎 Search class ID, name, teacher or level…" oninput="renderClassGroups(true)"></div>
+        <div class="card"><div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Class ID</th><th>Name</th><th>Program</th><th>Teacher</th><th>Schedule</th><th>Mode</th><th>Students</th><th>Status</th><th>Start – End</th><th>Applicants</th><th></th></tr></thead>
+          <tbody id="cgBody"></tbody></table></div></div>
+      </section>
+
       <!-- ===== CLASS OPERATIONS ===== -->
       <section class="view hide" id="view-classops">
         <div class="page-head"><div class="ph-left"><div class="ph-ic">📅</div><div><h1>Class Operations</h1><div class="sub">View and manage class schedules, class details, and any changes.</div></div></div>
-          <button class="btn btn-primary" onclick="openSession()">＋ Add Class</button></div>
+          <button class="btn btn-primary" onclick="openSession()">＋ Add Session</button></div>
         <div class="utabs" id="coTabs"></div>
         <div class="toolbar" id="coBar">
           <input type="month" id="coMonth" onchange="CO_PAGE=1;renderClassOps()">
@@ -156,16 +175,17 @@
       <section class="view hide" id="view-certs">
         <div class="page-head"><div class="ph-left"><div class="ph-ic">🏅</div><div><h1>Certificate Management</h1><div class="sub">Check eligibility, generate or upload certificates, and track issued certificates.</div></div></div></div>
         <div class="utabs" id="ceTabs"></div>
-        <div class="toolbar">
+        <div class="toolbar" id="ceBar">
           <select id="ceProg" onchange="renderCerts()"></select>
           <select id="ceClass" onchange="renderCerts()"></select>
           <input class="grow" id="ceSearch" placeholder="🔎 Search student name…" oninput="renderCerts()">
         </div>
+        <div id="ceTpl" class="hide"></div>
         <div class="split2 noside" id="ceWrap">
           <div class="card"><div class="table-wrap"><table class="tbl"><thead id="ceHead"></thead><tbody id="ceBody"></tbody></table></div></div>
           <div class="card card-pad side panel-side" id="ceSide"></div>
         </div>
-        <div class="note-band mt-16" style="font-size:12.5px">🏅 A student is <b>eligible</b> when they have attended at least the class's minimum sessions (default <b>26 of 32</b>, ≈80%). Late counts as present; sick/excused/absent do not. <b>Generate</b> creates a Kwelingo e-certificate automatically; <b>Upload</b> lets you attach a certificate file made elsewhere. Students see issued certificates in their Student Hub.</div>
+        <div class="note-band mt-16" style="font-size:12.5px">🏅 A student is <b>eligible</b> when they have attended at least the class's minimum sessions (default <b>26 of 32</b>, ≈80%). Late counts as present; sick/excused/absent do not. <b>Generate</b> creates the e-certificate automatically (using your design from the <b>Certificate Template</b> tab, if uploaded); <b>Upload</b> lets you attach a certificate file made elsewhere. Students see issued certificates in their Student Hub.</div>
       </section>
 
       <!-- ===== ATTENDANCE & PROGRESS ===== -->
@@ -404,7 +424,67 @@
   </div>
 </div>
 
-<script src="assets/app.js"></script>
+<!-- MODAL: CLASS GROUP -->
+<div class="modal-overlay" id="mClassGroup">
+  <div class="modal">
+    <div class="modal-head"><h3 id="mCgTitle">Add Class</h3><button class="x" onclick="closeModal('mClassGroup')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="cgId">
+      <div class="field-row">
+        <div class="field"><label>Class ID</label>
+          <div style="display:flex;gap:10px;align-items:center"><input id="cgCid" readonly style="flex:1;font-weight:700;color:var(--navy)"><button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('cgCid').value=genClassId()">🔄</button></div></div>
+        <div class="field"><label>Class Name <span class="req">*</span></label><input id="cgName" placeholder="e.g. English A"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Program</label><select id="cgProgram"><option value="">Select…</option><option>Boost English</option><option>Speak Active</option><option>IELTS Preparation</option><option>Boost Mandarin</option><option>HSK Preparation</option></select></div>
+        <div class="field"><label>Teacher</label><select id="cgTutor"></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Level</label><input id="cgLevel" placeholder="e.g. A2 / B1 / HSK 2"></div>
+        <div class="field"><label>Mode</label><select id="cgMode"><option>Onsite</option><option>Online</option><option>Hybrid</option></select></div>
+      </div>
+      <div class="field"><label>Students <span class="help" style="display:inline">(tick the students in this class)</span></label>
+        <input id="cgStuFilter" placeholder="🔎 Filter students…" oninput="drawCgStudents()" style="margin-bottom:6px">
+        <div id="cgStuPick" style="max-height:170px;overflow:auto;border:1.5px solid var(--line);border-radius:10px;padding:6px 10px"></div>
+        <input type="hidden" id="cgStudents"></div>
+      <div class="field-row">
+        <div class="field"><label>Days</label><input id="cgDays" placeholder="e.g. Mon & Thu"></div>
+        <div class="field"><label>Room / Venue</label><input id="cgRoom" placeholder="e.g. Room 2 / Zoom"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Start Time</label><input type="time" id="cgStartTime"></div>
+        <div class="field"><label>End Time</label><input type="time" id="cgEndTime"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Start Date</label><input type="date" id="cgStart"></div>
+        <div class="field"><label>End Date <span class="help" style="display:inline">(optional)</span></label><input type="date" id="cgEnd"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>No. of Sessions</label><input type="number" id="cgSessions" value="32"></div>
+        <div class="field"><label>Min. Attendance for Certification</label><input type="number" id="cgMinCert" value="26"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Max. Students</label><input type="number" id="cgMax" placeholder="e.g. 8"></div>
+        <div class="field"><label>Status</label><select id="cgStatus">
+          <option value="Open">Open — post as class request to teachers</option><option value="Filled">Filled — teacher assigned</option>
+          <option>Pending</option><option value="In progress">In progress (Active)</option><option>Completed</option><option>Cancelled</option></select></div>
+      </div>
+      <input type="hidden" id="cgSchedule">
+      <div class="field"><label>Admin Notes <span class="help" style="display:inline">(shown to teachers on the class request)</span></label><textarea id="cgNotes" rows="2" placeholder="e.g. Fun, conversation-focused club for teens."></textarea></div>
+      <div class="note-band" style="font-size:12px">💡 <b>Open</b> classes appear in every teacher's <b>Class Requests</b>. Teachers accept or decline; you then pick one under <b>Applicants</b>. After a teacher is assigned, use <b>Generate Sessions</b> to fill the schedule.</div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mClassGroup')">Cancel</button><button class="btn btn-primary" onclick="saveClassGroup()">Save</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="mApplicants">
+  <div class="modal wide">
+    <div class="modal-head"><h3 id="apTitle">Applicants</h3><button class="x" onclick="closeModal('mApplicants')">×</button></div>
+    <div class="modal-body" id="apBody"></div>
+  </div>
+</div>
+
+<script src="assets/app.js?v=20261102"></script>
 <script>
 /* =====================================================================
    Operations Admin (rev5)
@@ -478,7 +558,7 @@ async function loadAll(){
 async function reloadClasses(){ try{ ALLC=await API.getClasses({})||[]; }catch(e){} }
 
 /* ---------- navigation ---------- */
-const RENDER={dashboard:renderHome,classops:renderClassOps,requests:renderRequests,lessons:renderLessons,certs:renderCerts,attendance:renderAttendance,messages:renderMessages,announce:renderAnnounce,settings:()=>{},invoices:renderInvoices,sop:renderSop};
+const RENDER={dashboard:renderHome,classops:renderClassOps,classes:()=>renderClassGroups(),requests:renderRequests,lessons:renderLessons,certs:renderCerts,attendance:renderAttendance,messages:renderMessages,announce:renderAnnounce,settings:()=>{},invoices:renderInvoices,sop:renderSop};
 function go(v){
   CUR_VIEW=v;
   document.querySelectorAll('.nav a[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===v));
@@ -684,6 +764,116 @@ function renderCoCalendar(){
   const tops=[...document.querySelectorAll('#coCal .cal-ev')].map(e=>parseFloat(e.style.top)); if(tops.length) document.getElementById('coCal').scrollTop=Math.max(0,Math.min(...tops)-40);
 }
 
+/* ===== Class groups (cohorts) ===== */
+let CLASSGROUPS=[];
+const tName=id=>tut(id).nama, avS=n=>`<span class="av-sm">${esc(initials(n||'?'))}</span>`, gIds=g=>String((g&&g.student_ids)||'').split(',').map(x=>x.trim()).filter(Boolean), dS=d=>d?dShort(d):'-';
+const utabsS=(...a)=>utabs(...a), progOptsS=id=>progOpts(id), toggleMenuSA=b=>toggleMenu(b);
+function dlCSV(rows,name){ const csv=rows.map(r=>r.map(v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',')).join('\n'); const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
+function genClassId(){ return 'CLS-'+String(Math.floor(1000+Math.random()*9000)); }
+let CG_APPS=[];
+let CG_TAB='all';
+function setCgTab(t){ CG_TAB=t; renderClassGroups(true); }
+async function renderClassGroups(keep){
+  if(!keep){ try{ CLASSGROUPS=await API.getClassGroups()||[]; GROUPS=CLASSGROUPS; }catch(e){ CLASSGROUPS=GROUPS||[]; } try{ CG_APPS=await API.list('class_applications',{})||[]; }catch(e){ CG_APPS=[]; } }
+  const sb=(t,l,v)=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`;
+  document.getElementById('cgStats').innerHTML=sb('tint-blue','Total Classes',CLASSGROUPS.length)+sb('tint-green','Active Classes',CLASSGROUPS.filter(c=>c.status==='In progress').length)+sb('tint-amber','Open / Waiting for Teacher',CLASSGROUPS.filter(c=>c.status==='Open').length)+sb('tint-purple','Completed',CLASSGROUPS.filter(c=>c.status==='Completed').length);
+  const bucket=c=>c.status==='In progress'?'active':(c.status==='Completed'?'completed':(c.status==='Cancelled'?'cancelled':'upcoming'));
+  utabsS('cgTabs',[['all','All Classes',CLASSGROUPS.length],['active','Active'],['upcoming','Upcoming / Open'],['completed','Completed'],['cancelled','Cancelled']],CG_TAB,'setCgTab');
+  if(!document.getElementById('cgFProg').options.length){ progOptsS('cgFProg'); document.getElementById('cgFTutor').innerHTML='<option value="">All Teachers</option>'+TUTORS.map(t=>`<option value="${esc(t.id)}">${esc(t.nama)}</option>`).join(''); }
+  const pr=document.getElementById('cgFProg').value, tu=document.getElementById('cgFTutor').value, md=document.getElementById('cgFMode').value, q=(document.getElementById('cgQ').value||'').toLowerCase();
+  const list=CLASSGROUPS.filter(c=>(CG_TAB==='all'||bucket(c)===CG_TAB)&&(!pr||c.program===pr)&&(!tu||String(c.tutor_id)===String(tu))&&(!md||c.mode===md)&&(!q||[c.class_id,c.name,c.level,tName(c.tutor_id)].join(' ').toLowerCase().includes(q)));
+  const cgStatusBadge=s=>{const m={'Open':'badge-pending','Filled':'badge-purple','Pending':'badge-grey','In progress':'badge-paid','Completed':'badge-active','Cancelled':'badge-unpaid'}[s]||'badge-grey';return `<span class="badge ${m}">${esc(s==='In progress'?'Active':(s||'Pending'))}</span>`;};
+  document.getElementById('cgBody').innerHTML=list.map(c=>{
+    const nStu=gIds(c).length;
+    const apps=CG_APPS.filter(a=>String(a.group_id)===String(c.id)), acc=apps.filter(a=>a.status==='accepted').length, dec=apps.filter(a=>a.status==='declined').length;
+    const appCell=apps.length?`<span class="badge badge-grey">🙋 ${acc}${dec?` · ✕${dec}`:''}</span>`:(c.status==='Open'?'<span class="text-muted" style="font-size:12px">Waiting…</span>':'<span class="text-muted">-</span>');
+    const sched=c.schedule||[c.days,c.start_time&&(c.start_time+(c.end_time?'–'+c.end_time:''))].filter(Boolean).join(' · ');
+    return `<tr><td><b style="color:var(--navy)">${esc(c.class_id||'-')}</b></td><td><b>${esc(c.name||'-')}</b>${c.level?` <span class="badge badge-grey">${esc(c.level)}</span>`:''}</td><td>${esc(c.program||'-')}</td>
+      <td>${c.tutor_id?`<div style="display:flex;gap:6px;align-items:center">${avS(tName(c.tutor_id))}${esc(tName(c.tutor_id))}</div>`:'<span class="text-muted">– not assigned –</span>'}</td><td style="font-size:12.5px">${esc(sched||'-')}</td><td>${c.mode?`<span class="badge ${c.mode==='Online'?'badge-active':'badge-paid'}">${esc(c.mode)}</span>`:'-'}</td><td>${nStu}${c.max_students?` / ${esc(c.max_students)}`:''}</td>
+      <td>${cgStatusBadge(c.status)}</td><td style="font-size:12px;white-space:nowrap">${esc(dS(c.start_date))}<br>${esc(c.end_date?dS(c.end_date):'')}</td><td>${appCell}</td></tr>`;
+  }).join('')||'<tr><td colspan="10" class="empty">No classes for this filter.</td></tr>';
+}
+function exportClassesO(){ dlCSV([['Class ID','Name','Program','Level','Teacher','Schedule','Mode','Students','Status','Start','End']].concat(CLASSGROUPS.map(c=>[c.class_id,c.name,c.program,c.level,tName(c.tutor_id),c.schedule,c.mode,gIds(c).length,c.status,c.start_date,c.end_date])),'classes-'+TODAY+'.csv'); }
+let CG_PICK=new Set();
+function drawCgStudents(){
+  const f=(document.getElementById('cgStuFilter').value||'').toLowerCase();
+  document.getElementById('cgStuPick').innerHTML=STUDENTS.filter(s=>!f||String(s.nama).toLowerCase().includes(f)||String(s.program||'').toLowerCase().includes(f)).map(s=>
+    `<label style="display:flex;gap:8px;align-items:center;padding:4px 0;margin:0;font-size:13px;cursor:pointer;text-align:left"><input type="checkbox" style="width:auto;margin:0;flex-shrink:0" ${CG_PICK.has(String(s.id))?'checked':''} onchange="this.checked?CG_PICK.add('${s.id}'):CG_PICK.delete('${s.id}');document.getElementById('cgStudents').value=[...CG_PICK].join(',')">
+      <b>${esc(s.nama)}</b> <span class="muted" style="font-size:11px">${esc(s.program||'')}${s.level?' · '+esc(s.level):''}</span></label>`).join('')||'<div class="muted" style="font-size:12px;padding:6px 0">No students.</div>';
+}
+function openClassGroup(id){
+  document.getElementById('mCgTitle').textContent=id?'Edit Class':'Add Class';
+  const c=id?CLASSGROUPS.find(x=>x.id===id):{status:'Open'};
+  const V=(k,v)=>{const el=document.getElementById(k);if(el)el.value=v;};
+  V('cgId',id||''); V('cgCid',c.class_id||genClassId()); V('cgName',c.name||''); V('cgProgram',c.program||''); V('cgLevel',c.level||''); V('cgMode',c.mode||'Onsite');
+  V('cgStudents',c.student_ids||''); V('cgSchedule',c.schedule||''); V('cgStart',c.start_date||''); V('cgEnd',c.end_date||'');
+  V('cgDays',c.days||''); V('cgRoom',c.room||''); V('cgStartTime',c.start_time||''); V('cgEndTime',c.end_time||''); V('cgMax',c.max_students||''); V('cgNotes',c.admin_notes||'');
+  V('cgSessions',c.total_sessions||32); V('cgMinCert',c.min_cert||26); V('cgStatus',c.status||'Pending');
+  CG_PICK=new Set(String(c.student_ids||'').split(',').map(x=>x.trim()).filter(Boolean)); V('cgStuFilter',''); drawCgStudents();
+  const tsel=document.getElementById('cgTutor'); if(tsel){ tsel.innerHTML='<option value="">– not assigned (open request) –</option>'+TUTORS.map(t=>`<option value="${t.id}" ${String(t.id)===String(c.tutor_id)?'selected':''}>${esc(t.nama)}</option>`).join(''); }
+  openModal('mClassGroup');
+}
+async function saveClassGroup(){
+  const g=id=>{const el=document.getElementById(id);return el?el.value:'';};
+  if(!g('cgName')){toast('Class name is required','err');return;}
+  let status=g('cgStatus');
+  if(status==='Open'&&g('cgTutor')&&!confirm('A teacher is selected but status is "Open". Keep it open for other teachers to apply?')) status='Filled';
+  const days=g('cgDays').trim(), st=g('cgStartTime'), et=g('cgEndTime');
+  const sched=[days,st?(st.replace(':','.')+(et?'–'+et.replace(':','.'):'')):''].filter(Boolean).join(' · ')||g('cgSchedule');
+  const p={id:g('cgId')||undefined,class_id:g('cgCid'),name:g('cgName'),program:g('cgProgram'),level:g('cgLevel'),mode:g('cgMode'),tutor_id:g('cgTutor'),
+    student_ids:g('cgStudents'),schedule:sched,days,start_time:st,end_time:et,room:g('cgRoom'),start_date:g('cgStart'),end_date:g('cgEnd'),
+    total_sessions:g('cgSessions'),min_cert:g('cgMinCert'),max_students:g('cgMax'),admin_notes:g('cgNotes'),status};
+  try{ await API.saveClassGroup(p); closeModal('mClassGroup'); toast(status==='Open'?'Class posted — teachers can now apply 🙋':'Class saved','ok'); renderClassGroups(); reloadClasses(); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+function openApplicants(gid){
+  const c=CLASSGROUPS.find(x=>String(x.id)===String(gid))||{}; const apps=CG_APPS.filter(a=>String(a.group_id)===String(gid));
+  document.getElementById('apTitle').textContent='Applicants — '+(c.name||'');
+  document.getElementById('apBody').innerHTML=`<div class="note-band" style="margin-bottom:12px;font-size:12.5px">${esc(c.class_id||'')} · ${esc(c.program||'')} ${esc(c.level||'')} · ${esc(c.schedule||'')} · ${esc(c.room||c.mode||'')}</div>`+
+    (apps.length?`<div class="table-wrap"><table class="tbl"><thead><tr><th>Teacher</th><th>Response</th><th>Date</th><th></th></tr></thead><tbody>${apps.map(a=>{const t=TUTORS.find(x=>String(x.id)===String(a.tutor_id))||{};
+      const assigned=String(c.tutor_id)===String(a.tutor_id);
+      return `<tr><td><b>${esc(t.nama||a.tutor_id)}</b><br><small class="muted">${esc(t.program||t.subject||'')} · ${esc(t.teaching_location||'')}</small></td>
+        <td>${a.status==='accepted'?'<span class="badge badge-active">✔ Accepted</span>':'<span class="badge badge-unpaid">✕ Declined</span>'}</td>
+        <td>${esc(a.responded_at?prettyDate(String(a.responded_at).slice(0,10)):'-')}</td>
+        <td>${assigned?'<span class="badge badge-paid">Assigned</span>':(a.status==='accepted'?`<button class="btn btn-primary btn-sm" onclick="assignTeacher('${gid}','${a.tutor_id}')">Assign</button>`:'')}</td></tr>`;}).join('')}</tbody></table></div>`
+    :'<div class="muted" style="text-align:center;padding:18px">No responses yet.</div>');
+  openModal('mApplicants');
+}
+async function assignTeacher(gid,tid){
+  const c=CLASSGROUPS.find(x=>String(x.id)===String(gid)); if(!c) return;
+  if(!confirm('Assign '+tName(tid)+' to '+c.name+'?')) return;
+  try{ await API.saveClassGroup({...c,tutor_id:tid,status:'Filled'}); closeModal('mApplicants'); toast('Teacher assigned ✅ — next: generate the sessions','ok'); await renderClassGroups();
+    if(confirm('Generate the class sessions now so they appear in the teacher\'s schedule?')) generateSessions(gid); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+function parseDays(str){
+  const M={sun:0,min:0,mon:1,sen:1,tue:2,sel:2,wed:3,rab:3,thu:4,kam:4,fri:5,jum:5,sat:6,sab:6};
+  return [...new Set(String(str||'').toLowerCase().split(/[^a-z]+/).map(w=>M[w.slice(0,3)]).filter(v=>v!==undefined))];
+}
+async function generateSessions(gid){
+  const c=CLASSGROUPS.find(x=>String(x.id)===String(gid)); if(!c) return;
+  const days=parseDays(c.days||c.schedule), stus=String(c.student_ids||'').split(',').map(x=>x.trim()).filter(Boolean);
+  if(!c.tutor_id){ toast('Assign a teacher first','err'); return; }
+  if(!days.length||!c.start_date||!c.start_time){ toast('Fill in Days, Start Time and Start Date first (Edit)','err'); return; }
+  if(!stus.length){ toast('Add students to this class first','err'); return; }
+  const total=Number(c.total_sessions)||32, dates=[]; const d=new Date(c.start_date+'T00:00:00');
+  const iso=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
+  while(dates.length<total && dates.length<400){ if(days.includes(d.getDay()) && (!c.end_date||iso(d)<=c.end_date)) dates.push(iso(d)); if(c.end_date&&iso(d)>c.end_date) break; d.setDate(d.getDate()+1); }
+  let existing=[]; try{ existing=(await API.getClasses({tutor_id:c.tutor_id})||[]).filter(r=>String(r.group_id)===String(gid)); }catch(e){}
+  const have=new Set(existing.map(r=>r.date+'|'+r.student_id));
+  const todo=[]; dates.forEach(dt=>stus.forEach(sid=>{ if(!have.has(dt+'|'+sid)) todo.push([dt,sid]); }));
+  if(!todo.length){ toast('All '+dates.length+' sessions already exist ✅','ok'); return; }
+  if(!confirm(`Create ${dates.length} sessions (${todo.length} rows for ${stus.length} student${stus.length>1?'s':''}) from ${prettyDate(dates[0])} to ${prettyDate(dates[dates.length-1])}?`)) return;
+  const [h1,m1]=String(c.start_time).split(':').map(Number), [h2,m2]=String(c.end_time||'').split(':').map(Number);
+  const dur=(c.end_time&&!isNaN(h2))?((h2*60+m2)-(h1*60+m1)):90;
+  const type=String(c.mode||'').toLowerCase()==='online'?'online':'onsite';
+  let n=0; toast('Creating sessions… 0/'+todo.length);
+  try{ for(const [dt,sid] of todo){ await API.addClass({date:dt,student_id:sid,tutor_id:c.tutor_id,group_id:gid,start_time:c.start_time,end_time:c.end_time||'',duration:dur,type,room:c.room||'',status:'scheduled'}); n++; if(n%10===0) toast('Creating sessions… '+n+'/'+todo.length); }
+    if(c.status==='Filled'||c.status==='Pending'||c.status==='Open') await API.saveClassGroup({...c,status:'In progress'});
+    toast(n+' session rows created ✅','ok'); await reloadClasses(); renderClassGroups(); }
+  catch(e){ toast('Stopped after '+n+' rows: '+(e.message||e),'err'); }
+}
+async function delClassGroup(id){ if(!confirm('Delete this class?'))return; try{ await API.deleteClassGroup(id); toast('Deleted','ok'); renderClassGroups(); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
 /* ============================== REQUESTS ============================== */
 let RQ_TAB='reschedule', RQ_SEL=null;
 function setRqTab(t){ RQ_TAB=t; RQ_SEL=null; renderRequests(); }
@@ -706,7 +896,7 @@ function renderRequests(){
   document.getElementById('rqBody').innerHTML=list.map(c=>{ const g=grpOf(gidOf(c)), s=stu(c.student_id), stt=reqStat(c);
     const sub=`<td style="white-space:nowrap">${esc(dtShort(c.req_at||c.created_at||c.date))}</td><td><b>${esc(s.nama)}</b><br><small class="text-muted">by ${esc({murid:'student',ortu:'parent',admin:'admin',guru:'teacher'}[c.req_by]||c.req_by||'student')}</small></td><td><b>${esc(g.name)}</b><br><small class="text-muted">${esc(g.program||s.program||'')}</small></td>`;
     const reason=`<td style="max-width:200px">${esc(c.req_reason||c.resched_note||c.req_note||'-')}</td>`;
-    const act=`<td><button class="btn btn-outline btn-sm" onclick="RQ_SEL='${esc(c.id)}';renderRequests()">View</button></td>`;
+    const act=`<td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="RQ_SEL='${esc(c.id)}';renderRequests()">View</button>${stt==='pending'?` <button class="btn btn-green btn-sm" title="Approve" onclick="decideReq('${esc(c.id)}','approved')">✓ Approve</button> <button class="btn btn-danger btn-sm" title="Reject" onclick="decideReq('${esc(c.id)}','rejected')">✕</button>`:''}</td>`;
     if(RQ_TAB==='reschedule'){ const od=c.orig_date||c.date, ot=c.orig_time||c.start_time, nd=stt==='approved'?c.date:c.resched_date, nt=stt==='approved'?c.start_time:c.resched_time;
       return `<tr class="${RQ_SEL===c.id?'sel':''}">${sub}<td style="white-space:nowrap">${esc(dShort(od))}<br><small class="text-muted">${esc(ot||'')}</small></td><td style="white-space:nowrap"><b>${esc(dShort(nd))}</b><br><small class="text-muted">${esc(nt||'')}</small></td>${reason}<td>${sb(stt)}</td>${act}</tr>`; }
     return `<tr>${sub}<td style="white-space:nowrap"><b>${esc(dShort(c.date))}</b><br><small class="text-muted">${esc(trng(c.start_time,c.end_time,c.duration))}</small></td>${reason}<td>${c.fee?fmtRp(c.fee):'-'}</td><td>${sb(stt)}</td>${act}</tr>`; }).join('')
@@ -731,7 +921,8 @@ function drawReqSide(){
     ${stt==='pending'?`<div style="font-weight:700;color:var(--navy);font-size:13px;margin:14px 0 6px">${k==='reschedule'?'New session (edit if needed)':'Schedule the '+(k==='recovery'?'recovery':'extra')+' class'}</div>
       <div class="field-row"><div class="field"><label>Date</label><input type="date" id="rqD" value="${esc(k==='reschedule'?(c.resched_date||c.date):c.date)}"></div><div class="field"><label>Start</label><input type="time" id="rqT" value="${esc(k==='reschedule'?(c.resched_time||c.start_time||''):(c.start_time||''))}"></div></div>`:''}
     ${k!=='reschedule'&&stt==='pending'?`
-      <div class="field-row"><div class="field"><label>Teacher</label><select id="rqTu">${TUTORS.map(t=>`<option value="${esc(t.id)}" ${String(t.id)===String(c.tutor_id)?'selected':''}>${esc(t.nama)}</option>`).join('')}</select></div><div class="field"><label>Room</label><input id="rqRo" value="${esc(c.room||'')}"></div></div>`:''}
+      <div class="field-row"><div class="field"><label>Teacher</label><select id="rqTu">${TUTORS.map(t=>`<option value="${esc(t.id)}" ${String(t.id)===String(c.tutor_id)?'selected':''}>${esc(t.nama)}</option>`).join('')}</select></div><div class="field"><label>Room</label><input id="rqRo" value="${esc(c.room||'')}"></div></div>
+      ${k==='recovery'?`<div class="field"><label>Recovery Fee (Rp) <span class="help" style="display:inline">(student sees "contact admin" until set)</span></label><input type="number" id="rqFee" value="${esc(c.fee||'')}" placeholder="e.g. 50000"></div>`:''}`:''}
     <div style="font-weight:700;color:var(--navy);font-size:13px;margin:14px 0 6px">Admin Notes (optional)</div>
     <textarea id="rqNote" rows="3" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px" placeholder="Add a note…" ${stt!=='pending'?'disabled':''}>${esc(c.admin_note||'')}</textarea>
     ${stt==='pending'?`<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-danger" style="flex:1" onclick="decideReq('${esc(c.id)}','rejected')">Reject</button><button class="btn btn-primary" style="flex:1" onclick="decideReq('${esc(c.id)}','approved')">Approve</button><button class="btn btn-outline" style="flex:1" onclick="RQ_SEL=null;renderRequests()">Cancel</button></div>`
@@ -754,7 +945,7 @@ function renderTeacherReqs(){
     const what=r.kind==='leave'?`<b style="white-space:nowrap">${esc(dShort(r.start_date))}${r.end_date&&r.end_date!==r.start_date?' – '+esc(dShort(r.end_date)):''}</b><br><small class="text-muted">${esc(r.leave_type||'Leave')}</small>`:`<b>${esc(g.name)}</b><br><small class="text-muted">${esc(dShort(r.class_date))} · ${esc(r.start_time||'')}</small>`;
     const chg=r.kind==='leave'?'<small class="text-muted">Handled by Super Admin</small>':(r.new_date?`<b>${esc(dShort(r.new_date))}</b><br><small class="text-muted">${esc(r.new_time||r.start_time||'')}</small>`:'<small class="text-muted">To be arranged</small>');
     return `<tr class="${RQ_SEL===r.id?'sel':''}"><td style="white-space:nowrap">${esc(dtShort(r.created_at))}</td><td style="white-space:nowrap"><b>${esc(tut(r.tutor_id).nama)}</b></td><td>${r.kind==='leave'?'<span class="badge" style="background:#FDECF3;color:#C2255C">On Leave</span>':'<span class="badge badge-active">Reschedule</span>'}</td>
-      <td style="min-width:150px">${what}</td><td style="white-space:nowrap">${chg}</td><td style="max-width:200px">${esc(String(r.reason||'-').slice(0,70))}</td><td>${trBadge(s)}</td><td><button class="btn btn-outline btn-sm" onclick="RQ_SEL='${esc(r.id)}';renderRequests()">View</button></td></tr>`; }).join('')
+      <td style="min-width:150px">${what}</td><td style="white-space:nowrap">${chg}</td><td style="max-width:200px">${esc(String(r.reason||'-').slice(0,70))}</td><td>${trBadge(s)}</td><td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="RQ_SEL='${esc(r.id)}';renderRequests()">View</button>${s==='Pending'&&r.kind==='reschedule'?` <button class="btn btn-green btn-sm" onclick="decideTReq('${esc(r.id)}','Approved')">✓ Approve</button> <button class="btn btn-danger btn-sm" onclick="decideTReq('${esc(r.id)}','Declined')">✕</button>`:''}</td></tr>`; }).join('')
     ||'<tr><td colspan="8" class="empty">No teacher requests. 🎉</td></tr>';
   drawTReqSide(); refreshDots();
 }
@@ -780,10 +971,12 @@ function drawTReqSide(){
       :`<div class="text-muted" style="font-size:12px;margin-top:10px">${s==='Pending'?'Waiting for Super Admin.':'This request was '+s.toLowerCase()+(r.decided_by?' by '+esc(r.decided_by):'')+'.'}</div>`}`;
 }
 async function decideTReq(id,decision){
-  const r=TREQ.find(x=>x.id===id); if(!r) return; const note=(document.getElementById('trNote')||{}).value||'';
+  const r=TREQ.find(x=>x.id===id); if(!r) return; const note=((String(RQ_SEL)===String(id)&&document.getElementById('trNote'))||{}).value||'';
   let nd='', nt='';
-  if(decision==='Approved'){ nd=(document.getElementById('trD')||{}).value; nt=(document.getElementById('trT')||{}).value;
-    if(!nd||!nt){ toast('Set the new date & time first','err'); return; } if(nd<TODAY){ toast('The new date is in the past','err'); return; } }
+  if(decision==='Approved'){ const side=String(RQ_SEL)===String(id)&&document.getElementById('trD');
+    nd=side?document.getElementById('trD').value:r.new_date; nt=side?document.getElementById('trT').value:(r.new_time||r.start_time);
+    if(!nd||!nt){ RQ_SEL=id; renderRequests(); toast('Set the new date & time first','err'); return; }
+    if(!side&&!confirm('Approve: move '+grpOf(r.group_id).name+' ('+dShort(r.class_date)+') to '+dShort(nd)+' '+nt+'?')) return; if(nd<TODAY){ toast('The new date is in the past','err'); return; } }
   else if(!confirm('Decline this reschedule request?')) return;
   try{
     if(decision==='Approved'){ const rows=trSessRows(r);
@@ -800,13 +993,16 @@ async function decideTReq(id,decision){
   }catch(e){ toast('Failed: '+(e.message||e),'err'); }
 }
 async function decideReq(id,decision){
-  const c=ALLC.find(x=>String(x.id)===String(id)); if(!c) return; const note=(document.getElementById('rqNote')||{}).value||''; const k=reqKind(c);
+  const c=ALLC.find(x=>String(x.id)===String(id)); if(!c) return; const note=((String(RQ_SEL)===String(id)&&document.getElementById('rqNote'))||{}).value||''; const k=reqKind(c);
   if(decision==='rejected'&&!confirm('Reject this request?')) return;
   let p={id,req_kind:k,req_status:decision,admin_note:note};
-  if(k==='reschedule'){ const nd=(document.getElementById('rqD')||{}).value||c.resched_date||c.date, nt=(document.getElementById('rqT')||{}).value||c.resched_time||c.start_time;
+  const side=String(RQ_SEL)===String(id)&&document.getElementById('rqD'), SV=k2=>side?(document.getElementById(k2)||{}).value:'';
+  if(k==='reschedule'){ const nd=SV('rqD')||c.resched_date||c.date, nt=SV('rqT')||c.resched_time||c.start_time;
     p=decision==='approved'?{...p,orig_date:c.orig_date||c.date,orig_time:c.orig_time||c.start_time,date:nd,start_time:nt,end_time:c.end_time?endTime(nt,c.duration):'',status:'scheduled'}:{...p,status:'scheduled'}; }
-  else { if(decision==='approved'){ const d=document.getElementById('rqD').value, t=document.getElementById('rqT').value; if(!d||!t){ toast('Set the date & time first','err'); return; }
-      p={...p,date:d,start_time:t,end_time:endTime(t,c.duration),tutor_id:document.getElementById('rqTu').value,room:document.getElementById('rqRo').value.trim(),status:'scheduled'}; }
+  else { if(decision==='approved'){ const d=SV('rqD')||c.date, t=SV('rqT')||c.start_time, tu=SV('rqTu')||c.tutor_id;
+      if(!d||!t||!tu){ RQ_SEL=id; renderRequests(); toast('Set the date, time & teacher first','err'); return; }
+      if(!side&&!confirm('Approve this '+k+' class on '+dShort(d)+' '+t+' with '+tut(tu).nama+'?')) return;
+      p={...p,date:d,start_time:t,end_time:endTime(t,c.duration),tutor_id:tu,room:side?(SV('rqRo')||'').trim():(c.room||''),fee:side?(SV('rqFee')||c.fee||''):(c.fee||''),status:'scheduled'}; }
     else p={...p,status:'declined'}; }
   try{ await API.updateClass(p); toast(decision==='approved'?'Request approved ✅ — it is now on the schedule':'Request rejected','ok'); await reloadClasses(); renderRequests(); }
   catch(e){ toast('Failed: '+(e.message||e),'err'); }
@@ -888,7 +1084,9 @@ function renderCerts(){
   const cls=document.getElementById('ceClass').value, q=(document.getElementById('ceSearch').value||'').toLowerCase();
   const all=certCandidates().filter(x=>(!prog||x.g.program===prog)&&(!cls||x.g.id===cls)&&(!q||String(stu(x.sid).nama).toLowerCase().includes(q)));
   const issued=CERTS.filter(c=>(!prog||c.program===prog)&&(!cls||c.group_id===cls)&&(!q||String(stu(c.student_id).nama).toLowerCase().includes(q)));
-  utabs('ceTabs',[['generate','Generate Certificates',all.filter(x=>x.eligible&&!x.cert).length],['upload','Upload Certificates'],['issued','Issued Certificates',issued.length],['not','Not Eligible',all.filter(x=>!x.eligible).length]],CE_TAB,'setCeTab');
+  utabs('ceTabs',[['generate','Generate Certificates',all.filter(x=>x.eligible&&!x.cert).length],['upload','Upload Certificates'],['issued','Issued Certificates',issued.length],['not','Not Eligible',all.filter(x=>!x.eligible).length],['template','🎨 Certificate Template']],CE_TAB,'setCeTab');
+  const isT=CE_TAB==='template'; ['ceWrap','ceBar'].forEach(id=>document.getElementById(id).classList.toggle('hide',isT)); document.getElementById('ceTpl').classList.toggle('hide',!isT);
+  if(isT){ renderCertTpl(); return; }
   const head=document.getElementById('ceHead'), body=document.getElementById('ceBody');
   const elig=x=>x.eligible?'<span class="badge badge-paid">Eligible</span>':(x.finished?'<span class="badge badge-unpaid">Not Eligible</span>':`<span class="badge badge-grey">In progress</span>`);
   const stat=x=>x.cert?`<span class="badge ${x.cert.mode==='upload'?'badge-purple':'badge-active'}">${esc(x.cert.status||'Generated')}</span>`:(x.eligible?'<span class="badge badge-pending">Not Generated</span>':'-');
@@ -923,11 +1121,54 @@ function renderCerts(){
     side.innerHTML=`<div class="card-title">Generate Certificate <button class="x" onclick="CE_SEL=null;renderCerts()">×</button></div>${okBand}${whoRow}
       <div style="font-weight:700;color:var(--navy);font-size:13px;margin:10px 0 6px">Certificate Preview</div>
       <div class="cert-prev"><img src="assets/logo-h.png" onerror="this.src='assets/logo.png'" style="height:30px;margin:0 auto"><h3>CERTIFICATE</h3><small style="letter-spacing:3px;font-weight:700;color:var(--navy)">OF COMPLETION</small><small style="margin-top:8px">This is to certify that</small><div class="nm">${esc(s.nama)}</div><small>has successfully completed<br><b style="color:var(--navy)">${esc(x.g.program||'')}${x.g.level?' – Level '+esc(x.g.level):''}</b><br>at Kwelingo Academy.</small><small style="margin-top:8px">${esc(dShort(comp))}</small></div>
-      <div class="kv-box"><div class="kv"><span class="k">Program / Level</span><span class="v">${esc(x.g.program||'-')} ${esc(x.g.level||'')}</span><span class="k">Completion Date</span><span class="v"><input type="date" id="ceDate" value="${esc(comp)}" style="padding:4px 8px;border:1.5px solid var(--line);border-radius:8px"></span><span class="k">Template</span><span class="v">Standard Certificate</span></div></div>
+      <div class="kv-box"><div class="kv"><span class="k">Program / Level</span><span class="v">${esc(x.g.program||'-')} ${esc(x.g.level||'')}</span><span class="k">Completion Date</span><span class="v"><input type="date" id="ceDate" value="${esc(comp)}" style="padding:4px 8px;border:1.5px solid var(--line);border-radius:8px"></span><span class="k">Template</span><span class="v">${CERT_TPL&&CERT_TPL.url&&CERT_TPL.enabled!=='0'?'Custom design ✅':'Standard Certificate'}</span></div></div>
       <button class="btn btn-primary btn-block" onclick="generateCert('${esc(x.key)}')">🏅 Generate Certificate</button>`;
   }
   refreshDots();
 }
+/* ---- Certificate template editor ---- */
+let TPL_DRAFT=null;
+function tplVal(){ return TPL_DRAFT||(TPL_DRAFT={...CERT_TPL_DEFAULT,...(CERT_TPL||{})}); }
+function renderCertTpl(){
+  const T=tplVal(), box=document.getElementById('ceTpl');
+  const num=(k,l,min,max)=>`<div class="field"><label>${l}</label><input type="number" min="${min}" max="${max}" value="${esc(T[k])}" oninput="tplSet('${k}',this.value)"></div>`;
+  const txt=(k,l,ph)=>`<div class="field"><label>${l}</label><input value="${esc(T[k])}" placeholder="${esc(ph||'')}" oninput="tplSet('${k}',this.value)"></div>`;
+  box.innerHTML=`<div class="grid" style="grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start">
+    <div class="card card-pad"><div class="card-title">Live Preview <span class="more" onclick="tplPreview()">Open full size ↗</span></div>
+      <div id="tplPrev" style="position:relative;width:100%;aspect-ratio:1.414/1;border-radius:10px;overflow:hidden;background:#F5F8FD;border:1px dashed var(--line);container-type:inline-size;font-family:'Plus Jakarta Sans',sans-serif"></div>
+      <div class="note-band mt-16" style="font-size:12.5px">💡 How to use: design the certificate in Canva / Word / Photoshop as <b>A4 landscape</b>, leave the student name, date and number <b>empty</b>, export as <b>PNG or JPG</b>, then upload it here. Adjust the positions until the preview looks right and click <b>Save Template</b>. Every certificate you generate after that uses this design.</div></div>
+    <div class="card card-pad"><div class="card-title">Certificate Template</div>
+      <div class="field"><label>Template Image (PNG / JPG, A4 landscape)</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="document.getElementById('tplFile').click()">⬆️ Upload design</button>${T.url?'<button class="btn btn-ghost btn-sm" onclick="tplSet(\'url\',\'\')">Remove</button>':''}<span class="help" style="display:inline" id="tplFileName">${T.url?'✅ Design uploaded':'Using the standard Kwelingo design'}</span></div>
+        <input type="file" id="tplFile" class="hide" accept="image/png,image/jpeg" onchange="tplUpload(this)"></div>
+      <div class="field"><label><input type="checkbox" ${T.enabled!=='0'?'checked':''} onchange="tplSet('enabled',this.checked?'1':'0')" style="width:auto"> Use this template when generating certificates</label></div>
+      <div style="font-weight:700;color:var(--navy);font-size:13px;margin:6px 0">Student Name</div>
+      <div class="field-row"><div class="field"><label>Font</label><select onchange="tplSet('font',this.value)"><option value="script" ${T.font==='script'?'selected':''}>Script (handwriting)</option><option value="serif" ${T.font==='serif'?'selected':''}>Serif</option><option value="sans" ${T.font==='sans'?'selected':''}>Sans (bold)</option></select></div>
+        <div class="field"><label>Text color</label><input type="color" value="${esc(T.color)}" oninput="tplSet('color',this.value)" style="height:40px;padding:4px"></div></div>
+      <div class="field-row">${num('nameY','Name – vertical position (%)',0,100)}${num('nameSize','Name – size',10,120)}</div>
+      <div style="font-weight:700;color:var(--navy);font-size:13px;margin:6px 0">Program line</div>
+      ${txt('line1','Text (leave empty to hide)','has successfully completed {program}{level_text}')}
+      <div class="field-row">${num('line1Y','Vertical position (%)',0,100)}${num('line1Size','Size',6,60)}</div>
+      <div style="font-weight:700;color:var(--navy);font-size:13px;margin:6px 0">Date &amp; Certificate No.</div>
+      <div class="field-row">${txt('dateText','Date text','{date}')}${txt('noText','Number text','No. {no}')}</div>
+      <div class="field-row">${num('dateX','Date – horizontal (%)',0,100)}${num('dateY','Date – vertical (%)',0,100)}</div>
+      <div class="field-row">${num('noX','No. – horizontal (%)',0,100)}${num('noY','No. – vertical (%)',0,100)}</div>
+      ${num('metaSize','Date / No. size',6,40)}
+      <div class="help" style="margin-bottom:12px">Placeholders: {program} {level} {level_text} {date} {no} {pct} {sessions}</div>
+      <div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="TPL_DRAFT=null;renderCertTpl()">Reset</button><button class="btn btn-primary" style="flex:2" onclick="saveCertTpl()">💾 Save Template</button></div></div></div>`;
+  drawTplPrev();
+}
+const TPL_SAMPLE={name:'Alya Putri',program:'Boost English',level:'A2',date:'28 Nov 2026',no:'KWE/2026/0012',pct:92,sessions:30};
+function drawTplPrev(){ const T=tplVal(), el=document.getElementById('tplPrev'); if(!el) return;
+  el.innerHTML=T.url?certTplInner(T,TPL_SAMPLE):'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;text-align:center;padding:20px">No design uploaded yet — certificates use the standard Kwelingo design.<br>Upload your PNG/JPG design to preview it here.</div>'; }
+function tplSet(k,v){ tplVal()[k]=v; if(k==='url'||k==='enabled') renderCertTpl(); else drawTplPrev(); }
+async function tplUpload(inp){ const f=inp.files[0]; if(!f) return; if(f.size>5*1024*1024){ toast('Max 5 MB','err'); return; }
+  try{ toast('Uploading design…'); const r=await API.uploadFile(await fileToBase64(f),'cert-template-'+Date.now()+'.'+(f.name.split('.').pop()||'png')); const url=(r&&(r.view||r.url))||''; if(!url) throw new Error('Upload failed'); tplSet('url',url); toast('Design uploaded — adjust the positions, then Save','ok'); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+function tplPreview(){ const T=tplVal(); openCertificate({...TPL_SAMPLE,tpl:T.url?T:false}); }
+async function saveCertTpl(){ const T=tplVal();
+  try{ await API.setSetting('cert_template',JSON.stringify(T)); CERT_TPL={...T}; TPL_DRAFT=null; toast('Certificate template saved ✅','ok'); renderCertTpl(); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); } }
 function certNo(){ const y=new Date().getFullYear(); const n=CERTS.filter(c=>String(c.cert_no||'').includes('/'+y+'/')).length+1; return `KWE/${y}/${String(n).padStart(4,'0')}`; }
 async function generateCert(key){
   const x=certCandidates().find(c=>c.key===key); if(!x) return; const s=stu(x.sid), date=document.getElementById('ceDate').value||TODAY;
@@ -1053,6 +1294,7 @@ function convs(){
   TUTORS.forEach(t=>mk(dmRoom('admin',t.id),t.nama,'Teacher',(t.program||t.subject||'')+' teacher',t));
   STUDENTS.forEach(s=>{ mk(dmRoom('admin',s.id),s.nama,'Student',(s.program||'')+(s.level?' – '+s.level:''),s); mk(dmRoom('admin','p:'+s.id),s.parent_name?`${s.parent_name} (${s.nama.split(' ')[0]}'s parent)`:`Parent of ${s.nama}`,'Parent',s.nama,s); });
   mk('guru',"Teacher's Lounge",'Group','All teachers & admins',null); mk('admin-team','Admin Team','Group','Admins & owner',null);
+  [...new Set([...GROUPS.map(g=>g.program),...TUTORS.flatMap(t=>String(t.program||'').split(',').map(x=>x.trim()))].filter(Boolean))].forEach(p=>mk('prog:'+p,p+' Teachers','Group',p+' teaching team (Teacher\'s Lounge)',null));
   return out.sort((a,b)=>String(b.last?b.last.created_at:'').localeCompare(String(a.last?a.last.created_at:'')));
 }
 function unreadCount(){ return convs().reduce((a,c)=>a+(c.unread?1:0),0); }
@@ -1313,8 +1555,13 @@ async function tpMarkSent(){
   catch(e){ toast('Failed: '+(e.message||e),'err'); }
 }
 function tpViewSlip(tid,mon){ const x=tpRows(mon).find(r=>String(r.t.id)===String(tid)); if(!x) return; const r=x.rec||{};
-  const rows=ALLC.filter(c=>String(c.tutor_id)===String(tid)&&String(c.date).slice(0,7)===mon&&isSession(c)).sort((a,b)=>(a.date+a.start_time).localeCompare(b.date+b.start_time));
-  openPayrollSlip({name:x.t.nama,period:monthLabel(mon),sessions:x.n,fee:x.fee,bonus:Math.max(0,(Number(r.amount)||x.fee)-x.fee),total:Number(r.amount)||x.fee,note:rows.map(c=>`${c.date} ${c.start_time||''} · ${stu(c.student_id).nama} · ${fmtRp(sessionFee(stu(c.student_id),c))}`).join('\n'),status:x.state.toUpperCase()}); }
+  const rows=ALLC.filter(c=>String(c.tutor_id)===String(tid)&&String(c.date).slice(0,7)===mon&&(isSession(c)||c.status==='cancelled'));
+  const ses=sessionsOf(rows).map(se=>{ const g=grpOf(se.gid), cancel=se.rows.every(c=>c.status==='cancelled'||c.status==='declined');
+    const type=se.rows.some(c=>c.session_type==='recovery')?'Recovery':(se.rows.some(c=>c.orig_date||c.resched_date)?'Reschedule':'Regular');
+    const done=se.rows.some(c=>c.status==='done'||c.attend)||se.date<TODAY;
+    return {date:dShort(se.date),cls:g.name+(g.class_id&&!g.pseudo?' ('+g.class_id+')':''),type,status:cancel?'Canceled':(done?'Completed':'Scheduled'),amount:cancel?0:se.rows.reduce((a,c)=>a+sessionFee(stu(c.student_id),c),0)}; });
+  const fee=ses.reduce((a,z)=>a+z.amount,0), bonus=Math.max(0,(Number(r.amount)||fee)-fee), last=new Date(Number(mon.slice(0,4)),Number(mon.slice(5)),0).getDate();
+  openTeachingSummary({name:x.t.nama,programs:x.t.program||'',period:monthLabel(mon),range:`1 – ${last} ${monthLabel(mon)}`,slipNo:'KWE-PAY/'+mon.slice(0,4)+'/'+mon.slice(5)+String(x.t.id).replace(/\W/g,'').slice(-4).toUpperCase(),rows:ses,bonus,bonusNote:r.note||'',total:fee+bonus,status:x.state,paidOn:r.transfer_date?dShort(r.transfer_date):'',bank:{bank:x.t.bank_name,account:x.t.bank_account,holder:x.t.bank_holder||x.t.nama}}); }
 function exportInv(){
   let rows;
   if(IV_TAB==='students') rows=[['Invoice No','Student','Program','Level','Period','Invoice Date','Due Date','Amount','Status']].concat(PAYS.map(p=>[p.invoice_no,stu(p.student_id).nama,p.program,p.level,p.month,p.issue_date,p.due_date,invAmt(p),invState(p)]));
@@ -1381,7 +1628,7 @@ async function clearAllDocs(){
 /* ============================== BOOT ============================== */
 async function boot(){
   if(boot._done) return; boot._done=true;
-  await loadAll();
+  await loadAll(); loadCertTemplate();
   if(DEEP==='invoices'&&DEEP_SUB) IV_TAB=DEEP_SUB; if(DEEP==='requests'&&DEEP_SUB) RQ_TAB=DEEP_SUB; if(DEEP==='certs'&&DEEP_SUB) CE_TAB=DEEP_SUB;
   go(RENDER[DEEP]?DEEP:'dashboard');
   setInterval(async()=>{ if(document.visibilityState!=='visible'||document.querySelector('.modal-overlay.open')) return; await reloadClasses(); if(CUR_VIEW==='dashboard') renderHome(); },60000);

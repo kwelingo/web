@@ -1,5 +1,5 @@
 /* Kwelingo PWA service worker — app shell cache + offline fallback */
-const CACHE = 'kwelingo-v1';
+const CACHE = 'kwelingo-v3';
 const SHELL = [
   'portal.html','index.html','student.html','teacher.html','parent.html',
   'admin.html','master-admin.html','registration.html',
@@ -31,8 +31,14 @@ self.addEventListener('fetch', e => {
       fetch(req).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put(req, cp)); return r; })
         .catch(() => caches.match(req).then(m => m || caches.match('portal.html')))
     );
+  } else if (/\.(js|css)$/.test(url.pathname)) {
+    // Kode (js/css): network-first supaya update langsung terpakai, cache hanya saat offline
+    e.respondWith(
+      fetch(req).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put(req, cp)); return r; })
+        .catch(() => caches.match(req, { ignoreSearch: true }))
+    );
   } else {
-    // Aset (css/js/img): cache-first
+    // Gambar/ikon: cache-first
     e.respondWith(
       caches.match(req).then(m => m || fetch(req).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put(req, cp)); return r; }))
     );
