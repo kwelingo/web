@@ -764,6 +764,26 @@ function certEligible(stats,tstats){
 }
 
 /* Certificate of Completion — buka tab baru berisi e-cert siap di-print/Save as PDF */
+/* ---- Registration page config (editable in Super Admin → Settings → Registration Page; saved in app_settings 'reg_config') ----
+   fees = price per PACKAGE of 8 sessions: [online private (60 min), online semi-private (90 min), onsite semi-private (90 min)]; null = not offered */
+const REG_DEFAULT={
+  wa:'6281945144145',
+  bank:{name:'Bank Central Asia (BCA)',holder:'Kwe Sutrisno',number:'0520-2434-11'},
+  minutes:[60,90,90],
+  programs:[
+    {id:'be',lang:'English',active:true,name:'Boost English',ic:'🏆',pill:'A1 – C2 (6 Levels)',levels:'A1 – C2',desc:'A structured, international-curriculum program to build your overall English skills.',who:'Kids (8–12), Teens (13–18)\n& Adults (18+)',dur:'3 – 6 months / level',fees:{local:[null,550000,650000],intl:[null,1250000,null]}},
+    {id:'sa',lang:'English',active:true,name:'Speak Active',ic:'💬',pill:'Speaking Program',levels:'',desc:'Build your speaking confidence through real and current topics.',who:'Teens & Adults',dur:'Private — online (60 min)\nSemi-private (90 min)',fees:{local:[1200000,500000,null],intl:[1600000,1100000,null]}},
+    {id:'ie',lang:'English',active:true,name:'IELTS / TOEFL Prep',ic:'🎯',pill:'Test Preparation',levels:'',desc:'Focused preparation with strategies, practice, and feedback.',who:'Teens (16–18)\n& Adults (18+)',dur:'4 – 6 months\n(Semi-private, 90 min)',fees:{local:[null,800000,1000000],intl:[null,null,null]}},
+    {id:'bm',lang:'Mandarin',active:true,name:'Boost Mandarin',ic:'🏮',pill:'HSK 1 – 6',levels:'HSK 1 – 6',desc:'Learn Mandarin step by step — speaking, listening, characters and culture.',who:'Kids, Teens & Adults',dur:'4 – 6 months / level',fees:{local:[null,550000,650000],intl:[null,1250000,null]}},
+    {id:'hsk',lang:'Mandarin',active:true,name:'HSK Preparation',ic:'📝',pill:'Test Preparation',levels:'',desc:'Targeted practice and mock tests for the HSK exam.',who:'Teens & Adults',dur:'4 – 12 months / level\n(Semi-private, 90 min)',fees:{local:[null,650000,750000],intl:[null,1350000,null]}},
+  ],
+};
+async function loadRegConfig(){
+  const base=JSON.parse(JSON.stringify(REG_DEFAULT));
+  try{ const v=await API.getSetting('reg_config'); if(v){ const c=JSON.parse(v); return {...base,...c,bank:{...base.bank,...(c.bank||{})},programs:Array.isArray(c.programs)&&c.programs.length?c.programs:base.programs}; } }catch(e){}
+  return base;
+}
+
 /* ---- Certificate template (uploaded design + text positions, saved in app_settings 'cert_template') ---- */
 let CERT_TPL=null;
 const CERT_TPL_DEFAULT={enabled:'1',url:'',font:'script',color:'#13235B',nameY:47,nameSize:58,line1:'has successfully completed {program}{level_text}',line1Y:60,line1Size:18,dateText:'{date}',dateX:24,dateY:84,noText:'No. {no}',noX:76,noY:84,metaSize:13};

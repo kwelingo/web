@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Admin Portal — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/style.css?v=20261102">
+<link rel="stylesheet" href="assets/style.css?v=20261103">
 <style>
   .report-grid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
   @media(max-width:1100px){.report-grid{grid-template-columns:1fr}}
@@ -501,9 +501,30 @@
         </div>
       </section>
 
+      <!-- REGISTRATION PAGE SETTINGS -->
+      <section class="view hide" id="view-regpage">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">🧾</div><div><h1>Registration Page</h1><div class="sub">Programs, fees, bank account and WhatsApp shown on the public registration form.</div></div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="showView('settings')">← Settings</button><a class="btn btn-outline btn-sm" href="registration.html" target="_blank">👁️ Preview page ↗</a><button class="btn btn-primary" onclick="saveRegCfg()">💾 Save Changes</button></div></div>
+        <div class="grid grid-2" style="gap:16px;margin-bottom:16px;align-items:start">
+          <div class="card card-pad"><div class="card-title">💬 WhatsApp (registrations are sent here)</div>
+            <div class="field"><label>WhatsApp number (with country code, no +)</label><input id="rgWa" placeholder="6281945144145" oninput="RG.wa=this.value"></div></div>
+          <div class="card card-pad"><div class="card-title">🏦 Bank Account (payment instructions)</div>
+            <div class="field-row"><div class="field"><label>Bank</label><input id="rgBank" oninput="RG.bank.name=this.value"></div><div class="field"><label>Account Number</label><input id="rgNum" oninput="RG.bank.number=this.value"></div></div>
+            <div class="field"><label>Account Holder</label><input id="rgHolder" oninput="RG.bank.holder=this.value"></div></div>
+        </div>
+        <div class="card"><div class="card-pad" style="padding-bottom:4px"><div class="card-title">📚 Programs &amp; Fees <span style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="rgAdd('English')">＋ English program</button><button class="btn btn-outline btn-sm" onclick="rgAdd('Mandarin')">＋ Mandarin program</button></span></div>
+          <div class="text-muted" style="font-size:12.5px">Fees are per <b>package of 8 sessions</b> (Rupiah). Leave a fee <b>empty</b> if that option is not offered — the page shows “–” / “Ask admin”.
+          </div>
+          <div class="field-row" style="grid-template-columns:repeat(3,minmax(0,160px));margin-top:10px"><div class="field"><label>Private — minutes/session</label><input id="rgM0" type="number" oninput="RG.minutes[0]=Number(this.value)||60"></div><div class="field"><label>Online Semi — minutes</label><input id="rgM1" type="number" oninput="RG.minutes[1]=Number(this.value)||90"></div><div class="field"><label>Onsite Semi — minutes</label><input id="rgM2" type="number" oninput="RG.minutes[2]=Number(this.value)||90"></div></div></div>
+          <div class="table-wrap"><table class="tbl tight rg-tbl"><thead><tr><th rowspan="2">Show</th><th rowspan="2">Program</th><th colspan="3" style="text-align:center;background:#EEF6FC">Local Teacher (Rp / 8 sessions)</th><th colspan="3" style="text-align:center;background:#FFF4E8">International Teacher (Rp / 8 sessions)</th><th rowspan="2"></th></tr>
+            <tr><th style="background:#EEF6FC">Online Private</th><th style="background:#EEF6FC">Online Semi</th><th style="background:#EEF6FC">Onsite Semi</th><th style="background:#FFF4E8">Online Private</th><th style="background:#FFF4E8">Online Semi</th><th style="background:#FFF4E8">Onsite Semi</th></tr></thead><tbody id="rgBody"></tbody></table></div></div>
+        <div class="note-band mt-16" style="font-size:12.5px">💡 Click <b>✏️</b> to edit a program's card (icon, badge, description, age group, duration). Changes appear on the registration page right after you click <b>Save Changes</b>.</div>
+      </section>
+
       <section class="view hide" id="view-settings">
         <div class="page-head"><div class="ph-left"><div class="ph-ic">⚙️</div><div><h1>Settings</h1><div class="sub">Portal PINs, data tools and system links.</div></div></div></div>
         <div class="grid grid-3" style="gap:14px;margin-bottom:18px">
+          <div class="card card-pad" style="cursor:pointer;border-color:#FBD9B5;background:#FFF8F0" onclick="showView('regpage');renderM('regpage')"><div style="font-size:26px">🧾</div><b style="color:var(--navy)">Registration Page</b><div class="text-muted" style="font-size:12.5px">Edit programs, fees (per 8 sessions), bank account &amp; WhatsApp on the registration form.</div></div>
           <div class="card card-pad" style="cursor:pointer" onclick="showView('data');renderM('data')"><div style="font-size:26px">🗄️</div><b style="color:var(--navy)">Data Explorer</b><div class="text-muted" style="font-size:12.5px">View, search, sort &amp; export every table (CSV).</div></div>
           <div class="card card-pad" style="cursor:pointer" onclick="window.open('admin.html#sop','_blank')"><div style="font-size:26px">📘</div><b style="color:var(--navy)">Guidelines &amp; SOP</b><div class="text-muted" style="font-size:12.5px">Managed in Operations Admin → Guidelines &amp; SOP.</div></div>
           <div class="card card-pad" style="cursor:pointer" onclick="window.open('admin.html#announce','_blank')"><div style="font-size:26px">📣</div><b style="color:var(--navy)">Announcements &amp; Messages</b><div class="text-muted" style="font-size:12.5px">Managed in Operations Admin.</div></div>
@@ -650,6 +671,15 @@
   </div>
 </div>
 
+<!-- MODAL: registration program card -->
+<div class="modal-overlay" id="mRgProg">
+  <div class="modal">
+    <div class="modal-head"><h3>Program Card</h3><button class="x" onclick="closeModal('mRgProg')">×</button></div>
+    <div class="modal-body" id="rgpBody"></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mRgProg')">Cancel</button><button class="btn btn-primary" onclick="rgSaveCard()">Apply</button></div>
+  </div>
+</div>
+
 <!-- MODAL: CLASS GROUP -->
 <div class="modal-overlay" id="mClassGroup">
   <div class="modal">
@@ -756,7 +786,7 @@
   </div>
 </div>
 
-<script src="assets/app.js?v=20261102"></script>
+<script src="assets/app.js?v=20261103"></script>
 <script>
 document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Super Admin Portal');
 /* ---- PIN gate (verifikasi ke server) ---- */
@@ -825,6 +855,7 @@ function renderM(v){
   if(v==='reschedule'||v==='certificates') loadEmbed(v);
   if(v==='invoices')    renderInvoicesSA();
   if(v==='activity')    renderAudit();
+  if(v==='regpage')     renderRegCfg();
 }
 
 /* ===== Parents ===== */
@@ -2014,6 +2045,33 @@ function renderInvoicesSA(){
       <div class="card"><div class="card-pad" style="padding-bottom:4px"><div class="card-title">Recent Teacher Payments <span class="more" onclick="setFiTab('teachers')">View All →</span></div></div><div class="table-wrap"><table class="tbl"><thead><tr><th>Teacher</th><th>Period</th><th>Amount</th><th>Paid On</th><th>Status</th></tr></thead><tbody>${[...PAYROLL].sort((a,b)=>String(b.month).localeCompare(String(a.month))).slice(0,6).map(r=>`<tr><td>${esc(tutS(r.tutor_id).nama)}</td><td>${esc(monthLabel(r.month))}</td><td>${fmtRp(r.amount)}</td><td>${esc(r.transfer_date?dS(r.transfer_date):'—')}</td><td>${payrollStatusInfo(r.status).badge}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No teacher payments.</td></tr>'}</tbody></table></div></div></div>`;
 }
 
+/* ============================== REGISTRATION PAGE CONFIG ============================== */
+let RG=null, RG_EDIT=-1;
+async function renderRegCfg(){ if(!RG) RG=await loadRegConfig(); drawRegCfg(); }
+function drawRegCfg(){
+  const V=(id,v)=>{ const e=document.getElementById(id); if(e&&document.activeElement!==e) e.value=v??''; };
+  V('rgWa',RG.wa); V('rgBank',RG.bank.name); V('rgNum',RG.bank.number); V('rgHolder',RG.bank.holder); RG.minutes=RG.minutes||[60,90,90]; [0,1,2].forEach(i=>V('rgM'+i,RG.minutes[i]));
+  const fee=(i,t,k)=>{ const v=((RG.programs[i].fees||{})[t]||[])[k]; return `<td><input type="number" min="0" step="10000" value="${v==null?'':esc(v)}" placeholder="–" style="width:92px;padding:6px 6px;border:1.5px solid var(--line);border-radius:8px" oninput="rgFee(${i},'${t}',${k},this.value)"></td>`; };
+  document.getElementById('rgBody').innerHTML=RG.programs.map((p,i)=>`<tr style="${p.active===false?'opacity:.5':''}"><td><input type="checkbox" ${p.active!==false?'checked':''} onchange="RG.programs[${i}].active=this.checked;drawRegCfg()" style="width:auto"></td>
+    <td style="min-width:170px"><b style="color:var(--navy)">${esc(p.ic||'')} ${esc(p.name)}</b><br><small class="text-muted">${esc(p.lang)}${p.levels?' · '+esc(p.levels):''}</small></td>
+    ${[0,1,2].map(k=>fee(i,'local',k)).join('')}${[0,1,2].map(k=>fee(i,'intl',k)).join('')}
+    <td style="white-space:nowrap;padding-left:2px;padding-right:2px"><button class="btn btn-ghost btn-sm" style="padding:4px 6px" title="Edit card" onclick="rgEdit(${i})">✏️</button><button class="btn btn-ghost btn-sm" style="padding:4px 6px" title="Move up" onclick="rgMove(${i},-1)">↑</button><button class="btn btn-ghost btn-sm" style="padding:4px 6px" title="Delete" onclick="if(confirm('Remove this program from the registration page?')){RG.programs.splice(${i},1);drawRegCfg();}">🗑</button></td></tr>`).join('')
+    ||'<tr><td colspan="9" class="empty">No programs yet.</td></tr>';
+}
+function rgFee(i,t,k,v){ const p=RG.programs[i]; p.fees=p.fees||{local:[null,null,null],intl:[null,null,null]}; p.fees[t]=p.fees[t]||[null,null,null]; p.fees[t][k]=v===''?null:Number(v); }
+function rgMove(i,d){ const j=i+d; if(j<0||j>=RG.programs.length) return; const a=RG.programs; [a[i],a[j]]=[a[j],a[i]]; drawRegCfg(); }
+function rgAdd(lang){ RG.programs.push({id:'p'+Date.now().toString(36),lang,active:true,name:'New Program',ic:'📘',pill:'',levels:'',desc:'',who:'',dur:'',fees:{local:[null,null,null],intl:[null,null,null]}}); drawRegCfg(); rgEdit(RG.programs.length-1); }
+function rgEdit(i){ RG_EDIT=i; const p=RG.programs[i], f=(k,l,ph,ta)=>`<div class="field"><label>${l}</label>${ta?`<textarea id="rgp_${k}" rows="2" placeholder="${esc(ph||'')}">${esc(p[k]||'')}</textarea>`:`<input id="rgp_${k}" value="${esc(p[k]||'')}" placeholder="${esc(ph||'')}">`}</div>`;
+  document.getElementById('rgpBody').innerHTML=`<div class="field-row"><div class="field"><label>Language</label><select id="rgp_lang"><option ${p.lang==='English'?'selected':''}>English</option><option ${p.lang==='Mandarin'?'selected':''}>Mandarin</option></select></div>${f('ic','Icon (emoji)','🏆')}</div>
+    ${f('name','Program name','e.g. Boost English')}<div class="field-row">${f('pill','Badge','e.g. A1 – C2 (6 Levels)')}${f('levels','Levels (shown in fee table)','e.g. A1 – C2')}</div>
+    ${f('desc','Short description','',true)}<div class="field-row">${f('who','Age group (new line = line break)','Kids (8–12)…',true)}${f('dur','Duration (new line = line break)','3 – 6 months / level',true)}</div>`;
+  openModal('mRgProg'); }
+function rgSaveCard(){ const p=RG.programs[RG_EDIT]; if(!p) return; ['lang','ic','name','pill','levels','desc','who','dur'].forEach(k=>{ const e=document.getElementById('rgp_'+k); if(e) p[k]=e.value.trim(); });
+  if(!p.name){ toast('Program name is required','err'); return; } closeModal('mRgProg'); drawRegCfg(); toast('Updated — click Save Changes to publish','ok'); }
+async function saveRegCfg(){
+  if(!/^\d{8,15}$/.test(String(RG.wa||'').replace(/\D/g,''))){ toast('Check the WhatsApp number (e.g. 6281945144145)','err'); return; }
+  try{ await API.setSetting('reg_config',JSON.stringify(RG)); toast('Registration page updated ✅','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
 /* ============================== AUDIT LOG ============================== */
 function auditItems(){
   const L=[], add=(at,type,t,s,c)=>{ if(at) L.push({at:String(at),type,t,s,c}); };
