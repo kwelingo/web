@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeacherNotes Writer — Kwelingo Academy</title>
+<link rel="icon" href="assets/logo.png">
+<meta name="theme-color" content="#1F6FEB">
+<link rel="stylesheet" href="assets/style.css?v=20261106">
+<style>
+  .ed-toolbar{display:flex;gap:4px;flex-wrap:wrap;background:#F5F8FD;border:1.5px solid var(--line);border-bottom:0;border-radius:12px 12px 0 0;padding:6px}
+  .ed-toolbar button{border:0;background:#fff;border-radius:8px;min-width:34px;height:32px;padding:0 9px;font-weight:700;color:var(--navy);cursor:pointer;font-size:13px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .ed-toolbar button:hover{background:var(--sky-soft)}
+  .ed-toolbar .sep{width:1px;background:var(--line);margin:4px 2px}
+  .editor{min-height:340px;max-height:56vh;overflow:auto;border:1.5px solid var(--line);border-radius:0 0 12px 12px;padding:16px 18px;font-size:15px;line-height:1.7;color:#2B3656;background:#fff;outline:none}
+  .editor:focus{border-color:var(--blue)}
+  .editor:empty:before{content:attr(data-ph);color:#A0AABF}
+  .editor h2{font-size:21px;color:var(--navy);margin:14px 0 6px}.editor h3{font-size:17px;color:var(--navy);margin:12px 0 4px}
+  .editor blockquote{border-left:4px solid var(--blue);background:#F1F6FF;margin:10px 0;padding:8px 14px;border-radius:0 10px 10px 0}
+  .editor img{max-width:100%;border-radius:12px;margin:8px 0}
+  .editor ul,.editor ol{padding-left:22px}
+  .cover-box{border:1.8px dashed #B9CFF6;border-radius:14px;background:#F5F9FF;aspect-ratio:16/7;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;color:var(--blue);font-weight:700;font-size:13px;text-align:center}
+  .cover-box img{width:100%;height:100%;object-fit:cover}
+  .art-row{display:flex;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .art-row:last-child{border-bottom:0}
+  .art-cv{width:96px;height:62px;border-radius:10px;background:linear-gradient(135deg,#22B2DC,#1F6FEB);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+  .art-cv img{width:100%;height:100%;object-fit:cover}
+  .art-row b{color:var(--navy);font-size:15px;display:block}.art-row small{color:var(--muted);font-size:12px}
+  .preview-art h1{font-size:28px;color:var(--navy);line-height:1.25;margin:8px 0}
+  .preview-art .content{font-size:15.5px;line-height:1.75;color:#2B3656}
+  .preview-art .content h2{font-size:21px;color:var(--navy);margin:18px 0 6px}.preview-art .content h3{font-size:17px;color:var(--navy);margin:14px 0 4px}
+  .preview-art .content img{max-width:100%;border-radius:12px;margin:10px 0}
+  .preview-art .content blockquote{border-left:4px solid var(--blue);background:#F1F6FF;margin:12px 0;padding:10px 16px;border-radius:0 10px 10px 0}
+  .preview-art .content ul,.preview-art .content ol{padding-left:22px}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginGate" style="position:fixed;inset:0;z-index:500;background:linear-gradient(160deg,#EEF4FF 0%,#F7FBFF 60%,#FFF6EA 100%);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card card-pad" style="max-width:390px;width:100%;text-align:center;padding:30px 28px">
+    <img src="assets/logo-h.png" onerror="this.src='assets/logo.png'" alt="Kwelingo Academy" style="height:52px;margin:0 auto 10px">
+    <span class="ls-sub" style="display:inline-block;margin-bottom:16px">TeacherNotes Writer</span>
+    <h2 style="color:var(--navy);font-size:21px;margin-bottom:4px">Hi, writer ✍️</h2>
+    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Log in with the username &amp; PIN from the Super Admin.</p>
+    <div class="field" style="text-align:left"><label>Username</label><input id="lgName" autocomplete="off" placeholder="e.g. nadiablog" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field" style="text-align:left"><label>PIN (4 digits)</label><input id="lgPin" maxlength="4" inputmode="numeric" type="password" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-primary btn-block" onclick="doLogin()">Log in →</button>
+    <div class="help" id="lgErr" style="color:var(--red);margin-top:10px;font-weight:600"></div>
+    <div class="help" style="margin-top:14px"><a href="blog.html" style="color:var(--muted)">← Read TeacherNotes</a></div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-head" id="logo"></div>
+    <nav class="nav">
+      <a data-view="articles" class="active"><span class="ic">📝</span> My Articles</a>
+      <a data-view="account"><span class="ic">⚙️</span> Account</a>
+      <div class="divider"></div>
+      <a href="blog.html" target="_blank"><span class="ic">🌐</span> View TeacherNotes</a>
+      <a onclick="logout()"><span class="ic">🚪</span> Log out</a>
+    </nav>
+    <div class="sidebar-help" onclick="openEditor()"><span style="font-size:22px">✍️</span><div><b>Write an article</b><small>Share tips &amp; stories</small></div><span class="chev" style="margin-left:auto">›</span></div>
+  </aside>
+  <div class="backdrop" onclick="toggleSidebar()"></div>
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="spacer"></div>
+      <div class="me"><div class="who"><span id="meName">Writer</span><small>TeacherNotes Writer</small></div><div class="avatar" id="meAv">W</div></div>
+    </div>
+    <div class="content">
+
+      <section class="view" id="view-articles">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📝</div><div><h1>My Articles</h1><div class="sub">Write articles for TeacherNotes. Every article is reviewed by the Super Admin before it is published.</div></div></div>
+          <button class="btn btn-primary" onclick="openEditor()">＋ New Article</button></div>
+        <div class="grid grid-4" style="margin-bottom:16px" id="stats"></div>
+        <div class="utabs" id="tabs"></div>
+        <div class="card" id="list"></div>
+      </section>
+
+      <section class="view hide" id="view-account">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">⚙️</div><div><h1>Account</h1><div class="sub">Your writer profile.</div></div></div></div>
+        <div class="grid grid-2" style="gap:16px;align-items:start">
+          <div class="card card-pad"><div class="card-title">👤 Profile</div>
+            <div class="field"><label>Display name (shown on articles)</label><input id="acName"></div>
+            <div class="field"><label>Short bio</label><textarea id="acBio" rows="3" maxlength="200" placeholder="e.g. English teacher at Kwelingo."></textarea></div>
+            <button class="btn btn-primary" onclick="saveProfile()">Save Profile</button></div>
+          <div class="card card-pad"><div class="card-title">🔒 Change PIN</div>
+            <div class="field"><label>Current PIN</label><input id="acOld" type="password" maxlength="4" inputmode="numeric"></div>
+            <div class="field-row"><div class="field"><label>New PIN</label><input id="acNew" type="password" maxlength="4" inputmode="numeric"></div><div class="field"><label>Repeat</label><input id="acNew2" type="password" maxlength="4" inputmode="numeric"></div></div>
+            <button class="btn btn-primary" onclick="changePin()">Save New PIN</button></div>
+        </div>
+      </section>
+
+      <div class="foot-note">© 2026 Kwelingo Academy · TeacherNotes</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: editor ===== -->
+<div class="modal-overlay" id="mEditor">
+  <div class="modal xl">
+    <div class="modal-head"><h3 id="edTitle">New Article</h3><button class="x" onclick="closeModal('mEditor')">×</button></div>
+    <div class="modal-body">
+      <div id="edNote"></div>
+      <div class="grid" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;align-items:start" id="edGrid">
+        <div>
+          <div class="field"><label>Title <span class="req">*</span></label><input id="edT" maxlength="120" placeholder="e.g. 5 Easy Habits to Practise English Every Day"></div>
+          <label style="font-size:12.5px;font-weight:700;color:var(--navy)">Article <span class="req">*</span></label>
+          <div class="ed-toolbar">
+            <button title="Heading" onclick="fmt('formatBlock','H2')">H2</button><button title="Sub-heading" onclick="fmt('formatBlock','H3')">H3</button><button title="Paragraph" onclick="fmt('formatBlock','P')">¶</button><span class="sep"></span>
+            <button title="Bold" onclick="fmt('bold')"><b>B</b></button><button title="Italic" onclick="fmt('italic')"><i>I</i></button><button title="Underline" onclick="fmt('underline')"><u>U</u></button><span class="sep"></span>
+            <button title="Bullet list" onclick="fmt('insertUnorderedList')">• List</button><button title="Numbered list" onclick="fmt('insertOrderedList')">1. List</button><button title="Quote" onclick="fmt('formatBlock','BLOCKQUOTE')">❝</button><span class="sep"></span>
+            <button title="Link" onclick="addLink()">🔗</button><button title="Image" onclick="document.getElementById('edImg').click()">🖼️</button><button title="Clear formatting" onclick="fmt('removeFormat')">⌫</button>
+          </div>
+          <div class="editor" id="edC" contenteditable="true" data-ph="Start writing your article…"></div>
+          <input type="file" id="edImg" class="hide" accept="image/*" onchange="insertImage(this)">
+          <div class="help" id="edWords" style="text-align:right;margin-top:4px"></div>
+        </div>
+        <div>
+          <div class="field"><label>Cover Image</label><div class="cover-box" id="edCover" onclick="document.getElementById('edCv').click()">🖼️<br>Click to upload a cover (landscape)</div>
+            <input type="file" id="edCv" class="hide" accept="image/*" onchange="uploadCover(this)"><div style="text-align:right"><button class="btn btn-ghost btn-sm" onclick="CV='';drawCover()">Remove cover</button></div></div>
+          <div class="field"><label>Category <span class="req">*</span></label><select id="edCat"></select></div>
+          <div class="field"><label>Short summary <span class="help" style="display:inline">(shown on the article card)</span></label><textarea id="edEx" rows="3" maxlength="220" placeholder="One or two sentences about the article…"></textarea></div>
+          <div class="field"><label>Tags <span class="help" style="display:inline">(optional, comma separated)</span></label><input id="edTags" placeholder="e.g. speaking, vocabulary"></div>
+          <div class="note-band" style="font-size:12px">💡 Tips: use short paragraphs, headings (H2) and lists. Add a cover image for a better look on the TeacherNotes page.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="previewDraft()">👁️ Preview</button><span style="flex:1"></span><button class="btn btn-outline" onclick="saveArticle('Draft')">💾 Save Draft</button><button class="btn btn-primary" onclick="saveArticle('Pending')">📤 Submit for Review</button></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: preview ===== -->
+<div class="modal-overlay" id="mPreview">
+  <div class="modal wide">
+    <div class="modal-head"><h3>Preview</h3><button class="x" onclick="closeModal('mPreview')">×</button></div>
+    <div class="modal-body preview-art" id="pvBody"></div>
+  </div>
+</div>
+
+<script src="assets/app.js?v=20261106"></script>
+<script>
+document.getElementById('logo').innerHTML=logoBlock('Kwelingo Academy','TeacherNotes Writer');
+let ME=null, POSTS=[], TAB='all', ED=null, CV='';
+const ST={Draft:'<span class="badge badge-grey">Draft</span>',Pending:'<span class="badge badge-pending">Waiting for review</span>',Published:'<span class="badge badge-paid">Published</span>',Rejected:'<span class="badge badge-unpaid">Needs revision</span>'};
+
+async function doLogin(){
+  const u=document.getElementById('lgName').value.trim(), p=document.getElementById('lgPin').value, err=document.getElementById('lgErr');
+  if(!u){ err.textContent='Enter your username'; return; } if(!/^\d{4}$/.test(p)){ err.textContent='PIN must be 4 digits'; return; }
+  err.textContent='Checking…';
+  try{ ME=await API.blogLogin(u,p); try{ sessionStorage.setItem('kw_blog',JSON.stringify({u,p})); }catch(e){}
+    document.getElementById('loginGate').style.display='none'; document.getElementById('meName').textContent=ME.nama; document.getElementById('meAv').textContent=initials(ME.nama);
+    document.getElementById('edCat').innerHTML=BLOG_CATS.map(c=>`<option>${esc(c)}</option>`).join('');
+    await load(); go('articles'); }
+  catch(e){ err.textContent=e.message||'Login failed'; }
+}
+function logout(){ try{ sessionStorage.removeItem('kw_blog'); }catch(e){} location.reload(); }
+(async()=>{ try{ const s=JSON.parse(sessionStorage.getItem('kw_blog')||'null'); if(s){ document.getElementById('lgName').value=s.u; document.getElementById('lgPin').value=s.p; await doLogin(); } }catch(e){} })();
+async function load(){ try{ POSTS=await API.list('blog_posts',{author_id:ME.id},'created_at.desc')||[]; }catch(e){ POSTS=[]; } }
+
+const RENDER={articles:renderList,account:renderAccount};
+function go(v){ document.querySelectorAll('.nav a[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===v)); document.querySelectorAll('.view').forEach(s=>s.classList.toggle('hide',s.id!=='view-'+v)); (RENDER[v]||(()=>{}))(); if(typeof _syncShell==='function') _syncShell(v); if(innerWidth<768) closeDrawer(); }
+document.querySelectorAll('.nav a[data-view]').forEach(a=>a.addEventListener('click',()=>go(a.dataset.view)));
+
+function renderList(){
+  const n=s=>POSTS.filter(p=>p.status===s).length;
+  document.getElementById('stats').innerHTML=[['tint-green','Published',n('Published')],['tint-amber','Waiting for review',n('Pending')],['tint-pink','Needs revision',n('Rejected')],['tint-blue','Drafts',n('Draft')]].map(([t,l,v])=>`<div class="stat ${t}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+  utabsW([['all','All',POSTS.length],['Published','Published'],['Pending','Waiting for review'],['Rejected','Needs revision'],['Draft','Drafts']]);
+  const list=POSTS.filter(p=>TAB==='all'||p.status===TAB);
+  document.getElementById('list').innerHTML=list.map(p=>`<div class="art-row"><div class="art-cv">${p.cover_url?`<img src="${esc(p.cover_url)}" alt="">`:'📝'}</div>
+    <div style="flex:1;min-width:0"><b>${esc(p.title)}</b><small>${esc(p.category||'')} · ${esc(shortDate(String(p.published_at||p.updated_at||p.created_at||'').slice(0,10)))} · ${blogReadMins(p.content)} min read</small>
+      ${p.status==='Rejected'&&p.review_note?`<div class="note-band" style="font-size:12px;margin-top:6px;padding:6px 10px">💬 Admin: ${esc(p.review_note)}</div>`:''}</div>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">${ST[p.status]||esc(p.status)}
+      ${p.status==='Published'?`<a class="btn btn-ghost btn-sm" href="blog.html?p=${encodeURIComponent(p.slug||p.id)}" target="_blank">View ↗</a>`:''}
+      <button class="btn btn-outline btn-sm" onclick="openEditor('${esc(p.id)}')">✏️ Edit</button>${p.status!=='Published'?`<button class="btn btn-ghost btn-sm" title="Delete" onclick="delArticle('${esc(p.id)}')">🗑</button>`:''}</div></div>`).join('')
+    ||`<div class="card-pad empty">${POSTS.length?'Nothing here.':'No articles yet — click <b>＋ New Article</b> to write your first one ✍️'}</div>`;
+}
+function utabsW(tabs){ document.getElementById('tabs').innerHTML=tabs.map(([k,l,c])=>`<button class="${k===TAB?'on':''}" onclick="TAB='${k}';renderList()">${l}${c!=null?`<span class="cnt">${c}</span>`:''}</button>`).join(''); }
+
+/* ---------- editor ---------- */
+function openEditor(id){
+  const p=id?POSTS.find(x=>x.id===id):{}; ED=id||null; CV=p.cover_url||'';
+  document.getElementById('edTitle').textContent=id?'Edit Article':'New Article';
+  document.getElementById('edT').value=p.title||''; document.getElementById('edC').innerHTML=p.content||''; document.getElementById('edCat').value=p.category||BLOG_CATS[0];
+  document.getElementById('edEx').value=p.excerpt||''; document.getElementById('edTags').value=p.tags||'';
+  document.getElementById('edNote').innerHTML=p.status==='Rejected'&&p.review_note?`<div class="note-band" style="margin-bottom:12px;background:#FDECEC;border-color:#F5C2C4;color:#A1262B">💬 Admin feedback: ${esc(p.review_note)}</div>`:(p.status==='Published'?'<div class="note-band" style="margin-bottom:12px">ℹ️ This article is live. If you submit changes, it will be hidden until the Super Admin approves the new version.</div>':'');
+  drawCover(); words(); openModal('mEditor');
+}
+function fmt(cmd,val){ document.getElementById('edC').focus(); document.execCommand(cmd,false,val||null); words(); }
+function addLink(){ const u=prompt('Link URL (https://…)'); if(u&&/^(https?:|mailto:)/i.test(u)) fmt('createLink',u); }
+async function insertImage(inp){ const f=inp.files[0]; inp.value=''; if(!f) return; if(f.size>4*1024*1024){ toast('Max 4 MB per image','err'); return; }
+  try{ toast('Uploading image…'); const r=await API.uploadFile(await resizeImageToDataURL(f,1400),f.name); const url=(r&&(r.view||r.url))||''; if(!url) throw new Error('Upload failed'); fmt('insertImage',url); toast('Image added','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+async function uploadCover(inp){ const f=inp.files[0]; inp.value=''; if(!f) return;
+  try{ toast('Uploading cover…'); const r=await API.uploadFile(await resizeImageToDataURL(f,1600),f.name); CV=(r&&(r.view||r.url))||''; drawCover(); toast('Cover added','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+function drawCover(){ document.getElementById('edCover').innerHTML=CV?`<img src="${esc(CV)}" alt="">`:'🖼️<br>Click to upload a cover (landscape)'; }
+function words(){ const t=document.getElementById('edC').innerText.trim(); const w=t?t.split(/\s+/).length:0; document.getElementById('edWords').textContent=`${w} words · ~${Math.max(1,Math.round(w/200))} min read`; }
+document.getElementById('edC').addEventListener('input',words);
+document.getElementById('edC').addEventListener('paste',e=>{ e.preventDefault(); const h=e.clipboardData.getData('text/html'), t=e.clipboardData.getData('text/plain'); document.execCommand('insertHTML',false,h?blogSanitize(h):esc(t).replace(/\n/g,'<br>')); });
+function collect(){ return {title:document.getElementById('edT').value.trim(),content:blogSanitize(document.getElementById('edC').innerHTML),category:document.getElementById('edCat').value,excerpt:document.getElementById('edEx').value.trim(),tags:document.getElementById('edTags').value.trim(),cover_url:CV}; }
+function previewDraft(){ const d=collect(); document.getElementById('pvBody').innerHTML=`${d.cover_url?`<img src="${esc(d.cover_url)}" style="width:100%;border-radius:14px;aspect-ratio:16/7;object-fit:cover">`:''}<span class="badge badge-active" style="margin-top:12px">${esc(d.category)}</span><h1>${esc(d.title||'Untitled')}</h1><div class="text-muted" style="font-size:13px;margin-bottom:14px">By ${esc(ME.nama)} · ${blogReadMins(d.content)} min read</div><div class="content">${d.content}</div>`; openModal('mPreview'); }
+async function saveArticle(status){
+  const d=collect(); if(!d.title){ toast('Please write a title','err'); return; }
+  const text=document.getElementById('edC').innerText.trim(); if(status==='Pending'&&text.split(/\s+/).length<30){ toast('The article is too short to submit (min. 30 words)','err'); return; }
+  const now=new Date().toISOString(), old=ED?POSTS.find(x=>x.id===ED):null;
+  if(status==='Pending'&&old&&old.status==='Published'&&!confirm('This article is live. Submitting changes will hide it until the Super Admin approves again. Continue?')) return;
+  const excerpt=d.excerpt||text.slice(0,180)+(text.length>180?'…':'');
+  const row={...d,excerpt,id:ED||undefined,author_id:ME.id,author_name:ME.nama,status,updated_at:now,slug:(old&&old.slug)||(blogSlug(d.title)+'-'+Date.now().toString(36).slice(-4)),...(status==='Pending'?{submitted_at:now,review_note:''}:{})};
+  try{ await API.upsert('blog_posts',row); await load(); closeModal('mEditor'); TAB='all'; renderList(); toast(status==='Pending'?'Submitted for review 📤 — the Super Admin will check it':'Draft saved','ok'); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+async function delArticle(id){ if(!confirm('Delete this article?')) return; try{ await API.remove('blog_posts',id); await load(); renderList(); toast('Deleted','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+
+/* ---------- account ---------- */
+function renderAccount(){ document.getElementById('acName').value=ME.nama||''; document.getElementById('acBio').value=ME.bio||''; }
+async function saveProfile(){ const n=document.getElementById('acName').value.trim(); if(!n){ toast('Name is required','err'); return; }
+  try{ await API.upsert('blog_writers',{id:ME.id,nama:n,bio:document.getElementById('acBio').value.trim()}); ME.nama=n; ME.bio=document.getElementById('acBio').value.trim(); document.getElementById('meName').textContent=n; toast('Profile saved','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+async function changePin(){ const o=document.getElementById('acOld').value, a=document.getElementById('acNew').value, b=document.getElementById('acNew2').value;
+  if(String(o)!==String(ME.pin)){ toast('Current PIN is incorrect','err'); return; } if(!/^\d{4}$/.test(a)){ toast('New PIN must be 4 digits','err'); return; } if(a!==b){ toast('PINs do not match','err'); return; }
+  try{ await API.upsert('blog_writers',{id:ME.id,pin:a}); ME.pin=a; ['acOld','acNew','acNew2'].forEach(i=>document.getElementById(i).value=''); try{ const s=JSON.parse(sessionStorage.getItem('kw_blog')||'{}'); s.p=a; sessionStorage.setItem('kw_blog',JSON.stringify(s)); }catch(e){} toast('PIN updated ✅','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+</script>
+<script>initAppShell();</script>
+</body>
+</html>

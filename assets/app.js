@@ -232,6 +232,7 @@ const SCRIPT_API = {
   getStudents : (o={}) => SCRIPT_API._post({action:'getStudents',...o}),
   studentLogin: (login,pin) => SCRIPT_API._post({action:'studentLogin',login,pin}),
   parentLogin: (login,pin) => SCRIPT_API._post({action:'parentLogin',login,pin}),
+  blogLogin: (login,pin) => SCRIPT_API._post({action:'blogLogin',login,pin}),
   getStudent  : (id)   => SCRIPT_API._post({action:'getStudents',id}),
   addStudent  : (d)    => SCRIPT_API._post({action:'addStudent',...d}),
   updateStudent:(d)    => SCRIPT_API._post({action:'updateStudent',...d}),
@@ -339,6 +340,8 @@ const SB_COLS = {
   chat:['id','room','sender_id','sender_name','role','message'],
   tboard:['id','title','body','date','author','program','attach_url','attach_name'],
   tboard_read:['id','board_id','reader_id','reader_name','read_at'],
+  blog_posts:['id','title','slug','category','cover_url','excerpt','content','author_id','author_name','status','review_note','submitted_at','reviewed_at','published_at','updated_at','tags'],
+  blog_writers:['id','nama','username','pin','email','bio','photo_url','status'],
 };
 const sbPick=(o,cols)=>{const r={};cols.forEach(k=>{ if(o[k]!==undefined && o[k]!==null) r[k]=o[k]; });return r;};
 const SB = {
@@ -420,6 +423,9 @@ const SB_API = {
   getStudents:(o={})=> SB.req('students?select=*'+(o.id?'&id=eq.'+SB.enc(o.id):'')+'&order=created_at.asc'),
   getStudent :(id)=> SB.req('students?select=*&id=eq.'+SB.enc(id)),
   studentLogin:(login,pin)=> sbLogin('students',login,pin),
+  async blogLogin(login,pin){ const v=SB.enc(String(login||'').trim()); const rows=await SB.req(`blog_writers?username=ilike.${v}&select=*`);
+    if(!rows.length) throw new Error('Writer account not found'); const hit=rows.find(x=>String(x.pin)===String(pin)); if(!hit) throw new Error('Incorrect PIN');
+    if(String(hit.status||'Active')!=='Active') throw new Error('This account is not active — please contact the admin'); return hit; },
   async parentLogin(login,pin){ const v=SB.enc(String(login||'').trim()); const rows=await SB.req(`parents?or=(username.ilike.${v},parent_id.ilike.${v})&select=*`);
     if(!rows.length) throw new Error('Parent account not found'); const hit=rows.find(x=>String(x.pin)===String(pin)); if(!hit) throw new Error('Incorrect PIN');
     if(String(hit.status||'Active')!=='Active') throw new Error('This account is not active — please contact the admin'); return hit; },
@@ -1410,6 +1416,7 @@ const DEMO = {
       case 'deleteClassGroup':{ this.class_groups=(this.class_groups||[]).filter(x=>x.id!==p.id); return {deleted:p.id}; }
       case 'uploadFile':{ return {url:p.base64,view:p.base64}; }
       case 'addStudent': { const id='s'+Date.now(); const pin=p.pin||genPin(); this.students.push({active:'aktif',pin,...p,id}); return {id,pin}; }
+      case 'blogLogin':{ const key=String(p.login||'').toLowerCase().trim(); const x=(this.blog_writers||[]).find(a=>String(a.username||'').toLowerCase()===key); if(!x) throw new Error('Writer account not found'); if(String(x.pin)!==String(p.pin)) throw new Error('Incorrect PIN'); if(String(x.status||'Active')!=='Active') throw new Error('This account is not active — please contact the admin'); return clone(x); }
       case 'parentLogin':{ const key=String(p.login||'').toLowerCase().trim(); const x=(this.parents||[]).find(a=>String(a.username||'').toLowerCase()===key||String(a.parent_id||'').toLowerCase()===key); if(!x) throw new Error('Parent account not found'); if(String(x.pin)!==String(p.pin)) throw new Error('Incorrect PIN'); return clone(x); }
       case 'studentLogin':{ const key=String(p.login||'').toLowerCase().trim(); const s=this.students.find(x=>x.id===p.login||(x.username||'').toLowerCase().trim()===key||genUsername(x.nama)===key||x.nama.toLowerCase().trim()===key); if(!s)throw new Error('Student not found'); if(String(s.pin)!==String(p.pin))throw new Error('Incorrect PIN'); return clone(s); }
       case 'addTutor':   { const id='t'+Date.now(); const pin=p.pin||genPin(); this.tutors.push({pin,...p,id}); return {id,pin}; }
@@ -1632,3 +1639,38 @@ function openInvoice(o){
   ${o.note?`<div style="margin-top:14px;font-size:12.5px;color:#6B7A99">Note: ${esc(o.note)}</div>`:''}</div></body></html>`;
   const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the invoice','err'); return; } w.document.write(html); w.document.close();
 }
+
+
+/* ============================================================
+   TeacherNotes blog — shared helpers (blog.html, index.html, blog-admin.html, master-admin.html)
+   ============================================================ */
+const BLOG_CATS=['Learning Tips','English','Mandarin','Test Prep','Kwelingo News','Stories'];
+function blogSlug(t){ return String(t||'post').toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/[\s_-]+/g,'-').slice(0,70)||'post'; }
+// allow only safe formatting tags in article HTML
+function blogSanitize(html){
+  const ok={P:[],H2:[],H3:[],H4:[],B:[],STRONG:[],I:[],EM:[],U:[],UL:[],OL:[],LI:[],BLOCKQUOTE:[],A:['href'],IMG:['src','alt'],BR:[],HR:[],FIGURE:[],FIGCAPTION:[],SPAN:[],DIV:[]};
+  const doc=new DOMParser().parseFromString('<div>'+String(html||'')+'</div>','text/html');
+  const walk=node=>{ [...node.childNodes].forEach(n=>{
+    if(n.nodeType===3) return; if(n.nodeType!==1){ n.remove(); return; }
+    if(!ok[n.tagName]){ if(['SCRIPT','STYLE','IFRAME','OBJECT','EMBED','FORM','INPUT','BUTTON','TEXTAREA','SELECT'].includes(n.tagName)){ n.remove(); return; } walk(n); n.replaceWith(...n.childNodes); return; }
+    [...n.attributes].forEach(a=>{ if(!ok[n.tagName].includes(a.name)) n.removeAttribute(a.name); });
+    if(n.hasAttribute('href')&&!/^(https?:|mailto:|\/|#)/i.test(n.getAttribute('href'))) n.removeAttribute('href');
+    if(n.hasAttribute('src')&&!/^(https?:|data:image\/)/i.test(n.getAttribute('src'))) n.remove();
+    if(n.tagName==='A'){ n.setAttribute('target','_blank'); n.setAttribute('rel','noopener'); }
+    walk(n); }); };
+  const root=doc.body.firstChild; walk(root); return root.innerHTML;
+}
+function blogReadMins(html){ const w=String(html||'').replace(/<[^>]+>/g,' ').trim().split(/\s+/).filter(Boolean).length; return Math.max(1,Math.round(w/200)); }
+async function blogPublished(){ let r=[]; try{ r=await API.list('blog_posts',{status:'Published'},'published_at.desc')||[]; }catch(e){} return r.sort((a,b)=>String(b.published_at||'').localeCompare(String(a.published_at||''))); }
+
+/* demo data for the blog */
+(function seedBlog(){
+  if(typeof DEMO==='undefined') return;
+  const t=todayStr(), add=n=>{const d=new Date(t+'T00:00:00'); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+  DEMO.blog_writers=[{id:'bw1',nama:'Nadia Putri',username:'nadiablog',pin:'1357',email:'nadia@kwelingo.com',bio:'English teacher & content writer at Kwelingo.',status:'Active',created_at:add(-40)+'T09:00:00'}];
+  DEMO.blog_posts=[
+    {id:'bp1',title:'5 Easy Habits to Practise English Every Day',slug:'5-easy-habits-to-practise-english-every-day',category:'Learning Tips',cover_url:'',excerpt:'Small daily habits make a big difference. Here are five simple ways to keep your English growing — even on busy days.',content:'<p>Learning a language is a marathon, not a sprint. The good news? A few minutes a day is enough to keep growing.</p><h2>1. Think in English</h2><p>Describe what you are doing in your head: <em>“I’m making breakfast, then I’ll catch the bus.”</em></p><h2>2. Keep a mini diary</h2><p>Write three sentences every night about your day.</p><h2>3. Shadow a short video</h2><p>Pick a 1-minute clip and repeat after the speaker.</p><blockquote>Consistency beats intensity.</blockquote><h2>4. Label your home</h2><p>Sticky notes on objects help new words stick.</p><h2>5. Talk to someone</h2><p>Join a Speak Active session and use what you learned!</p>',author_id:'bw1',author_name:'Nadia Putri',status:'Published',published_at:add(-6)+'T10:00:00',created_at:add(-8)+'T10:00:00'},
+    {id:'bp2',title:'HSK 1 vs HSK 2: Which Level Should You Start With?',slug:'hsk-1-vs-hsk-2',category:'Mandarin',cover_url:'',excerpt:'Not sure where to begin with the HSK? We compare the first two levels so you can choose the right starting point.',content:'<p>The HSK (汉语水平考试) is the standard Mandarin proficiency test. Levels 1 and 2 are where most learners begin.</p><h2>HSK 1</h2><ul><li>150 words</li><li>Basic greetings and numbers</li></ul><h2>HSK 2</h2><ul><li>300 words</li><li>Simple daily conversations</li></ul><p>Not sure? Book a discovery session and we will help you decide.</p>',author_id:'bw1',author_name:'Nadia Putri',status:'Published',published_at:add(-15)+'T09:00:00',created_at:add(-16)+'T09:00:00'},
+    {id:'bp3',title:'How to Prepare for IELTS Speaking Part 2',slug:'ielts-speaking-part-2',category:'Test Prep',cover_url:'',excerpt:'One minute to prepare, two minutes to speak. Here is a simple structure that works.',content:'<p>In Part 2 you get a cue card, one minute to prepare and up to two minutes to speak.</p><h2>A simple structure</h2><ol><li>Introduce the topic</li><li>Give details (who, what, when)</li><li>Explain why it matters to you</li></ol>',author_id:'bw1',author_name:'Nadia Putri',status:'Pending',submitted_at:add(-1)+'T15:00:00',created_at:add(-2)+'T15:00:00'},
+  ];
+})();

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Admin Portal — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/style.css?v=20261103">
+<link rel="stylesheet" href="assets/style.css?v=20261106">
 <style>
   .report-grid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
   @media(max-width:1100px){.report-grid{grid-template-columns:1fr}}
@@ -83,6 +83,18 @@
     .stat{break-inside:avoid}
     *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }
+  .bl-row{display:flex;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .bl-row:last-child{border-bottom:0}
+  .bl-cv{width:96px;height:62px;border-radius:10px;background:linear-gradient(135deg,#26B5DF,#1495C4);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+  .bl-cv img{width:100%;height:100%;object-fit:cover}
+  .bl-row b{color:var(--navy);font-size:15px;display:block}.bl-row small{color:var(--muted);font-size:12px}
+  .bl-art h1{font-size:27px;color:var(--navy);line-height:1.25;margin:8px 0}
+  .bl-art .content{font-size:15.5px;line-height:1.75;color:#2B3656}
+  .bl-art .content h2{font-size:21px;color:var(--navy);margin:18px 0 6px}.bl-art .content h3{font-size:17px;color:var(--navy);margin:14px 0 4px}
+  .bl-art .content img{max-width:100%;border-radius:12px;margin:10px 0}
+  .bl-art .content blockquote{border-left:4px solid var(--blue);background:#F1F6FF;margin:12px 0;padding:10px 16px;border-radius:0 10px 10px 0}
+  .bl-art .content ul,.bl-art .content ol{padding-left:22px}
+  @media(max-width:640px){.bl-row{flex-wrap:wrap}.bl-cv{width:72px;height:50px}}
 </style>
 </head>
 <body>
@@ -118,6 +130,7 @@
       <a data-view="certificates"><span class="ic">🏅</span> Certificate Management</a>
       <a data-view="invoices"><span class="ic">💳</span> Invoices &amp; Payments</a>
       <a data-view="laporan"><span class="ic">📈</span> Reports</a>
+      <a data-view="blog"><span class="ic">📰</span> TeacherNotes Blog <span class="nav-dot" id="blDot" style="display:none"></span></a>
       <a data-view="settings"><span class="ic">⚙️</span> Settings</a>
       <a data-view="activity"><span class="ic">🛡️</span> Audit Log</a>
       <div class="divider"></div>
@@ -521,6 +534,15 @@
         <div class="note-band mt-16" style="font-size:12.5px">💡 Click <b>✏️</b> to edit a program's card (icon, badge, description, age group, duration). Changes appear on the registration page right after you click <b>Save Changes</b>.</div>
       </section>
 
+      <!-- TEACHERNOTES BLOG -->
+      <section class="view hide" id="view-blog">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📰</div><div><h1>TeacherNotes Blog</h1><div class="sub">Review writers' articles before they go live, and manage blog-only writer accounts.</div></div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-outline btn-sm" href="blog.html" target="_blank">👁️ View blog ↗</a><a class="btn btn-outline btn-sm" href="blog-admin.html" target="_blank">✍️ Writer portal ↗</a><button class="btn btn-primary" onclick="blWriterOpen()">＋ Add Writer</button></div></div>
+        <div class="grid grid-4" style="margin-bottom:16px" id="blStats"></div>
+        <div class="utabs" id="blTabs"></div>
+        <div id="blBody"></div>
+      </section>
+
       <section class="view hide" id="view-settings">
         <div class="page-head"><div class="ph-left"><div class="ph-ic">⚙️</div><div><h1>Settings</h1><div class="sub">Portal PINs, data tools and system links.</div></div></div></div>
         <div class="grid grid-3" style="gap:14px;margin-bottom:18px">
@@ -672,6 +694,29 @@
 </div>
 
 <!-- MODAL: registration program card -->
+<div class="modal-overlay" id="mBlPost">
+  <div class="modal wide">
+    <div class="modal-head"><h3 id="blpHead">Review Article</h3><button class="x" onclick="closeModal('mBlPost')">×</button></div>
+    <div class="modal-body bl-art" id="blpBody"></div>
+    <div class="modal-foot" id="blpFoot" style="flex-wrap:wrap"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="mBlWriter">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head"><h3 id="blwHead">Add Writer</h3><button class="x" onclick="closeModal('mBlWriter')">×</button></div>
+    <div class="modal-body"><input type="hidden" id="blwId">
+      <div class="note-band" style="font-size:12.5px;margin-bottom:12px">✍️ Writer accounts can <b>only</b> log in to the TeacherNotes writer portal (<b>blog-admin.html</b>). Their articles are published only after you approve them.</div>
+      <div class="field"><label>Full Name *</label><input id="blwNama" placeholder="e.g. Nadia Putri" oninput="if(!document.getElementById('blwId').value)document.getElementById('blwUser').value=genUsername(this.value)+'blog'"></div>
+      <div class="field-row"><div class="field"><label>Username *</label><input id="blwUser" autocomplete="off"></div>
+        <div class="field"><label>PIN (4 digits) *</label><div style="display:flex;gap:8px"><input id="blwPin" maxlength="4" inputmode="numeric" style="flex:1;font-weight:800;letter-spacing:4px;text-align:center"><button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('blwPin').value=genPin()">🔄</button></div></div></div>
+      <div class="field-row"><div class="field"><label>Email</label><input id="blwEmail" type="email" placeholder="optional"></div>
+        <div class="field"><label>Status</label><select id="blwStatus"><option>Active</option><option>Deactivated</option></select></div></div>
+      <div class="field"><label>Short bio</label><textarea id="blwBio" rows="2" placeholder="Shown under the writer's articles"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mBlWriter')">Cancel</button><button class="btn btn-primary" onclick="blWriterSave()">Save Writer</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="mRgProg">
   <div class="modal">
     <div class="modal-head"><h3>Program Card</h3><button class="x" onclick="closeModal('mRgProg')">×</button></div>
@@ -786,7 +831,7 @@
   </div>
 </div>
 
-<script src="assets/app.js?v=20261103"></script>
+<script src="assets/app.js?v=20261106"></script>
 <script>
 document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Super Admin Portal');
 /* ---- PIN gate (verifikasi ke server) ---- */
@@ -856,7 +901,107 @@ function renderM(v){
   if(v==='invoices')    renderInvoicesSA();
   if(v==='activity')    renderAudit();
   if(v==='regpage')     renderRegCfg();
+  if(v==='blog')        renderBlogSA();
 }
+
+/* ============================== TEACHERNOTES BLOG (review + writers) ============================== */
+let BL_POSTS=[],BL_WRITERS=[],BL_TAB='pending';
+const BL_ST={Draft:'<span class="badge badge-grey">Draft</span>',Pending:'<span class="badge badge-pending">Pending review</span>',Published:'<span class="badge badge-paid">Published</span>',Rejected:'<span class="badge badge-unpaid">Returned for revision</span>'};
+async function blLoad(){ try{ BL_POSTS=await API.list('blog_posts',{},'created_at.desc')||[]; }catch(e){ BL_POSTS=[]; } try{ BL_WRITERS=await API.list('blog_writers',{},'created_at.desc')||[]; }catch(e){ BL_WRITERS=[]; } blDot(); }
+function blDot(){ const n=BL_POSTS.filter(p=>p.status==='Pending').length, d=document.getElementById('blDot'); if(d){ d.textContent=n; d.style.display=n?'inline-flex':'none'; } }
+async function renderBlogSA(keep){
+  if(!keep) await blLoad();
+  const c=k=>BL_POSTS.filter(p=>(p.status||'Draft')===k).length;
+  document.getElementById('blStats').innerHTML=statBox('⏳','#FFF6E5',c('Pending'),'Pending Review','waiting for your approval')+statBox('✅','#F0FAF4',c('Published'),'Published','live on the blog')+statBox('📝','#F1F6FF',c('Draft')+c('Rejected'),'Drafts / Returned','')+statBox('✍️','#F6F2FF',BL_WRITERS.filter(w=>(w.status||'Active')==='Active').length,'Active Writers','');
+  const tabs=[['pending','Pending Review',c('Pending')],['published','Published',c('Published')],['other','Drafts & Returned',c('Draft')+c('Rejected')],['writers','Writers',BL_WRITERS.length]];
+  document.getElementById('blTabs').innerHTML=tabs.map(([k,l,n])=>`<button class="${k===BL_TAB?'on':''}" onclick="BL_TAB='${k}';renderBlogSA(true)">${l}<span class="cnt">${n}</span></button>`).join('');
+  const body=document.getElementById('blBody');
+  if(BL_TAB==='writers'){ body.innerHTML=blWritersHtml(); return; }
+  const f={pending:p=>p.status==='Pending',published:p=>p.status==='Published',other:p=>p.status==='Draft'||p.status==='Rejected'||!p.status}[BL_TAB];
+  const key={pending:'submitted_at',published:'published_at',other:'updated_at'}[BL_TAB];
+  const rows=BL_POSTS.filter(f).sort((a,b)=>String(b[key]||b.created_at||'').localeCompare(String(a[key]||a.created_at||'')));
+  const empty={pending:'🎉 Nothing waiting for review.',published:'No published articles yet.',other:'No drafts or returned articles.'}[BL_TAB];
+  body.innerHTML=`<div class="card">${rows.map(p=>{
+    const when=p.status==='Published'?'Published '+dS(p.published_at):p.status==='Pending'?'Submitted '+dtS(p.submitted_at||p.created_at):'Last edit '+dtS(p.updated_at||p.created_at);
+    const acts=p.status==='Pending'?`<button class="btn btn-primary btn-sm" onclick="blOpen('${p.id}')">🔎 Review</button>`
+      :p.status==='Published'?`<button class="btn btn-outline btn-sm" onclick="blOpen('${p.id}')">👁️ View</button><a class="btn btn-ghost btn-sm" href="blog.html?p=${encodeURIComponent(p.slug||p.id)}" target="_blank">↗</a>`
+      :`<button class="btn btn-outline btn-sm" onclick="blOpen('${p.id}')">👁️ View</button>`;
+    return `<div class="bl-row"><div class="bl-cv">${p.cover_url?`<img src="${esc(p.cover_url)}" alt="">`:'📝'}</div><div style="flex:1;min-width:0"><b>${esc(p.title||'Untitled')}</b><small>${esc(p.category||'-')} · by ${esc(p.author_name||'-')} · ${esc(when)} · ${blogReadMins(p.content)} min read</small>${p.status==='Rejected'&&p.review_note?`<div style="font-size:12px;color:var(--red);margin-top:3px">↩ ${esc(p.review_note)}</div>`:''}</div>${BL_ST[p.status||'Draft']||''}<div style="display:flex;gap:6px">${acts}</div></div>`;
+  }).join('')||`<div class="empty" style="padding:30px">${empty}</div>`}</div>`;
+}
+function blOpen(id){
+  const p=BL_POSTS.find(x=>x.id===id); if(!p) return;
+  document.getElementById('blpHead').textContent=p.status==='Pending'?'Review Article':'Article';
+  const tags=String(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+  document.getElementById('blpBody').innerHTML=`${p.cover_url?`<img src="${esc(p.cover_url)}" style="width:100%;border-radius:14px;aspect-ratio:16/7;object-fit:cover">`:''}
+    <div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap"><span class="badge badge-active">${esc(p.category||'-')}</span>${BL_ST[p.status||'Draft']||''}</div>
+    <h1>${esc(p.title||'Untitled')}</h1><div class="text-muted" style="font-size:13px;margin-bottom:6px">By <b>${esc(p.author_name||'-')}</b> · ${blogReadMins(p.content)} min read${p.submitted_at?' · submitted '+esc(dtS(p.submitted_at)):''}</div>
+    ${p.excerpt?`<p style="font-size:14px;color:#5B6680;font-style:italic;border-left:3px solid var(--orange);padding-left:12px">${esc(p.excerpt)}</p>`:''}
+    <div class="content">${blogSanitize(p.content)}</div>
+    ${tags.length?`<div style="margin-top:14px">${tags.map(t=>`<span class="pill-tag">#${esc(t)}</span>`).join('')}</div>`:''}
+    ${p.status==='Pending'||p.status==='Published'?`<div class="field" style="margin-top:18px"><label>Note to writer (required to return for revision)</label><textarea id="blpNote" rows="2" placeholder="e.g. Please add a cover image and fix the second heading.">${esc(p.review_note||'')}</textarea></div>`:(p.review_note?`<div class="note-band" style="margin-top:16px;font-size:13px">↩ Your note: ${esc(p.review_note)}</div>`:'')}`;
+  const F=document.getElementById('blpFoot');
+  F.innerHTML=`<button class="btn btn-ghost" style="color:var(--red);margin-right:auto" onclick="blDelete('${p.id}')">🗑 Delete</button>`+
+    (p.status==='Pending'?`<button class="btn btn-outline" onclick="blReject('${p.id}')">↩ Return for revision</button><button class="btn btn-green" onclick="blApprove('${p.id}')">✅ Approve &amp; Publish</button>`
+    :p.status==='Published'?`<button class="btn btn-outline" onclick="blReject('${p.id}',1)">⏸ Unpublish</button><a class="btn btn-primary" href="blog.html?p=${encodeURIComponent(p.slug||p.id)}" target="_blank">Open on blog ↗</a>`
+    :`<button class="btn btn-green" onclick="blApprove('${p.id}')">✅ Publish anyway</button>`);
+  openModal('mBlPost');
+}
+async function blSet(id,patch,msg){
+  const p=BL_POSTS.find(x=>x.id===id); if(!p) return;
+  try{ await API.upsert('blog_posts',{...p,...patch,reviewed_at:new Date().toISOString()}); closeModal('mBlPost'); toast(msg,'ok'); await renderBlogSA(); }
+  catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+function blApprove(id){ const p=BL_POSTS.find(x=>x.id===id); if(!p) return;
+  if(!String(p.title||'').trim()){ toast('This article has no title','err'); return; }
+  if(!confirm('Publish "'+p.title+'" on TeacherNotes now?')) return;
+  blSet(id,{status:'Published',published_at:p.published_at||new Date().toISOString(),review_note:''},'Published ✅ — the article is now live'); }
+function blReject(id,unpub){ const note=(document.getElementById('blpNote')?.value||'').trim();
+  if(!unpub&&!note){ toast('Write a short note so the writer knows what to fix','err'); document.getElementById('blpNote')?.focus(); return; }
+  if(unpub&&!confirm('Unpublish this article? It will be hidden from the blog and returned to the writer.')) return;
+  blSet(id,{status:'Rejected',review_note:note||'Unpublished by Super Admin'},unpub?'Unpublished — returned to the writer':'Returned to the writer for revision'); }
+async function blDelete(id){ if(!confirm('Delete this article permanently? This cannot be undone.')) return;
+  try{ await API.remove('blog_posts',id); closeModal('mBlPost'); toast('Deleted','ok'); await renderBlogSA(); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+function blWritersHtml(){
+  const n=id=>BL_POSTS.filter(p=>p.author_id===id&&p.status==='Published').length;
+  return `<div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Writer</th><th>Login</th><th>Email</th><th>Published</th><th>Status</th><th></th></tr></thead><tbody>${BL_WRITERS.map(w=>`<tr>
+    <td><b style="color:var(--navy)">${esc(w.nama||'-')}</b>${w.bio?`<br><small class="text-muted">${esc(String(w.bio).slice(0,70))}</small>`:''}</td>
+    <td><b style="color:var(--navy)">${esc(w.username||'-')}</b><br><small style="letter-spacing:2px;font-weight:800">${esc(w.pin||'----')}</small> <button class="btn btn-ghost btn-sm" style="padding:2px 6px" title="New PIN" onclick="blWriterPin('${w.id}')">🔄</button></td>
+    <td>${esc(w.email||'-')}</td><td>${n(w.id)}</td>
+    <td>${(w.status||'Active')==='Active'?'<span class="badge badge-paid">Active</span>':'<span class="badge badge-off">Deactivated</span>'}</td>
+    <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="blWriterOpen('${w.id}')">✏️</button><button class="btn btn-ghost btn-sm" onclick="blWriterWa('${w.id}')" title="Copy login info">📋</button><button class="btn btn-ghost btn-sm" onclick="blWriterDel('${w.id}')">🗑</button></td></tr>`).join('')||'<tr><td colspan="6" class="empty">No writer accounts yet — click “＋ Add Writer”.</td></tr>'}</tbody></table></div></div>
+    <div class="note-band mt-16" style="font-size:12.5px">💡 Writers log in at <b>blog-admin.html</b> with their username &amp; PIN. They can write and submit articles, but only you can publish them.</div>`;
+}
+function blWriterOpen(id){
+  const w=BL_WRITERS.find(x=>x.id===id)||{}; const V=(k,v)=>document.getElementById(k).value=v??'';
+  document.getElementById('blwHead').textContent=id?'Edit Writer':'Add Writer';
+  V('blwId',w.id||''); V('blwNama',w.nama); V('blwUser',w.username); V('blwPin',w.pin||genPin()); V('blwEmail',w.email); V('blwStatus',w.status||'Active'); V('blwBio',w.bio);
+  openModal('mBlWriter');
+}
+async function blWriterSave(){
+  const g=k=>document.getElementById(k).value.trim();
+  const id=g('blwId'), nama=g('blwNama'), user=g('blwUser').toLowerCase().replace(/\s+/g,''), pin=g('blwPin');
+  if(!nama||!user){ toast('Name and username are required','err'); return; }
+  if(!/^\d{4}$/.test(pin)){ toast('PIN must be 4 digits','err'); return; }
+  if(BL_WRITERS.some(w=>w.id!==id&&String(w.username||'').toLowerCase()===user)){ toast('That username is already used','err'); return; }
+  const old=BL_WRITERS.find(w=>w.id===id)||{};
+  const row={...old,id:id||('BW-'+Date.now().toString(36)),nama,username:user,pin,email:g('blwEmail'),status:g('blwStatus'),bio:g('blwBio')};
+  try{ await API.upsert('blog_writers',row);
+    if(id&&old.nama&&old.nama!==nama){ for(const p of BL_POSTS.filter(p=>p.author_id===id)){ try{ await API.upsert('blog_posts',{...p,author_name:nama}); }catch(e){} } }
+    closeModal('mBlWriter'); toast(id?'Writer updated':'Writer account created ✍️','ok'); BL_TAB='writers'; await renderBlogSA();
+    if(!id) blWriterWa(row.id);
+  }catch(e){ toast('Failed: '+(e.message||e),'err'); }
+}
+async function blWriterPin(id){ const w=BL_WRITERS.find(x=>x.id===id); if(!w||!confirm('Generate a new PIN for '+w.nama+'? The old PIN will stop working.')) return;
+  try{ await API.upsert('blog_writers',{...w,pin:genPin()}); toast('New PIN generated','ok'); await renderBlogSA(); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+async function blWriterDel(id){ const w=BL_WRITERS.find(x=>x.id===id); if(!w) return;
+  const n=BL_POSTS.filter(p=>p.author_id===id).length;
+  if(!confirm('Delete writer "'+w.nama+'"?'+(n?'\n\nTheir '+n+' article(s) will stay on the blog. To block access only, set the status to Deactivated instead.':''))) return;
+  try{ await API.remove('blog_writers',id); toast('Writer deleted','ok'); await renderBlogSA(); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+function blWriterWa(id){ const w=BL_WRITERS.find(x=>x.id===id); if(!w) return;
+  const url=location.href.replace(/[^/]*([?#].*)?$/,'')+'blog-admin.html';
+  const txt=`Hi ${w.nama}! 👋\nHere is your TeacherNotes writer account:\n\n🔗 ${url}\n👤 Username: ${w.username}\n🔑 PIN: ${w.pin}\n\nWrite your article, then click “Submit for Review”. It will be published after the Super Admin approves it. Thank you! ✍️`;
+  try{ navigator.clipboard.writeText(txt); toast('Login info copied — paste it into WhatsApp','ok'); }catch(e){ prompt('Copy this login info:',txt); } }
 
 /* ===== Parents ===== */
 let PARENTS=[];
@@ -1844,7 +1989,7 @@ async function boot(){
   await loadExtra();
   renderBirthday();
   wireSearch('dashSearch','dashHits'); wireGlobalSearch(); renderHits('dashHits',STUDENTS);
-  renderDashboardSA();
+  renderDashboardSA(); blLoad();
   const q=new URLSearchParams(location.search);
   if(q.get('student')){const s=STUDENTS.find(x=>x.id===q.get('student'));if(s)openReport(s.id);}
 }

@@ -1,8 +1,8 @@
 /* Kwelingo PWA service worker — app shell cache + offline fallback */
-const CACHE = 'kwelingo-v3';
+const CACHE = 'kwelingo-v4';
 const SHELL = [
   'portal.html','index.html','student.html','teacher.html','parent.html',
-  'admin.html','master-admin.html','registration.html',
+  'admin.html','master-admin.html','registration.html','blog.html','blog-admin.html',
   'assets/style.css','assets/app.js','assets/logo.png','assets/logo-full.png',
   'assets/icon-192.png','assets/icon-512.png','manifest.json'
 ];

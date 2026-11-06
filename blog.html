@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeacherNotes — Kwelingo Academy Blog</title>
+<meta name="description" id="metaDesc" content="TeacherNotes — learning tips, stories and ideas for English & Mandarin learners from the teachers at Kwelingo Academy.">
+<link rel="icon" href="assets/logo.png">
+<meta name="theme-color" content="#26B5DF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Kwelingo palette — white · Kwelingo blue · Kwelingo orange (same as the portals) */
+  --blue:#26B5DF;--blue-d:#1495C4;--blue-dd:#0F7FAA;--sky:#E8F6FC;--sky2:#D5EFFA;
+  --orange:#FF9300;--orange-d:#F07F00;--orange-soft:#FFF2E0;
+  --navy:#13235B;--ink:#2B3656;--muted:#66748F;--line:#E3ECF4;--white:#fff;
+  --shadow:0 10px 30px rgba(19,35,91,.08);--shadow-lg:0 22px 55px rgba(19,35,91,.14);
+  --disp:'Fredoka',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);background:#fff;line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 26px;border-radius:999px;font-weight:700;font-size:15px;cursor:pointer;border:2px solid transparent;transition:.18s;white-space:nowrap;font-family:inherit}
+.btn:active{transform:translateY(1px)}
+.btn-or{background:var(--orange);color:#fff;box-shadow:0 10px 22px rgba(255,147,0,.3)}.btn-or:hover{background:var(--orange-d);transform:translateY(-2px)}
+.btn-line{background:#fff;border-color:var(--blue);color:var(--blue-d)}.btn-line:hover{background:var(--sky)}
+.btn-white{background:#fff;color:var(--blue-dd);box-shadow:var(--shadow)}.btn-white:hover{transform:translateY(-2px)}
+.pill-eyebrow{display:inline-block;border:1.5px solid var(--blue);color:var(--blue-d);border-radius:999px;padding:6px 20px;font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;background:#fff}
+.sec{padding:84px 0}
+.sec-head{text-align:center;margin-bottom:42px}
+.sec-head h2{font-family:var(--disp);font-size:clamp(30px,4.6vw,46px);color:var(--navy);font-weight:700;margin:14px 0 8px;letter-spacing:-.3px;line-height:1.15}
+.sec-head p{color:var(--muted);font-size:16.5px}
+
+/* ===== Header (floating pill menu) ===== */
+header{position:sticky;top:0;z-index:100;padding:14px 0;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.75) 70%,rgba(255,255,255,0))}
+.navbar{display:flex;align-items:center;gap:18px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 10px 8px 22px;box-shadow:0 8px 28px rgba(19,35,91,.08)}
+.brand img{height:44px;width:auto}
+.links{display:flex;gap:6px;margin:0 auto;font-weight:600;font-size:14.5px;color:var(--navy)}
+.links a{padding:8px 14px;border-radius:999px;transition:.15s}
+.links a:hover,.links a.on{background:var(--sky);color:var(--blue-dd)}
+.links small{font-size:10.5px;color:var(--orange-d);font-weight:700;margin-left:3px}
+.nav-cta{display:flex;gap:8px;align-items:center}
+.nav-cta .btn{padding:10px 20px;font-size:14px}
+.hamburger{display:none;background:none;border:0;font-size:24px;color:var(--navy);cursor:pointer;margin-left:auto;padding:4px 10px}
+
+/* ===== CTA ===== */
+.cta{background:linear-gradient(120deg,var(--blue),var(--blue-d));color:#fff;text-align:center;padding:70px 0;position:relative;overflow:hidden}
+.cta:before,.cta:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.08)}
+.cta:before{width:320px;height:320px;left:-90px;top:-120px}.cta:after{width:260px;height:260px;right:-70px;bottom:-110px;background:rgba(255,147,0,.18)}
+.cta h2{font-family:var(--disp);font-size:clamp(32px,5vw,50px);font-weight:700;position:relative}
+.cta p{font-size:17px;opacity:.95;margin:8px 0 26px;position:relative}
+.cta .btn{position:relative}
+/* ===== Footer (sky blue) ===== */
+footer{background:var(--sky);color:var(--ink);padding:56px 0 26px}
+.fgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);gap:40px}
+.fgrid .logo{height:62px;width:auto;margin-bottom:14px}
+.fgrid p{font-size:14.5px;color:#46557A;max-width:420px}
+footer h4{font-family:var(--disp);font-size:24px;color:var(--navy);font-weight:600}
+footer h4:after{content:"";display:block;width:36px;height:3px;border-radius:3px;background:var(--orange);margin:8px 0 14px}
+.flinks a{display:flex;align-items:center;gap:12px;padding:7px 0;font-size:15px;color:var(--ink);font-weight:500}
+.flinks a:hover{color:var(--blue-dd)}
+.flinks a span{width:32px;height:32px;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:15px}
+.contact{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:38px 0 18px;padding-top:26px;border-top:1px solid #C6E6F4}
+.contact a{display:inline-flex;gap:8px;align-items:center;background:#fff;border-radius:999px;padding:9px 18px;font-weight:700;font-size:14px;color:var(--navy);box-shadow:0 4px 12px rgba(19,35,91,.06)}
+.contact a:hover{color:var(--blue-dd)}
+.copy{text-align:center;font-size:13px;color:var(--muted)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:13px 22px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;z-index:400;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ===== Blog ===== */
+.bhero{background:linear-gradient(180deg,#fff 0%,var(--sky) 70%,#fff 100%);padding:36px 0 30px;text-align:center}
+.bhero h1{font-family:var(--disp);font-size:clamp(40px,6vw,64px);font-weight:700;line-height:1.05;margin:16px 0 10px;letter-spacing:-.5px}
+.bhero h1 .b{color:var(--blue)}.bhero h1 .o{color:var(--orange)}
+.bhero p{color:var(--muted);font-size:17px;max-width:620px;margin:0 auto}
+.bsearch{max-width:520px;margin:24px auto 0;position:relative}
+.bsearch input{width:100%;padding:14px 20px 14px 48px;border-radius:999px;border:1.5px solid #CBE8F5;font:inherit;font-size:15px;background:#fff;box-shadow:var(--shadow);outline:none;color:var(--navy)}
+.bsearch input:focus{border-color:var(--blue)}
+.bsearch:before{content:"🔎";position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:16px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:22px 0 0}
+.chips button{border:1.5px solid var(--line);background:#fff;color:var(--navy);border-radius:999px;padding:8px 16px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;transition:.15s}
+.chips button:hover{border-color:var(--blue);color:var(--blue-dd)}
+.chips button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.blist{padding:34px 0 80px}
+.feat{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:0;background:#fff;border:1px solid var(--line);border-radius:26px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:30px;transition:.2s}
+.feat:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.feat .cv{min-height:300px}
+.feat .bd{padding:34px 34px 30px;display:flex;flex-direction:column;justify-content:center}
+.feat h2{font-family:var(--disp);font-size:clamp(26px,3vw,34px);color:var(--navy);font-weight:600;line-height:1.2;margin:12px 0 10px}
+.feat p{color:var(--muted);font-size:15.5px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.pcard{background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 6px 20px rgba(19,35,91,.06);display:flex;flex-direction:column;transition:.2s}
+.pcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.pcard .cv{aspect-ratio:16/9}
+.pcard .bd{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1}
+.pcard h3{font-family:var(--disp);font-size:21px;color:var(--navy);font-weight:600;line-height:1.25;margin:10px 0 8px}
+.pcard p{color:var(--muted);font-size:14px;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cv{background:linear-gradient(135deg,var(--blue),var(--blue-d));display:flex;align-items:center;justify-content:center;font-size:54px;position:relative;overflow:hidden}
+.cv.o{background:linear-gradient(135deg,#FFB13D,var(--orange-d))}
+.cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cat{display:inline-block;align-self:flex-start;font-size:11.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--blue-dd);background:var(--sky);padding:4px 12px;border-radius:999px}
+.cat.o{color:#B85F00;background:var(--orange-soft)}
+.meta{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin-top:14px}
+.av{width:30px;height:30px;border-radius:50%;background:var(--orange);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0}
+.meta b{color:var(--navy)}
+.empty{text-align:center;color:var(--muted);padding:50px 10px;font-size:15.5px}
+/* article */
+.art{max-width:780px;margin:0 auto;padding:26px 22px 70px}
+.back{display:inline-flex;gap:6px;align-items:center;font-weight:700;color:var(--blue-dd);font-size:14px}
+.art h1{font-family:var(--disp);font-size:clamp(32px,5vw,48px);color:var(--navy);font-weight:700;line-height:1.15;margin:16px 0 6px;letter-spacing:-.4px}
+.art .lead{font-size:18px;color:var(--muted);margin-top:8px}
+.art .cvbig{border-radius:24px;aspect-ratio:16/8;margin:26px 0 8px;font-size:80px}
+.prose{font-size:17.5px;line-height:1.8;color:var(--ink);margin-top:22px}
+.prose>*+*{margin-top:16px}
+.prose h2{font-family:var(--disp);font-size:29px;color:var(--navy);font-weight:600;line-height:1.25;margin-top:34px}
+.prose h3{font-family:var(--disp);font-size:23px;color:var(--navy);font-weight:600;margin-top:26px}
+.prose h4{font-size:18px;color:var(--navy);margin-top:22px}
+.prose a{color:var(--blue-dd);text-decoration:underline;text-underline-offset:3px}
+.prose ul,.prose ol{padding-left:26px}.prose li+li{margin-top:6px}
+.prose li::marker{color:var(--orange);font-weight:700}
+.prose blockquote{border-left:5px solid var(--orange);background:var(--orange-soft);padding:16px 22px;border-radius:0 16px 16px 0;font-family:var(--disp);font-size:21px;color:var(--navy)}
+.prose img{border-radius:16px;margin:22px auto}
+.prose hr{border:0;border-top:2px dashed var(--line);margin:30px 0}
+.tags{margin-top:30px;display:flex;gap:8px;flex-wrap:wrap}
+.tags span{background:var(--sky);color:var(--blue-dd);font-weight:700;font-size:13px;padding:5px 14px;border-radius:999px}
+.share{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:28px;padding-top:22px;border-top:1px solid var(--line)}
+.share b{color:var(--navy);margin-right:4px}
+.share .btn{padding:9px 18px;font-size:14px}
+.author{display:flex;gap:16px;align-items:center;background:var(--sky);border-radius:20px;padding:20px 22px;margin-top:28px}
+.author .av{width:54px;height:54px;font-size:18px}
+.author b{color:var(--navy);font-size:16px;display:block}.author small{color:var(--muted);font-size:14px}
+.more{background:#F7FBFE;padding:60px 0 70px;border-top:1px solid var(--line)}
+.more h2{font-family:var(--disp);font-size:34px;color:var(--navy);text-align:center;margin-bottom:28px;font-weight:600}
+@media(max-width:1060px){.links a{padding:8px 9px}.nav-cta .btn{padding:9px 14px}}
+@media(max-width:960px){
+  .links,.nav-cta{display:none}.hamburger{display:block}
+  .navbar{flex-wrap:wrap;border-radius:24px}
+  .navbar.open .links{display:flex;flex-direction:column;width:100%;order:3;margin:6px 0 0}
+  .navbar.open .nav-cta{display:flex;width:100%;order:4;padding-bottom:6px}.navbar.open .nav-cta .btn{flex:1}
+  .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .feat{grid-template-columns:minmax(0,1fr)}.feat .cv{min-height:0;aspect-ratio:16/8}
+  .fgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.fgrid>div:first-child{grid-column:1/-1}
+}
+@media(max-width:600px){
+  .brand img{height:36px}
+  .grid3{grid-template-columns:minmax(0,1fr)}
+  .feat .bd{padding:24px 22px}
+  .prose{font-size:16.5px}
+  .fgrid{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="navbar" id="navbar">
+      <a class="brand" href="index.html" aria-label="Kwelingo — Home for Language Learners"><img src="assets/logo-tagline.png" onerror="this.src='assets/logo-h.png'" alt="Kwelingo — Home for Language Learners"></a>
+      <div class="links">
+        <a href="index.html">Home</a>
+        <a href="index.html#programs">Programs</a>
+        <a href="blog.html" class="on">TeacherNotes <small>Blog</small></a>
+        <a id="waHomebuilder" href="#" target="_blank" rel="noopener">Be Our Homebuilder!</a>
+      </div>
+      <div class="nav-cta">
+        <a class="btn btn-line" id="waNav" href="#" target="_blank" rel="noopener">💬 Chat with Us!</a>
+        <a class="btn btn-or" href="portal.html">Kwelingo Hub</a>
+      </div>
+      <button class="hamburger" onclick="document.getElementById('navbar').classList.toggle('open')" aria-label="Menu">☰</button>
+    </nav>
+  </div>
+</header>
+
+<main id="app"><div class="empty">Loading TeacherNotes…</div></main>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Ready to start learning?</h2>
+    <p>Not sure which program fits you? Chat with us and we’ll help you choose.</p>
+    <a class="btn btn-white" id="waDiscovery" href="#" target="_blank" rel="noopener">📅 Book a Discovery Session</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div><img class="logo" src="assets/logo-tagline.png" onerror="this.src='assets/logo-h.png'" alt="Kwelingo — Home for Language Learners">
+        <p>Kwelingo is a home for language learners, offering language programs designed to build practical skills, confidence, and meaningful connections. Learn with us online or onsite in a supportive environment.</p></div>
+      <div><h4>Our Programs</h4><div class="flinks">
+        <a href="registration.html?program=be"><span>📈</span>Boost English</a>
+        <a href="registration.html?program=sa"><span>💬</span>Speak Active</a>
+        <a href="registration.html?program=ie"><span>📝</span>IELTS &amp; TOEFL Preparation</a>
+        <a href="registration.html?program=bm"><span>📖</span>Boost Mandarin</a>
+        <a href="registration.html?program=hsk"><span>🎯</span>HSK Preparation</a></div></div>
+      <div><h4>Kwelingo Hub</h4><div class="flinks">
+        <a href="registration.html"><span>📝</span>Registration</a>
+        <a href="teacher.html"><span>👩‍🏫</span>Teacher Room</a>
+        <a href="student.html"><span>🎓</span>Student Login</a>
+        <a href="parent.html"><span>👪</span>Parent Hub</a>
+        <a href="blog-admin.html"><span>✍️</span>Writer Login</a></div></div>
+    </div>
+    <div class="contact">
+      <a id="waFoot" href="#" target="_blank" rel="noopener">📞 0819-45-144-145</a>
+      <a href="mailto:kwelingo.indonesia@gmail.com">✉️ kwelingo.indonesia@gmail.com</a>
+      <a href="https://instagram.com/kwelingo" target="_blank" rel="noopener">📷 Instagram</a>
+      <a href="https://threads.net/@kwelingo" target="_blank" rel="noopener">🧵 Threads</a>
+      <a href="https://facebook.com/kwelingo" target="_blank" rel="noopener">👍 Facebook</a>
+    </div>
+    <div class="copy">© 2026 Kwelingo Academy · Cemara Asri, Medan · All rights reserved.</div>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script src="assets/app.js?v=20261106"></script>
+<script>
+const WA_NO="6281945144145";
+const wa=t=>"https://wa.me/"+WA_NO+"?text="+encodeURIComponent(t);
+const WA_CHAT=wa("Hi Kwelingo! I'd like to ask about your programs & registration.");
+const setHref=(id,h)=>{ const e=document.getElementById(id); if(e) e.href=h; };
+setHref('waNav',WA_CHAT); setHref('waFoot',WA_CHAT);
+setHref('waDiscovery',wa("Hi Kwelingo! I'd like to book a discovery session to find the right program."));
+setHref('waHomebuilder',wa("Hi Kwelingo! I'd like to join as a Kwelingo Homebuilder (teacher / partner)."));
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2800); }
+
+const CAT_IC={'Learning Tips':'💡','English':'🇬🇧','Mandarin':'🀄','Test Prep':'📝','Kwelingo News':'📣','Stories':'📖'};
+const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tone=c=>(BLOG_CATS.indexOf(c)%2===1)?'o':'';
+const ini=n=>String(n||'K').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const dfmt=d=>{ if(!d) return ''; const x=new Date(String(d).length<=10?d+'T00:00:00':d); return isNaN(x)?'':x.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); };
+const link=p=>'blog.html?p='+encodeURIComponent(p.slug||p.id);
+const cover=(p,cls)=>`<div class="cv ${tone(p.category)} ${cls||''}">${CAT_IC[p.category]||'📝'}${p.cover_url?`<img src="${h(p.cover_url)}" alt="" loading="lazy" onerror="this.remove()">`:''}</div>`;
+const meta=p=>`<div class="meta"><span class="av">${h(ini(p.author_name))}</span><span><b>${h(p.author_name||'Kwelingo Team')}</b> · ${dfmt(p.published_at)} · ${blogReadMins(p.content)} min read</span></div>`;
+const card=p=>`<a class="pcard" href="${link(p)}">${cover(p)}<div class="bd"><span class="cat ${tone(p.category)}">${h(p.category||'Notes')}</span><h3>${h(p.title)}</h3><p>${h(p.excerpt||'')}</p>${meta(p)}</div></a>`;
+
+let POSTS=[], CAT='', Q='';
+const qs=new URLSearchParams(location.search);
+(async function init(){
+  POSTS=await blogPublished();
+  const id=qs.get('p');
+  if(id) renderArticle(id); else { CAT=qs.get('cat')||''; renderList(); }
+})();
+
+function renderList(){
+  document.title='TeacherNotes — Kwelingo Academy Blog';
+  const cats=BLOG_CATS.filter(c=>POSTS.some(p=>p.category===c));
+  document.getElementById('app').innerHTML=`
+  <section class="bhero"><div class="wrap">
+    <span class="pill-eyebrow">The Kwelingo Blog</span>
+    <h1><span class="b">Teacher</span><span class="o">Notes</span></h1>
+    <p>Tips, stories and learning ideas from our teachers — for English &amp; Mandarin learners of every level.</p>
+    <div class="bsearch"><input id="q" placeholder="Search articles…" value="${h(Q)}" oninput="Q=this.value;drawList()"></div>
+    <div class="chips" id="chips">${['',...cats].map(c=>`<button class="${c===CAT?'on':''}" onclick="CAT='${c}';drawChips();drawList()">${c?(CAT_IC[c]||'')+' '+h(c):'All'}</button>`).join('')}</div>
+  </div></section>
+  <section class="blist"><div class="wrap" id="list"></div></section>`;
+  drawList();
+}
+function drawChips(){ document.querySelectorAll('#chips button').forEach(b=>b.classList.toggle('on',(b.getAttribute('onclick').match(/CAT='([^']*)'/)||[])[1]===CAT)); }
+function drawList(){
+  const q=Q.trim().toLowerCase();
+  const rows=POSTS.filter(p=>(!CAT||p.category===CAT)&&(!q||[p.title,p.excerpt,p.tags,p.author_name,p.category].join(' ').toLowerCase().includes(q)));
+  const el=document.getElementById('list');
+  if(!rows.length){ el.innerHTML=`<div class="empty">${POSTS.length?'No articles match your search.':'📝 Our teachers are writing the first notes — check back soon!'}</div>`; return; }
+  const [f,...rest]=(!q&&!CAT)?rows:[null,...rows];
+  el.innerHTML=(f?`<a class="feat" href="${link(f)}">${cover(f)}<div class="bd"><span class="cat ${tone(f.category)}">${h(f.category||'Notes')}</span><h2>${h(f.title)}</h2><p>${h(f.excerpt||'')}</p>${meta(f)}</div></a>`:'')+
+    (rest.length?`<div class="grid3">${rest.map(card).join('')}</div>`:'');
+}
+function renderArticle(id){
+  const p=POSTS.find(x=>x.slug===id||x.id===id);
+  const app=document.getElementById('app');
+  if(!p){ app.innerHTML=`<div class="art"><a class="back" href="blog.html">← All articles</a><div class="empty">😕 This article isn’t available (it may have been moved or unpublished).</div></div>`; return; }
+  document.title=p.title+' — TeacherNotes · Kwelingo';
+  if(p.excerpt) document.getElementById('metaDesc').setAttribute('content',p.excerpt);
+  const tags=String(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+  const more=POSTS.filter(x=>x.id!==p.id).sort((a,b)=>(b.category===p.category)-(a.category===p.category)).slice(0,3);
+  const url=location.href.split('#')[0];
+  app.innerHTML=`<article class="art">
+    <a class="back" href="blog.html">← All articles</a>
+    <div style="margin-top:18px"><span class="cat ${tone(p.category)}">${h(p.category||'Notes')}</span></div>
+    <h1>${h(p.title)}</h1>
+    ${p.excerpt?`<p class="lead">${h(p.excerpt)}</p>`:''}
+    ${meta(p)}
+    ${cover(p,'cvbig')}
+    <div class="prose">${blogSanitize(p.content)}</div>
+    ${tags.length?`<div class="tags">${tags.map(t=>`<span>#${h(t)}</span>`).join('')}</div>`:''}
+    <div class="share"><b>Share:</b>
+      <a class="btn btn-line" href="https://wa.me/?text=${encodeURIComponent(p.title+' — '+url)}" target="_blank" rel="noopener">💬 WhatsApp</a>
+      <a class="btn btn-line" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener">👍 Facebook</a>
+      <button class="btn btn-line" onclick="copyLink()">🔗 Copy link</button></div>
+    <div class="author"><span class="av">${h(ini(p.author_name))}</span><div><b>${h(p.author_name||'Kwelingo Team')}</b><small>Writer at Kwelingo Academy · TeacherNotes</small></div></div>
+  </article>
+  ${more.length?`<section class="more"><div class="wrap"><h2>More from TeacherNotes</h2><div class="grid3">${more.map(card).join('')}</div></div></section>`:''}`;
+  scrollTo(0,0);
+}
+function copyLink(){ try{ navigator.clipboard.writeText(location.href); toast('🔗 Link copied!'); }catch(e){ prompt('Copy this link:',location.href); } }
+</script>
+</body>
+</html>
