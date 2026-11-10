@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1F6FEB">
 <link rel="apple-touch-icon" href="assets/icon-192.png">
-<link rel="stylesheet" href="assets/style.css?v=20261106">
+<link rel="stylesheet" href="assets/style.css?v=20261110">
 <style>
   .welcome h1{font-size:28px}
   .stat5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:18px}
@@ -484,7 +484,7 @@
   </div>
 </div>
 
-<script src="assets/app.js?v=20261106"></script>
+<script src="assets/app.js?v=20261110"></script>
 <script>
 /* =====================================================================
    Operations Admin (rev5)
@@ -1462,7 +1462,7 @@ function viewInvoice(id){ const p=PAYS.find(x=>x.id===id); if(!p) return; const 
   const items=[{d:`${p.program||s.program||'Course'} ${p.level||''} — ${monthLabel(String(p.month).slice(0,7))}`,q:p.meetings+' sessions',p:Number(p.price_per_meet),t:(Number(p.meetings)||0)*(Number(p.price_per_meet)||0)}];
   if(Number(p.add_fee2)) items.push({d:p.add_fee2_note||'Additional fee',q:'',p:null,t:Number(p.add_fee2)});
   if(Number(p.add_fee1)) items.push({d:'Additional fee',q:'',p:null,t:Number(p.add_fee1)});
-  openInvoice({no:p.invoice_no,student:s.nama,parent:s.parent_name,program:p.program||s.program,level:p.level||s.level,issue:dShort(p.issue_date||p.month),due:dShort(p.due_date),period:monthLabel(String(p.month).slice(0,7)),status:p.status,paidOn:dShort(p.paid_at||p.pay_date),items,total:invAmt(p),note:p.note}); }
+  openInvoice({no:p.invoice_no,student:s.nama,studentId:s.id?'ST-'+String(s.id).replace(/\W/g,'').slice(-6).toUpperCase():'',parent:s.parent_name,program:p.program||s.program,level:p.level||s.level,issue:dShort(p.issue_date||p.month),due:dShort(p.due_date),period:monthLabel(String(p.month).slice(0,7)),status:p.status,paidOn:dShort(p.paid_at||p.pay_date),items,total:invAmt(p),note:p.note}); }
 function openRecPay(id){ const p=PAYS.find(x=>x.id===id); document.getElementById('rpId').value=id; document.getElementById('rpInfo').innerHTML=`<b>${esc(p.invoice_no||'')}</b> · ${esc(stu(p.student_id).nama)} · <b>${fmtRp(invAmt(p))}</b>`; document.getElementById('rpDate').value=TODAY; document.getElementById('rpFile').value=''; document.getElementById('rpFileName').textContent=''; openModal('mRecPay'); }
 async function recordPayment(){
   const id=document.getElementById('rpId').value, f=document.getElementById('rpFile').files[0]; let url='';

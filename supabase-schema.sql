@@ -383,6 +383,9 @@ create table if not exists public.blog_writers (
   nama text, username text, pin text, email text, bio text, photo_url text, status text,
   created_at timestamptz default now()
 );
+-- rev10: Community Blog sections (TeacherNotes / Open Pages) + writer type (Teacher / Student / Staff)
+alter table public.blog_posts   add column if not exists section text;
+alter table public.blog_writers add column if not exists role text;
 
 -- ---------- Safety: pastikan semua tabel punya kolom created_at -------
 -- (tabel lama yang dibuat sebelum versi ini kadang belum punya kolom ini,
@@ -432,7 +435,7 @@ create policy kwe_mat_update on storage.objects for update to anon, authenticate
 create policy kwe_mat_delete on storage.objects for delete to anon, authenticated using (bucket_id = 'materials');
 
 -- ---------- selesai -----------------------------------------
--- Cek cepat (hasil yang benar: tabel = 29, kolom_baru = 7):
+-- Cek cepat (hasil yang benar: tabel = 29, kolom_baru = 9):
 select 'tabel' as jenis, count(*)::text as jumlah from information_schema.tables
   where table_schema='public'
     and table_name in ('students','tutors','classes','deposit','payments','tutor_bonus',
@@ -445,4 +448,6 @@ select 'kolom_baru', count(*)::text from information_schema.columns
   where table_schema='public' and (
         (table_name='quizzes'  and column_name in ('tutor_id','rules','passing_score'))
      or (table_name='tasks'    and column_name in ('rubric','scores'))
-     or (table_name='parents'  and column_name in ('username','pin')));
+     or (table_name='parents'  and column_name in ('username','pin'))
+     or (table_name='blog_posts'   and column_name = 'section')
+     or (table_name='blog_writers' and column_name = 'role'));

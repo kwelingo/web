@@ -340,8 +340,8 @@ const SB_COLS = {
   chat:['id','room','sender_id','sender_name','role','message'],
   tboard:['id','title','body','date','author','program','attach_url','attach_name'],
   tboard_read:['id','board_id','reader_id','reader_name','read_at'],
-  blog_posts:['id','title','slug','category','cover_url','excerpt','content','author_id','author_name','status','review_note','submitted_at','reviewed_at','published_at','updated_at','tags'],
-  blog_writers:['id','nama','username','pin','email','bio','photo_url','status'],
+  blog_posts:['id','title','slug','section','category','cover_url','excerpt','content','author_id','author_name','status','review_note','submitted_at','reviewed_at','published_at','updated_at','tags'],
+  blog_writers:['id','nama','username','pin','email','bio','photo_url','status','role'],
 };
 const sbPick=(o,cols)=>{const r={};cols.forEach(k=>{ if(o[k]!==undefined && o[k]!==null) r[k]=o[k]; });return r;};
 const SB = {
@@ -954,49 +954,6 @@ async function parentPayNotifs(studentId){
 }
 
 /* Slip Pembayaran Fee Guru (bisa dipakai sebagai prepayment slip) — buka tab print/PDF */
-/* ---- Prepayment Slip — Teaching Session Summary (teacher payment detail, printable) ---- */
-function openTeachingSummary(o){
-  o=o||{}; const rows=o.rows||[]; const base=location.href.replace(/[^/]*$/,'');
-  const fee=rows.reduce((a,r)=>a+(Number(r.amount)||0),0), bonus=Number(o.bonus)||0, total=o.total!=null?Number(o.total):fee+bonus;
-  const TB={Regular:['#EEF4FF','#1F6FEB'],Recovery:['#FFF4E5','#E07A00'],Reschedule:['#F3EEFF','#7C5CE6'],Rescheduled:['#F3EEFF','#7C5CE6']};
-  const SB={Completed:['#E7F6EE','#1E7E34','✔'],Canceled:['#FDECEC','#D8352A','✕'],Cancelled:['#FDECEC','#D8352A','✕'],Scheduled:['#EEF4FF','#1F6FEB','•'],Rescheduled:['#F3EEFF','#7C5CE6','↻']};
-  const pill=(m,t,ic)=>`<span style="display:inline-block;padding:3px 9px;border-radius:99px;background:${m[0]};color:${m[1]};font-weight:700;font-size:10.5px;white-space:nowrap">${ic?ic+' ':''}${esc(t)}</span>`;
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Prepayment Slip — ${esc(o.name||'')} — ${esc(o.period||'')}</title>
-<style>@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:#EEF3FA;color:#13235B;padding:60px 18px 30px}
-.pg{width:820px;max-width:100%;margin:0 auto;background:#fff;position:relative;overflow:hidden;padding:44px 46px 30px;box-shadow:0 14px 50px rgba(19,35,91,.14)}
-.c1{position:absolute;right:0;top:0;width:0;height:0;border-top:120px solid #22B2DC;border-left:200px solid transparent;opacity:.95}.c2{position:absolute;right:0;top:0;width:0;height:0;border-top:70px solid #F99400;border-left:70px solid transparent}
-.c3{position:absolute;left:0;bottom:0;width:0;height:0;border-bottom:90px solid #F99400;border-right:170px solid transparent}.c4{position:absolute;right:0;bottom:0;width:0;height:0;border-bottom:130px solid #22B2DC;border-left:150px solid transparent}
-.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;z-index:2}.logo{height:56px}
-.ttl{text-align:right;margin-top:64px}.ttl h1{font-size:28px;letter-spacing:1px;font-weight:800;color:#13235B}.ttl small{display:block;font-size:11px;letter-spacing:3px;color:#22B2DC;font-weight:800;margin-top:2px}
-.no{display:inline-block;margin-top:8px;background:#F99400;color:#fff;font-weight:800;font-size:11.5px;padding:5px 14px;border-radius:99px}
-.info{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:26px 0 20px;position:relative;z-index:2}.info .r{border-left:1.5px solid #E2E8F2;padding-left:22px}
-.nm{font-size:22px;font-weight:800}.mut{color:#6B7A99;font-size:12px}.kv{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}.kv i{font-style:normal;width:22px;color:#1F6FEB}.kv b{display:block;font-size:13.5px}
-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;position:relative;z-index:2;border:1px solid #E2E8F2;border-radius:12px;overflow:hidden}
-th{background:#E8F4FB;text-align:left;padding:10px 9px;font-size:11px;color:#13235B}td{padding:9px;border-top:1px solid #EEF2F8}td.a,th.a{text-align:right;font-weight:700}
-.tot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:14px;position:relative;z-index:2}.tbox{background:linear-gradient(90deg,#1F9BD7,#22B2DC);color:#fff;border-radius:12px;padding:12px 20px;display:flex;gap:40px;align-items:center;min-width:330px;justify-content:space-between}.tbox b{font-size:22px}
-.sub{font-size:12.5px;display:flex;justify-content:space-between;min-width:330px;padding:3px 4px}
-.foot2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:22px;position:relative;z-index:2}.foot2 .r{border-left:1.5px solid #E2E8F2;padding-left:22px}.foot2 h4{font-size:13.5px;margin-bottom:10px}.foot2 ul{padding-left:16px;font-size:11.5px;color:#4A5675;line-height:1.7}
-.thx{background:#EEF7FC;border-radius:12px;padding:12px 16px;margin-top:20px;font-size:12px;color:#33507A;position:relative;z-index:2}.thx b{color:#13235B}
-.ft{display:flex;gap:26px;justify-content:flex-start;font-size:11px;color:#4A5675;margin-top:18px;border-top:1px solid #E2E8F2;padding-top:12px;position:relative;z-index:2}
-.pbar{position:fixed;top:0;left:0;right:0;background:#1F6FEB;color:#fff;padding:10px;text-align:center;font-size:13px;z-index:99}.pbar button{background:#fff;color:#1F6FEB;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px}
-@media print{.pbar{display:none}body{background:#fff;padding:0}.pg{box-shadow:none;width:100%}@page{size:A4;margin:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>
-<div class="pbar">💾 Save as PDF: click the button → choose <b>Save as PDF</b> <button onclick="window.print()">⬇️ Download / Print</button></div>
-<div class="pg"><div class="c1"></div><div class="c2"></div><div class="c3"></div><div class="c4"></div>
-<div class="top"><img class="logo" src="${base}assets/logo-h.png" onerror="this.src='${base}assets/logo.png'" alt="Kwelingo Academy"><div class="ttl"><h1>PREPAYMENT SLIP</h1><small>TEACHING SESSION SUMMARY</small><span class="no">${esc(o.slipNo||'')}</span></div></div>
-<div class="info"><div><div class="nm">${esc(o.name||'Teacher')}</div><div class="mut" style="margin-top:6px">👤 Teacher${o.programs?' · '+esc(o.programs):''}</div>${o.status?`<div class="mut" style="margin-top:6px">Status: <b style="color:#13235B">${esc(o.status)}</b></div>`:''}</div>
-  <div class="r"><div class="kv"><i>📅</i><div><span class="mut">Payment Period</span><b>${esc(o.range||'')}</b></div></div><div class="kv"><i>📄</i><div><span class="mut">Period</span><b>${esc(o.period||'')}</b></div></div>${o.paidOn?`<div class="kv"><i>✅</i><div><span class="mut">Paid On</span><b>${esc(o.paidOn)}</b></div></div>`:''}</div></div>
-<table><thead><tr><th>No.</th><th>Date</th><th>Class</th><th>Class Type</th><th>Status</th><th class="a">Amount</th></tr></thead><tbody>
-${rows.map((r,i)=>`<tr><td>${i+1}</td><td style="white-space:nowrap">${esc(r.date)}</td><td>${esc(r.cls)}</td><td>${pill(TB[r.type]||TB.Regular,r.type==='Rescheduled'?'Reschedule':r.type||'Regular')}</td><td>${pill(SB[r.status]||SB.Scheduled,r.status,(SB[r.status]||SB.Scheduled)[2])}</td><td class="a">${fmtRp(r.amount)}</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:#7A88A6;padding:18px">No sessions in this period.</td></tr>'}
-</tbody></table>
-<div class="tot"><div style="font-size:13px">Total Sessions: <b>${rows.length}</b>${rows.some(r=>/cancel/i.test(r.status))?` <span class="mut">(${rows.filter(r=>!/cancel/i.test(r.status)).length} paid)</span>`:''}</div>
-  <div>${bonus?`<div class="sub"><span>Teaching Fee</span><b>${fmtRp(fee)}</b></div><div class="sub"><span>Commission / Bonus${o.bonusNote?' ('+esc(o.bonusNote)+')':''}</span><b>${fmtRp(bonus)}</b></div>`:''}<div class="tbox"><span>Total Amount</span><b>${fmtRp(total)}</b></div></div></div>
-<div class="foot2"><div><h4>🏦 Teacher Bank Account</h4><div class="kv"><i>🏛️</i><div><span class="mut">Bank</span><b>${esc((o.bank||{}).bank||'-')}</b></div></div><div class="kv"><i>💳</i><div><span class="mut">Account Number</span><b>${esc((o.bank||{}).account||'-')}</b></div></div><div class="kv"><i>👤</i><div><span class="mut">Beneficiary</span><b>${esc((o.bank||{}).holder||o.name||'-')}</b></div></div></div>
-  <div class="r"><h4>📝 Payment Notes</h4><ul><li>This payment covers the teaching sessions shown in the table above.</li><li>Only completed sessions are included in the total amount.</li><li>Payment is transferred to the bank account listed on the left.</li><li>Kindly confirm once the transfer is received.</li></ul></div></div>
-<div class="thx">ℹ️ <b>Thank you for being part of the Kwelingo Academy family!</b><br>Your dedication helps our students grow and achieve their language goals.</div>
-<div class="ft"><span>🌐 www.kwelingo.com</span><span>📷 @kwelingo</span><span>📍 Cemara Asri, Medan</span></div></div></body></html>`;
-  const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the slip','err'); return; } w.document.write(html); w.document.close();
-}
 function openPayrollSlip(o){
   o=o||{};
   const nm=esc(o.name||'Teacher');
@@ -1119,35 +1076,20 @@ function shortDate(iso){ if(!iso) return '-'; const d=new Date(String(iso).slice
 /* Monthly Learning Report (rev6 format) — printable / Save as PDF.
    o = {student, program, level, teacher, month:'YYYY-MM', rows:[{date,topic,strengths,improve,strategy}]} */
 function openMonthlyReport(o){
-  o=o||{}; const rows=o.rows||[];
-  const logo=location.href.replace(/[^/]*$/,'')+'assets/logo-h.png';
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Monthly Learning Report — ${esc(o.student||'')} — ${esc(monthLabel(o.month))}</title>
-<style>
- @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
- *{box-sizing:border-box;margin:0;padding:0} body{font-family:'Plus Jakarta Sans',sans-serif;color:#1E2A4A;background:#F4F7FC;padding:24px}
- .page{max-width:900px;margin:auto;background:#fff;border-radius:18px;padding:28px 30px;box-shadow:0 10px 40px rgba(19,35,91,.10)}
- .hd{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:20px}
- .hd img{height:58px} .ttl{background:#EEF4FF;border-radius:16px;padding:16px 26px;text-align:right}
- .ttl h1{font-size:26px;color:#13235B;font-weight:800;line-height:1.1} .ttl h2{font-size:20px;color:#13235B;font-weight:800}
- .info{background:#F5F8FD;border-radius:14px;padding:14px 18px;display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:13.5px;margin-bottom:18px;max-width:440px}
- .info .k{color:#6B7A99}.info .v{font-weight:800;color:#13235B}
- table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;border:1px solid #E6ECF5;border-radius:14px;overflow:hidden}
- th{padding:12px 10px;text-align:left;font-size:12px;color:#13235B} td{padding:12px 10px;vertical-align:top;border-top:1px solid #E6ECF5;line-height:1.45}
- th.d,td.d{width:84px;text-align:center} th.t{background:#EEF4FF} th.s{background:#E7F6EE} th.i{background:#FDECEC} th.g{background:#FFF5E2} th.d{background:#EEF4FF}
- td.d b{display:block;font-size:16px;color:#13235B} td.d small{color:#6B7A99}
- .empty{padding:30px;text-align:center;color:#6B7A99}
- .bar{max-width:900px;margin:0 auto 14px;text-align:right} .bar button{background:#1F6FEB;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;font-family:inherit}
- @media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.bar{display:none}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-</style></head><body>
-<div class="bar"><button onclick="window.print()">⬇️ Download / Save as PDF</button></div>
-<div class="page">
- <div class="hd"><img src="${logo}" alt="Kwelingo Academy"><div class="ttl"><h1>Monthly Learning Report</h1><h2>${esc(monthLabel(o.month))}</h2></div></div>
- <div class="info"><span class="k">Student Name</span><span class="v">${esc(o.student||'-')}</span><span class="k">Program</span><span class="v">${esc(o.program||'-')}</span><span class="k">Level</span><span class="v">${esc(o.level||'-')}</span><span class="k">Teacher</span><span class="v">${esc(o.teacher||'-')}</span></div>
- <table><thead><tr><th class="d"># Date</th><th class="t">Topic</th><th class="s">⭐ Strengths<br><small>(Teacher's Comment)</small></th><th class="i">🎯 Areas to Improve<br><small>(Teacher's Comment)</small></th><th class="g">💡 Improvement Strategies<br><small>(Teacher's Comment)</small></th></tr></thead>
- <tbody>${rows.length?rows.map((r,i)=>`<tr><td class="d"><b>${i+1}</b><small>${esc(shortDate(r.date))}</small></td><td>${esc(r.topic||'-')}</td><td>${esc(r.strengths||'-')}</td><td>${esc(r.improve||'-')}</td><td>${esc(r.strategy||'-')}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">No development notes for this month yet.</td></tr>'}</tbody></table>
-</div></body></html>`;
-  const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the report','err'); return; }
-  w.document.open(); w.document.write(html); w.document.close();
+  o=o||{}; const rows=o.rows||[], st=o.stats||null;
+  const body=`<style>.mr th{font-size:11px}.mr th.s{background:#2FA86B}.mr th.i{background:#E5605A}.mr th.g{background:#FF9300}.mr td{line-height:1.5;vertical-align:top}.mr td.d{text-align:center;width:70px}.mr td.d b{display:block;font-size:16px}.mr td.d small{color:#7A88A6}
+  .mst{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:-4px 0 18px}.mst div{background:#F2F8FD;border-radius:12px;padding:10px 12px}.mst small{display:block;font-size:10.5px;color:#5B6B8C;font-weight:700}.mst b{font-size:18px}
+  @media(max-width:700px){.mst{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>
+<div class="tl"><div><h1>MONTHLY REPORT</h1><div class="s">Learning Progress · ${esc(monthLabel(o.month))}</div></div><div style="text-align:right"><span class="no">${esc(monthLabel(o.month))}</span></div></div>
+<div class="info"><div class="bill"><div class="lb">Student</div><div class="who">${kwDocIc('user')}<div><div class="nm">${esc(o.student||'-')}</div><div class="ln">Monthly learning progress report</div>${o.parent?`<div class="ln">Parent : <b>${esc(o.parent)}</b></div>`:''}</div></div></div>
+  <div class="dl"><div class="dr">${kwDocIc('book')}<span>Program</span><span>:</span><b>${esc(o.program||'-')}</b></div><div class="dr">${kwDocIc('id')}<span>Level</span><span>:</span><b>${esc(o.level||'-')}</b></div><div class="dr">${kwDocIc('user')}<span>Teacher</span><span>:</span><b>${esc(o.teacher||'-')}</b></div><div class="dr">${kwDocIc('cal')}<span>Period</span><span>:</span><b>${esc(monthLabel(o.month))}</b></div></div></div>
+${st?`<div class="mst"><div><small>SESSIONS</small><b>${st.sessions}</b></div><div><small>ATTENDED</small><b>${st.attended}</b></div><div><small>ATTENDANCE</small><b>${st.pct}</b></div><div><small>TEACHER NOTES</small><b>${rows.filter(r=>r.strengths||r.improve||r.strategy).length}</b></div></div>`:''}
+<div class="tw"><table class="mr"><thead><tr><th class="c" style="width:70px"># Date</th><th>Topic</th><th class="s">⭐ Strengths</th><th class="i">🎯 Areas to Improve</th><th class="g">💡 Improvement Strategies</th></tr></thead>
+<tbody>${rows.length?rows.map((r,i)=>`<tr><td class="d"><b>${i+1}</b><small>${esc(shortDate(r.date))}</small></td><td><b>${esc(r.topic||'-')}</b></td><td>${esc(r.strengths||'-')}</td><td>${esc(r.improve||'-')}</td><td>${esc(r.strategy||'-')}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#7A88A6;padding:22px">No sessions or teacher notes for this month yet.</td></tr>'}</tbody></table></div>
+<div class="note">${kwDocIc('info')}<span>Strengths, areas to improve and strategies are written by the teacher after each session. Questions? Chat with our admin anytime.</span></div>
+<div class="thx"><h3>Keep growing<span>!</span></h3><p>We are proud of every step of your language journey.</p></div>`;
+  const w=o.win||window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the report','err'); return; }
+  w.document.open(); w.document.write(kwDocShell({title:'Monthly Report — '+(o.student||'')+' — '+monthLabel(o.month),body})); w.document.close();
 }
 // Kategori rating kelas & guru (rubrik 1-5)
 const RATING_CATS=[
@@ -1610,41 +1552,190 @@ function annFor(list,role,stu,groups){
   });
 }
 
-/* Printable student invoice (rev7) */
+
+/* ============================================================
+   Brand icons (social / contact) + round flags — shared by index, blog, portal docs
+   (paths: Simple Icons, CC0)
+   ============================================================ */
+const KW_ICON_PATHS={"wa": "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z", "gmail": "M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z", "ig": "M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077", "threads": "M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z", "fb": "M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"};
+function kwIcon(name,size){ size=size||18;
+  const C={wa:'#25D366',gmail:'#EA4335',threads:'#000000',fb:'#0866FF'};
+  if(name==='ig') return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true"><defs><radialGradient id="kwIgG" cx="30%" cy="107%" r="150%"><stop offset="0" stop-color="#FDF497"/><stop offset=".05" stop-color="#FDF497"/><stop offset=".45" stop-color="#FD5949"/><stop offset=".6" stop-color="#D6249F"/><stop offset=".9" stop-color="#285AEB"/></radialGradient></defs><path fill="url(#kwIgG)" d="${KW_ICON_PATHS.ig}"/></svg>`;
+  if(name==='web') return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#1495C4" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.6 2.7 3.9 5.9 3.9 9.5s-1.3 6.8-3.9 9.5c-2.6-2.7-3.9-5.9-3.9-9.5S9.4 5.2 12 2.5z"/></svg>`;
+  if(name==='pin') return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF9300" d="M12 1.8a7.6 7.6 0 0 0-7.6 7.6c0 5.6 7.6 12.8 7.6 12.8s7.6-7.2 7.6-12.8A7.6 7.6 0 0 0 12 1.8z"/><circle cx="12" cy="9.4" r="2.9" fill="#fff"/></svg>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true"><path fill="${C[name]||'#13235B'}" d="${KW_ICON_PATHS[name]||''}"/></svg>`;
+}
+const KW_FLAG={en:"<svg viewBox=\"15 0 30 30\" preserveAspectRatio=\"xMidYMid slice\" xmlns=\"http://www.w3.org/2000/svg\"><clipPath id=\"kwUkT\"><path d=\"M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z\"/></clipPath><path d=\"M0,0 v30 h60 v-30 z\" fill=\"#012169\"/><path d=\"M0,0 L60,30 M60,0 L0,30\" stroke=\"#fff\" stroke-width=\"6\"/><path d=\"M0,0 L60,30 M60,0 L0,30\" clip-path=\"url(#kwUkT)\" stroke=\"#C8102E\" stroke-width=\"4\"/><path d=\"M30,0 v30 M0,15 h60\" stroke=\"#fff\" stroke-width=\"10\"/><path d=\"M30,0 v30 M0,15 h60\" stroke=\"#C8102E\" stroke-width=\"6\"/></svg>",zh:"<svg viewBox=\"0 0 20 20\" preserveAspectRatio=\"xMidYMid slice\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"30\" height=\"20\" fill=\"#EE1C25\"/><polygon fill=\"#FFDE00\" points=\"5.00,2.00 5.67,4.07 7.85,4.07 6.09,5.35 6.76,7.43 5.00,6.15 3.24,7.43 3.91,5.35 2.15,4.07 4.33,4.07\"/><polygon fill=\"#FFDE00\" points=\"10.86,1.49 10.38,2.03 10.75,2.66 10.09,2.37 9.61,2.92 9.67,2.20 9.00,1.91 9.71,1.75 9.78,1.03 10.15,1.65\"/><polygon fill=\"#FFDE00\" points=\"12.99,3.86 12.34,4.18 12.44,4.90 11.93,4.38 11.28,4.70 11.62,4.05 11.12,3.53 11.83,3.66 12.17,3.01 12.27,3.73\"/><polygon fill=\"#FFDE00\" points=\"12.96,7.27 12.24,7.30 12.04,8.00 11.79,7.32 11.06,7.34 11.63,6.90 11.38,6.21 11.99,6.62 12.56,6.17 12.36,6.87\"/><polygon fill=\"#FFDE00\" points=\"10.78,9.62 10.10,9.37 9.65,9.94 9.68,9.21 9.00,8.95 9.70,8.76 9.74,8.04 10.13,8.64 10.84,8.45 10.38,9.02\"/></svg>"};
+
+/* ============================================================
+   Website instructor profiles (Super Admin → Website → Instructor Profiles)
+   saved in app_settings 'web_teachers' → shown on index.html & registration.html
+   ============================================================ */
+const WEB_TEACHERS_DEFAULT=[
+  {id:'wt1',name:'Ms. Sarah',role:'Boost English',type:'Local',programs:['be','ie'],color:'b',photo:'assets/teacher-sarah.jpg',show:true,
+   bio:'Sarah has a background in English Language Education and over 5 years of teaching experience. She enjoys creating a supportive and engaging classroom where students build practical language skills for real-life situations.',
+   facts:[['🎓','B.A. in English Language Education'],['👥','5+ years teaching teens and adults'],['📖','Focus on communicative and student-centered learning']]},
+  {id:'wt2',name:'Mr. Adi',role:'Speak Active',type:'Local',programs:['sa','be'],color:'o',photo:'assets/teacher-adi.jpg',show:true,
+   bio:'Adi is a communication-focused instructor with a background in International Relations. He helps learners turn their existing knowledge into confident, natural conversations through practical and interactive sessions.',
+   facts:[['🎓','B.A. in International Relations'],['👥','4+ years teaching adults and professionals'],['💬','Specializes in conversation skills and real-life communication']]},
+  {id:'wt3',name:'Ms. Lina',role:'Boost Mandarin',type:'Local',programs:['bm'],color:'b',photo:'assets/teacher-lina.jpg',show:true,
+   bio:'Lina is a native Mandarin speaker who makes learning Chinese approachable and fun, guiding students from their very first characters to everyday conversation.',
+   facts:[['🗣️','Native Mandarin speaker'],['📚','HSK-aligned teaching'],['🌱','Beginner-friendly classes']]},
+  {id:'wt4',name:'Mr. Wang',role:'HSK Preparation',type:'International',programs:['hsk','bm'],color:'o',photo:'assets/teacher-wang.jpg',show:true,
+   bio:'Wang specializes in structured HSK exam preparation, helping students reach their target level with clear strategies and steady, measurable progress.',
+   facts:[['🎯','HSK exam specialist'],['🗂️','Structured preparation plans'],['📈','Target-level coaching']]},
+];
+async function loadWebTeachers(all){
+  let list=JSON.parse(JSON.stringify(WEB_TEACHERS_DEFAULT));
+  try{ const v=await API.getSetting('web_teachers'); if(v){ const c=JSON.parse(v); if(Array.isArray(c)) list=c; } }catch(e){}
+  list=list.map(t=>({...t,programs:Array.isArray(t.programs)?t.programs:String(t.programs||'').split(',').map(x=>x.trim()).filter(Boolean),facts:Array.isArray(t.facts)?t.facts:[]}));
+  return all?list:list.filter(t=>t.show!==false);
+}
+
+/* ============================================================
+   Community Blog — two sections, each with its own sub-categories
+   ============================================================ */
+const BLOG_SECTIONS={
+  'TeacherNotes':{key:'teachernotes',ic:'🍎',tone:'b',who:'Teachers',tag:'Teaching tips & classroom ideas from our teachers',
+    cats:['Lesson Planning','Teaching Strategies','Classroom Activities','Classroom Management','Learning & Assessment','Teacher Development & Reflection']},
+  'Open Pages':{key:'openpages',ic:'📖',tone:'o',who:'Students',tag:'Free-topic stories & perspectives from our students',
+    cats:['Culture & Society','Travel & Experiences','Work & Career','Lifestyle & Well-being','Opinions & Perspectives','What If…?','Everyday Life']}
+};
+const BLOG_CAT_IC={'Lesson Planning':'🗓️','Teaching Strategies':'🧠','Classroom Activities':'🎲','Classroom Management':'🧭','Learning & Assessment':'📝','Teacher Development & Reflection':'🌱',
+  'Culture & Society':'🏛️','Travel & Experiences':'✈️','Work & Career':'💼','Lifestyle & Well-being':'🌿','Opinions & Perspectives':'💭','What If…?':'🤔','Everyday Life':'☕'};
+// writer type → which sections they may write in
+const BLOG_ROLE_SECTIONS={Teacher:['TeacherNotes','Open Pages'],Student:['Open Pages'],Staff:['TeacherNotes','Open Pages']};
+function blogSectionOf(p){ if(p&&BLOG_SECTIONS[p.section]) return p.section; const c=(p||{}).category; return BLOG_SECTIONS['Open Pages'].cats.includes(c)?'Open Pages':'TeacherNotes'; }
+
+/* ============================================================
+   Printable documents (rev10): student invoice + teacher prepayment slip
+   shared look — logo "Home for Language Learners", blue/orange corners,
+   www.kwelingo.co.id · @kwelingo · Cemara Asri, Medan
+   ============================================================ */
+const KW_DOC_SITE='www.kwelingo.co.id', KW_DOC_IG='@kwelingo', KW_DOC_ADDR='Cemara Asri, Medan';
+function kwDocIc(n){
+  const P={cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+    id:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.2c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14.5 10h4M14.5 13.5h3"/>',
+    book:'<path d="M4 5.5C6.7 4.6 9.4 4.7 12 6.4v13.1c-2.6-1.7-5.3-1.8-8-.9zM20 5.5c-2.7-.9-5.4-.8-8 .9v13.1c2.6-1.7 5.3-1.8 8-.9z"/>',
+    bank:'<path d="M3 9.5 12 4l9 5.5M5 10v8M9.7 10v8M14.3 10v8M19 10v8M3 20.5h18"/>',
+    card:'<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6 15h4"/>',
+    doc:'<path d="M7 3h7l5 5v12.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V3.5A.5.5 0 0 1 7 3z"/><path d="M14 3v5h5M9 12.5h6M9 16h6"/>',
+    wallet:'<rect x="3" y="6" width="18" height="13.5" rx="2.5"/><path d="M3 9.5h18M16 14.2h2"/><path d="M6 6l9-3 1.5 3"/>',
+    info:'<circle cx="12" cy="12" r="9.5" fill="#1CA3D6" stroke="#1CA3D6"/><path d="M12 10.5v6" stroke="#fff"/><circle cx="12" cy="7.4" r=".6" fill="#fff" stroke="#fff"/>',
+    check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>'};
+  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1CA3D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]||''}</svg>`;
+}
+function kwDocShell(o){
+  const base=location.href.replace(/[^/]*([?#].*)?$/,'');
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(o.title||'Kwelingo')}</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#EEF3FA;color:#13235B;padding:62px 16px 30px}
+.pg{width:820px;max-width:100%;margin:0 auto;background:#fff;position:relative;overflow:hidden;padding:40px 46px 28px;box-shadow:0 14px 50px rgba(19,35,91,.14)}
+.cor{position:absolute;pointer-events:none;z-index:0}.cor.tr{right:0;top:0;width:300px}.cor.br{right:0;bottom:0;width:260px}
+.z{position:relative;z-index:2}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}.hd img{height:62px;display:block}
+.tl{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:22px}
+.tl h1{font-size:36px;font-weight:800;letter-spacing:.5px;line-height:1;color:#13235B}.tl .s{font-size:12px;font-weight:800;letter-spacing:3px;color:#1CA3D6;margin-top:6px;text-transform:uppercase}
+.no{display:inline-block;background:#FFF1DE;color:#E07B00;border:1px solid #FFD9A8;font-weight:800;font-size:13px;padding:6px 16px;border-radius:99px}
+.st{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:1px}
+.st.ok{background:#E7F6EE;color:#1E7E34}.st.no2{background:#FDECEC;color:#D8352A}.st.pd{background:#FFF4DE;color:#B26A00}.st.in{background:#EEF4FF;color:#1F6FEB}
+.info{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;margin:24px 0 20px}
+.bill{background:#F2F8FD;border:1px solid #E1EEF8;border-radius:16px;padding:16px 18px}.bill .lb{font-size:11px;font-weight:800;color:#5B6B8C;letter-spacing:.5px;margin-bottom:8px}
+.bill .who{display:flex;gap:12px;align-items:flex-start}.bill .nm{font-size:19px;font-weight:800;line-height:1.2}.bill .ln{font-size:12.5px;color:#46557A;margin-top:5px}.bill .ln b{color:#13235B}
+.dl{border-left:1.5px solid #E2E8F2;padding-left:22px;display:flex;flex-direction:column;justify-content:center;gap:11px}
+.dr{display:grid;grid-template-columns:24px 112px 10px 1fr;align-items:center;font-size:12.5px;color:#46557A}.dr b{color:#13235B;font-size:13px}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;border:1px solid #DCEAF5;border-radius:12px;overflow:hidden}
+th{background:#1CA3D6;color:#fff;text-align:left;padding:11px 10px;font-size:11.5px;font-weight:700}td{padding:10px;border-top:1px solid #EEF2F8;vertical-align:middle}
+td.c,th.c{text-align:center}td.a,th.a{text-align:right}td.a{font-weight:800}td small{display:block;color:#7A88A6;font-size:10.5px;margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-weight:700;font-size:10.5px;white-space:nowrap}
+.tot{display:flex;justify-content:space-between;align-items:center;gap:14px;background:#F2F8FD;border-radius:14px;margin-top:14px;padding:0 0 0 18px}
+.tot .l{font-size:13px;color:#46557A}.tot .l b{color:#13235B}
+.tbox{background:linear-gradient(90deg,#FF9300,#F57C00);color:#fff;border-radius:14px;padding:13px 22px;display:flex;gap:26px;align-items:center}.tbox span{font-weight:700;font-size:14px;padding-right:22px;border-right:1.5px solid rgba(255,255,255,.5)}.tbox b{font-size:24px;font-weight:800;white-space:nowrap}.tbox span{white-space:nowrap}
+.tbox.blue{background:linear-gradient(90deg,#1495C4,#26B5DF)}
+.sub{display:flex;justify-content:flex-end;gap:30px;font-size:12.5px;color:#46557A;margin-top:10px;padding-right:6px}.sub b{color:#13235B}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:20px;background:#F7FAFD;border:1px solid #E6EEF6;border-radius:16px;padding:18px 4px}
+.two>div{padding:0 18px}.two>div+div{border-left:1.5px solid #E2E8F2}
+.two h4{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;margin-bottom:10px}.two .ds{font-size:12px;color:#46557A;margin-bottom:10px}
+.kv{display:flex;gap:10px;align-items:center;margin-bottom:10px}.kv small{display:block;font-size:10.5px;color:#7A88A6}.kv b{font-size:13.5px}
+.steps{list-style:none}.steps li{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#33405F;margin-bottom:11px;line-height:1.5}.steps li i{font-style:normal;flex:0 0 22px;height:22px;border-radius:50%;background:#FF9300;color:#fff;font-weight:800;font-size:11.5px;display:flex;align-items:center;justify-content:center}
+.bul{padding-left:16px;font-size:12px;color:#33405F;line-height:1.75}
+.note{display:flex;gap:10px;align-items:center;background:#EAF6FC;border-radius:12px;padding:11px 14px;margin-top:16px;font-size:12px;color:#33507A}
+.thx{text-align:center;margin:20px 0 4px}.thx h3{font-size:22px;font-weight:800;color:#13235B;letter-spacing:.3px}.thx h3 span{color:#FF9300}.thx p{font-size:12.5px;color:#46557A;margin-top:4px}
+.ft{display:flex;gap:26px;flex-wrap:wrap;font-size:11.5px;color:#46557A;margin-top:16px;border-top:1px solid #E2E8F2;padding-top:12px;max-width:560px}.ft span{display:inline-flex;align-items:center;gap:6px}
+.pbar{position:fixed;top:0;left:0;right:0;background:#1495C4;color:#fff;padding:10px;text-align:center;font-size:13px;z-index:99}.pbar button{background:#fff;color:#1495C4;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px;font-family:inherit}
+@media(max-width:700px){.pg{padding:28px 18px 22px}.info,.two{grid-template-columns:1fr}.dl{border-left:0;padding-left:0}.two>div+div{border-left:0;border-top:1.5px solid #E2E8F2;padding-top:14px;margin-top:6px}.tl{flex-direction:column;align-items:flex-start}.tl>div:last-child{text-align:left!important}.tl h1{font-size:28px}.tw{overflow-x:auto;margin:0 -4px;padding:0 4px}.tw table{min-width:620px}.hd img{height:48px}.cor.tr{width:180px}.cor.br{width:150px}table{font-size:11px}.tot{flex-direction:column;align-items:stretch;padding:12px}.tbox{justify-content:space-between}}
+@media print{.pbar{display:none}body{background:#fff;padding:0}.pg{box-shadow:none;width:100%}@page{size:A4;margin:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>
+<div class="pbar">💾 Save as PDF: click the button → choose <b>Save as PDF</b> <button onclick="window.print()">⬇️ Download / Print</button></div>
+<div class="pg">
+<svg class="cor tr" viewBox="0 0 300 150" preserveAspectRatio="xMaxYMin meet"><path d="M120 0H300V118C250 70 190 34 120 0z" fill="#26B5DF"/><path d="M228 0H300V64C276 40 254 20 228 0z" fill="#FF9300"/></svg>
+<svg class="cor br" viewBox="0 0 260 130" preserveAspectRatio="xMaxYMax meet"><path d="M0 130C70 112 130 80 172 38 190 20 204 8 216 0V130z" fill="#FF9300"/><path d="M78 130C138 112 190 82 226 40 240 24 250 12 260 2V130z" fill="#26B5DF"/></svg>
+<div class="z">
+<div class="hd"><img src="${base}assets/logo-tagline.png" onerror="this.src='${base}assets/logo-h.png'" alt="Kwelingo — Home for Language Learners"></div>
+${o.body}
+<div class="ft"><span>${kwIcon('web',15)} ${KW_DOC_SITE}</span><span>${kwIcon('ig',15)} ${KW_DOC_IG}</span><span>${kwIcon('pin',15)} ${KW_DOC_ADDR}</span></div>
+</div></div></body></html>`;
+}
+
+/* Student invoice */
 function openInvoice(o){
-  o=o||{}; const logo=location.href.replace(/[^/]*$/,'')+'assets/logo-h.png';
-  const paid=isPaid(o.status);
-  const rows=(o.items||[]).map(it=>`<tr><td>${esc(it.d)}</td><td style="text-align:center">${esc(it.q||'')}</td><td style="text-align:right">${it.p!=null?rupiah(it.p):''}</td><td style="text-align:right"><b>${rupiah(it.t)}</b></td></tr>`).join('');
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(o.no||'Invoice')} — ${esc(o.student||'')}</title><style>
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0} body{font-family:'Plus Jakarta Sans',sans-serif;color:#1E2A4A;background:#EEF3FA;padding:60px 20px 20px}
-  .pg{max-width:800px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 44px;box-shadow:0 10px 40px rgba(19,35,91,.12)}
-  .hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #E6ECF5;padding-bottom:20px;margin-bottom:22px}
-  .hd img{height:54px} h1{font-size:30px;color:#13235B;text-align:right} .no{color:#6B7A99;text-align:right;font-size:13px}
-  .st{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:800;background:${paid?'#E7F6EC':'#FFF4DE'};color:${paid?'#1E7E34':'#B26A00'}}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px;font-size:13px} .grid b{display:block;color:#13235B;font-size:14px;margin-bottom:4px} .lbl{color:#6B7A99;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:6px}
-  table{width:100%;border-collapse:collapse;font-size:13px} th{background:#F1F6FF;color:#13235B;text-align:left;padding:10px 12px;font-size:12px} td{padding:11px 12px;border-bottom:1px solid #E6ECF5}
-  .tot{display:flex;justify-content:flex-end;margin-top:16px}.tot div{background:#1F6FEB;color:#fff;border-radius:12px;padding:14px 22px;font-size:14px}.tot b{font-size:22px;display:block}
-  .pay{margin-top:24px;background:#F5F8FD;border-radius:12px;padding:16px 18px;font-size:13px;line-height:1.7}
-  .pbar{position:fixed;top:0;left:0;right:0;background:#1F6FEB;color:#fff;padding:10px;text-align:center;font-size:13px}
-  .pbar button{background:#fff;color:#1F6FEB;border:none;padding:7px 18px;border-radius:8px;font-weight:700;cursor:pointer;margin-left:10px}
-  @media print{.pbar{display:none}body{background:#fff;padding:0}.pg{box-shadow:none}}
-  </style></head><body><div class="pbar">💾 Save as PDF: <button onclick="window.print()">⬇️ Download / Print</button></div>
-  <div class="pg"><div class="hd"><img src="${logo}" alt="Kwelingo Academy"><div><h1>INVOICE</h1><div class="no">${esc(o.no||'')}</div><div style="text-align:right"><span class="st">${paid?'PAID':'UNPAID'}</span></div></div></div>
-  <div class="grid"><div><div class="lbl">BILL TO</div><b>${esc(o.parent||'Parent / Guardian')}</b>Student: ${esc(o.student||'')}<br>Program: ${esc(o.program||'-')}${o.level?' – '+esc(o.level):''}</div>
-    <div style="text-align:right"><div class="lbl">DETAILS</div>Invoice date: <b style="display:inline">${esc(o.issue||'-')}</b><br>Due date: <b style="display:inline">${esc(o.due||'-')}</b><br>Period: ${esc(o.period||'-')}${paid&&o.paidOn?`<br>Paid on: ${esc(o.paidOn)}`:''}</div></div>
-  <table><thead><tr><th>Description</th><th style="text-align:center">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Amount</th></tr></thead><tbody>${rows}</tbody></table>
-  <div class="tot"><div>Total Amount<b>${rupiah(o.total)}</b></div></div>
-  <div class="pay"><b>Payment</b><br>${o.bank?esc(o.bank):'Please transfer to the Kwelingo Academy account shown in your Parent Hub'}<br>Please upload the transfer proof in the Parent Hub after paying. Thank you! 🙏</div>
-  ${o.note?`<div style="margin-top:14px;font-size:12.5px;color:#6B7A99">Note: ${esc(o.note)}</div>`:''}</div></body></html>`;
-  const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the invoice','err'); return; } w.document.write(html); w.document.close();
+  o=o||{};
+  const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the invoice','err'); return; }
+  w.document.write('<p style="font-family:sans-serif;padding:40px;color:#567">Preparing invoice…</p>');
+  (async()=>{
+    let bank=REG_DEFAULT.bank; try{ bank=(await loadRegConfig()).bank||bank; }catch(e){}
+    const st=String(o.status||'').toUpperCase(), paid=isPaid(o.status), wait=/MENUNGGU|VERIF/.test(st);
+    const stCls=paid?'ok':wait?'in':'pd', stTxt=paid?'PAID':wait?'AWAITING VERIFICATION':'UNPAID';
+    const items=o.items||[];
+    const rows=items.map((it,i)=>`<tr><td class="c">${i+1}</td><td><b>${esc(it.d)}</b>${it.q?`<small>${esc(it.q)}</small>`:''}</td><td class="c">${esc(String(it.q||'').replace(/\D+/g,'')||'1')}</td><td class="a" style="font-weight:600">${it.p!=null?rupiah(it.p):'—'}</td><td class="a">${rupiah(it.t)}</td></tr>`).join('');
+    const sess=items[0]&&String(items[0].q||'').match(/\d+/);
+    const body=`<div class="tl"><div><h1>INVOICE</h1><div class="s">Student Payment</div></div><div style="text-align:right"><span class="no">${esc(o.no||'—')}</span><br><span class="st ${stCls}">${stTxt}</span></div></div>
+<div class="info"><div class="bill"><div class="lb">Bill To</div><div class="who">${kwDocIc('user')}<div><div class="nm">${esc(o.student||'-')}</div>
+  ${o.studentId?`<div class="ln">Student ID &nbsp;: <b>${esc(o.studentId)}</b></div>`:''}<div class="ln">Program &nbsp;&nbsp;&nbsp;&nbsp;: <b>${esc(o.program||'-')}${o.level?' – '+esc(o.level):''}</b></div>${o.parent?`<div class="ln">Parent &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <b>${esc(o.parent)}</b></div>`:''}</div></div></div>
+  <div class="dl"><div class="dr">${kwDocIc('cal')}<span>Invoice Date</span><span>:</span><b>${esc(o.issue||'-')}</b></div><div class="dr">${kwDocIc('cal')}<span>Due Date</span><span>:</span><b>${esc(o.due||'-')}</b></div><div class="dr">${kwDocIc('doc')}<span>Period</span><span>:</span><b>${esc(o.period||'-')}</b></div>${paid&&o.paidOn&&o.paidOn!=='-'?`<div class="dr">${kwDocIc('check')}<span>Paid On</span><span>:</span><b>${esc(o.paidOn)}</b></div>`:''}</div></div>
+<div class="tw"><table><thead><tr><th class="c" style="width:44px">No.</th><th>Description</th><th class="c" style="width:56px">Qty</th><th class="a" style="width:120px">Unit Price</th><th class="a" style="width:130px">Amount</th></tr></thead><tbody>${rows||'<tr><td colspan="5" style="text-align:center;color:#7A88A6;padding:16px">—</td></tr>'}</tbody></table></div>
+<div class="tot"><div class="l">${paid?'✅ <b>Paid in full</b> — thank you!':'Please pay by <b>'+esc(o.due||'the due date')+'</b>'}</div><div class="tbox"><span>${paid?'Total Paid':'Total Amount Due'}</span><b>${rupiah(o.total)}</b></div></div>
+<div class="two"><div><h4>${kwDocIc('wallet')} Payment Information</h4><div class="ds">Please make your payment to the Kwelingo Academy account below:</div>
+  <div class="kv">${kwDocIc('bank')}<div><small>Bank</small><b>${esc(bank.name||'-')}</b></div></div><div class="kv">${kwDocIc('card')}<div><small>Account Number</small><b style="letter-spacing:.5px">${esc(bank.number||'-')}</b></div></div><div class="kv">${kwDocIc('user')}<div><small>Beneficiary (Account Name)</small><b>${esc(bank.holder||'-')}</b></div></div></div>
+  <div><h4>${kwDocIc('doc')} Payment Instructions</h4><ul class="steps"><li><i>1</i>Transfer the total amount to the Kwelingo Academy bank account.</li><li><i>2</i>Upload your proof of payment in the Parent Hub or send it to our admin via WhatsApp.</li><li><i>3</i>Kindly ensure the payment is made by the due date above.</li></ul></div></div>
+<div class="note">${kwDocIc('info')}<span><b>Note:</b> ${o.note?esc(o.note):`This invoice is for the ${esc(o.period||'')} learning period${sess?' ('+sess[0]+' sessions)':''}.`}</span></div>
+<div class="thx"><h3>Thank you<span>!</span></h3><p>for being part of the Kwelingo Academy family.</p></div>`;
+    w.document.open(); w.document.write(kwDocShell({title:(o.no||'Invoice')+' — '+(o.student||''),body})); w.document.close();
+  })();
+}
+
+/* Prepayment Slip — Teaching Session Summary (teacher payment detail) */
+function openTeachingSummary(o){
+  o=o||{}; const rows=o.rows||[];
+  const fee=rows.reduce((a,r)=>a+(Number(r.amount)||0),0), bonus=Number(o.bonus)||0, total=o.total!=null?Number(o.total):fee+bonus;
+  const TB={Regular:['#EEF4FF','#1F6FEB',''],Recovery:['#FFF4E5','#E07A00','↺'],Reschedule:['#F3EEFF','#7C5CE6','⟳'],Rescheduled:['#F3EEFF','#7C5CE6','⟳']};
+  const SB={Completed:['#E7F6EE','#1E7E34','✔'],Canceled:['#FDECEC','#D8352A','✕'],Cancelled:['#FDECEC','#D8352A','✕'],Scheduled:['#EEF4FF','#1F6FEB','•'],Rescheduled:['#F3EEFF','#7C5CE6','↻']};
+  const pill=(m,t)=>`<span class="pill" style="background:${m[0]};color:${m[1]}">${m[2]?m[2]+' ':''}${esc(t)}</span>`;
+  const st=String(o.status||'').toLowerCase(), stCls=/paid|sent|transfer/.test(st)?'ok':/confirm/.test(st)?'in':'pd';
+  const qty=r=>/cancel/i.test(r.status)?0:1, paidN=rows.filter(r=>!/cancel/i.test(r.status)).length;
+  const b=o.bank||{};
+  const body=`<div class="tl"><div><h1>PREPAYMENT SLIP</h1><div class="s">Teaching Session Summary</div></div><div style="text-align:right"><span class="no">${esc(o.slipNo||'—')}</span>${o.status?`<br><span class="st ${stCls}">${esc(String(o.status).toUpperCase())}</span>`:''}</div></div>
+<div class="info"><div class="bill"><div class="lb">Pay To</div><div class="who">${kwDocIc('user')}<div><div class="nm">${esc(o.name||'Teacher')}</div><div class="ln">Role &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <b>Teacher</b></div>${o.programs?`<div class="ln">Program &nbsp;: <b>${esc(o.programs)}</b></div>`:''}</div></div></div>
+  <div class="dl"><div class="dr">${kwDocIc('cal')}<span>Payment Period</span><span>:</span><b>${esc(o.range||'-')}</b></div><div class="dr">${kwDocIc('doc')}<span>Period</span><span>:</span><b>${esc(o.period||'-')}</b></div>${o.paidOn?`<div class="dr">${kwDocIc('check')}<span>Paid On</span><span>:</span><b>${esc(o.paidOn)}</b></div>`:''}</div></div>
+<div class="tw"><table><thead><tr><th class="c" style="width:40px">No.</th><th>Date</th><th>Class</th><th>Class Type</th><th>Status</th><th class="c">Qty</th><th class="a">Amount</th></tr></thead><tbody>
+${rows.map((r,i)=>`<tr><td class="c">${i+1}</td><td style="white-space:nowrap">${esc(r.date)}</td><td>${esc(r.cls)}</td><td>${pill(TB[r.type]||TB.Regular,r.type==='Rescheduled'?'Reschedule':r.type||'Regular')}</td><td>${pill(SB[r.status]||SB.Scheduled,r.status||'Scheduled')}</td><td class="c">${qty(r)}</td><td class="a">${rupiah(r.amount)}</td></tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:#7A88A6;padding:18px">No sessions in this period.</td></tr>'}
+</tbody></table></div>
+${bonus?`<div class="sub"><span>Teaching Fee: <b>${rupiah(fee)}</b></span><span>Commission / Bonus${o.bonusNote?' ('+esc(o.bonusNote)+')':''}: <b>${rupiah(bonus)}</b></span></div>`:''}
+<div class="tot"><div class="l">Total Sessions: <b>${rows.length}</b>${rows.length!==paidN?` <span style="color:#7A88A6">(${paidN} paid)</span>`:''}</div><div class="tbox blue"><span>Total Amount</span><b>${rupiah(total)}</b></div></div>
+<div class="two"><div><h4>${kwDocIc('bank')} Teacher Bank Account</h4>
+  <div class="kv">${kwDocIc('bank')}<div><small>Bank</small><b>${esc(b.bank||'-')}</b></div></div><div class="kv">${kwDocIc('card')}<div><small>Account Number</small><b style="letter-spacing:.5px">${esc(b.account||'-')}</b></div></div><div class="kv">${kwDocIc('user')}<div><small>Beneficiary</small><b>${esc(b.holder||o.name||'-')}</b></div></div></div>
+  <div><h4>${kwDocIc('doc')} Payment Notes</h4><ul class="bul"><li>This payment covers the teaching sessions shown in the table above.</li><li>Only completed sessions are included in the total amount.</li><li>Payment is transferred to the bank account listed on the left.</li><li>Kindly confirm once the transfer is received.</li></ul></div></div>
+<div class="note">${kwDocIc('info')}<span><b>Thank you for being part of the Kwelingo Academy family!</b> Your dedication helps our students grow and achieve their language goals.</span></div>
+<div class="thx"><h3>Together, we grow<span>.</span></h3></div>`;
+  const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups to open the slip','err'); return; }
+  w.document.write(kwDocShell({title:'Prepayment Slip — '+(o.name||'')+' — '+(o.period||''),body})); w.document.close();
 }
 
 
 /* ============================================================
    TeacherNotes blog — shared helpers (blog.html, index.html, blog-admin.html, master-admin.html)
    ============================================================ */
-const BLOG_CATS=['Learning Tips','English','Mandarin','Test Prep','Kwelingo News','Stories'];
+const BLOG_CATS=[...BLOG_SECTIONS['TeacherNotes'].cats,...BLOG_SECTIONS['Open Pages'].cats];
 function blogSlug(t){ return String(t||'post').toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/[\s_-]+/g,'-').slice(0,70)||'post'; }
 // allow only safe formatting tags in article HTML
 function blogSanitize(html){
@@ -1667,10 +1758,13 @@ async function blogPublished(){ let r=[]; try{ r=await API.list('blog_posts',{st
 (function seedBlog(){
   if(typeof DEMO==='undefined') return;
   const t=todayStr(), add=n=>{const d=new Date(t+'T00:00:00'); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
-  DEMO.blog_writers=[{id:'bw1',nama:'Nadia Putri',username:'nadiablog',pin:'1357',email:'nadia@kwelingo.com',bio:'English teacher & content writer at Kwelingo.',status:'Active',created_at:add(-40)+'T09:00:00'}];
+  DEMO.blog_writers=[{id:'bw1',nama:'Nadia Putri',username:'nadiablog',pin:'1357',email:'nadia@kwelingo.com',bio:'English teacher & content writer at Kwelingo.',status:'Active',role:'Teacher',created_at:add(-40)+'T09:00:00'}];
   DEMO.blog_posts=[
-    {id:'bp1',title:'5 Easy Habits to Practise English Every Day',slug:'5-easy-habits-to-practise-english-every-day',category:'Learning Tips',cover_url:'',excerpt:'Small daily habits make a big difference. Here are five simple ways to keep your English growing — even on busy days.',content:'<p>Learning a language is a marathon, not a sprint. The good news? A few minutes a day is enough to keep growing.</p><h2>1. Think in English</h2><p>Describe what you are doing in your head: <em>“I’m making breakfast, then I’ll catch the bus.”</em></p><h2>2. Keep a mini diary</h2><p>Write three sentences every night about your day.</p><h2>3. Shadow a short video</h2><p>Pick a 1-minute clip and repeat after the speaker.</p><blockquote>Consistency beats intensity.</blockquote><h2>4. Label your home</h2><p>Sticky notes on objects help new words stick.</p><h2>5. Talk to someone</h2><p>Join a Speak Active session and use what you learned!</p>',author_id:'bw1',author_name:'Nadia Putri',status:'Published',published_at:add(-6)+'T10:00:00',created_at:add(-8)+'T10:00:00'},
-    {id:'bp2',title:'HSK 1 vs HSK 2: Which Level Should You Start With?',slug:'hsk-1-vs-hsk-2',category:'Mandarin',cover_url:'',excerpt:'Not sure where to begin with the HSK? We compare the first two levels so you can choose the right starting point.',content:'<p>The HSK (汉语水平考试) is the standard Mandarin proficiency test. Levels 1 and 2 are where most learners begin.</p><h2>HSK 1</h2><ul><li>150 words</li><li>Basic greetings and numbers</li></ul><h2>HSK 2</h2><ul><li>300 words</li><li>Simple daily conversations</li></ul><p>Not sure? Book a discovery session and we will help you decide.</p>',author_id:'bw1',author_name:'Nadia Putri',status:'Published',published_at:add(-15)+'T09:00:00',created_at:add(-16)+'T09:00:00'},
-    {id:'bp3',title:'How to Prepare for IELTS Speaking Part 2',slug:'ielts-speaking-part-2',category:'Test Prep',cover_url:'',excerpt:'One minute to prepare, two minutes to speak. Here is a simple structure that works.',content:'<p>In Part 2 you get a cue card, one minute to prepare and up to two minutes to speak.</p><h2>A simple structure</h2><ol><li>Introduce the topic</li><li>Give details (who, what, when)</li><li>Explain why it matters to you</li></ol>',author_id:'bw1',author_name:'Nadia Putri',status:'Pending',submitted_at:add(-1)+'T15:00:00',created_at:add(-2)+'T15:00:00'},
+    {id:'bp1',title:'5 Easy Habits to Practise English Every Day',slug:'5-easy-habits-to-practise-english-every-day',section:'TeacherNotes',category:'Teaching Strategies',cover_url:'',excerpt:'Small daily habits make a big difference. Here are five simple ways to keep your English growing — even on busy days.',content:'<p>Learning a language is a marathon, not a sprint. The good news? A few minutes a day is enough to keep growing.</p><h2>1. Think in English</h2><p>Describe what you are doing in your head: <em>“I’m making breakfast, then I’ll catch the bus.”</em></p><h2>2. Keep a mini diary</h2><p>Write three sentences every night about your day.</p><h2>3. Shadow a short video</h2><p>Pick a 1-minute clip and repeat after the speaker.</p><blockquote>Consistency beats intensity.</blockquote><h2>4. Label your home</h2><p>Sticky notes on objects help new words stick.</p><h2>5. Talk to someone</h2><p>Join a Speak Active session and use what you learned!</p>',author_id:'bw1',author_name:'Nadia Putri',status:'Published',published_at:add(-6)+'T10:00:00',created_at:add(-8)+'T10:00:00'},
+    {id:'bp2',title:'HSK 1 vs HSK 2: Which Level Should You Start With?',slug:'hsk-1-vs-hsk-2',section:'TeacherNotes',category:'Learning & Assessment',cover_url:'',excerpt:'Not sure where to begin with the HSK? We compare the first two levels so you can choose the right starting point.',content:'<p>The HSK (汉语水平考试) is the standard Mandarin proficiency test. Levels 1 and 2 are where most learners begin.</p><h2>HSK 1</h2><ul><li>150 words</li><li>Basic greetings and numbers</li></ul><h2>HSK 2</h2><ul><li>300 words</li><li>Simple daily conversations</li></ul><p>Not sure? Book a discovery session and we will help you decide.</p>',author_id:'bw1',author_name:'Nadia Putri',status:'Published',published_at:add(-15)+'T09:00:00',created_at:add(-16)+'T09:00:00'},
+    {id:'bp3',title:'How to Prepare for IELTS Speaking Part 2',slug:'ielts-speaking-part-2',section:'TeacherNotes',category:'Classroom Activities',cover_url:'',excerpt:'One minute to prepare, two minutes to speak. Here is a simple structure that works.',content:'<p>In Part 2 you get a cue card, one minute to prepare and up to two minutes to speak.</p><h2>A simple structure</h2><ol><li>Introduce the topic</li><li>Give details (who, what, when)</li><li>Explain why it matters to you</li></ol>',author_id:'bw1',author_name:'Nadia Putri',status:'Pending',submitted_at:add(-1)+'T15:00:00',created_at:add(-2)+'T15:00:00'},
+    {id:'bp4',title:'My First Trip Abroad: Ordering Food in English',slug:'my-first-trip-abroad',section:'Open Pages',category:'Travel & Experiences',cover_url:'',excerpt:'I was so nervous to speak English in a real café. Here is what happened — and what I learned.',content:'<p>Last holiday my family went to Singapore. On the second day I decided to order breakfast by myself.</p><h2>The moment of truth</h2><p>My hands were cold, but I said: <em>“Can I have a kaya toast set, please?”</em> The waiter smiled and answered — and I understood everything!</p><blockquote>Mistakes are proof that you are trying.</blockquote><p>Now I am not afraid to speak anymore. What about you?</p>',author_id:'bw2',author_name:'Kevin Tan',status:'Published',published_at:add(-3)+'T08:00:00',created_at:add(-4)+'T08:00:00'},
+    {id:'bp5',title:'What If Everyone Spoke the Same Language?',slug:'what-if-same-language',section:'Open Pages',category:'What If…?',cover_url:'',excerpt:'Would the world be easier — or more boring? A student imagines a world with only one language.',content:'<p>Imagine waking up tomorrow and everyone in the world speaks the same language.</p><h2>The good side</h2><ul><li>Travelling would be easy</li><li>No more translation apps</li></ul><h2>The other side</h2><p>But we would lose songs, jokes and words that only exist in one language. I think learning languages is like collecting keys to different houses.</p>',author_id:'bw2',author_name:'Kevin Tan',status:'Published',published_at:add(-10)+'T08:00:00',created_at:add(-11)+'T08:00:00'},
   ];
+  DEMO.blog_writers.push({id:'bw2',nama:'Kevin Tan',username:'kevinblog',pin:'2468',email:'',bio:'Boost English student who loves travelling.',status:'Active',role:'Student',created_at:add(-20)+'T09:00:00'});
 })();

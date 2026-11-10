@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Admin Portal — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/style.css?v=20261106">
+<link rel="stylesheet" href="assets/style.css?v=20261110">
 <style>
   .report-grid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
   @media(max-width:1100px){.report-grid{grid-template-columns:1fr}}
@@ -95,6 +95,14 @@
   .bl-art .content blockquote{border-left:4px solid var(--blue);background:#F1F6FF;margin:12px 0;padding:10px 16px;border-radius:0 10px 10px 0}
   .bl-art .content ul,.bl-art .content ol{padding-left:22px}
   @media(max-width:640px){.bl-row{flex-wrap:wrap}.bl-cv{width:72px;height:50px}}
+  .wt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+  .wt-card{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 6px 18px rgba(19,35,91,.05);display:flex;flex-direction:column}
+  .wt-card.off{opacity:.55}
+  .wt-ph{aspect-ratio:600/432;background:#EAF6FC center/cover no-repeat;position:relative}
+  .wt-ph .tg{position:absolute;left:10px;top:10px;background:#fff;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:800;color:var(--navy)}
+  .wt-bd{padding:14px 16px;flex:1}.wt-bd b{color:var(--navy);font-size:16px;display:block}.wt-bd small{color:var(--muted);font-size:12.5px}
+  .wt-ft{display:flex;gap:4px;align-items:center;padding:8px 10px;border-top:1px solid var(--line)}
+  .wt-pv{width:100%;aspect-ratio:600/432;border:1.8px dashed #B9CFF6;border-radius:14px;background:#F5F9FF center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--blue);font-weight:700;font-size:13px;cursor:pointer;text-align:center}
 </style>
 </head>
 <body>
@@ -130,9 +138,12 @@
       <a data-view="certificates"><span class="ic">🏅</span> Certificate Management</a>
       <a data-view="invoices"><span class="ic">💳</span> Invoices &amp; Payments</a>
       <a data-view="laporan"><span class="ic">📈</span> Reports</a>
-      <a data-view="blog"><span class="ic">📰</span> TeacherNotes Blog <span class="nav-dot" id="blDot" style="display:none"></span></a>
       <a data-view="settings"><span class="ic">⚙️</span> Settings</a>
       <a data-view="activity"><span class="ic">🛡️</span> Audit Log</a>
+      <div class="divider"></div>
+      <div class="sidebar-role" style="margin-top:0">Website</div>
+      <a data-view="webteachers"><span class="ic">🧑‍🏫</span> Instructor Profiles</a>
+      <a data-view="blog"><span class="ic">📰</span> Community Blog <span class="nav-dot" id="blDot" style="display:none"></span></a>
       <div class="divider"></div>
       <div class="sidebar-role" style="margin-top:0">Open Other Portals</div>
       <a href="admin.html" target="_blank"><span class="ic">🗂️</span> Operations Admin ↗</a>
@@ -344,6 +355,7 @@
             <div class="breadcrumb">Home › Search Students › <b id="crumb">—</b></div></div>
           <div style="display:flex;gap:10px;align-items:center" class="no-print">
             <input type="month" id="repMonthSel" class="btn btn-outline" style="font-weight:600" title="Select report period" onchange="if(CUR)openReport(CUR.id,this.value)">
+            <button class="btn btn-primary" onclick="saMonthlyPdf()">📄 Monthly Report PDF</button>
             <button class="btn btn-green" onclick="openModal('mWa')">🟢 WhatsApp Parent</button>
             <button class="btn btn-outline" onclick="window.print()">🧾 Save PDF</button>
           </div>
@@ -534,9 +546,17 @@
         <div class="note-band mt-16" style="font-size:12.5px">💡 Click <b>✏️</b> to edit a program's card (icon, badge, description, age group, duration). Changes appear on the registration page right after you click <b>Save Changes</b>.</div>
       </section>
 
-      <!-- TEACHERNOTES BLOG -->
+      <!-- WEBSITE: INSTRUCTOR PROFILES -->
+      <section class="view hide" id="view-webteachers">
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">🧑‍🏫</div><div><h1>Instructor Profiles</h1><div class="sub">Teacher profiles shown on the website (Meet Our Instructors) and in the registration form (Preferred Instructor).</div></div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-outline btn-sm" href="index.html#instructors" target="_blank">👁️ View on website ↗</a><button class="btn btn-primary" onclick="wtOpen()">＋ Add Instructor</button></div></div>
+        <div class="note-band" style="font-size:12.5px;margin-bottom:16px">💡 Drag order with <b>↑ ↓</b>. Turn <b>Show</b> off to hide a profile without deleting it. Programs decide where the teacher appears as a <b>Preferred Instructor</b> option on the registration form.</div>
+        <div class="wt-grid" id="wtGrid"></div>
+      </section>
+
+      <!-- COMMUNITY BLOG -->
       <section class="view hide" id="view-blog">
-        <div class="page-head"><div class="ph-left"><div class="ph-ic">📰</div><div><h1>TeacherNotes Blog</h1><div class="sub">Review writers' articles before they go live, and manage blog-only writer accounts.</div></div></div>
+        <div class="page-head"><div class="ph-left"><div class="ph-ic">📰</div><div><h1>Community Blog</h1><div class="sub"><b>TeacherNotes</b> (teacher contributors) &amp; <b>Open Pages</b> (student contributors) — review articles before they go live and manage writer accounts.</div></div></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-outline btn-sm" href="blog.html" target="_blank">👁️ View blog ↗</a><a class="btn btn-outline btn-sm" href="blog-admin.html" target="_blank">✍️ Writer portal ↗</a><button class="btn btn-primary" onclick="blWriterOpen()">＋ Add Writer</button></div></div>
         <div class="grid grid-4" style="margin-bottom:16px" id="blStats"></div>
         <div class="utabs" id="blTabs"></div>
@@ -547,6 +567,7 @@
         <div class="page-head"><div class="ph-left"><div class="ph-ic">⚙️</div><div><h1>Settings</h1><div class="sub">Portal PINs, data tools and system links.</div></div></div></div>
         <div class="grid grid-3" style="gap:14px;margin-bottom:18px">
           <div class="card card-pad" style="cursor:pointer;border-color:#FBD9B5;background:#FFF8F0" onclick="showView('regpage');renderM('regpage')"><div style="font-size:26px">🧾</div><b style="color:var(--navy)">Registration Page</b><div class="text-muted" style="font-size:12.5px">Edit programs, fees (per 8 sessions), bank account &amp; WhatsApp on the registration form.</div></div>
+          <div class="card card-pad" style="cursor:pointer;border-color:#BFE6F5;background:#F3FAFE" onclick="showView('webteachers');renderM('webteachers')"><div style="font-size:26px">🧑‍🏫</div><b style="color:var(--navy)">Website Instructor Profiles</b><div class="text-muted" style="font-size:12.5px">Photos, bios &amp; programs of the teachers shown on the homepage and registration form.</div></div>
           <div class="card card-pad" style="cursor:pointer" onclick="showView('data');renderM('data')"><div style="font-size:26px">🗄️</div><b style="color:var(--navy)">Data Explorer</b><div class="text-muted" style="font-size:12.5px">View, search, sort &amp; export every table (CSV).</div></div>
           <div class="card card-pad" style="cursor:pointer" onclick="window.open('admin.html#sop','_blank')"><div style="font-size:26px">📘</div><b style="color:var(--navy)">Guidelines &amp; SOP</b><div class="text-muted" style="font-size:12.5px">Managed in Operations Admin → Guidelines &amp; SOP.</div></div>
           <div class="card card-pad" style="cursor:pointer" onclick="window.open('admin.html#announce','_blank')"><div style="font-size:26px">📣</div><b style="color:var(--navy)">Announcements &amp; Messages</b><div class="text-muted" style="font-size:12.5px">Managed in Operations Admin.</div></div>
@@ -694,6 +715,29 @@
 </div>
 
 <!-- MODAL: registration program card -->
+<div class="modal-overlay" id="mWt">
+  <div class="modal wide">
+    <div class="modal-head"><h3 id="wtHead">Add Instructor</h3><button class="x" onclick="closeModal('mWt')">×</button></div>
+    <div class="modal-body"><input type="hidden" id="wtId">
+      <div class="grid grid-2" style="gap:18px;align-items:start">
+        <div><div class="wt-pv" id="wtPv" onclick="document.getElementById('wtFile').click()">📷<br>Click to upload a photo<br><small style="font-weight:500">(landscape, about 600 × 430)</small></div><input type="file" id="wtFile" class="hide" accept="image/*" onchange="wtPhoto(this)">
+          <div class="field" style="margin-top:12px"><label>Fill from a teacher account (optional)</label><select id="wtFrom" onchange="wtFill(this.value)"><option value="">— choose a teacher —</option></select></div>
+          <label class="chk" style="display:flex;gap:8px;align-items:center;font-weight:600;margin-top:4px"><input type="checkbox" id="wtShow" checked> Show on the website &amp; registration form</label></div>
+        <div>
+          <div class="field"><label>Display Name *</label><input id="wtName" placeholder="e.g. Ms. Sarah"></div>
+          <div class="field-row"><div class="field"><label>Title under the name</label><input id="wtRole" placeholder="e.g. Boost English"></div>
+            <div class="field"><label>Teacher Type</label><select id="wtType"><option>Local</option><option>International</option></select></div></div>
+          <div class="field"><label>Programs taught <small class="text-muted">(for Preferred Instructor)</small></label><div id="wtProgs" style="display:flex;flex-wrap:wrap;gap:6px 14px"></div></div>
+          <div class="field"><label>Card colour</label><select id="wtColor"><option value="b">Kwelingo Blue</option><option value="o">Kwelingo Orange</option></select></div>
+        </div></div>
+      <div class="field"><label>Short Bio *</label><textarea id="wtBio" rows="3" placeholder="2–3 sentences about the teacher's background and teaching style."></textarea></div>
+      <div class="field"><label>Highlights <small class="text-muted">(icon + short text, up to 3)</small></label>
+        <div style="display:flex;gap:8px;margin-bottom:6px"><input id="wtFi0" maxlength="4" style="width:64px;text-align:center;font-size:18px" placeholder="🎓"><input id="wtFt0" style="flex:1" placeholder="e.g. B.A. in English Language Education"></div><div style="display:flex;gap:8px;margin-bottom:6px"><input id="wtFi1" maxlength="4" style="width:64px;text-align:center;font-size:18px" placeholder="🎓"><input id="wtFt1" style="flex:1" placeholder="e.g. 5+ years teaching teens and adults"></div><div style="display:flex;gap:8px;margin-bottom:6px"><input id="wtFi2" maxlength="4" style="width:64px;text-align:center;font-size:18px" placeholder="🎓"><input id="wtFt2" style="flex:1" placeholder="e.g. Focus on real-life communication"></div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mWt')">Cancel</button><button class="btn btn-primary" onclick="wtSave()">Save Profile</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="mBlPost">
   <div class="modal wide">
     <div class="modal-head"><h3 id="blpHead">Review Article</h3><button class="x" onclick="closeModal('mBlPost')">×</button></div>
@@ -705,12 +749,13 @@
   <div class="modal" style="max-width:520px">
     <div class="modal-head"><h3 id="blwHead">Add Writer</h3><button class="x" onclick="closeModal('mBlWriter')">×</button></div>
     <div class="modal-body"><input type="hidden" id="blwId">
-      <div class="note-band" style="font-size:12.5px;margin-bottom:12px">✍️ Writer accounts can <b>only</b> log in to the TeacherNotes writer portal (<b>blog-admin.html</b>). Their articles are published only after you approve them.</div>
+      <div class="note-band" style="font-size:12.5px;margin-bottom:12px">✍️ Writer accounts can <b>only</b> log in to the blog writer portal (<b>blog-admin.html</b>). Their articles are published only after you approve them.</div>
       <div class="field"><label>Full Name *</label><input id="blwNama" placeholder="e.g. Nadia Putri" oninput="if(!document.getElementById('blwId').value)document.getElementById('blwUser').value=genUsername(this.value)+'blog'"></div>
       <div class="field-row"><div class="field"><label>Username *</label><input id="blwUser" autocomplete="off"></div>
         <div class="field"><label>PIN (4 digits) *</label><div style="display:flex;gap:8px"><input id="blwPin" maxlength="4" inputmode="numeric" style="flex:1;font-weight:800;letter-spacing:4px;text-align:center"><button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('blwPin').value=genPin()">🔄</button></div></div></div>
       <div class="field-row"><div class="field"><label>Email</label><input id="blwEmail" type="email" placeholder="optional"></div>
         <div class="field"><label>Status</label><select id="blwStatus"><option>Active</option><option>Deactivated</option></select></div></div>
+      <div class="field"><label>Contributor Type</label><select id="blwRole"><option value="Teacher">👩‍🏫 Teacher — TeacherNotes &amp; Open Pages</option><option value="Student">🎓 Student — Open Pages only</option><option value="Staff">🗂️ Staff — TeacherNotes &amp; Open Pages</option></select></div>
       <div class="field"><label>Short bio</label><textarea id="blwBio" rows="2" placeholder="Shown under the writer's articles"></textarea></div>
     </div>
     <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mBlWriter')">Cancel</button><button class="btn btn-primary" onclick="blWriterSave()">Save Writer</button></div>
@@ -831,7 +876,7 @@
   </div>
 </div>
 
-<script src="assets/app.js?v=20261106"></script>
+<script src="assets/app.js?v=20261110"></script>
 <script>
 document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Super Admin Portal');
 /* ---- PIN gate (verifikasi ke server) ---- */
@@ -902,6 +947,48 @@ function renderM(v){
   if(v==='activity')    renderAudit();
   if(v==='regpage')     renderRegCfg();
   if(v==='blog')        renderBlogSA();
+  if(v==='webteachers') renderWebTeachers();
+}
+
+/* ============================== WEBSITE — INSTRUCTOR PROFILES ============================== */
+let WT=[], WT_PROGS=[], WT_PHOTO='';
+async function renderWebTeachers(keep){
+  if(!keep){ WT=await loadWebTeachers(true); try{ WT_PROGS=((await loadRegConfig()).programs||[]).map(p=>({id:p.id,name:p.name})); }catch(e){ WT_PROGS=[]; } }
+  const pn=id=>(WT_PROGS.find(p=>p.id===id)||{}).name||id;
+  document.getElementById('wtGrid').innerHTML=WT.map((t,i)=>`<div class="wt-card ${t.show===false?'off':''}"><div class="wt-ph" style="background-image:url('${esc(t.photo||'')}')"><span class="tg">${t.type==='International'?'🌏 International':'🇮🇩 Local'}</span></div>
+    <div class="wt-bd"><b>${esc(t.name)}</b><small style="color:${t.color==='o'?'var(--orange)':'var(--blue)'};font-weight:700">${esc(t.role||'')}</small><div style="margin-top:6px">${(t.programs||[]).map(id=>`<span class="pill-tag">${esc(pn(id))}</span>`).join('')||'<small>No program selected</small>'}</div></div>
+    <div class="wt-ft"><label style="display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:700;color:var(--navy);margin-right:auto"><input type="checkbox" ${t.show!==false?'checked':''} onchange="wtToggle(${i},this.checked)"> Show</label>
+      <button class="btn btn-ghost btn-sm" title="Move up" onclick="wtMove(${i},-1)">↑</button><button class="btn btn-ghost btn-sm" title="Move down" onclick="wtMove(${i},1)">↓</button><button class="btn btn-ghost btn-sm" onclick="wtOpen(${i})">✏️</button><button class="btn btn-ghost btn-sm" onclick="wtDel(${i})">🗑</button></div></div>`).join('')
+    ||'<div class="empty" style="padding:30px">No instructor profiles yet — click “＋ Add Instructor”.</div>';
+}
+async function wtPersist(msg){ try{ await API.setSetting('web_teachers',JSON.stringify(WT)); if(msg) toast(msg,'ok'); }catch(e){ toast('Failed to save: '+(e.message||e),'err'); } renderWebTeachers(true); }
+function wtToggle(i,on){ WT[i].show=on; wtPersist(on?'Shown on the website':'Hidden from the website'); }
+function wtMove(i,d){ const j=i+d; if(j<0||j>=WT.length) return; [WT[i],WT[j]]=[WT[j],WT[i]]; wtPersist(); }
+function wtDel(i){ if(!confirm('Delete the profile of '+WT[i].name+'?')) return; WT.splice(i,1); wtPersist('Profile deleted'); }
+function wtDrawPv(){ const e=document.getElementById('wtPv'); e.style.backgroundImage=WT_PHOTO?`url('${WT_PHOTO}')`:''; e.innerHTML=WT_PHOTO?'':'📷<br>Click to upload a photo<br><small style="font-weight:500">(landscape, about 600 × 430)</small>'; }
+function wtOpen(i){
+  const t=i!=null?WT[i]:{type:'Local',color:'b',show:true,programs:[],facts:[]}; const V=(k,v)=>document.getElementById(k).value=v??'';
+  document.getElementById('wtHead').textContent=i!=null?'Edit Instructor':'Add Instructor';
+  V('wtId',i!=null?i:''); V('wtName',t.name); V('wtRole',t.role); V('wtType',t.type||'Local'); V('wtColor',t.color||'b'); V('wtBio',t.bio); V('wtFrom','');
+  document.getElementById('wtShow').checked=t.show!==false;
+  [0,1,2].forEach(k=>{ const f=(t.facts||[])[k]||['','']; V('wtFi'+k,f[0]); V('wtFt'+k,f[1]); });
+  document.getElementById('wtProgs').innerHTML=(WT_PROGS.length?WT_PROGS:[{id:'be',name:'Boost English'}]).map(p=>`<label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" value="${esc(p.id)}" ${(t.programs||[]).includes(p.id)?'checked':''}> ${esc(p.name)}</label>`).join('');
+  document.getElementById('wtFrom').innerHTML='<option value="">— choose a teacher —</option>'+TUTORS.map(x=>`<option value="${esc(x.id)}">${esc(x.nama)}</option>`).join('');
+  WT_PHOTO=t.photo||''; wtDrawPv(); openModal('mWt');
+}
+function wtFill(id){ const x=TUTORS.find(t=>t.id===id); if(!x) return; const V=(k,v)=>{ const e=document.getElementById(k); if(!e.value&&v) e.value=v; };
+  V('wtName',x.nama); V('wtRole',String(x.program||'').split(',')[0].trim()); V('wtBio',x.bio); if(x.photo_url&&!WT_PHOTO){ WT_PHOTO=x.photo_url; wtDrawPv(); }
+  if(/international|native/i.test(x.category||'')) document.getElementById('wtType').value='International'; }
+async function wtPhoto(inp){ const f=inp.files[0]; inp.value=''; if(!f) return;
+  try{ toast('Uploading photo…'); const r=await API.uploadFile(await resizeImageToDataURL(f,900),'instructor-'+f.name); WT_PHOTO=(r&&(r.view||r.url))||''; wtDrawPv(); toast('Photo added','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+function wtSave(){
+  const g=k=>document.getElementById(k).value.trim(), iStr=g('wtId');
+  if(!g('wtName')||!g('wtBio')){ toast('Name and bio are required','err'); return; }
+  const old=iStr!==''?WT[Number(iStr)]:{};
+  const t={...old,id:old.id||('wt'+Date.now().toString(36)),name:g('wtName'),role:g('wtRole'),type:g('wtType'),color:g('wtColor'),bio:g('wtBio'),photo:WT_PHOTO,show:document.getElementById('wtShow').checked,
+    programs:[...document.querySelectorAll('#wtProgs input:checked')].map(c=>c.value),facts:[0,1,2].map(k=>[g('wtFi'+k)||'✨',g('wtFt'+k)]).filter(f=>f[1])};
+  if(iStr!=='') WT[Number(iStr)]=t; else WT.push(t);
+  closeModal('mWt'); wtPersist(iStr!==''?'Profile updated':'Instructor added 🎉');
 }
 
 /* ============================== TEACHERNOTES BLOG (review + writers) ============================== */
@@ -926,7 +1013,7 @@ async function renderBlogSA(keep){
     const acts=p.status==='Pending'?`<button class="btn btn-primary btn-sm" onclick="blOpen('${p.id}')">🔎 Review</button>`
       :p.status==='Published'?`<button class="btn btn-outline btn-sm" onclick="blOpen('${p.id}')">👁️ View</button><a class="btn btn-ghost btn-sm" href="blog.html?p=${encodeURIComponent(p.slug||p.id)}" target="_blank">↗</a>`
       :`<button class="btn btn-outline btn-sm" onclick="blOpen('${p.id}')">👁️ View</button>`;
-    return `<div class="bl-row"><div class="bl-cv">${p.cover_url?`<img src="${esc(p.cover_url)}" alt="">`:'📝'}</div><div style="flex:1;min-width:0"><b>${esc(p.title||'Untitled')}</b><small>${esc(p.category||'-')} · by ${esc(p.author_name||'-')} · ${esc(when)} · ${blogReadMins(p.content)} min read</small>${p.status==='Rejected'&&p.review_note?`<div style="font-size:12px;color:var(--red);margin-top:3px">↩ ${esc(p.review_note)}</div>`:''}</div>${BL_ST[p.status||'Draft']||''}<div style="display:flex;gap:6px">${acts}</div></div>`;
+    return `<div class="bl-row"><div class="bl-cv">${p.cover_url?`<img src="${esc(p.cover_url)}" alt="">`:'📝'}</div><div style="flex:1;min-width:0"><b>${esc(p.title||'Untitled')}</b><small><b style="color:${blogSectionOf(p)==='Open Pages'?'var(--orange)':'var(--blue)'}">${esc(blogSectionOf(p))}</b> · ${esc(p.category||'-')} · by ${esc(p.author_name||'-')} · ${esc(when)} · ${blogReadMins(p.content)} min read</small>${p.status==='Rejected'&&p.review_note?`<div style="font-size:12px;color:var(--red);margin-top:3px">↩ ${esc(p.review_note)}</div>`:''}</div>${BL_ST[p.status||'Draft']||''}<div style="display:flex;gap:6px">${acts}</div></div>`;
   }).join('')||`<div class="empty" style="padding:30px">${empty}</div>`}</div>`;
 }
 function blOpen(id){
@@ -934,7 +1021,7 @@ function blOpen(id){
   document.getElementById('blpHead').textContent=p.status==='Pending'?'Review Article':'Article';
   const tags=String(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   document.getElementById('blpBody').innerHTML=`${p.cover_url?`<img src="${esc(p.cover_url)}" style="width:100%;border-radius:14px;aspect-ratio:16/7;object-fit:cover">`:''}
-    <div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap"><span class="badge badge-active">${esc(p.category||'-')}</span>${BL_ST[p.status||'Draft']||''}</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap"><span class="badge ${blogSectionOf(p)==='Open Pages'?'badge-pending':'badge-active'}">${esc(blogSectionOf(p))}</span><span class="badge badge-grey">${esc(p.category||'-')}</span>${BL_ST[p.status||'Draft']||''}</div>
     <h1>${esc(p.title||'Untitled')}</h1><div class="text-muted" style="font-size:13px;margin-bottom:6px">By <b>${esc(p.author_name||'-')}</b> · ${blogReadMins(p.content)} min read${p.submitted_at?' · submitted '+esc(dtS(p.submitted_at)):''}</div>
     ${p.excerpt?`<p style="font-size:14px;color:#5B6680;font-style:italic;border-left:3px solid var(--orange);padding-left:12px">${esc(p.excerpt)}</p>`:''}
     <div class="content">${blogSanitize(p.content)}</div>
@@ -954,7 +1041,7 @@ async function blSet(id,patch,msg){
 }
 function blApprove(id){ const p=BL_POSTS.find(x=>x.id===id); if(!p) return;
   if(!String(p.title||'').trim()){ toast('This article has no title','err'); return; }
-  if(!confirm('Publish "'+p.title+'" on TeacherNotes now?')) return;
+  if(!confirm('Publish "'+p.title+'" on the Community Blog now?')) return;
   blSet(id,{status:'Published',published_at:p.published_at||new Date().toISOString(),review_note:''},'Published ✅ — the article is now live'); }
 function blReject(id,unpub){ const note=(document.getElementById('blpNote')?.value||'').trim();
   if(!unpub&&!note){ toast('Write a short note so the writer knows what to fix','err'); document.getElementById('blpNote')?.focus(); return; }
@@ -964,18 +1051,19 @@ async function blDelete(id){ if(!confirm('Delete this article permanently? This 
   try{ await API.remove('blog_posts',id); closeModal('mBlPost'); toast('Deleted','ok'); await renderBlogSA(); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
 function blWritersHtml(){
   const n=id=>BL_POSTS.filter(p=>p.author_id===id&&p.status==='Published').length;
-  return `<div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Writer</th><th>Login</th><th>Email</th><th>Published</th><th>Status</th><th></th></tr></thead><tbody>${BL_WRITERS.map(w=>`<tr>
+  return `<div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>Writer</th><th>Type</th><th>Login</th><th>Email</th><th>Published</th><th>Status</th><th></th></tr></thead><tbody>${BL_WRITERS.map(w=>`<tr>
     <td><b style="color:var(--navy)">${esc(w.nama||'-')}</b>${w.bio?`<br><small class="text-muted">${esc(String(w.bio).slice(0,70))}</small>`:''}</td>
+    <td>${(w.role||'Teacher')==='Student'?'<span class="badge badge-pending">🎓 Student</span>':(w.role==='Staff'?'<span class="badge badge-grey">🗂️ Staff</span>':'<span class="badge badge-active">👩‍🏫 Teacher</span>')}</td>
     <td><b style="color:var(--navy)">${esc(w.username||'-')}</b><br><small style="letter-spacing:2px;font-weight:800">${esc(w.pin||'----')}</small> <button class="btn btn-ghost btn-sm" style="padding:2px 6px" title="New PIN" onclick="blWriterPin('${w.id}')">🔄</button></td>
     <td>${esc(w.email||'-')}</td><td>${n(w.id)}</td>
     <td>${(w.status||'Active')==='Active'?'<span class="badge badge-paid">Active</span>':'<span class="badge badge-off">Deactivated</span>'}</td>
-    <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="blWriterOpen('${w.id}')">✏️</button><button class="btn btn-ghost btn-sm" onclick="blWriterWa('${w.id}')" title="Copy login info">📋</button><button class="btn btn-ghost btn-sm" onclick="blWriterDel('${w.id}')">🗑</button></td></tr>`).join('')||'<tr><td colspan="6" class="empty">No writer accounts yet — click “＋ Add Writer”.</td></tr>'}</tbody></table></div></div>
-    <div class="note-band mt-16" style="font-size:12.5px">💡 Writers log in at <b>blog-admin.html</b> with their username &amp; PIN. They can write and submit articles, but only you can publish them.</div>`;
+    <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="blWriterOpen('${w.id}')">✏️</button><button class="btn btn-ghost btn-sm" onclick="blWriterWa('${w.id}')" title="Copy login info">📋</button><button class="btn btn-ghost btn-sm" onclick="blWriterDel('${w.id}')">🗑</button></td></tr>`).join('')||'<tr><td colspan="7" class="empty">No writer accounts yet — click “＋ Add Writer”.</td></tr>'}</tbody></table></div></div>
+    <div class="note-band mt-16" style="font-size:12.5px">💡 Writers log in at <b>blog-admin.html</b> with their username &amp; PIN. <b>Teachers</b> write in TeacherNotes (and Open Pages); <b>Students</b> write in Open Pages. Only you can publish.</div>`;
 }
 function blWriterOpen(id){
   const w=BL_WRITERS.find(x=>x.id===id)||{}; const V=(k,v)=>document.getElementById(k).value=v??'';
   document.getElementById('blwHead').textContent=id?'Edit Writer':'Add Writer';
-  V('blwId',w.id||''); V('blwNama',w.nama); V('blwUser',w.username); V('blwPin',w.pin||genPin()); V('blwEmail',w.email); V('blwStatus',w.status||'Active'); V('blwBio',w.bio);
+  V('blwId',w.id||''); V('blwNama',w.nama); V('blwUser',w.username); V('blwPin',w.pin||genPin()); V('blwEmail',w.email); V('blwStatus',w.status||'Active'); V('blwBio',w.bio); V('blwRole',w.role||'Teacher');
   openModal('mBlWriter');
 }
 async function blWriterSave(){
@@ -985,7 +1073,7 @@ async function blWriterSave(){
   if(!/^\d{4}$/.test(pin)){ toast('PIN must be 4 digits','err'); return; }
   if(BL_WRITERS.some(w=>w.id!==id&&String(w.username||'').toLowerCase()===user)){ toast('That username is already used','err'); return; }
   const old=BL_WRITERS.find(w=>w.id===id)||{};
-  const row={...old,id:id||('BW-'+Date.now().toString(36)),nama,username:user,pin,email:g('blwEmail'),status:g('blwStatus'),bio:g('blwBio')};
+  const row={...old,id:id||('BW-'+Date.now().toString(36)),nama,username:user,pin,email:g('blwEmail'),status:g('blwStatus'),bio:g('blwBio'),role:g('blwRole')};
   try{ await API.upsert('blog_writers',row);
     if(id&&old.nama&&old.nama!==nama){ for(const p of BL_POSTS.filter(p=>p.author_id===id)){ try{ await API.upsert('blog_posts',{...p,author_name:nama}); }catch(e){} } }
     closeModal('mBlWriter'); toast(id?'Writer updated':'Writer account created ✍️','ok'); BL_TAB='writers'; await renderBlogSA();
@@ -1000,7 +1088,7 @@ async function blWriterDel(id){ const w=BL_WRITERS.find(x=>x.id===id); if(!w) re
   try{ await API.remove('blog_writers',id); toast('Writer deleted','ok'); await renderBlogSA(); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
 function blWriterWa(id){ const w=BL_WRITERS.find(x=>x.id===id); if(!w) return;
   const url=location.href.replace(/[^/]*([?#].*)?$/,'')+'blog-admin.html';
-  const txt=`Hi ${w.nama}! 👋\nHere is your TeacherNotes writer account:\n\n🔗 ${url}\n👤 Username: ${w.username}\n🔑 PIN: ${w.pin}\n\nWrite your article, then click “Submit for Review”. It will be published after the Super Admin approves it. Thank you! ✍️`;
+  const txt=`Hi ${w.nama}! 👋\nHere is your Kwelingo Community Blog writer account (${(w.role||'Teacher')==='Student'?'Open Pages':'TeacherNotes & Open Pages'}):\n\n🔗 ${url}\n👤 Username: ${w.username}\n🔑 PIN: ${w.pin}\n\nWrite your article, then click “Submit for Review”. It will be published after the Super Admin approves it. Thank you! ✍️`;
   try{ navigator.clipboard.writeText(txt); toast('Login info copied — paste it into WhatsApp','ok'); }catch(e){ prompt('Copy this login info:',txt); } }
 
 /* ===== Parents ===== */
@@ -2300,6 +2388,18 @@ function lpDetails(c){
       ${line('Extended',lp.extended)}
       ${(d.strength||d.improve||d.strategy)?`<div style="margin-top:5px;border-top:1px dashed #cfd6ea;padding-top:5px">${line('Strength',d.strength)}${line('Area of Improvement',d.improve)}${line('Strategy',d.strategy)}</div>`:''}
     </div></details>`;
+}
+/* Monthly Report PDF — same file parents download in the Parent Hub (attach it to the WhatsApp message) */
+async function saMonthlyPdf(){
+  if(!CUR) return; const m=REP_MONTH||todayStr().slice(0,7);
+  const w=window.open('','_blank'); if(!w){ toast('Please allow pop-ups','err'); return; } w.document.write('<p style="font-family:sans-serif;padding:40px;color:#567">Preparing report…</p>');
+  let cls=[],notes=[]; try{ cls=await API.getClasses({student_id:CUR.id})||[]; }catch(e){} try{ notes=await API.list('dev_notes',{student_id:CUR.id})||[]; }catch(e){}
+  const T=todayStr(); const ses=cls.filter(c=>String(c.date).slice(0,7)===m&&isSession(c)&&c.date<=T).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  notes=notes.filter(d=>String(d.date).slice(0,7)===m);
+  const rows=ses.map(c=>{ const n=notes.find(d=>d.date===c.date)||{}; return {...n,date:c.date,topic:c.topic||n.topic||''}; });
+  notes.filter(n=>!ses.some(c=>c.date===n.date)).forEach(n=>rows.push(n)); rows.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  const st=attendanceStats(ses); const tid=(notes[0]||ses[0]||{}).tutor_id||CUR.tutor_id;
+  openMonthlyReport({win:w,student:CUR.nama,program:CUR.program,level:CUR.level,teacher:tName(tid),month:m,rows,stats:{sessions:ses.length,attended:st.hadir,pct:st.counted?st.pct+'%':'–'}});
 }
 async function openReport(id, month){
   CUR=STUDENTS.find(s=>s.id===id); if(!CUR)return;

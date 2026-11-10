@@ -1,10 +1,10 @@
 /* Kwelingo PWA service worker — app shell cache + offline fallback */
-const CACHE = 'kwelingo-v4';
+const CACHE = 'kwelingo-v5';
 const SHELL = [
   'portal.html','index.html','student.html','teacher.html','parent.html',
   'admin.html','master-admin.html','registration.html','blog.html','blog-admin.html',
   'assets/style.css','assets/app.js','assets/logo.png','assets/logo-full.png',
-  'assets/icon-192.png','assets/icon-512.png','manifest.json'
+  'assets/icon-192.png','assets/icon-512.png','assets/hub-illustration.svg','manifest.json'
 ];
 
 self.addEventListener('install', e => {

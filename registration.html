@@ -58,7 +58,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdro
 .langtabs{display:grid;grid-template-columns:1fr 1fr;background:#EEF3F9;border-radius:12px;padding:5px;margin-bottom:18px}
 .langtabs button{border:0;background:none;padding:12px;border-radius:9px;font-weight:700;font-size:16px;color:var(--navy);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
 .langtabs button.on{background:var(--blue);color:#fff;box-shadow:0 6px 16px rgba(30,155,215,.3)}
-.flag{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:17px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.flag{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:17px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);overflow:hidden;border:2px solid #fff;flex-shrink:0}.flag svg{width:100%;height:100%;display:block}
 .cards-wrap{position:relative}
 .cards{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 28px)/3);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 10px;scrollbar-width:none}
 .cards::-webkit-scrollbar{display:none}
@@ -133,6 +133,11 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);text-align:center;paddi
 @media(max-width:900px){.nav .cta .btn{padding:8px 14px;font-size:13px}
   .hero .art{width:100%;opacity:.28}.cards{grid-auto-columns:78%}.bgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stepper .ln{display:none}.stepper{gap:10px 16px}.brand .tag{display:none}}
 @media(max-width:560px){table.fee{min-width:540px}.stepper .s span.t{display:none}.stepper .s.on span.t{display:inline}.fee{font-size:12px}.fee th,.fee td{padding:8px 6px}.arrow{display:none}.row{grid-template-columns:1fr}.row.dob{grid-template-columns:1.6fr 1fr}}
+.tpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:4px}
+.tpick .tp{display:flex;gap:9px;align-items:center;border:1.5px solid var(--line);border-radius:14px;padding:8px 10px;cursor:pointer;background:#fff;text-align:left;font:inherit;transition:.15s}
+.tpick .tp:hover{border-color:var(--blue)}.tpick .tp.on{border-color:var(--orange);background:#FFF7EC;box-shadow:0 0 0 2px rgba(255,147,0,.15)}
+.tpick .tp img,.tpick .tp .av{width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#EAF6FC;display:flex;align-items:center;justify-content:center;font-size:18px}
+.tpick .tp b{display:block;font-size:13px;color:var(--navy);line-height:1.2}.tpick .tp small{font-size:11px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -159,7 +164,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);text-align:center;paddi
   <!-- ===== LEFT: choose program ===== -->
   <div>
     <div class="sec-h"><div class="num">1</div><div><h2>Choose Your Program</h2><p>Select a language and program that fits your goal.</p></div></div>
-    <div class="langtabs"><button id="lgEn" class="on" onclick="setLang('English')"><span class="flag">🇬🇧</span> English Programs</button><button id="lgZh" onclick="setLang('Mandarin')"><span class="flag">🇨🇳</span> Mandarin Programs</button></div>
+    <div class="langtabs"><button id="lgEn" class="on" onclick="setLang('English')"><span class="flag"><svg viewBox="15 0 30 30" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><clipPath id="kwUkT"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#kwUkT)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg></span> English Programs</button><button id="lgZh" onclick="setLang('Mandarin')"><span class="flag"><svg viewBox="0 0 20 20" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><rect width="30" height="20" fill="#EE1C25"/><polygon fill="#FFDE00" points="5.00,2.00 5.67,4.07 7.85,4.07 6.09,5.35 6.76,7.43 5.00,6.15 3.24,7.43 3.91,5.35 2.15,4.07 4.33,4.07"/><polygon fill="#FFDE00" points="10.86,1.49 10.38,2.03 10.75,2.66 10.09,2.37 9.61,2.92 9.67,2.20 9.00,1.91 9.71,1.75 9.78,1.03 10.15,1.65"/><polygon fill="#FFDE00" points="12.99,3.86 12.34,4.18 12.44,4.90 11.93,4.38 11.28,4.70 11.62,4.05 11.12,3.53 11.83,3.66 12.17,3.01 12.27,3.73"/><polygon fill="#FFDE00" points="12.96,7.27 12.24,7.30 12.04,8.00 11.79,7.32 11.06,7.34 11.63,6.90 11.38,6.21 11.99,6.62 12.56,6.17 12.36,6.87"/><polygon fill="#FFDE00" points="10.78,9.62 10.10,9.37 9.65,9.94 9.68,9.21 9.00,8.95 9.70,8.76 9.74,8.04 10.13,8.64 10.84,8.45 10.38,9.02"/></svg></span> Mandarin Programs</button></div>
     <div class="cards-wrap"><button class="arrow l" onclick="scrollCards(-1)" aria-label="Previous">‹</button><div class="cards" id="cards"></div><button class="arrow" onclick="scrollCards(1)" aria-label="Next">›</button></div>
 
     <div class="sec2" id="fees">
@@ -182,7 +187,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);text-align:center;paddi
 <footer>© 2026 Kwelingo Academy · Cemara Asri, Medan · 0819-45-144-145 · kwelingo.indonesia@gmail.com</footer>
 <div class="toast" id="toast"></div>
 
-<script src="assets/app.js?v=20261106"></script>
+<script src="assets/app.js?v=20261110"></script>
 <script>
 /* =====================================================================
    Registration (rev9). EDIT PRICES HERE — per session, in Rupiah.
@@ -261,6 +266,7 @@ function drawForm(){
       <span class="lbl">Class Type</span>${canPrivate()?R('ctype',[['semi','Semi-Private (2–4)'],['private','Private (1-on-1, 60 min)']],S.classType,'setClassType'):'<input class="inp" readonly value="Semi-Private (2–4 students, 90 min)"><div style="font-size:11.5px;color:var(--muted);margin-top:4px">Private (1-on-1) is available for Speak Active, online only.</div>'}
       ${p.levels?`<span class="lbl">Current Level <small style="font-weight:500;color:var(--muted)">(if known)</small></span><select class="inp" data-k="level"><option value="">Not sure — please assess me</option>${(S.lang==='English'?['A1','A2','B1','B2','C1','C2']:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6']).map(l=>`<option ${D.level===l?'selected':''}>${l}</option>`).join('')}</select>`:''}
       <span class="lbl">Preferred Days &amp; Time</span>${I('schedule','e.g. Mon & Thu, after 4 pm')}
+      ${tpickHtml()}
       <div class="row"><div><span class="lbl">School / Workplace</span>${I('school','e.g. SMP Petra 1')}</div><div><span class="lbl">Grade / Occupation</span>${I('grade','e.g. Grade 8')}</div></div>
       <hr class="hr"><h4>👪 Parent / Guardian ${minor?'<span class="r" style="color:#E5484D">*</span>':'<small style="font-weight:500;color:var(--muted)">(for students under 18)</small>'}</h4>
       <div class="row"><div><span class="lbl">Name</span>${I('parent','Full name')}</div><div><span class="lbl">Relationship</span><select class="inp" data-k="rel">${['','Mother','Father','Guardian','Other'].map(r=>`<option value="${r}" ${D.rel===r?'selected':''}>${r||'Select…'}</option>`).join('')}</select></div></div>
@@ -272,7 +278,7 @@ function drawForm(){
   } else if(S.step===3){
     const row=(k,v)=>v?`<div><span>${k}</span><b>${ex(v)}</b></div>`:'';
     h+=`<div class="sum">${row('Program',p.name+(D.level?' · '+D.level:''))}${row('Learning Mode',S.mode==='online'?'Online':'Onsite (Cemara Asri, Medan)')}${row('Class Type',S.classType==='semi'?'Semi-Private (2–4, 90 min)':'Private (1-on-1, 60 min)')}${row('Teacher Type',S.teacher==='local'?'Local Teacher':'International Teacher')}
-        ${row('Student',D.name)}${row('Date of Birth',D.dob+(ageOf(D.dob)!==''?' ('+ageOf(D.dob)+' y.o.)':''))}${row('Email',D.email)}${row('WhatsApp',(D.cc||'+62')+' '+D.phone)}${row('Preferred Schedule',D.schedule)}${row('Parent / Guardian',D.parent?(D.parent+(D.rel?' ('+D.rel+')':'')+(D.pphone?' · '+D.pphone:'')):'')}</div>
+        ${row('Student',D.name)}${row('Date of Birth',D.dob+(ageOf(D.dob)!==''?' ('+ageOf(D.dob)+' y.o.)':''))}${row('Email',D.email)}${row('WhatsApp',(D.cc||'+62')+' '+D.phone)}${row('Preferred Schedule',D.schedule)}${row('Preferred Instructor',tprefName())}${row('Parent / Guardian',D.parent?(D.parent+(D.rel?' ('+D.rel+')':'')+(D.pphone?' · '+D.pphone:'')):'')}</div>
       ${est}
       <span class="lbl">Statement of Declaration <span class="r">*</span></span>
       <div class="consent">I hereby commit to taking my studies at Kwelingo Academy seriously. I will actively participate in class, complete all extended practice tasks, and attend at least <b>80% of the class meetings</b> at each level. I understand that failure to meet these requirements may result in <b>not receiving a certificate of completion</b>.<br><br><i>Saya berkomitmen untuk mengikuti kegiatan belajar di Kwelingo Academy dengan sungguh-sungguh, berpartisipasi aktif, menyelesaikan seluruh tugas latihan tambahan, serta menghadiri minimal 80% dari total pertemuan kelas pada setiap level.</i></div>
@@ -317,6 +323,7 @@ ${D.parent?`👪 Parent/Guardian: ${D.parent}${D.rel?' ('+D.rel+')':''} ${D.ppho
 🎯 Program: ${p.name}${D.level?' — level '+D.level:''}
    ${S.mode==='online'?'Online':'Onsite (Cemara Asri)'} · ${S.classType==='semi'?'Semi-Private':'Private'} · ${S.teacher==='local'?'Local':'International'} Teacher
    Preferred schedule: ${D.schedule||'-'}
+   Preferred instructor: ${tprefName()||'No preference'}
    Fee: ${f?rp(f.p)+' / 8 sessions ('+f.m+' min each)':'ask admin'}
 📍 Address: ${D.address||'-'}
 📣 Heard about us from: ${D.source||'-'}
@@ -327,6 +334,25 @@ function openWA(){ window.open('https://wa.me/'+WA_NUMBER+'?text='+encodeURIComp
 function submitReg(){ keep(); const D=S.data;
   if(!D.sod||!D.mc) return err('Please tick both the Statement of Declaration and the Media Consent.');
   openWA(); goStep(4); toast('Opening WhatsApp… our admin will confirm your registration 🎉'); window.scrollTo({top:0,behavior:'smooth'}); }
+/* ---------- Preferred instructor (profiles from Super Admin → Website → Instructor Profiles) ---------- */
+let WTS=[];
+function tCands(){ const want=S.teacher==='intl'?'International':'Local'; return WTS.filter(t=>(t.programs||[]).includes(S.prog)&&(t.type||'Local')===want); }
+function tprefName(){ const t=WTS.find(x=>x.id===S.data.tpref); return t?t.name+(t.role?' ('+t.role+')':''):''; }
+function pickT(id){ keep(); S.data.tpref=id; drawForm(); }
+function tpickHtml(){
+  const c=tCands(); if(S.data.tpref&&!c.some(t=>t.id===S.data.tpref)) S.data.tpref='';
+  const cur=S.data.tpref||'';
+  return `<span class="lbl">Preferred Instructor <small style="font-weight:500;color:var(--muted)">(optional)</small></span>
+    <input type="hidden" data-k="tpref" value="${ex(cur)}">
+    ${c.length?`<div class="tpick"><button type="button" class="tp ${cur?'':'on'}" onclick="pickT('')"><span class="av">✨</span><span><b>No preference</b><small>We'll match you</small></span></button>${c.map(t=>`<button type="button" class="tp ${cur===t.id?'on':''}" onclick="pickT('${ex(t.id)}')">${t.photo?`<img src="${ex(t.photo)}" alt="">`:'<span class="av">👩‍🏫</span>'}<span><b>${ex(t.name)}</b><small>${ex(t.role||'')}</small></span></button>`).join('')}</div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:4px">Subject to schedule availability — our admin will confirm. <a href="index.html#instructors" target="_blank" style="color:var(--blue)">See instructor profiles ↗</a></div>`
+    :`<div style="font-size:12.5px;color:var(--muted);background:#F5F9FF;border-radius:10px;padding:9px 12px">No ${S.teacher==='intl'?'International':'Local'} instructor profile for this program yet — our admin will match you with the best teacher.</div>`}`;
+}
+loadWebTeachers().then(l=>{ WTS=l; const id=new URLSearchParams(location.search).get('teacher'); const t=WTS.find(x=>x.id===id);
+  if(t){ S.data.tpref=t.id; S.teacher=t.type==='International'?'intl':'local'; document.getElementById('ttLocal').classList.toggle('on',S.teacher==='local'); document.getElementById('ttIntl').classList.toggle('on',S.teacher==='intl');
+    if(!new URLSearchParams(location.search).get('program')&&t.programs&&t.programs[0]){ const L=Object.entries(PROGRAMS).find(([l,ps])=>ps.some(x=>x.id===t.programs[0])); if(L){ S.lang=L[0]; S.prog=t.programs[0]; setLang(S.lang); } }
+    drawFees(); }
+  drawForm(); }).catch(()=>{});
 function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3400); }
 
 // deep link: registration.html?program=sa&mode=onsite

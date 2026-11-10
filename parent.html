@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="assets/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kwelingo">
-<link rel="stylesheet" href="assets/style.css?v=20261106">
+<link rel="stylesheet" href="assets/style.css?v=20261110">
 <style>
   .welcome h1{font-size:27px}
   .row2{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
@@ -217,7 +217,7 @@
   </div>
 </div>
 
-<script src="assets/app.js?v=20261106"></script>
+<script src="assets/app.js?v=20261110"></script>
 <script>
 /* =====================================================================
    Parent Hub (rev9) — own parent login, linked children, messages with
@@ -414,9 +414,13 @@ function renderReport(){
   document.getElementById('reportBody').innerHTML=html;
 }
 function downloadMonthReport(){ const m=document.getElementById('repMonth').value||TODAY.slice(0,7); const g=kidGroups()[0]||{};
-  const list=DEVS.filter(d=>String(d.date).slice(0,7)===m).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
-  if(!list.length){ toast('No teacher notes for this month yet','err'); return; }
-  openMonthlyReport({student:KID.nama,program:g.program||KID.program,level:g.level||KID.level,teacher:tut((list[0]||{}).tutor_id||g.tutor_id).nama,month:m,rows:list}); }
+  const ses=CLS.filter(c=>String(c.date).slice(0,7)===m&&isSession(c)&&c.date<=TODAY).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  const notes=DEVS.filter(d=>String(d.date).slice(0,7)===m).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  const rows=ses.map(c=>{ const n=notes.find(d=>d.date===c.date)||{}; return {...n,date:c.date,topic:c.topic||n.topic||''}; });
+  notes.filter(n=>!ses.some(c=>c.date===n.date)).forEach(n=>rows.push(n)); rows.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  if(!rows.length){ toast('No sessions or teacher notes for this month yet','err'); return; }
+  const st=attendanceStats(ses);
+  openMonthlyReport({student:KID.nama,program:g.program||KID.program,level:g.level||KID.level,teacher:tut((notes[0]||ses[0]||{}).tutor_id||g.tutor_id).nama,month:m,rows,stats:{sessions:ses.length,attended:st.hadir,pct:st.counted?st.pct+'%':'–'}}); }
 
 /* ============================== PAYMENTS ============================== */
 function renderPayment(){
@@ -432,7 +436,7 @@ function viewInvoice(id){ const p=PAYS.find(x=>x.id===id); if(!p) return;
   const items=[{d:`${p.program||KID.program||'Course'} ${p.level||''} — ${monthLabel(String(p.month).slice(0,7))}`,q:(p.meetings||'')+' sessions',p:Number(p.price_per_meet)||null,t:(Number(p.meetings)||0)*(Number(p.price_per_meet)||0)||invAmt(p)}];
   if(Number(p.add_fee2)) items.push({d:p.add_fee2_note||'Additional fee',q:'',p:null,t:Number(p.add_fee2)});
   if(Number(p.add_fee1)) items.push({d:'Additional fee',q:'',p:null,t:Number(p.add_fee1)});
-  openInvoice({no:p.invoice_no,student:KID.nama,parent:PARENT.nama,program:p.program||KID.program,level:p.level||KID.level,issue:dShort(p.issue_date||p.month),due:dShort(p.due_date),period:monthLabel(String(p.month).slice(0,7)),status:p.status,paidOn:dShort(p.paid_at||p.pay_date),items,total:invAmt(p),note:p.note}); }
+  openInvoice({no:p.invoice_no,student:KID.nama,studentId:KID.id?'ST-'+String(KID.id).replace(/\W/g,'').slice(-6).toUpperCase():'',parent:PARENT.nama,program:p.program||KID.program,level:p.level||KID.level,issue:dShort(p.issue_date||p.month),due:dShort(p.due_date),period:monthLabel(String(p.month).slice(0,7)),status:p.status,paidOn:dShort(p.paid_at||p.pay_date),items,total:invAmt(p),note:p.note}); }
 let _buktiId=null;
 function uploadBukti(id){ _buktiId=id; const f=document.getElementById('buktiFile'); f.value=''; f.click(); }
 document.getElementById('buktiFile').onchange=async e=>{
