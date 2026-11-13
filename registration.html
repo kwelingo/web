@@ -67,7 +67,8 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdro
 .pc.on{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,155,215,.15);background:#FBFEFF}
 .pc .rd{position:absolute;right:14px;top:14px;width:22px;height:22px;border-radius:50%;border:1.8px solid #B8C4D6;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
 .pc.on .rd{background:var(--blue);border-color:var(--blue)}
-.pc .ic{font-size:26px}
+.pc .ic{font-size:26px;width:52px;height:52px;border-radius:15px;background:var(--blue-soft);color:var(--blue-d);display:flex;align-items:center;justify-content:center}
+.pc.on .ic{background:#FFF1DE;color:var(--orange-d)}
 .pc h3{font-size:20px;color:var(--navy);margin-top:6px;font-weight:800}
 .pc .pill{display:inline-block;background:var(--blue-soft);color:var(--blue-d);font-weight:700;font-size:12px;padding:3px 10px;border-radius:99px;margin:6px 0 10px}
 .pc .d{font-size:13px;color:#4A5675;flex:1}
@@ -93,13 +94,13 @@ table.fee{width:100%;border-collapse:separate;border-spacing:0;border:1px solid 
 .benefits h3{font-size:19px;color:var(--navy);display:flex;gap:10px;align-items:center;margin-bottom:14px}
 .bgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .bgrid div{display:flex;gap:12px;align-items:center;font-size:13.5px;color:var(--navy);font-weight:600;line-height:1.3}
-.bgrid span{width:52px;height:52px;border-radius:50%;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.bgrid div:last-child span{background:var(--orange-soft)}
+.bgrid span{width:52px;height:52px;border-radius:50%;background:var(--blue-soft);color:var(--blue-d);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.bgrid div:last-child span{background:var(--orange-soft);color:var(--orange-d)}
 /* form card */
 .fcard{border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow-lg);background:#fff;position:sticky;top:86px}
 .fcard h2{font-size:22px;color:var(--navy);display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}
 .fcard h2 span{color:var(--blue);font-size:26px}
-.fcard h4{font-size:15px;color:var(--navy);margin:16px 0 8px}
+.fcard h4{font-size:15px;color:var(--navy);margin:16px 0 8px;display:flex;gap:8px;align-items:center}.fcard h4 svg,.fee th svg,.drop svg{vertical-align:-3px;color:var(--blue)}.fcard h2 span{display:flex}
 .lbl{font-size:13.5px;font-weight:700;color:var(--navy);margin:12px 0 6px;display:block}
 .lbl .r{color:#E5484D}
 .inp{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;color:var(--ink);background:#fff}
@@ -136,7 +137,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);text-align:center;paddi
 .tpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:4px}
 .tpick .tp{display:flex;gap:9px;align-items:center;border:1.5px solid var(--line);border-radius:14px;padding:8px 10px;cursor:pointer;background:#fff;text-align:left;font:inherit;transition:.15s}
 .tpick .tp:hover{border-color:var(--blue)}.tpick .tp.on{border-color:var(--orange);background:#FFF7EC;box-shadow:0 0 0 2px rgba(255,147,0,.15)}
-.tpick .tp img,.tpick .tp .av{width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#EAF6FC;display:flex;align-items:center;justify-content:center;font-size:18px}
+.tpick .tp img,.tpick .tp .av{width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#EAF6FC;color:var(--blue-d);display:flex;align-items:center;justify-content:center;font-size:18px}
 .tpick .tp b{display:block;font-size:13px;color:var(--navy);line-height:1.2}.tpick .tp small{font-size:11px;color:var(--muted)}
 </style>
 </head>
@@ -172,10 +173,10 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);text-align:center;paddi
       <div class="tt"><button id="ttLocal" class="on" onclick="setTeacher('local')">Local Teacher</button><button id="ttIntl" onclick="setTeacher('intl')">International Teacher</button></div>
     </div>
     <div style="overflow-x:auto"><table class="fee" id="feeTable"></table></div>
-    <div class="fee-note"><span style="color:var(--orange);font-size:18px">ⓘ</span><span id="feeNote"></span></div>
+    <div class="fee-note"><span style="color:var(--orange);display:flex"><svg class="li" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span><span id="feeNote"></span></div>
 
-    <div class="benefits"><h3><span style="color:var(--blue)">🗂️</span> Program Benefits</h3>
-      <div class="bgrid"><div><span>📚</span>International Curriculum</div><div><span>👥</span>Small Class<br>(Max. 4 Students)</div><div><span>🗓️</span>Structured &amp; Flexible Schedule</div><div><span>⭐</span>Certificate of Completion*</div></div>
+    <div class="benefits"><h3><span style="color:var(--blue);display:inline-flex;vertical-align:-3px"><svg class="li" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg></span> Program Benefits</h3>
+      <div class="bgrid"><div><span><svg class="li" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span>International Curriculum</div><div><span><svg class="li" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Small Class<br>(Max. 4 Students)</div><div><span><svg class="li" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg></span>Structured &amp; Flexible Schedule</div><div><span><svg class="li" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg></span>Certificate of Completion*</div></div>
       <div style="font-size:11.5px;color:var(--muted);margin-top:10px">*Students receive the certificate when they attend at least 80% of the sessions in a level and complete the extended practice tasks.</div>
     </div>
   </div>
@@ -187,7 +188,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.7);text-align:center;paddi
 <footer>© 2026 Kwelingo Academy · Cemara Asri, Medan · 0819-45-144-145 · kwelingo.indonesia@gmail.com</footer>
 <div class="toast" id="toast"></div>
 
-<script src="assets/app.js?v=20261110"></script>
+<script src="assets/app.js?v=20261113"></script>
 <script>
 /* =====================================================================
    Registration (rev9). EDIT PRICES HERE — per session, in Rupiah.
@@ -218,14 +219,14 @@ function setLang(l){ keep(); S.lang=l; document.getElementById('lgEn').classList
   if(!PROGRAMS[l].some(p=>p.id===S.prog)) S.prog=PROGRAMS[l][0].id; drawCards(); drawFees(); drawForm(); }
 function pickProg(id){ keep(); S.prog=id; drawCards(); drawFees(); drawForm(); }
 function drawCards(){
-  document.getElementById('cards').innerHTML=PROGRAMS[S.lang].map(p=>`<div class="pc ${p.id===S.prog?'on':''}" onclick="pickProg('${p.id}')"><span class="rd">${p.id===S.prog?'✓':''}</span><div class="ic">${ex(p.ic)}</div><h3>${ex(p.name)}</h3>${p.pill?`<div><span class="pill">${ex(p.pill)}</span></div>`:''}<div class="d">${ex(p.desc)}</div>
-    <div class="meta"><div><span>👤</span><div>${p.who}</div></div><div><span>📅</span><div>${p.dur}</div></div></div></div>`).join('');
+  document.getElementById('cards').innerHTML=PROGRAMS[S.lang].map(p=>`<div class="pc ${p.id===S.prog?'on':''}" onclick="pickProg('${p.id}')"><span class="rd">${p.id===S.prog?'✓':''}</span><div class="ic">${kwEmojiLi(p.ic,28)||kwLi('book-open',28)}</div><h3>${ex(p.name)}</h3>${p.pill?`<div><span class="pill">${ex(p.pill)}</span></div>`:''}<div class="d">${ex(p.desc)}</div>
+    <div class="meta"><div><span>${kwLi('user',16)}</span><div>${p.who}</div></div><div><span>${kwLi('calendar-days',16)}</span><div>${p.dur}</div></div></div></div>`).join('');
 }
 function scrollCards(d){ const c=document.getElementById('cards'); c.scrollBy({left:d*c.clientWidth/1.5,behavior:'smooth'}); }
 function setTeacher(t){ keep(); S.teacher=t; document.getElementById('ttLocal').classList.toggle('on',t==='local'); document.getElementById('ttIntl').classList.toggle('on',t==='intl'); drawFees(); drawForm(); }
 function drawFees(){
   const cell=(v,i)=>v?`<b>${rp(v)}</b><small>/ 8 × ${MINS[i]} min</small>`:'<b style="color:var(--muted)">–</b>';
-  document.getElementById('feeTable').innerHTML=`<thead><tr><th class="p" rowspan="2" style="vertical-align:middle;font-size:15px">Program</th><th class="hd1" colspan="2">🖥️ Online <small style="font-weight:500">(Virtual Class)</small></th><th class="hd2">📍 Onsite <small style="font-weight:500">(Cemara Asri, Medan)</small></th></tr>
+  document.getElementById('feeTable').innerHTML=`<thead><tr><th class="p" rowspan="2" style="vertical-align:middle;font-size:15px">Program</th><th class="hd1" colspan="2">${kwLi('monitor',17)} Online <small style="font-weight:500">(Virtual Class)</small></th><th class="hd2">${kwLi('map-pin',17)} Onsite <small style="font-weight:500">(Cemara Asri, Medan)</small></th></tr>
     <tr><th class="on1">Private<br><small>(1-on-1)</small></th><th class="on1">Semi-Private<br><small>(2–4 students)</small></th><th class="on2">Semi-Private<br><small>(2–4 students)</small></th></tr></thead>
     <tbody>${PROGRAMS[S.lang].map(p=>{ const f=(FEES[S.teacher]||{})[p.id]||[];
       return `<tr class="${p.id===S.prog?'sel':''}" style="cursor:pointer" onclick="pickProg('${p.id}')"><td class="p">${ex(p.name)}${p.levels||p.pill?`<small>(${ex(p.levels||p.pill)})</small>`:''}</td>${[0,1,2].map(i=>`<td>${cell(f[i],i)}</td>`).join('')}</tr>`; }).join('')}</tbody>`;
@@ -248,12 +249,12 @@ function drawForm(){
   const R=(name,opts,cur,on)=>`<div class="radios">${opts.map(([v,l])=>`<label><input type="radio" name="${name}" value="${v}" ${cur===v?'checked':''} onchange="${on}('${v}')"> ${l}</label>`).join('')}</div>`;
   const I=(k,ph,type,extra)=>`<input class="inp" data-k="${k}" type="${type||'text'}" value="${ex(D[k]||'')}" placeholder="${ph||''}" ${extra||''}>`;
   const est=`<div class="est">${f?`<b>${rp(f.p)} <small style="font-size:12px;color:var(--muted)">/ 8 sessions × ${f.m} min</small></b><small>${p.name} · ${S.mode==='online'?'Online':'Onsite'} · ${S.classType==='semi'?'Semi-Private':'Private'} · ${S.teacher==='local'?'Local':'International'} Teacher</small>`:`<b>Ask admin</b><small>${S.classType==='private'?'Private classes are available for Speak Active (online) only.':'This combination is not available yet — our admin will help you.'}</small>`}</div>`;
-  let h=`<h2><span>📋</span>Registration Form</h2>`;
+  let h=`<h2><span>${kwLi('clipboard-list',26)}</span>Registration Form</h2>`;
   if(S.step===1){
     h+=`<span class="lbl">Selected Program</span><input class="inp" readonly value="${ex(p.name)}${p.levels?' ('+ex(p.levels)+')':''}">
       <span class="lbl">Learning Mode</span>${R('mode',[['online','Online'],['onsite','Onsite']],S.mode,'setMode')}
       <span class="lbl">Teacher Type</span>${R('teacher',[['local','Local Teacher'],['intl','International Teacher']],S.teacher,'setTeacher')}
-      <hr class="hr"><h4>👤 Student Information</h4>
+      <hr class="hr"><h4>${kwLi('user',17)} Student Information</h4>
       <span class="lbl">Full Name <span class="r">*</span></span>${I('name','Enter your full name')}
       <div class="row dob"><div><span class="lbl">Date of Birth <span class="r">*</span></span>${I('dob','','date','oninput="document.getElementById(\'ageBox\').value=ageOf(this.value)"')}</div><div><span class="lbl">Age <span class="r">*</span></span><input class="inp" id="ageBox" readonly value="${ageOf(D.dob)}" placeholder="–"></div></div>
       <span class="lbl">Email <span class="r">*</span></span>${I('email','Enter your email','email')}
@@ -268,7 +269,7 @@ function drawForm(){
       <span class="lbl">Preferred Days &amp; Time</span>${I('schedule','e.g. Mon & Thu, after 4 pm')}
       ${tpickHtml()}
       <div class="row"><div><span class="lbl">School / Workplace</span>${I('school','e.g. SMP Petra 1')}</div><div><span class="lbl">Grade / Occupation</span>${I('grade','e.g. Grade 8')}</div></div>
-      <hr class="hr"><h4>👪 Parent / Guardian ${minor?'<span class="r" style="color:#E5484D">*</span>':'<small style="font-weight:500;color:var(--muted)">(for students under 18)</small>'}</h4>
+      <hr class="hr"><h4>${kwLi('users-round',17)} Parent / Guardian ${minor?'<span class="r" style="color:#E5484D">*</span>':'<small style="font-weight:500;color:var(--muted)">(for students under 18)</small>'}</h4>
       <div class="row"><div><span class="lbl">Name</span>${I('parent','Full name')}</div><div><span class="lbl">Relationship</span><select class="inp" data-k="rel">${['','Mother','Father','Guardian','Other'].map(r=>`<option value="${r}" ${D.rel===r?'selected':''}>${r||'Select…'}</option>`).join('')}</select></div></div>
       <span class="lbl">Parent WhatsApp</span>${I('pphone','08xx-xxxx-xxxx','tel')}
       <span class="lbl">Address</span>${I('address','Home address')}
@@ -288,15 +289,15 @@ function drawForm(){
       <label class="chk"><input type="checkbox" data-k="mc" ${D.mc?'checked':''}> I agree to the Media Consent above.</label>
       <span class="lbl">Payment <small style="font-weight:500;color:var(--muted)">(registration fee &amp; first payment — the admin confirms the amount)</small></span>
       <div class="bank"><div><small style="color:var(--muted)">Bank</small><br><b>${ex(BANK.name)}</b></div><div style="margin-top:6px"><small style="color:var(--muted)">Account Holder</small><br><b>${ex(BANK.holder)}</b></div><div style="margin-top:6px"><small style="color:var(--muted)">Account Number</small><br><b style="letter-spacing:1px">${ex(BANK.number)}</b></div></div>
-      <label class="drop" for="fProof">📎 <span id="proofName">${D.proofName?'✓ '+ex(D.proofName):'Attach transfer proof (optional)'}</span></label><input id="fProof" type="file" accept="image/*,.pdf" hidden onchange="S.data.proofName=this.files[0]?this.files[0].name:'';document.getElementById('proofName').textContent=S.data.proofName?'✓ '+S.data.proofName:'Attach transfer proof (optional)'">
+      <label class="drop" for="fProof">${kwLi('upload',17)} <span id="proofName">${D.proofName?'✓ '+ex(D.proofName):'Attach transfer proof (optional)'}</span></label><input id="fProof" type="file" accept="image/*,.pdf" hidden onchange="S.data.proofName=this.files[0]?this.files[0].name:'';document.getElementById('proofName').textContent=S.data.proofName?'✓ '+S.data.proofName:'Attach transfer proof (optional)'">
       <div style="font-size:11.5px;color:var(--muted);margin-top:6px">After submitting, send the proof in the WhatsApp chat with our admin.</div>
       <div class="err" id="fErr"></div>
       <div class="navbtns"><button class="btn btn-ghost" onclick="keep();goStep(2)">← Back</button><button class="btn btn-or" onclick="submitReg()">Submit ✓</button></div>`;
   } else {
     h+=`<div class="done"><div class="ok">✓</div><h3>Registration sent!</h3><p>Thank you, <b>${ex(D.name)}</b>. Our admin will contact you on WhatsApp to confirm your class schedule and payment.</p>
-      <button class="btn btn-or" style="width:100%" onclick="openWA()">💬 Open WhatsApp again</button>
+      <button class="btn btn-or" style="width:100%" onclick="openWA()">${kwLi('message-circle',18)} Open WhatsApp again</button>
       <a class="btn btn-ghost" style="width:100%;margin-top:10px" href="index.html">Back to Home</a>
-      <a class="btn btn-ghost" style="width:100%;margin-top:10px" href="assets/sop-student.pdf" download>📘 Download Student SOP</a></div>`;
+      <a class="btn btn-ghost" style="width:100%;margin-top:10px" href="assets/sop-student.pdf" download>${kwLi('download',18)} Download Student SOP</a></div>`;
   }
   el.innerHTML=h;
 }
@@ -344,7 +345,7 @@ function tpickHtml(){
   const cur=S.data.tpref||'';
   return `<span class="lbl">Preferred Instructor <small style="font-weight:500;color:var(--muted)">(optional)</small></span>
     <input type="hidden" data-k="tpref" value="${ex(cur)}">
-    ${c.length?`<div class="tpick"><button type="button" class="tp ${cur?'':'on'}" onclick="pickT('')"><span class="av">✨</span><span><b>No preference</b><small>We'll match you</small></span></button>${c.map(t=>`<button type="button" class="tp ${cur===t.id?'on':''}" onclick="pickT('${ex(t.id)}')">${t.photo?`<img src="${ex(t.photo)}" alt="">`:'<span class="av">👩‍🏫</span>'}<span><b>${ex(t.name)}</b><small>${ex(t.role||'')}</small></span></button>`).join('')}</div>
+    ${c.length?`<div class="tpick"><button type="button" class="tp ${cur?'':'on'}" onclick="pickT('')"><span class="av">${kwLi('sparkles',19)}</span><span><b>No preference</b><small>We'll match you</small></span></button>${c.map(t=>`<button type="button" class="tp ${cur===t.id?'on':''}" onclick="pickT('${ex(t.id)}')">${t.photo?`<img src="${ex(t.photo)}" alt="">`:`<span class="av">${kwLi('user',19)}</span>`}<span><b>${ex(t.name)}</b><small>${ex(t.role||'')}</small></span></button>`).join('')}</div>
       <div style="font-size:11.5px;color:var(--muted);margin-top:4px">Subject to schedule availability — our admin will confirm. <a href="index.html#instructors" target="_blank" style="color:var(--blue)">See instructor profiles ↗</a></div>`
     :`<div style="font-size:12.5px;color:var(--muted);background:#F5F9FF;border-radius:10px;padding:9px 12px">No ${S.teacher==='intl'?'International':'Local'} instructor profile for this program yet — our admin will match you with the best teacher.</div>`}`;
 }

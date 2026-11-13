@@ -6,7 +6,7 @@
 <title>Community Blog Writer — Kwelingo Academy</title>
 <link rel="icon" href="assets/logo.png">
 <meta name="theme-color" content="#1F6FEB">
-<link rel="stylesheet" href="assets/style.css?v=20261110">
+<link rel="stylesheet" href="assets/style.css?v=20261113">
 <style>
   .ed-toolbar{display:flex;gap:4px;flex-wrap:wrap;background:#F5F8FD;border:1.5px solid var(--line);border-bottom:0;border-radius:12px 12px 0 0;padding:6px}
   .ed-toolbar button{border:0;background:#fff;border-radius:8px;min-width:34px;height:32px;padding:0 9px;font-weight:700;color:var(--navy);cursor:pointer;font-size:13px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
@@ -142,7 +142,7 @@
   </div>
 </div>
 
-<script src="assets/app.js?v=20261110"></script>
+<script src="assets/app.js?v=20261113"></script>
 <script>
 document.getElementById('logo').innerHTML=logoBlock('Kwelingo Academy','Community Blog Writer');
 let ME=null, POSTS=[], TAB='all', ED=null, CV='';
@@ -155,7 +155,7 @@ async function doLogin(){
   try{ ME=await API.blogLogin(u,p); try{ sessionStorage.setItem('kw_blog',JSON.stringify({u,p})); }catch(e){}
     document.getElementById('loginGate').style.display='none'; document.getElementById('meName').textContent=ME.nama; document.getElementById('meAv').textContent=initials(ME.nama);
     document.getElementById('meRole').textContent=(ME.role||'Teacher')+' · Community Blog';
-    document.getElementById('edSec').innerHTML=mySecs().map(k=>`<option value="${esc(k)}">${BLOG_SECTIONS[k].ic} ${esc(k)}</option>`).join(''); fillCats();
+    document.getElementById('edSec').innerHTML=mySecs().map(k=>`<option value="${esc(k)}">${esc(k)}</option>`).join(''); fillCats();
     await load(); go('articles'); }
   catch(e){ err.textContent=e.message||'Login failed'; }
 }

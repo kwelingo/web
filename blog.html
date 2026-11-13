@@ -64,26 +64,34 @@ footer h4{font-family:var(--disp);font-size:24px;color:var(--navy);font-weight:6
 footer h4:after{content:"";display:block;width:36px;height:3px;border-radius:3px;background:var(--orange);margin:8px 0 14px}
 .flinks a{display:flex;align-items:center;gap:12px;padding:7px 0;font-size:15px;color:var(--ink);font-weight:500}
 .flinks a:hover{color:var(--blue-dd)}
-.flinks a span{width:32px;height:32px;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:15px}
+.flinks a span{width:32px;height:32px;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:15px;color:var(--blue-d);flex-shrink:0}
 .contact{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:38px 0 18px;padding-top:26px;border-top:1px solid #C6E6F4}
 .contact a{display:inline-flex;gap:8px;align-items:center;background:#fff;border-radius:999px;padding:9px 18px;font-weight:700;font-size:14px;color:var(--navy);box-shadow:0 4px 12px rgba(19,35,91,.06)}
 .contact a:hover{color:var(--blue-dd)}
 .copy{text-align:center;font-size:13px;color:var(--muted)}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:13px 22px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;z-index:400;max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.secs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:820px;margin:26px auto 0;text-align:left}
-.sec-card{display:flex;gap:14px;align-items:center;background:#fff;border:2px solid #CBE8F5;border-radius:22px;padding:16px 18px;cursor:pointer;font:inherit;text-align:left;transition:.18s;box-shadow:0 8px 22px rgba(19,35,91,.06)}
-.sec-card:hover{transform:translateY(-2px);border-color:var(--blue)}
-.sec-card .si{width:54px;height:54px;flex:0 0 54px;border-radius:16px;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:28px}
-.sec-card b{display:block;font-family:var(--disp);font-size:22px;color:var(--blue-dd);font-weight:600;line-height:1.1}
-.sec-card small{display:block;color:var(--muted);font-size:13.5px;margin-top:3px}
-.sec-card em{display:block;font-style:normal;font-size:12px;font-weight:700;color:var(--blue-d);margin-top:5px}
-.sec-card.o{border-color:#FFDDB0}.sec-card.o .si{background:var(--orange-soft)}.sec-card.o b{color:#C96A00}.sec-card.o em{color:var(--orange-d)}.sec-card.o:hover{border-color:var(--orange)}
-.sec-card.on{background:var(--blue);border-color:var(--blue)}.sec-card.on b,.sec-card.on small,.sec-card.on em{color:#fff}.sec-card.on .si{background:rgba(255,255,255,.22)}
-.sec-card.o.on{background:var(--orange);border-color:var(--orange)}
 .chips button.o.on{background:var(--orange);border-color:var(--orange)}
 .av.o{background:var(--blue)}
-@media(max-width:600px){.secs{grid-template-columns:minmax(0,1fr)}.sec-card b{font-size:19px}}
+/* nav dropdown (Community Blog) */
+.dd{position:relative}
+.dd .ddt{display:inline-flex;align-items:center;gap:3px}
+.dd .ddt .chev{transition:.2s;margin-left:2px}
+.ddm{position:absolute;top:calc(100% + 10px);left:50%;transform:translate(-50%,6px);min-width:290px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 44px rgba(19,35,91,.16);padding:8px;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;transition:.18s;z-index:200}
+.ddm:before{content:"";position:absolute;top:-12px;left:0;right:0;height:12px}
+.dd:hover .ddm,.dd:focus-within .ddm,.dd.open .ddm{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.dd:hover .ddt .chev,.dd.open .ddt .chev{transform:rotate(180deg)}
+.links .ddm a{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:13px;font-weight:600}
+.links .ddm a:hover{background:var(--sky)}
+.ddm .di{width:38px;height:38px;flex:0 0 38px;border-radius:12px;background:var(--sky);color:var(--blue-d);display:flex;align-items:center;justify-content:center}
+.ddm .di.o{background:var(--orange-soft);color:var(--orange-d)}.ddm .di.g{background:#EEF1F6;color:var(--navy)}
+.ddm b{display:block;font-size:14.5px;color:var(--navy)}.ddm small{display:block;font-size:12px;color:var(--muted);font-weight:500;margin:0}
+@media(max-width:960px){
+  .dd .ddt .chev{display:none}
+  .ddm{position:static;transform:none!important;opacity:1;visibility:visible;box-shadow:none;border:0;padding:0 0 0 14px;min-width:0;background:transparent;display:none}
+  .navbar.open .ddm{display:flex}
+  .ddm .di{width:30px;height:30px;flex-basis:30px}.ddm small{display:none}
+}
 /* ===== Blog ===== */
 .bhero{background:linear-gradient(180deg,#fff 0%,var(--sky) 70%,#fff 100%);padding:36px 0 30px;text-align:center}
 .bhero h1{font-family:var(--disp);font-size:clamp(40px,6vw,64px);font-weight:700;line-height:1.05;margin:16px 0 10px;letter-spacing:-.5px}
@@ -92,7 +100,7 @@ footer h4:after{content:"";display:block;width:36px;height:3px;border-radius:3px
 .bsearch{max-width:520px;margin:24px auto 0;position:relative}
 .bsearch input{width:100%;padding:14px 20px 14px 48px;border-radius:999px;border:1.5px solid #CBE8F5;font:inherit;font-size:15px;background:#fff;box-shadow:var(--shadow);outline:none;color:var(--navy)}
 .bsearch input:focus{border-color:var(--blue)}
-.bsearch:before{content:"🔎";position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:16px}
+.bsearch:before{content:"";position:absolute;left:19px;top:50%;transform:translateY(-50%);width:18px;height:18px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231495C4' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7.5'/%3E%3Cpath d='m20.5 20.5-4.2-4.2'/%3E%3C/svg%3E") center/contain no-repeat}
 .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:22px 0 0}
 .chips button{border:1.5px solid var(--line);background:#fff;color:var(--navy);border-radius:999px;padding:8px 16px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;transition:.15s}
 .chips button:hover{border-color:var(--blue);color:var(--blue-dd)}
@@ -111,6 +119,7 @@ footer h4:after{content:"";display:block;width:36px;height:3px;border-radius:3px
 .pcard .bd{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1}
 .pcard h3{font-family:var(--disp);font-size:21px;color:var(--navy);font-weight:600;line-height:1.25;margin:10px 0 8px}
 .pcard p{color:var(--muted);font-size:14px;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.chips button svg{vertical-align:-3px}
 .cv{background:linear-gradient(135deg,var(--blue),var(--blue-d));display:flex;align-items:center;justify-content:center;font-size:54px;position:relative;overflow:hidden}
 .cv.o{background:linear-gradient(135deg,#FFB13D,var(--orange-d))}
 .cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -175,11 +184,16 @@ footer h4:after{content:"";display:block;width:36px;height:3px;border-radius:3px
       <div class="links">
         <a href="index.html">Home</a>
         <a href="index.html#programs">Programs</a>
-        <a href="blog.html" class="on">Community <small>Blog</small></a>
+        <div class="dd" id="ddBlog"><a href="blog.html" class="ddt on" onclick="return ddTap(event)" aria-haspopup="true">Community <small>Blog</small> <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a>
+          <div class="ddm" role="menu">
+            <a href="blog.html?s=teachernotes" role="menuitem"><span class="di"><svg class="li" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg></span><span><b>TeacherNotes</b><small>Teaching tips from our teachers</small></span></a>
+            <a href="blog.html?s=openpages" role="menuitem"><span class="di o"><svg class="li" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span><span><b>Open Pages</b><small>Stories &amp; perspectives from our students</small></span></a>
+            <a href="blog.html" role="menuitem" class="all"><span class="di g"><svg class="li" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></span><span><b>All Articles</b><small>Everything in the Community Blog</small></span></a>
+          </div></div>
         <a id="waHomebuilder" href="#" target="_blank" rel="noopener">Be Our Homebuilder!</a>
       </div>
       <div class="nav-cta">
-        <a class="btn btn-line" id="waNav" href="#" target="_blank" rel="noopener">💬 Chat with Us!</a>
+        <a class="btn btn-line" id="waNav" href="#" target="_blank" rel="noopener"><svg class="li" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> Chat with Us!</a>
         <a class="btn btn-or" href="portal.html">Kwelingo Hub</a>
       </div>
       <button class="hamburger" onclick="document.getElementById('navbar').classList.toggle('open')" aria-label="Menu">☰</button>
@@ -193,7 +207,7 @@ footer h4:after{content:"";display:block;width:36px;height:3px;border-radius:3px
   <div class="wrap">
     <h2>Ready to start learning?</h2>
     <p>Not sure which program fits you? Chat with us and we’ll help you choose.</p>
-    <a class="btn btn-white" id="waDiscovery" href="#" target="_blank" rel="noopener">📅 Book a Discovery Session</a>
+    <a class="btn btn-white" id="waDiscovery" href="#" target="_blank" rel="noopener"><svg class="li" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg> Book a Discovery Session</a>
   </div>
 </section>
 
@@ -203,17 +217,17 @@ footer h4:after{content:"";display:block;width:36px;height:3px;border-radius:3px
       <div><img class="logo" src="assets/logo-tagline.png" onerror="this.src='assets/logo-h.png'" alt="Kwelingo — Home for Language Learners">
         <p>Kwelingo is a home for language learners, offering language programs designed to build practical skills, confidence, and meaningful connections. Learn with us online or onsite in a supportive environment.</p></div>
       <div><h4>Our Programs</h4><div class="flinks">
-        <a href="registration.html?program=be"><span>📈</span>Boost English</a>
-        <a href="registration.html?program=sa"><span>💬</span>Speak Active</a>
-        <a href="registration.html?program=ie"><span>📝</span>IELTS &amp; TOEFL Preparation</a>
-        <a href="registration.html?program=bm"><span>📖</span>Boost Mandarin</a>
-        <a href="registration.html?program=hsk"><span>🎯</span>HSK Preparation</a></div></div>
+        <a href="registration.html?program=be"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>Boost English</a>
+        <a href="registration.html?program=sa"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span>Speak Active</a>
+        <a href="registration.html?program=ie"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/></svg></span>IELTS &amp; TOEFL Preparation</a>
+        <a href="registration.html?program=bm"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>Boost Mandarin</a>
+        <a href="registration.html?program=hsk"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>HSK Preparation</a></div></div>
       <div><h4>Kwelingo Hub</h4><div class="flinks">
-        <a href="registration.html"><span>📝</span>Registration</a>
-        <a href="teacher.html"><span>👩‍🏫</span>Teacher Room</a>
-        <a href="student.html"><span>🎓</span>Student Login</a>
-        <a href="parent.html"><span>👪</span>Parent Hub</a>
-        <a href="blog-admin.html"><span>✍️</span>Writer Login</a></div></div>
+        <a href="registration.html"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg></span>Registration</a>
+        <a href="teacher.html"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span>Teacher Room</a>
+        <a href="student.html"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>Student Login</a>
+        <a href="parent.html"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg></span>Parent Hub</a>
+        <a href="blog-admin.html"><span><svg class="li" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg></span>Writer Login</a></div></div>
     </div>
     <div class="contact">
       <a id="waFoot" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg> 0819-45-144-145</a>
@@ -227,7 +241,7 @@ footer h4:after{content:"";display:block;width:36px;height:3px;border-radius:3px
 </footer>
 <div class="toast" id="toast"></div>
 
-<script src="assets/app.js?v=20261110"></script>
+<script src="assets/app.js?v=20261113"></script>
 <script>
 const WA_NO="6281945144145";
 const wa=t=>"https://wa.me/"+WA_NO+"?text="+encodeURIComponent(t);
@@ -236,6 +250,10 @@ const setHref=(id,h)=>{ const e=document.getElementById(id); if(e) e.href=h; };
 setHref('waNav',WA_CHAT); setHref('waFoot',WA_CHAT);
 setHref('waDiscovery',wa("Hi Kwelingo! I'd like to book a discovery session to find the right program."));
 setHref('waHomebuilder',wa("Hi Kwelingo! I'd like to join as a Kwelingo Homebuilder (teacher / partner)."));
+/* Community Blog dropdown — on touch screens the first tap opens the menu */
+function ddTap(e){ const d=document.getElementById('ddBlog'); if(innerWidth<=960) return true;
+  if(matchMedia('(hover: none)').matches&&!d.classList.contains('open')){ e.preventDefault(); d.classList.add('open'); return false; } return true; }
+document.addEventListener('click',e=>{ const d=document.getElementById('ddBlog'); if(d&&!d.contains(e.target)) d.classList.remove('open'); });
 function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2800); }
 
 const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -244,7 +262,7 @@ const SEC_KEY=Object.fromEntries(Object.entries(BLOG_SECTIONS).map(([k,v])=>[v.k
 const ini=n=>String(n||'K').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const dfmt=d=>{ if(!d) return ''; const x=new Date(String(d).length<=10?d+'T00:00:00':d); return isNaN(x)?'':x.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); };
 const link=p=>'blog.html?p='+encodeURIComponent(p.slug||p.id);
-const cover=(p,cls)=>`<div class="cv ${tone(p)} ${cls||''}">${BLOG_CAT_IC[p.category]||BLOG_SECTIONS[secOf(p)].ic}${p.cover_url?`<img src="${h(p.cover_url)}" alt="" loading="lazy" onerror="this.remove()">`:''}</div>`;
+const cover=(p,cls)=>`<div class="cv ${tone(p)} ${cls||''}">${kwLi(BLOG_CAT_IC[p.category]||BLOG_SECTIONS[secOf(p)].ic,cls?76:56,'#fff',1.5)}${p.cover_url?`<img src="${h(p.cover_url)}" alt="" loading="lazy" onerror="this.remove()">`:''}</div>`;
 const label=p=>`<span class="cat ${tone(p)}">${h(secOf(p))} · ${h(p.category||'Notes')}</span>`;
 const meta=p=>`<div class="meta"><span class="av ${tone(p)}">${h(ini(p.author_name))}</span><span><b>${h(p.author_name||'Kwelingo Team')}</b> · ${dfmt(p.published_at)} · ${blogReadMins(p.content)} min read</span></div>`;
 const card=p=>`<a class="pcard" href="${link(p)}">${cover(p)}<div class="bd">${label(p)}<h3>${h(p.title)}</h3><p>${h(p.excerpt||'')}</p>${meta(p)}</div></a>`;
@@ -261,27 +279,30 @@ function renderList(){
   document.title=(SEC?SEC+' — ':'')+'Kwelingo Community Blog';
   document.getElementById('app').innerHTML=`
   <section class="bhero"><div class="wrap">
-    <span class="pill-eyebrow">Kwelingo Community Blog</span>
-    <h1><span class="b">Community</span> <span class="o">Blog</span></h1>
-    <p>Where our teachers and students share ideas, stories and perspectives.</p>
-    <div class="secs">${Object.entries(BLOG_SECTIONS).map(([k,v])=>`<button class="sec-card ${v.tone==='o'?'o':''} ${SEC===k?'on':''}" onclick="setSec('${k}')"><span class="si">${v.ic}</span><span><b>${h(k)}</b><small>${h(v.tag)}</small><em>by ${h(v.who)} · ${POSTS.filter(p=>secOf(p)===k).length} articles</em></span></button>`).join('')}</div>
+    <span class="pill-eyebrow" id="bEye">${SEC?h(SEC):'Kwelingo Community Blog'}</span>
+    <h1 id="bTitle">${heroTitle()}</h1>
+    <p id="bSub">${SEC?h(BLOG_SECTIONS[SEC].tag):'Where our teachers and students share ideas, stories and perspectives.'}</p>
     <div class="bsearch"><input id="q" placeholder="Search articles…" value="${h(Q)}" oninput="Q=this.value;drawList()"></div>
     <div class="chips" id="chips"></div>
   </div></section>
   <section class="blist"><div class="wrap" id="list"></div></section>`;
   drawChips(); drawList();
 }
-function setSec(k){ SEC=SEC===k?'':k; CAT=''; history.replaceState(null,'',SEC?'blog.html?s='+BLOG_SECTIONS[SEC].key:'blog.html'); document.querySelectorAll('.sec-card').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick')===`setSec('${SEC}')`)); drawChips(); drawList(); }
+function heroTitle(){ return SEC==='TeacherNotes'?'<span class="b">Teacher</span><span class="o">Notes</span>':SEC==='Open Pages'?'<span class="o">Open</span> <span class="b">Pages</span>':'<span class="b">Community</span> <span class="o">Blog</span>'; }
+function setSec(k){ SEC=k||''; CAT=''; history.replaceState(null,'',SEC?'blog.html?s='+BLOG_SECTIONS[SEC].key:'blog.html');
+  const e=document.getElementById('bEye'); if(!e){ renderList(); return; }
+  e.textContent=SEC||'Kwelingo Community Blog'; document.getElementById('bTitle').innerHTML=heroTitle(); document.getElementById('bSub').textContent=SEC?BLOG_SECTIONS[SEC].tag:'Where our teachers and students share ideas, stories and perspectives.';
+  document.title=(SEC?SEC+' — ':'')+'Kwelingo Community Blog'; drawChips(); drawList(); }
 function setCat(c){ CAT=c; drawChips(); drawList(); }
 function drawChips(){
   const pool=SEC?BLOG_SECTIONS[SEC].cats:BLOG_CATS; const cats=pool.filter(c=>POSTS.some(p=>p.category===c&&(!SEC||secOf(p)===SEC)));
-  document.getElementById('chips').innerHTML=['',...cats].map(c=>`<button class="${c===CAT?'on':''} ${SEC&&BLOG_SECTIONS[SEC].tone==='o'?'o':''}" onclick="setCat('${h(c)}')">${c?(BLOG_CAT_IC[c]||'')+' '+h(c):(SEC?'All '+h(SEC):'All')}</button>`).join('');
+  document.getElementById('chips').innerHTML=['',...cats].map(c=>`<button class="${c===CAT?'on':''} ${SEC&&BLOG_SECTIONS[SEC].tone==='o'?'o':''}" onclick="setCat('${h(c)}')">${c?kwLi(BLOG_CAT_IC[c]||'sparkles',15)+' '+h(c):(SEC?'All '+h(SEC):'All')}</button>`).join('');
 }
 function drawList(){
   const q=Q.trim().toLowerCase();
   const rows=POSTS.filter(p=>(!SEC||secOf(p)===SEC)&&(!CAT||p.category===CAT)&&(!q||[p.title,p.excerpt,p.tags,p.author_name,p.category,secOf(p)].join(' ').toLowerCase().includes(q)));
   const el=document.getElementById('list');
-  if(!rows.length){ el.innerHTML=`<div class="empty">${POSTS.length?'No articles here yet — check back soon!':'📝 Our community is writing the first articles — check back soon!'}</div>`; return; }
+  if(!rows.length){ el.innerHTML=`<div class="empty">${POSTS.length?'No articles here yet — check back soon!':'Our community is writing the first articles — check back soon!'}</div>`; return; }
   const [f,...rest]=(!q&&!CAT)?rows:[null,...rows];
   el.innerHTML=(f?`<a class="feat" href="${link(f)}">${cover(f)}<div class="bd">${label(f)}<h2>${h(f.title)}</h2><p>${h(f.excerpt||'')}</p>${meta(f)}</div></a>`:'')+
     (rest.length?`<div class="grid3">${rest.map(card).join('')}</div>`:'');
@@ -289,7 +310,7 @@ function drawList(){
 function renderArticle(id){
   const p=POSTS.find(x=>x.slug===id||x.id===id);
   const app=document.getElementById('app');
-  if(!p){ app.innerHTML=`<div class="art"><a class="back" href="blog.html">← All articles</a><div class="empty">😕 This article isn’t available (it may have been moved or unpublished).</div></div>`; return; }
+  if(!p){ app.innerHTML=`<div class="art"><a class="back" href="blog.html">← All articles</a><div class="empty">This article isn’t available (it may have been moved or unpublished).</div></div>`; return; }
   const sec=secOf(p), S=BLOG_SECTIONS[sec];
   document.title=p.title+' — '+sec+' · Kwelingo';
   if(p.excerpt) document.getElementById('metaDesc').setAttribute('content',p.excerpt);
@@ -308,13 +329,13 @@ function renderArticle(id){
     <div class="share"><b>Share:</b>
       <a class="btn btn-line" href="https://wa.me/?text=${encodeURIComponent(p.title+' — '+url)}" target="_blank" rel="noopener">${kwIcon('wa',18)} WhatsApp</a>
       <a class="btn btn-line" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener">${kwIcon('fb',18)} Facebook</a>
-      <button class="btn btn-line" onclick="copyLink()">🔗 Copy link</button></div>
+      <button class="btn btn-line" onclick="copyLink()">${kwLi('link',18)} Copy link</button></div>
     <div class="author"><span class="av ${tone(p)}">${h(ini(p.author_name))}</span><div><b>${h(p.author_name||'Kwelingo Team')}</b><small>${sec==='Open Pages'?'Kwelingo student · Open Pages':'Kwelingo teacher · TeacherNotes'}</small></div></div>
   </article>
   ${more.length?`<section class="more"><div class="wrap"><h2>More from the Community</h2><div class="grid3">${more.map(card).join('')}</div></div></section>`:''}`;
   scrollTo(0,0);
 }
-function copyLink(){ try{ navigator.clipboard.writeText(location.href); toast('🔗 Link copied!'); }catch(e){ prompt('Copy this link:',location.href); } }
+function copyLink(){ try{ navigator.clipboard.writeText(location.href); toast('Link copied!'); }catch(e){ prompt('Copy this link:',location.href); } }
 </script>
 </body>
 </html>

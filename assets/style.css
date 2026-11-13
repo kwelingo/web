@@ -71,10 +71,14 @@ button,input,select,textarea{font-family:inherit}
   display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;
   color:#33415F;font-weight:600;font-size:13.5px;margin-bottom:2px;transition:.15s;cursor:pointer;position:relative
 }
-.nav a .ic{width:22px;text-align:center;font-size:16px;opacity:.85;filter:grayscale(.15)}
+.nav a .ic{width:22px;text-align:center;font-size:16px;opacity:.85;filter:grayscale(.15);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav a .ic svg{width:19px;height:19px;display:block}
 .nav a:hover{background:var(--bg);color:var(--navy)}
 .nav a.active{background:var(--sky-soft);color:var(--blue);font-weight:700}
 .nav a.active .ic{opacity:1;filter:none}
+.page-head .ph-ic{color:var(--blue)}.page-head .ph-ic svg{width:26px;height:26px}
+.botnav-item .bi svg,.appgrid .tile .gi svg{width:22px;height:22px;display:block;margin:0 auto}
+.sidebar-help > span:first-child svg{width:22px;height:22px;color:var(--blue)}
 .nav a .nav-dot{margin-left:auto}
 .nav .divider{height:1px;background:var(--line);margin:10px 12px}
 .sidebar-help{margin:10px 14px 14px;background:var(--sky-soft);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--navy)}
@@ -149,7 +153,8 @@ button,input,select,textarea{font-family:inherit}
 .stat.tint-amber{background:#FFF8EB;border-color:#FBE7C2}.stat.tint-amber .val{color:#C77700}
 .stat.tint-purple{background:#F6F2FF;border-color:#E5DCFB}.stat.tint-purple .val{color:var(--purple)}
 .stat.tint-pink{background:#FFF3F6;border-color:#FBD9E3}.stat.tint-pink .val{color:#D6336C}
-.stat .icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;background:#fff;box-shadow:var(--shadow)}
+.stat .icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;background:#fff;box-shadow:var(--shadow);color:var(--blue)}.stat .icon svg{width:22px;height:22px}
+#saQuick button > span:first-child svg{width:22px;height:22px}#saQuick button{color:var(--navy)}
 .stat-row{display:flex;align-items:center;gap:14px}
 
 .progress{height:8px;background:#E8EEF8;border-radius:8px;overflow:hidden;margin-top:4px}
@@ -526,3 +531,6 @@ table.tbl.tight td{font-size:12.5px}
 .score-big{background:#E7F6EE;border-radius:14px;padding:14px;text-align:center;color:var(--green2)}
 .score-big b{display:block;font-size:26px;color:#1E7E34}
 @media(max-width:900px){.wz-grid,.q3,.pg3{grid-template-columns:minmax(0,1fr)}.opt-tiles{grid-template-columns:minmax(0,1fr)}.modal-head .wsteps{display:none}}
+.appgrid .tile .gi{color:var(--blue)}
+
+.set-ic{width:46px;height:46px;border-radius:14px;background:var(--sky-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:8px}.set-ic svg{width:24px;height:24px}

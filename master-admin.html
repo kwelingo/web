@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Admin Portal — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/style.css?v=20261110">
+<link rel="stylesheet" href="assets/style.css?v=20261113">
 <style>
   .report-grid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
   @media(max-width:1100px){.report-grid{grid-template-columns:1fr}}
@@ -108,15 +108,15 @@
 <body>
 
 <!-- PIN GATE (Master Admin) -->
-<div id="maGate" style="position:fixed;inset:0;z-index:600;background:linear-gradient(180deg,#EAF6FA,#FFF9F0);display:flex;align-items:center;justify-content:center;padding:20px">
-  <div class="card card-pad" style="max-width:360px;width:100%;text-align:center">
-    <img src="assets/logo.png" style="width:80px;height:80px;border-radius:16px;padding:6px;background:#fff;box-shadow:var(--shadow);margin:0 auto 14px">
-    <h2 style="color:var(--navy);font-size:20px;margin-bottom:4px">Super Admin Portal</h2>
-    <p class="text-muted" style="font-size:13px;margin-bottom:18px">Enter PIN to log in</p>
+<div id="maGate" style="position:fixed;inset:0;z-index:600;background:linear-gradient(160deg,#EEF4FF 0%,#F7FBFF 60%,#FFF6EA 100%);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card card-pad" style="max-width:370px;width:100%;text-align:center;padding:30px 28px">
+    <img src="assets/logo-h.png" onerror="this.src='assets/logo.png'" alt="Kwelingo Academy" style="height:52px;margin:0 auto 10px">
+    <span class="ls-sub" style="display:inline-block;margin-bottom:16px">Super Admin Portal</span>
+    <p class="text-muted" style="font-size:13px;margin-bottom:16px">Enter the Super Admin PIN to log in</p>
     <input id="maPin" type="password" maxlength="8" inputmode="numeric" placeholder="••••" style="letter-spacing:8px;text-align:center;font-size:20px;font-weight:800;width:100%;padding:11px;border:1.5px solid var(--line);border-radius:11px" onkeydown="if(event.key==='Enter')maLogin()">
     <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="maLogin()">Log in →</button>
     <div class="help" id="maErr" style="color:var(--red);margin-top:10px;font-weight:600"></div>
-    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Back to portal selection</a></div>
+    <div class="help" style="margin-top:14px"><a href="portal.html" style="color:var(--muted)">← Back to Kwelingo Hub</a></div>
   </div>
 </div>
 
@@ -566,11 +566,11 @@
       <section class="view hide" id="view-settings">
         <div class="page-head"><div class="ph-left"><div class="ph-ic">⚙️</div><div><h1>Settings</h1><div class="sub">Portal PINs, data tools and system links.</div></div></div></div>
         <div class="grid grid-3" style="gap:14px;margin-bottom:18px">
-          <div class="card card-pad" style="cursor:pointer;border-color:#FBD9B5;background:#FFF8F0" onclick="showView('regpage');renderM('regpage')"><div style="font-size:26px">🧾</div><b style="color:var(--navy)">Registration Page</b><div class="text-muted" style="font-size:12.5px">Edit programs, fees (per 8 sessions), bank account &amp; WhatsApp on the registration form.</div></div>
-          <div class="card card-pad" style="cursor:pointer;border-color:#BFE6F5;background:#F3FAFE" onclick="showView('webteachers');renderM('webteachers')"><div style="font-size:26px">🧑‍🏫</div><b style="color:var(--navy)">Website Instructor Profiles</b><div class="text-muted" style="font-size:12.5px">Photos, bios &amp; programs of the teachers shown on the homepage and registration form.</div></div>
-          <div class="card card-pad" style="cursor:pointer" onclick="showView('data');renderM('data')"><div style="font-size:26px">🗄️</div><b style="color:var(--navy)">Data Explorer</b><div class="text-muted" style="font-size:12.5px">View, search, sort &amp; export every table (CSV).</div></div>
-          <div class="card card-pad" style="cursor:pointer" onclick="window.open('admin.html#sop','_blank')"><div style="font-size:26px">📘</div><b style="color:var(--navy)">Guidelines &amp; SOP</b><div class="text-muted" style="font-size:12.5px">Managed in Operations Admin → Guidelines &amp; SOP.</div></div>
-          <div class="card card-pad" style="cursor:pointer" onclick="window.open('admin.html#announce','_blank')"><div style="font-size:26px">📣</div><b style="color:var(--navy)">Announcements &amp; Messages</b><div class="text-muted" style="font-size:12.5px">Managed in Operations Admin.</div></div>
+          <div class="card card-pad" style="cursor:pointer;border-color:#FBD9B5;background:#FFF8F0" onclick="showView('regpage');renderM('regpage')"><div class="set-ic">🧾</div><b style="color:var(--navy)">Registration Page</b><div class="text-muted" style="font-size:12.5px">Edit programs, fees (per 8 sessions), bank account &amp; WhatsApp on the registration form.</div></div>
+          <div class="card card-pad" style="cursor:pointer;border-color:#BFE6F5;background:#F3FAFE" onclick="showView('webteachers');renderM('webteachers')"><div class="set-ic">🧑‍🏫</div><b style="color:var(--navy)">Website Instructor Profiles</b><div class="text-muted" style="font-size:12.5px">Photos, bios &amp; programs of the teachers shown on the homepage and registration form.</div></div>
+          <div class="card card-pad" style="cursor:pointer" onclick="showView('data');renderM('data')"><div class="set-ic">🗄️</div><b style="color:var(--navy)">Data Explorer</b><div class="text-muted" style="font-size:12.5px">View, search, sort &amp; export every table (CSV).</div></div>
+          <div class="card card-pad" style="cursor:pointer" onclick="window.open('admin.html#sop','_blank')"><div class="set-ic">📘</div><b style="color:var(--navy)">Guidelines &amp; SOP</b><div class="text-muted" style="font-size:12.5px">Managed in Operations Admin → Guidelines &amp; SOP.</div></div>
+          <div class="card card-pad" style="cursor:pointer" onclick="window.open('admin.html#announce','_blank')"><div class="set-ic">📣</div><b style="color:var(--navy)">Announcements &amp; Messages</b><div class="text-muted" style="font-size:12.5px">Managed in Operations Admin.</div></div>
         </div>
         <div class="grid grid-2" style="gap:18px">
           <div class="card card-pad">
@@ -731,8 +731,8 @@
           <div class="field"><label>Card colour</label><select id="wtColor"><option value="b">Kwelingo Blue</option><option value="o">Kwelingo Orange</option></select></div>
         </div></div>
       <div class="field"><label>Short Bio *</label><textarea id="wtBio" rows="3" placeholder="2–3 sentences about the teacher's background and teaching style."></textarea></div>
-      <div class="field"><label>Highlights <small class="text-muted">(icon + short text, up to 3)</small></label>
-        <div style="display:flex;gap:8px;margin-bottom:6px"><input id="wtFi0" maxlength="4" style="width:64px;text-align:center;font-size:18px" placeholder="🎓"><input id="wtFt0" style="flex:1" placeholder="e.g. B.A. in English Language Education"></div><div style="display:flex;gap:8px;margin-bottom:6px"><input id="wtFi1" maxlength="4" style="width:64px;text-align:center;font-size:18px" placeholder="🎓"><input id="wtFt1" style="flex:1" placeholder="e.g. 5+ years teaching teens and adults"></div><div style="display:flex;gap:8px;margin-bottom:6px"><input id="wtFi2" maxlength="4" style="width:64px;text-align:center;font-size:18px" placeholder="🎓"><input id="wtFt2" style="flex:1" placeholder="e.g. Focus on real-life communication"></div></div>
+      <div class="field"><label>Highlights <small class="text-muted">(3 short lines — icons: graduation cap, open book, heart)</small></label>
+        <div style="display:flex;gap:8px;margin-bottom:6px"><span style="width:46px;height:46px;flex:0 0 46px;border-radius:12px;background:var(--sky-soft);color:var(--blue);display:flex;align-items:center;justify-content:center"><svg class="li" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span><input id="wtFt0" style="flex:1" placeholder="e.g. B.A. in English Language Education"></div><div style="display:flex;gap:8px;margin-bottom:6px"><span style="width:46px;height:46px;flex:0 0 46px;border-radius:12px;background:var(--sky-soft);color:var(--blue);display:flex;align-items:center;justify-content:center"><svg class="li" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span><input id="wtFt1" style="flex:1" placeholder="e.g. 5+ years teaching teens and adults"></div><div style="display:flex;gap:8px;margin-bottom:6px"><span style="width:46px;height:46px;flex:0 0 46px;border-radius:12px;background:var(--sky-soft);color:var(--blue);display:flex;align-items:center;justify-content:center"><svg class="li" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span><input id="wtFt2" style="flex:1" placeholder="e.g. Focus on real-life communication"></div></div>
     </div>
     <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mWt')">Cancel</button><button class="btn btn-primary" onclick="wtSave()">Save Profile</button></div>
   </div>
@@ -876,7 +876,7 @@
   </div>
 </div>
 
-<script src="assets/app.js?v=20261110"></script>
+<script src="assets/app.js?v=20261113"></script>
 <script>
 document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Super Admin Portal');
 /* ---- PIN gate (verifikasi ke server) ---- */
@@ -971,7 +971,7 @@ function wtOpen(i){
   document.getElementById('wtHead').textContent=i!=null?'Edit Instructor':'Add Instructor';
   V('wtId',i!=null?i:''); V('wtName',t.name); V('wtRole',t.role); V('wtType',t.type||'Local'); V('wtColor',t.color||'b'); V('wtBio',t.bio); V('wtFrom','');
   document.getElementById('wtShow').checked=t.show!==false;
-  [0,1,2].forEach(k=>{ const f=(t.facts||[])[k]||['','']; V('wtFi'+k,f[0]); V('wtFt'+k,f[1]); });
+  [0,1,2].forEach(k=>{ const f=(t.facts||[])[k]||['','']; V('wtFt'+k,f[1]); });
   document.getElementById('wtProgs').innerHTML=(WT_PROGS.length?WT_PROGS:[{id:'be',name:'Boost English'}]).map(p=>`<label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" value="${esc(p.id)}" ${(t.programs||[]).includes(p.id)?'checked':''}> ${esc(p.name)}</label>`).join('');
   document.getElementById('wtFrom').innerHTML='<option value="">— choose a teacher —</option>'+TUTORS.map(x=>`<option value="${esc(x.id)}">${esc(x.nama)}</option>`).join('');
   WT_PHOTO=t.photo||''; wtDrawPv(); openModal('mWt');
@@ -986,7 +986,7 @@ function wtSave(){
   if(!g('wtName')||!g('wtBio')){ toast('Name and bio are required','err'); return; }
   const old=iStr!==''?WT[Number(iStr)]:{};
   const t={...old,id:old.id||('wt'+Date.now().toString(36)),name:g('wtName'),role:g('wtRole'),type:g('wtType'),color:g('wtColor'),bio:g('wtBio'),photo:WT_PHOTO,show:document.getElementById('wtShow').checked,
-    programs:[...document.querySelectorAll('#wtProgs input:checked')].map(c=>c.value),facts:[0,1,2].map(k=>[g('wtFi'+k)||'✨',g('wtFt'+k)]).filter(f=>f[1])};
+    programs:[...document.querySelectorAll('#wtProgs input:checked')].map(c=>c.value),facts:[0,1,2].map(k=>[['🎓','📖','❤️'][k],g('wtFt'+k)])};
   if(iStr!=='') WT[Number(iStr)]=t; else WT.push(t);
   closeModal('mWt'); wtPersist(iStr!==''?'Profile updated':'Instructor added 🎉');
 }

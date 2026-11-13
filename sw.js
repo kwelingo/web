@@ -1,5 +1,5 @@
 /* Kwelingo PWA service worker — app shell cache + offline fallback */
-const CACHE = 'kwelingo-v5';
+const CACHE = 'kwelingo-v6';
 const SHELL = [
   'portal.html','index.html','student.html','teacher.html','parent.html',
   'admin.html','master-admin.html','registration.html','blog.html','blog-admin.html',
