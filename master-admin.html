@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Admin Portal — Kwelingo</title>
 <link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/style.css?v=20261113">
+<link rel="stylesheet" href="assets/style.css?v=20261124">
 <style>
   .report-grid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
   @media(max-width:1100px){.report-grid{grid-template-columns:1fr}}
@@ -876,7 +876,7 @@
   </div>
 </div>
 
-<script src="assets/app.js?v=20261113"></script>
+<script src="assets/app.js?v=20261124"></script>
 <script>
 document.getElementById('logo').innerHTML=logoBlock('Kwelingo','Super Admin Portal');
 /* ---- PIN gate (verifikasi ke server) ---- */
@@ -980,7 +980,7 @@ function wtFill(id){ const x=TUTORS.find(t=>t.id===id); if(!x) return; const V=(
   V('wtName',x.nama); V('wtRole',String(x.program||'').split(',')[0].trim()); V('wtBio',x.bio); if(x.photo_url&&!WT_PHOTO){ WT_PHOTO=x.photo_url; wtDrawPv(); }
   if(/international|native/i.test(x.category||'')) document.getElementById('wtType').value='International'; }
 async function wtPhoto(inp){ const f=inp.files[0]; inp.value=''; if(!f) return;
-  try{ toast('Uploading photo…'); const r=await API.uploadFile(await resizeImageToDataURL(f,900),'instructor-'+f.name); WT_PHOTO=(r&&(r.view||r.url))||''; wtDrawPv(); toast('Photo added','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
+  try{ toast('Uploading photo…'); const r=await API.uploadFile(await resizeImageToDataURL(f,1400),'instructor-'+f.name); WT_PHOTO=(r&&(r.view||r.url))||''; wtDrawPv(); toast('Photo added','ok'); }catch(e){ toast('Failed: '+(e.message||e),'err'); } }
 function wtSave(){
   const g=k=>document.getElementById(k).value.trim(), iStr=g('wtId');
   if(!g('wtName')||!g('wtBio')){ toast('Name and bio are required','err'); return; }

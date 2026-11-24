@@ -99,7 +99,8 @@ function viewImg(src){
   o.innerHTML=`<img src="${src}" style="max-width:95%;max-height:95%;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.5)">`;
 }
 // Downscale a chosen image to a small JPEG data-URL that fits in a sheet cell (<45k chars)
-function resizeImageToDataURL(file){
+// maxDim given (website photos, blog images) → high quality; no maxDim (proofs/docs stored inline) → small & compressed
+function resizeImageToDataURL(file,hqMax){
   return new Promise((resolve,reject)=>{
     const img=new Image(), url=URL.createObjectURL(file);
     img.onload=()=>{
@@ -109,9 +110,10 @@ function resizeImageToDataURL(file){
         if(w>h && w>maxDim){h=Math.round(h*maxDim/w);w=maxDim;}
         else if(h>=w && h>maxDim){w=Math.round(w*maxDim/h);h=maxDim;}
         const cv=document.createElement('canvas');cv.width=w;cv.height=h;
-        cv.getContext('2d').drawImage(img,0,0,w,h);
+        const cx=cv.getContext('2d'); cx.imageSmoothingEnabled=true; cx.imageSmoothingQuality='high'; cx.fillStyle='#fff'; cx.fillRect(0,0,w,h); cx.drawImage(img,0,0,w,h);
         return cv.toDataURL('image/jpeg',q);
       };
+      if(hqMax){ let q=0.9, out=draw(hqMax,q); for(let i=0;i<3 && out.length>1800000;i++){ q-=0.08; out=draw(hqMax,q); } resolve(out); return; }
       let maxDim=440,q=0.6,out=draw(maxDim,q);
       for(let i=0;i<5 && out.length>45000;i++){ maxDim=Math.round(maxDim*0.8); q=Math.max(0.35,q-0.08); out=draw(maxDim,q); }
       resolve(out);
